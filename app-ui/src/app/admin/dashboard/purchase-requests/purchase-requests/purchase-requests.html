@@ -1,0 +1,91 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Purchase Request Forms</h3>
+	</div>
+	<a href="#" ng-click="$ctrl.createNewPurchaseRequest($event);" class="btn btn-create btn-md button-link">Create New Request</a>
+</div>
+<div class='client-pris'>
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+        <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate" />
+  </div>
+</div>
+	<table ng-if="$ctrl.purchaseRequests" class='table table-list'>
+		<thead>
+			<tr>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'date';$ctrl.sortReverse = !$ctrl.sortReverse;">PRF Date
+                <span ng-show="$ctrl.sortType == 'date' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'date' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">PRF No
+                <span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+		<th>
+            <a href="#" ng-click="$ctrl.sortType = 'dateNeeded';$ctrl.sortReverse = !$ctrl.sortReverse;">Needed
+                <span ng-show="$ctrl.sortType == 'dateNeeded' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'dateNeeded' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+        <th>
+            <a href="#" ng-click="$ctrl.sortType = 'status';$ctrl.sortReverse = !$ctrl.sortReverse;">Status
+                <span ng-show="$ctrl.sortType == 'status' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'status' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="purchaseRequest in $ctrl.purchaseRequests | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
+				<td>{{purchaseRequest.date | date}}</td>
+				<td>{{purchaseRequest.number}}</td>
+				<td>{{purchaseRequest.dateNeeded | date}}</td>
+				<td>{{purchaseRequest.status}}</td>
+				<td ng-if="purchaseRequest.status != 'Cancelled'" class='tablebutton-form'>
+					<div class='holder'>
+						<button class='btn btn-compose'>
+							<i class='ion-ios-compose-outline' ng-click="$ctrl.openModal(purchaseRequest)"></i>
+						</button>
+					</div>
+					
+				</td>
+				<td ng-if="purchaseRequest.status == 'Cancelled'" class='tablebutton-form'>
+				<div class='holder'>
+					<button class='btn btn-compose'>
+							<i class='ion-ios-compose-outline' ng-click="$ctrl.openModal(purchaseRequest)"></i>
+						</button>
+					<button class='btn btn-info' ng-if="purchaseRequest.status == 'Cancelled'" ng-click="$ctrl.edit(purchaseRequest)">Edit</button>
+				</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+<view-prf-modal
+prf="$ctrl.prf"
+cancelreqs="$ctrl.cancelreqs"
+></view-prf-modal>

@@ -1,0 +1,71 @@
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+	<div class="form-content">
+		<div class="step-form">
+			<div class="horizontal-align -start rmpm-content">
+			<div class="horizontal-align -start rmpm-code">
+				<div class="form-group rmpm action">
+					<a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal"
+					 data-toggle="modal">Select Finished Good</a>
+				</div>
+				<div class="form-group rmpm">
+					<label class="label capitalize-text">FG Code</label>
+					<input  disabled type="text" ng-model="$ctrl.recipe.finishedGood.code" readonly class="form-control -border"
+					/>
+					<label class="label capitalize-text">FG Name</label>
+					<input  disabled type="text" ng-model="$ctrl.recipe.finishedGood.name" readonly class="form-control -border"
+					/>
+				</div>
+			</div>
+		</div>
+		<button type="button" ng-click="$ctrl.addIngredientGroup();">+ Add Ingredient Group</button>
+		<div ng-repeat="ingredientGroup in $ctrl.recipe.ingredientGroups">
+			<!-- Ingredient Groups -->
+			
+			<div class="horizontal-align -start rmpm-content">
+				<div>
+					Group Name
+					<input type="text" ng-model="ingredientGroup.name">
+				</div>
+				
+				<table class="table table-list">
+					<thead>
+						<tr>
+							
+							<td>Item</td>
+							<td>Ingredient Quantity</td>
+							<td><button type="button" style="background-color:aqua;" ng-click="$ctrl.addIngredient(ingredientGroup)">+ Add Ingredient</button></td>
+
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="ingredient in ingredientGroup.ingredients">
+							
+							<td>
+								<select class="form-control select -borderless" ng-model="ingredient.item" ng-options="d.name + '-' + d.code + ' ' + d.type.code  for d in $ctrl.items"
+								 name="finishedGood" >
+								</select>
+							</td>
+							<td>
+								<input type="text" ng-model="ingredient.quantity" />
+							</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+
+	</div>
+	<div class="request-action" ng-if="$ctrl.recipe.ingredientGroups && ($ctrl.recipe.ingredientGroups.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients && $ctrl.recipe.ingredientGroups[0].ingredients.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients[0].item.name)">
+		<button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button>
+	</div>
+
+	<div class="request-action" ng-if="$ctrl.recipe.ingredientGroups && !($ctrl.recipe.ingredientGroups.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients && $ctrl.recipe.ingredientGroups[0].ingredients.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients[0].item.name )">
+		<button type="submit" disabled class="btn btn-create btn-md">{{$ctrl.button}}</button>
+	</div>
+	
+<find-fg-modal
+	fg="$ctrl.recipe.finishedGood"
+></find-fg-modal>
+</form>

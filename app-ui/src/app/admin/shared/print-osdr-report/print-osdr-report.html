@@ -1,0 +1,47 @@
+
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Report:
+            <span class='content'>{{$ctrl.reportType}}</span>
+          </p>
+          <p class='title'>
+            Dates:
+            <span class='content'>{{$ctrl.dates}}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Company:
+            <span class='content'>{{$ctrl.company.name}}</span>
+          </p>
+        </div>
+        <div class='wrapper scroll-section'>
+          <table class='table table-list'>
+            <thead>
+              <tr>
+                <th>SO No</th>
+                <th>Date</th>
+                <th>OS/DR#</th>
+                <th>Date</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Amount</th>
+                <th>Batch</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="vp in $ctrl.entries">
+                <td>{{vp.soNumber}}</td>
+				<td>{{vp.soDate | date}}</td>
+				<td>{{vp.number}}</td>
+				<td>{{vp.date | date}}</td>
+				<td>{{vp.product}}</td>
+				<td>{{vp.quantity}}</td>
+				<td>{{vp.unitPrice}}</td>
+				<td>{{vp.amount}}</td>
+				<td>{{vp.lotNumber}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>

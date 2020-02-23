@@ -1,0 +1,31 @@
+/*
+*  %section.panel-card
+*   .item
+*     %span.strong Tax amount:
+*     %span.amount 3,500.00
+*   .item
+*     %span.strong Net amount:
+*     %span.amount 3,500.00
+*/
+
+.panel-card {
+  background-color: $white-two;
+  display: flex;
+  padding: 0.75em 1em;
+  border-radius: 4px;
+  margin-bottom: 1em;
+
+  > .item {
+    flex: 1;
+    font-size: 18px;
+    color: $dusk;
+
+    > .strong {
+     font-weight: 500;
+     text-transform: capitalize;
+    }
+    > .amount {
+      font-weight: 700;
+    }
+  }
+}

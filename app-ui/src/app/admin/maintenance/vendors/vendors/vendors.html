@@ -1,0 +1,101 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Vendor Information</h3>
+	</div>
+	<a href="/admin/maintenance/vendor/new" ng-click="" class="btn btn-create btn-md button-link">Add Vendor</a>
+</div>
+<div class='vendor-pris'>
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="Business name" type="text" name="search" ng-model="$ctrl.searchName"
+        />
+  </div>
+</div>
+	<table class='table table-list'>
+		<thead>
+			<tr>
+				<th>
+                    <a href="#" ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
+                        <span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
+                            <i class="fa fa-caret-down"></i>
+                        </span>
+                        <span ng-show="$ctrl.sortType == 'code' && $ctrl.sortReverse">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
+                        <span ng-show="$ctrl.sortType == 'name' && !$ctrl.sortReverse">
+                            <i class="fa fa-caret-down"></i>
+                        </span>
+                        <span ng-show="$ctrl.sortType == 'name' && $ctrl.sortReverse">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" ng-click="$ctrl.sortType = 'tin';$ctrl.sortReverse = !$ctrl.sortReverse;">tin
+                        <span ng-show="$ctrl.sortType == 'tin' && !$ctrl.sortReverse">
+                            <i class="fa fa-caret-down"></i>
+                        </span>
+                        <span ng-show="$ctrl.sortType == 'tin' && $ctrl.sortReverse">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" ng-click="$ctrl.sortType = 'proprietor';$ctrl.sortReverse = !$ctrl.sortReverse;">Phone Number
+                        <span ng-show="$ctrl.sortType == 'proprietor' && !$ctrl.sortReverse">
+                            <i class="fa fa-caret-down"></i>
+                        </span>
+                        <span ng-show="$ctrl.sortType == 'proprietor' && $ctrl.sortReverse">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" ng-click="$ctrl.sortType = 'businessAddress';$ctrl.sortReverse = !$ctrl.sortReverse;">Address
+                        <span ng-show="$ctrl.sortType == 'businessAddress' && !$ctrl.sortReverse">
+                            <i class="fa fa-caret-down"></i>
+                        </span>
+                        <span ng-show="$ctrl.sortType == 'businessAddress' && $ctrl.sortReverse">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </a>
+                </th>
+                <th>
+                    <a href="#" ng-click="$ctrl.sortType = 'lineOfBusiness';$ctrl.sortReverse = !$ctrl.sortReverse;">Active
+                        <span ng-show="$ctrl.sortType == 'lineOfBusiness' && !$ctrl.sortReverse">
+                            <i class="fa fa-caret-down"></i>
+                        </span>
+                        <span ng-show="$ctrl.sortType == 'lineOfBusiness' && $ctrl.sortReverse">
+                            <i class="fa fa-caret-up"></i>
+                        </span>
+                    </a>
+                </th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="c in $ctrl.vendors | filter: {name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
+				<td>{{c.code}}</td>
+				<td>{{c.name}}</td>
+                <td>{{c.tin}}</td>
+                <td>{{c.phoneNumber}}</td>
+                <td>{{c.address}}</td>
+                <td>{{c.isActive}}</td>
+				<td class='tablebutton-form'>
+					<div class='holder'>
+						<button class='btn btn-compose'>
+							<i class='ion-ios-compose-outline'  data-toggle="modal" ng-click="$ctrl.goToEdit(c.id)"></i>
+						</button>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>	
+</div>
+

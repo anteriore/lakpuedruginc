@@ -1,0 +1,43 @@
+#referece-number {
+  margin: 5px;
+}
+
+.reference-group {
+  width: 30%;
+}
+
+.item-list {
+  margin-top: 15px;
+}
+
+.item-list > .table {
+  margin-bottom: 2px;
+}
+
+.item-list > .action {
+  background-color: $white-two;
+  padding: 5px;
+  text-align: center;
+}
+
+.item-list > .action > .btn {
+  width: 30%;
+}
+
+.link-item {
+  > .icon:before {
+    float: left;
+  }
+}
+
+.request-action {
+  & {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  > .btn {
+    padding: 10px 12px;
+    width: 40%;
+  }
+}

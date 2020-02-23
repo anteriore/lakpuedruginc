@@ -1,0 +1,60 @@
+.department-area {
+  & {
+    width: 100%;
+  }
+
+  &.-left {
+    margin-right: 10px;
+  }
+}
+
+.department-area > .header > .caption {
+  margin-right: 20px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.bold-link > .link {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.department-area > .wrapper {
+  padding: 5px;
+  border: 1px solid $white-two;
+}
+
+.department-list {
+  & {
+    background-color: $white-two;
+    border: 1px solid $dark-grey;
+    margin-bottom: 5px;
+    padding: 5px;
+  }
+
+  > span {
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  > .code {
+    width: 40%;
+  }
+
+  > .dept {
+    width: 100%;
+  }
+
+  > .delete {
+    text-align: right;
+    width: 10%;
+  }
+
+  > .delete:before {
+    font-size: 15px;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,52 @@
+[
+    {
+        "areaCode": "L",
+        "code": "BIN-001",
+        "name": "BINAN, LAGUNA"
+    },
+    {
+        "areaCode": "M",
+        "code": "CDO-003",
+        "name": "CAGAYAN DE ORO"
+    },
+    {
+        "areaCode": "M",
+        "code": "DAV-004",
+        "name": "DAVAO CITY"
+    },
+    {
+        "areaCode": "V",
+        "code": "CEB-005",
+        "name": "CEBU"
+    },
+    {
+        "areaCode": "V",
+        "code": "ILO-006",
+        "name": "ILOILO"
+    },
+    {
+        "areaCode": "V",
+        "code": "BAC-007",
+        "name": "BACOLOD"
+    },
+    {
+        "areaCode": "L",
+        "code": "ISA-008",
+        "name": "ISABELA"
+    },
+    {
+        "areaCode": "L",
+        "code": "QCO-009",
+        "name": "QUEZON CITY - HEAD OFFICE"
+    },
+    {
+        "areaCode": "L",
+        "code": "BIC-010",
+        "name": "BICOL"
+    },
+    {
+        "areaCode": "V",
+        "code": "ORM-011",
+        "name": "ORMOC CITY"
+    }
+]

@@ -1,0 +1,55 @@
+
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Report:
+            <span class='content'>{{$ctrl.reportType}}</span>
+          </p>
+          <p class='title'>
+            Dates:
+            <span class='content'>{{$ctrl.dates}}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Company:
+            <span class='content'>{{$ctrl.company.name}}</span>
+          </p>
+        </div>
+        <div class='wrapper scroll-section'>
+          <table class='table table-condensed'>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>DR#</th>
+                <th>PO#</th>
+                <th>RR#</th>
+                <th>JV#</th>
+                <th>Account Titles</th>
+                <th>Credit</th>
+                <th>Debit</th>
+              </tr>
+            </thead>
+            <tbody ng-repeat="vp in $ctrl.entries">
+              <tr >
+                <td>{{vp.date | date}}</td>
+				<td>{{vp.dr}}</td>
+				<td>{{vp.po}}</td>
+				<td>{{vp.rr}}</td>
+				<td>{{vp.number}}</td>
+				<td>{{vp.accountTitles[0].title}}</td>
+				<td>{{vp.accountTitles[0].credit}}</td>
+				<td>{{vp.accountTitles[0].debit}}</td>
+              </tr>
+              <tr style="padding-top: 1em;" ng-repeat="title in vp.accountTitles" ng-if="$index > 0">
+              	<td></td>
+              	<td></td>
+              	<td></td>
+              	<td></td>
+              	<td></td>
+              	<td>{{title.title}}</td>
+              	<td>{{title.credit}}</td>
+              	<td>{{title.debit}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>

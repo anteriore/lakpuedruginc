@@ -1,0 +1,37 @@
+
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Report:
+            <span class='content'>{{$ctrl.reportType}}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Company:
+            <span class='content'>{{$ctrl.company.name}}</span>
+          </p>
+        </div>
+        <div class='wrapper scroll-section'>
+          <table class='table table-list'>
+            <thead>
+              <tr>
+                <th>Client Code</th>
+                <th>Client Name</th>
+                <th>Address</th>
+                <th>Contact Person</th>
+                <th>Telephone Number</th>
+                <th>TIN Number</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="entry in $ctrl.entries">
+                <td>{{entry.code}}</td>
+                <td>{{entry.name}}</td>
+                <td>{{entry.businessAddress}}</td>
+                <td>{{entry.proprietor}}</td>
+                <td>{{entry.telephoneNumbers}}</td>
+                <td>{{entry.tin}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>

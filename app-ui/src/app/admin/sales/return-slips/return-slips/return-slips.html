@@ -1,0 +1,91 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Return Slip Forms</h3>
+	</div>
+	<a href="/admin/shared/print-rs-report/depot/{{$ctrl.userAssignedDepot.id}}/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class="btn btn-primary btn-md button-link">Generate Report</a>
+	<a href="#" ng-click="$ctrl.createNewReturnSlip($event);" class="btn btn-create btn-md button-link">Create New SO</a>
+</div>
+<div class='client-pris'>
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+        <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate" />
+  </div>
+  <div class="search-box horizontal-align -between">
+   		<input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.startDate"
+        />
+        <input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.endDate" />
+	</div>
+</div>
+	<div class="search-box horizontal-align -between">
+	 <select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots">
+           					</select>	
+  </div>
+	<table ng-if="$ctrl.returnSlips" class='table table-list'>
+		<thead>
+			<tr>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'date';$ctrl.sortReverse = !$ctrl.sortReverse;">Date
+                <span ng-show="$ctrl.sortType == 'date' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'date' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">No
+                <span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+        		<th>
+            <a href="#" ng-click="$ctrl.sortType = 'preparedBy';$ctrl.sortReverse = !$ctrl.sortReverse;">DR#
+                <span ng-show="$ctrl.sortType == 'preparedBy' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'preparedBy' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+        <th>
+            <a href="#" ng-click="$ctrl.sortType = 'status';$ctrl.sortReverse = !$ctrl.sortReverse;">Client
+                <span ng-show="$ctrl.sortType == 'status' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'status' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+        <th>
+            <a href="#" ng-click="$ctrl.sortType = 'status';$ctrl.sortReverse = !$ctrl.sortReverse;">Amount
+                <span ng-show="$ctrl.sortType == 'status' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'status' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="returnSlip in $ctrl.returnSlips | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
+				<td>{{returnSlip.date | date}}</td>
+				<td>{{returnSlip.number}}</td>
+				<td>{{returnSlip.salesNumber}}</td>
+				<td>{{returnSlip.client.name}}</td>
+				<td>{{returnSlip.totalAmount}}</td>
+			</tr>
+		</tbody>
+	</table>

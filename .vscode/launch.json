@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ApplicationProcessApplication<superadmin>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.wyvernlabs.ldicp.spring.events.superadmin.ApplicationProcessApplication",
+            "projectName": "superadmin",
+            "args": ""
+        }
+    ]
+}

@@ -1,0 +1,174 @@
+[
+    {
+        "code": "GAL",
+        "name": "GALENICAL PRODUCTS"
+    },
+    {
+        "code": "GEN",
+        "name": "GENERIC PRODUCTS (HUMAN)"
+    },
+    {
+        "code": "CIP",
+        "name": "CONSUMER ITEM PRODUCTS"
+    },
+    {
+        "code": "HFP",
+        "name": "HEALTH FOOD PRODUCTS"
+    },
+    {
+        "code": "MSP",
+        "name": "MEDICAL SUPPLIES"
+    },
+    {
+        "code": "BRN",
+        "name": "BRANDED"
+    },
+    {
+        "code": "PCD",
+        "name": "PETSHOPS/POULTRY SUPPLY"
+    },
+    {
+        "code": "FCP",
+        "name": "FIGHTING COCK PRODUCT"
+    },
+    {
+        "code": "INJ",
+        "name": "INJECTABLE PRODUCTS"
+    },
+    {
+        "code": "HHP",
+        "name": "HERD HEALTH PRODUCT"
+    },
+    {
+        "code": "WSP",
+        "name": "WATER SOLUBLES PRODUCTS"
+    },
+    {
+        "code": "FGP",
+        "name": "FEED GRADE PRODUCT"
+    },
+    {
+        "code": "ASP",
+        "name": "ANTISCOURING PRODUCT"
+    },
+    {
+        "code": "DIP",
+        "name": "DISINFECTANT PRODUCT"
+    },
+    {
+        "code": "ACP",
+        "name": "ANTIBACTERIAL CONCETRATE PROD"
+    },
+    {
+        "code": "MP",
+        "name": "MISCELLANEOS PRODUCT"
+    },
+    {
+        "code": "WSP-ABP",
+        "name": "WATER SOLUBLE - ANTIBACTERIALS"
+    },
+    {
+        "code": "WSP-VMP",
+        "name": "WATER SOLUBLE - VITAMINS"
+    },
+    {
+        "code": "INJ-ABP",
+        "name": "INJECTABLES -ANTIBACTERIALS"
+    },
+    {
+        "code": "INJ-VMP",
+        "name": "INJECTABLES -VITAMINS/MINERALS"
+    },
+    {
+        "code": "FGP-AB",
+        "name": "FEED GRADE - ANTIBACTERIALS"
+    },
+    {
+        "code": "FGP-VM",
+        "name": "FEED GRADE - VITAMINS/MINERALS"
+    },
+    {
+        "code": "TOLL",
+        "name": "TOLL PRODUCTS"
+    },
+    {
+        "code": "PITFEED",
+        "name": "PIT FIGHTER FEEDS"
+    },
+    {
+        "code": "NUTRIT",
+        "name": "PIT FIGHTER NUTRITIONAL SLASH"
+    },
+    {
+        "code": "VETCLIN",
+        "name": "VETERINARIAN/VETERINARY CLINIC"
+    },
+    {
+        "code": "FISH",
+        "name": "FISH PHARMA"
+    },
+    {
+        "code": "TOS",
+        "name": "TRANSFER OF STOCKS"
+    },
+    {
+        "code": "ASSAY",
+        "name": "ASSAY OF RAW MATERIALS"
+    },
+    {
+        "code": "PRODEV",
+        "name": "PRODUCT DEVELOPMENT"
+    },
+    {
+        "code": "PROD01",
+        "name": "PRODUCTION USE"
+    },
+    {
+        "code": "P.CARE",
+        "name": "PET CARE"
+    },
+    {
+        "code": "CONSUMR",
+        "name": "CONSUMER"
+    },
+    {
+        "code": "RPIGEON",
+        "name": "RACING PIGEON"
+    },
+    {
+        "code": "SWINE",
+        "name": "SWINE"
+    },
+    {
+        "code": "EQUINE",
+        "name": "EQUINE"
+    },
+    {
+        "code": "VALFEE",
+        "name": "VALIDATION FEE"
+    },
+    {
+        "code": "CLASFEE",
+        "name": "TESTING FEE"
+    },
+    {
+        "code": "TESTFEE",
+        "name": "TESTING FEE"
+    },
+    {
+        "code": "MED MIS",
+        "name": "MEDICAL MISSION"
+    },
+    {
+        "code": "PROBIO",
+        "name": "PROBIOTICS"
+    },
+    {
+        "code": "INSPCTN",
+        "name": "INSPECTION  FEE"
+    },
+    {
+        "code": "TRIAL",
+        "name": "TRIAL SAMPLE APPROVAL COST"
+    }
+]

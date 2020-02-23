@@ -1,0 +1,139 @@
+
+<div class="admin-header">
+    <div class="title horizontal-align -between">
+        <h4 class="bg">Pre-Manufacturing Order</h4>
+
+    </div>
+    <hr class="devider">
+</div>
+
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+    <div class="form-content">
+        <div class="step-form">
+            <div class="horizontal-align -start rmpm-content">
+                <div class="horizontal-align -start rmpm-code">
+                    <div class="form-group rmpm action">
+                        <a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal"
+                         data-toggle="modal">Select Finished Good</a>
+                    </div>
+                    <div class="form-group rmpm">
+                        <label class="label capitalize-text">FG Code</label>
+                        <input  disabled type="text" ng-model="$ctrl.mo.finishedGood.code" readonly class="form-control -border"
+                        />
+                        <label class="label capitalize-text">FG Name</label>
+                        <input  disabled type="text" ng-model="$ctrl.mo.finishedGood.name" readonly class="form-control -border"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-content">
+            <div class="step-form">
+                <div class="horizontal-align -between">
+
+                    <div class="side-two">
+                        <div class="form-group">
+                            <div class="horizontal-align -between content">
+                                <div class="form-group field">
+                                    <label class="label capitalize-text">MO Type</label>
+                                    <select type="text"  class="form-control -border" ng-model="$ctrl.mo.type">
+                                        <option value="">ALL</option>
+                                        <option value="RM">RM</option>
+                                        <!-- <option value="PM">PM</option> -->
+                                    </select>
+                                </div>
+
+                                <div class="form-group field">
+                                    <label class="label capitalize-text">Batch Size</label>
+                                    <input type="text"  class="form-control -border" ng-model="$ctrl.mo.batchSize" />
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+
+
+            <div class="request-action">
+            <button type="button" class="btn btn-create btn-md" ng-click="$ctrl.testRun()">Test Run</button>
+        </div>
+
+        
+            <div class="horizontal-align -between">
+                    
+
+                    <table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list">
+                            <thead>
+                                <tr>
+                                    <td >Item</td>
+                                    <td>Type</td>
+                                    <td>Ingredient Quantity</td>
+                                    <td>Control Number</td>
+                                    <td>Inventory Quantity</td>
+                                    <td>Quantity Needed</td>
+                                    <td >Quantity Lacking</td>
+                                    <td>Expiry</td>
+                                    <td>Re-eval</td>
+                                    <td>Re-test</td>
+                                    <td>Best Before</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="{{(inv.result > 0) ? 'background-color: yellow' : 'background-color: white'}}" ng-repeat="inv in $ctrl.mo.inventoryList">
+                                    <td>
+                                        {{inv.item.name}} {{inv.item.code}}
+                                    </td>
+                                    <td>
+                                        {{inv.item.type.code}}
+                                    </td>
+                                    <td>
+                                        {{inv.ingredientQuantity}}
+                                    </td>
+                                    <td >
+                                       {{inv.controlNumber}}
+                                    </td>
+                                    <td>
+                                        {{inv.quantity}}    
+                                    </td>
+                                    <td>
+                                        {{$ctrl.getRecipeItemQuantity(inv.item.code, $ctrl.mo.recipe) }}
+                                    </td>
+                                    <td>
+                                        {{inv.result = $ctrl.processLacking(inv.quantity, inv.item.code, $ctrl.mo.recipe)}}
+                                    </td>
+                                    <td>
+                                        {{inv.expiration | date}}
+                                    </td>
+                                    <td>
+                                        {{inv.reevaluation | date}}
+                                    </td>
+                                    <td>
+                                        {{inv.retest | date}}
+                                    </td>
+                                    <td>{{inv.bestBefore | date}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                
+                       
+            </div>
+        
+            <div ng-if="$ctrl.mo.inventoryList.length > 0" class="form-group field">
+                    <label class="label capitalize-text">Result</label>
+                    <div>{{$ctrl.isPassed()}}</div>
+                    <button type="button" class="btn btn-create btn-md" ng-click="$ctrl.createMo()">Create MO</button>
+                </div>
+        
+       
+       
+
+
+
+</form>
+
+<find-fg-modal
+	fg="$ctrl.mo.finishedGood"
+></find-fg-modal>
+	  

@@ -1,0 +1,266 @@
+[
+    {
+        "code": "HO-EPD",
+        "name": "ZZZ EXEC PLANNING DIV"
+    },
+    {
+        "code": "HO-T&P",
+        "name": "H.O. - TECHNICAL & PROMO (OTC)"
+    },
+    {
+        "code": "HO-MCD",
+        "name": "SALES & MKTG CPD - LUZON"
+    },
+    {
+        "code": "HO-MOT",
+        "name": "SALES & MKTG CPD - CEBU"
+    },
+    {
+        "code": "VM-MVM",
+        "name": "SALES & MKTG CPD - DAVAO"
+    },
+    {
+        "code": "HO-A&M",
+        "name": "SALES & MKTG OTC - CDO"
+    },
+    {
+        "code": "HO-A&P",
+        "name": "H.O. - TREASURY DEPARTMENT"
+    },
+    {
+        "code": "HO-A&G",
+        "name": "SALES & MKTG OTC - ILOILO"
+    },
+    {
+        "code": "HO-ACT",
+        "name": "H.O. - ACCOUNTING"
+    },
+    {
+        "code": "HO-EDP",
+        "name": "H.O. - E.D.P. DEPARTMENT"
+    },
+    {
+        "code": "HO-PER",
+        "name": "ZZZ PERSONNEL DEPARTMENT"
+    },
+    {
+        "code": "IS-ADM",
+        "name": "Z-ADMINISTRATION  (ISABELA)"
+    },
+    {
+        "code": "CE-ADM",
+        "name": "Z-ADMINISTRATION     (CEBU)"
+    },
+    {
+        "code": "CD-ADM",
+        "name": "ZZZ ACCTNG- DAVAO"
+    },
+    {
+        "code": "DV-ADM",
+        "name": "Z-ADMINISTRATION    (DAVAO)"
+    },
+    {
+        "code": "BP-PRD",
+        "name": "ZZZ BINAN - PLANT"
+    },
+    {
+        "code": "BP-W&D",
+        "name": "ZZZ BINAN - WAREHOUSE & DELIVE"
+    },
+    {
+        "code": "BP-A&A",
+        "name": "ZZZ ACCTNG- CDO"
+    },
+    {
+        "code": "DP-ACT",
+        "name": "DEPOT - ACCOUNTING"
+    },
+    {
+        "code": "BC-ADM",
+        "name": "ZZZ ACCTNG- ILOILO"
+    },
+    {
+        "code": "BL-ADM",
+        "name": "Z-ADMINISTRATION    (BICOL)"
+    },
+    {
+        "code": "HO-ADM",
+        "name": "H.O. - ADMIN"
+    },
+    {
+        "code": "HO-AVPM",
+        "name": "H.O. - ART DEPARTMENT"
+    },
+    {
+        "code": "HO-PUR",
+        "name": "H.O. - PURCHASING"
+    },
+    {
+        "code": "BP-A&G",
+        "name": "ZZZ SUPPLIER - PROMO MAT'L"
+    },
+    {
+        "code": "BP-A&M",
+        "name": "SALES & MKTG OTC - DAVAO"
+    },
+    {
+        "code": "HO-L&A",
+        "name": "ZZZ LEGAL DEPARTMENT"
+    },
+    {
+        "code": "TB-PI",
+        "name": "SALES & MKTG OTC - CEBU"
+    },
+    {
+        "code": "D-BCONT",
+        "name": "Z-LDI CONTRACTUAL (BINAN)"
+    },
+    {
+        "code": "D-HCONT",
+        "name": "Z-LDI CONTRACTUAL (HO)"
+    },
+    {
+        "code": "HO-L&C",
+        "name": "SALES & MKTG CPD - CDO"
+    },
+    {
+        "code": "HO-ADT",
+        "name": "H.O. - AUDIT DEPARTMENT"
+    },
+    {
+        "code": "BP-R&D",
+        "name": "SALES & MKTG OTC - BACOLOD"
+    },
+    {
+        "code": "MP-PRD",
+        "name": "SALES & MKTG OTC - LUZON"
+    },
+    {
+        "code": "MP-ADM",
+        "name": "ZZZ ACCTNG- BACOLOD"
+    },
+    {
+        "code": "ACCME",
+        "name": "ZZZ-ACCME SAMPLE"
+    },
+    {
+        "code": "1",
+        "name": "ZZZ- SAMPLE"
+    },
+    {
+        "code": "HO-PS",
+        "name": "ZZZ SUPPLIER - PACK MAT - OTC"
+    },
+    {
+        "code": "SUPPLY",
+        "name": "ZZZ SUPPLIER - RAW MAT"
+    },
+    {
+        "code": "SALE-O",
+        "name": "SALES & MKTG CPD - BACOLOD"
+    },
+    {
+        "code": "SALE-C",
+        "name": "SALES & MKTG CPD - ILOILO"
+    },
+    {
+        "code": "SALES",
+        "name": "ZZZ SR COMMISSION - SALES"
+    },
+    {
+        "code": "OFF SUP",
+        "name": "ZZZ SUPPLIER - OFFICE SUPPLIES"
+    },
+    {
+        "code": "SR VECH",
+        "name": "ZZZ REPAIRS & MAINT. - SR VEH"
+    },
+    {
+        "code": "DEL VEC",
+        "name": "ZZZ REPAIRS & MAINT. - OFF/SR/"
+    },
+    {
+        "code": "ADMIN",
+        "name": "ZZZ SALES - REBATES"
+    },
+    {
+        "code": "FINANCE",
+        "name": "ZZZ CREDITOR"
+    },
+    {
+        "code": "BIN-ACT",
+        "name": "BINAN - ACCOUNTING"
+    },
+    {
+        "code": "BIN-ADM",
+        "name": "BINAN - ADMIN DEPARTMENT"
+    },
+    {
+        "code": "BIN-COR",
+        "name": "BINAN - CORPORATE"
+    },
+    {
+        "code": "BIN-EDP",
+        "name": "BINAN - EDP DEPARTMENT"
+    },
+    {
+        "code": "BIN-MFG",
+        "name": "ZZZ BINAN - MANUFACTURING"
+    },
+    {
+        "code": "DP-ADMI",
+        "name": "DEPOT - ADMIN DEPARTMENT"
+    },
+    {
+        "code": "HO-CORP",
+        "name": "H.O. - CORPORATE"
+    },
+    {
+        "code": "HO-BMGT",
+        "name": "H.O. - BRAND MANAGEMENT"
+    },
+    {
+        "code": "MAT-ADM",
+        "name": "MATATAG - ADMIN"
+    },
+    {
+        "code": "MT-SALE",
+        "name": "SALES & MKTG CPD - MATATAG"
+    },
+    {
+        "code": "H.O-CPD",
+        "name": "H.O. - TECHNICAL & PROMO (CPD)"
+    },
+    {
+        "code": "HO-PLAN",
+        "name": "H.O. - CORPORATE PLANNING"
+    },
+    {
+        "code": "DP-CPD",
+        "name": "DEPOT - CPD"
+    },
+    {
+        "code": "DP-OTC",
+        "name": "DEPOT - OTC"
+    },
+    {
+        "code": "H.O-R.A",
+        "name": "H.O. - REGULATORY AFFAIRS"
+    },
+    {
+        "code": "HO-LEGA",
+        "name": "H.O.- LEGAL"
+    },
+    {
+        "code": "HO-HRD",
+        "name": "H. O.- HRD"
+    },
+    {
+        "code": "CPD",
+        "name": "SALES - CPD"
+    },
+    {
+        "code": "OTC",
+        "name": "SALES - OTC"
+    }
+]

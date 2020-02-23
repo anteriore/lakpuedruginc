@@ -1,0 +1,90 @@
+.step-form {
+  & {
+    color: $dark;
+    margin-top: 10px;
+  }
+
+  > p {
+    margin-left: 10px;
+    margin-bottom: 0;
+    color: #b6b6b6;
+  }
+}
+
+.side-two {
+  margin-left: 20px;
+}
+
+.side-one, .side-two {
+  width: 100%;
+
+  > .content > .field {
+    width: 100%;
+  }
+
+  > .action > .btn {
+    width: 100%;
+  }
+}
+
+.uploader-content {
+  & {
+    margin-top: 2em;
+  }
+
+  > .content > .uploader {
+    background-color: $white-two;
+    padding: 5px;
+  }
+
+  > .action {
+    width: 30%;
+    position: relative;
+  }
+
+  > .action > .btn {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+  }
+}
+
+.approve-remarks {
+  margin: 0;
+}
+
+.control-number-container {
+  padding: 10px;
+  background-color: $white-two;
+  margin-bottom: 10px;
+}
+
+.approved-group {
+  margin-bottom: 0;
+}
+
+.unit-price-group {
+  width: 50%;
+}
+
+.total-quantity-group {
+  width: 40%;
+}
+
+.approved-group-action {
+  & {
+    margin-left: 15px;
+    width: 40%;
+  }
+
+  > .btn {
+    margin-top: 22px;
+    bottom: 10px;
+    width: 100%;
+  }
+}
+
+.approved-group > .field {
+  background-color: white;
+}

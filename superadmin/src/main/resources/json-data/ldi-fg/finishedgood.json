@@ -1,0 +1,122 @@
+[
+    {
+        "code": "FGP",
+        "name": "FEED GRADE PRODUCTS"
+    },
+    {
+        "code": "GAL",
+        "name": "GALENICAL PRODUCTS"
+    },
+    {
+        "code": "IND",
+        "name": "INDENT PRODUCTS"
+    },
+    {
+        "code": "WSP",
+        "name": "WATER SOLUBLE PRODUCTS"
+    },
+    {
+        "code": "HHP",
+        "name": "HERD HEALTH PRODUCTS"
+    },
+    {
+        "code": "INJ",
+        "name": "INJECTIBLES PRODUCTS"
+    },
+    {
+        "code": "FCP",
+        "name": "FIGHTING COCK PRODUCTS"
+    },
+    {
+        "code": "ASP",
+        "name": "ANTI-SCOURING PRODUCTS"
+    },
+    {
+        "code": "DIS",
+        "name": "DISINFECTANT PRODUCTS"
+    },
+    {
+        "code": "ESP",
+        "name": "EMULSION/SUSPENSION PRODUCTS"
+    },
+    {
+        "code": "EQUIPMT",
+        "name": "EQUIPMENT"
+    },
+    {
+        "code": "FCF",
+        "name": "FIGHTING COCK FEEDS"
+    },
+    {
+        "code": "CMP",
+        "name": "CUSTOM - MADE PRODUCTS"
+    },
+    {
+        "code": "NUTRIT",
+        "name": "PIT FIGHTER SLASHER NUTRITION"
+    },
+    {
+        "code": "ACP",
+        "name": "ANTIBACTERIAL CONCENTRATE PROD"
+    },
+    {
+        "code": "INJ-ABP",
+        "name": "INJECTABLES - ANTIBACTERIALS"
+    },
+    {
+        "code": "INJ-VMP",
+        "name": "INECTABLES - VITAMINS/MINERALS"
+    },
+    {
+        "code": "WSP-ABP",
+        "name": "WATER SOLUBLE - ANTIBACTERIALS"
+    },
+    {
+        "code": "WSP-VP",
+        "name": "WATER SOLUBLE - VITAMINS"
+    },
+    {
+        "code": "FGP-AB",
+        "name": "FEED GRADE - ANTIBACTERIALS"
+    },
+    {
+        "code": "FGP-VM",
+        "name": "FEED GRADE - VITAMINS/MINERALS"
+    },
+    {
+        "code": "FISH",
+        "name": "FISH PHARMA"
+    },
+    {
+        "code": "VAC-LOH",
+        "name": "LOHMANN VACCINE PRODUCTS"
+    },
+    {
+        "code": "VACCINE",
+        "name": "LOCAL VACCINE PRODUCTS"
+    },
+    {
+        "code": "PRP",
+        "name": "PROMO-FC PRODUCTS"
+    },
+    {
+        "code": "CTC",
+        "name": "COVER THE COUNTER PRODUCTS"
+    },
+    {
+        "code": "VETLPCK",
+        "name": "VETERINARY LARGE PACKAGING"
+    },
+    {
+        "code": "RP",
+        "name": "RACING PIGEON"
+    },
+    {
+        "code": "CPD",
+        "name": "COMMERCIAL PRODUCT DIVISION"
+    },
+    {
+        "code": "SPD",
+        "name": "SWINE PRODUCT DIVISION"
+    }
+]

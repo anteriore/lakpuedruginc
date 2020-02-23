@@ -1,0 +1,83 @@
+
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Account Summary Reports</h3>
+    </div>
+</div>
+<div class='client-pris'>
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" date="dd-MM-yyyy" placeholder="Start Date" type="date" name="search" ng-model="$ctrl.startDate"/>
+        <input class="form-control -borderless search" date="dd-MM-yyyy" placeholder="End Date" type="date" name="search" ng-model="$ctrl.endDate" />
+  </div>
+</div>
+	<table class='table table-list'>
+		<thead>
+			<tr>
+				<th>Type</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>JV</td>
+				<td >
+						<button class='btn btn-compose' ng-click="$ctrl.exportJV()" class='btn btn-show'>
+                            <i class="ion-ios-download" ></i>
+                        </button>
+                        <a class='btn btn-compose' href="/admin/shared/print-account-summary-report/jv/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class='btn btn-show'>
+                            <i class="ion-ios-printer" ></i>
+                        </a>
+				</td>
+			</tr>
+			<tr>
+				<td>PJV</td>
+				<td>
+						<button class='btn btn-compose' ng-click="$ctrl.exportPJV()" class='btn btn-show'>
+                            <i class="ion-ios-download" ></i>
+                        </button>
+                        <a class='btn btn-compose' href="/admin/shared/print-account-summary-report/pjv/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class='btn btn-show'>
+                            <i class="ion-ios-printer" ></i>
+                        </a>
+				</td>
+			</tr>
+			<tr>
+				<td>CDV</td>
+				<td >
+                        <button class='btn btn-compose' ng-click="$ctrl.printCDV()"  class='btn btn-show'>
+                            <i class="ion-ios-printer" ></i>
+                        </button>
+				</td>
+			</tr>
+			<tr>
+				<td>VP</td>
+				<td>
+						<button class='btn btn-compose' ng-click="$ctrl.exportVP()" class='btn btn-show'>
+                            <i class="ion-ios-download" ></i>
+                        </button>
+                        <a class='btn btn-compose' href="/admin/shared/print-account-summary-report/vp/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class='btn btn-show'>
+                            <i class="ion-ios-printer" ></i>
+                        </a>
+				</td>
+			</tr>
+			<tr>
+				<td>CM/DM</td>
+				<td>
+						<button class='btn btn-compose' ng-click="$ctrl.exportCMDM()" class='btn btn-show'>
+                            <i class="ion-ios-download" ></i>
+                        </button>
+                        <a class='btn btn-compose' href="/admin/shared/print-account-summary-report/vp/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class='btn btn-show'>
+                            <i class="ion-ios-printer" ></i>
+                        </a>
+				</td>
+			</tr>
+			
+		</tbody>
+	</table>	
+</div>
+
+
+
+    

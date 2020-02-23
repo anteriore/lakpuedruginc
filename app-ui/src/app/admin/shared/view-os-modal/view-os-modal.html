@@ -1,0 +1,57 @@
+<div class='modal fade' id='osInfoModal'>
+  <div class='modal-dialog -bg'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h4 class='modal-title'>{{$ctrl.os.salesOrder.type}} No. {{ $ctrl.os.number }} {{$ctrl.os.date | date}}</h4>
+        <button class='close'>
+          <span class='ion-android-close close-modal' data-dismiss="modal"></span>
+        </button>
+      </div>
+      <div class='modal-body'>
+        <div class='horizontal-align -between modal-information'>
+        	  <p class='title'>
+            Prepared By:
+            <span class='content'>{{$ctrl.os.preparedBy.firstName}} {{$ctrl.os.preparedBy.lastName}}</span>
+          </p>
+        </div>
+        <a target="_blank" href="/admin/shared/print-os/{{$ctrl.os.id}}" class="btn btn-info">Print {{$ctrl.os.salesOrder.type}}</a>
+        <div id="purchaseRequestsDiv">
+			<table class='table table-hover'>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>FG</th>
+                  <th>Lot #</th>
+                  <th>Expiration</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="product in $ctrl.os.orderedProducts">
+                  <td>{{product.product.finishedGood.code}}</td>
+                  <td>{{product.product.finishedGood.name}}</td>
+                  <td>{{product.product.lotNumber}}</td>
+                  <td>{{product.product.expiration | date}}</td>
+                  <td>{{product.quantity}}</td>
+                  <td>{{product.status}}</td>
+                </tr>
+              </tbody>
+            </table>
+		</div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Remarks:
+            <span class='content'>{{$ctrl.os.remarks}}</span>
+          </p>
+        </div>
+      </div>
+      <div class='modal-footer'>
+        <p class='date'>Created at {{$ctrl.os.date | date}}</p>
+        <button class='btn btn-cancel' data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,33 @@
+.packaging-materials-content {
+  border: 1px solid $white-two;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.packaging-materials-content > .label {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+#table-row {
+  > td {
+    padding: 5px;
+  }
+}
+
+.select-evaluation {
+  width: 55%;
+  margin: 10px auto;
+}
+
+.select-evaluation > .reevaluation {
+  width: 80%;
+}
+
+.select-evaluation > .action {
+  width: 30%;
+
+  > .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,84 @@
+.approved-materials {
+  margin-top: 20px;
+}
+
+.card-header > h5 > a > p {
+  margin-bottom: 0;
+  margin-top: 3px;
+  width: 30%;
+}
+
+.accordion-panel {
+  position: relative;
+  background-color: $white-two;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.card-header {
+  padding: 5px;
+
+  &.-orangish {
+    border-bottom: 2px solid $orangish;
+  }
+
+  &.-apple {
+    border-bottom: 2px solid $apple-green;
+  }
+}
+
+.card-block {
+  padding: 5px;
+}
+
+.accordion-info > .title {
+  & {
+    width: 100%;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
+
+  > .content {
+    font-weight: normal;
+    margin-left: 5px;
+    font-size: 13px;
+  }
+}
+
+.accordion-panel[data-toggle='collapse']:after {
+  content: "\f125";
+  font-family: Ionicons;
+  position: absolute;
+  font-size: 16px;
+  line-height: 22px;
+  right: 20px;
+  top: 5px;
+
+  -webkit-transform: rotate(-90deg);
+  -moz-transform:    rotate(-90deg);
+  -ms-transform:     rotate(-90deg);
+  -o-transform:      rotate(-90deg);
+  transform:         rotate(-90deg);
+
+  -webkit-transition-duration: 0.5s;
+  -moz-transition-duration: 0.5s;
+  -o-transition-duration: 0.5s;
+   transition-duration: 0.5s;
+}
+
+/* stylelint-disable */
+.collapsed[data-toggle='collapse']:after {
+  -webkit-transform: rotate(90deg);
+  -moz-transform:    rotate(90deg);
+  -ms-transform:     rotate(90deg);
+  -o-transform:      rotate(90deg);
+  transform:         rotate(90deg);
+
+  -webkit-transition-duration: 0.5s;
+  -moz-transition-duration: 0.5s;
+  -o-transition-duration: 0.5s;
+   transition-duration: 0.5s;
+}

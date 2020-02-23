@@ -1,0 +1,21 @@
+.admin-header > .title > .bg {
+  text-align: justify;
+  font-weight: 600;
+  color: $dusk;
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+.admin-header > .title > .md {
+  text-align: justify;
+  font-weight: 600;
+  color: $dusk;
+  margin-bottom: 0;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.admin-header > .devider {
+  margin: 5px 0;
+  border: 1px solid $white-two;
+}

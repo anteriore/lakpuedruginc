@@ -1,0 +1,42 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Engineering Inventory<h3>
+	</div>
+</div>
+<div class="evaluation-content">
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="Item code" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+  </div>
+  <table class="table table-list">
+    <thead>
+      <tr>
+      	<th>Code</th>
+      	<th>Item</th>
+      	<th>Quantity</th>
+      	<th>Unit</th>
+      	<th>Stock Card</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="inventoryItem in $ctrl.inventoryList">
+      	<td>{{inventoryItem.item.code}}</td>
+        <td>{{inventoryItem.item.name}}</td>
+        <td>{{inventoryItem.quantity}}</td>
+        <td>{{inventoryItem.item.unit.code}}</td>
+        <td><button type="button" class="btn btn-info" data-target="#stockCardM
+odal" data-toggle="modal" ng-click="$ctrl.openStockCard(inventoryItem)">View</button
+></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<view-stock-card-modal
+  stockcards="$ctrl.stockCards"
+  item="$ctrl.item"
+      >
+</view-stock-card-modal>
+

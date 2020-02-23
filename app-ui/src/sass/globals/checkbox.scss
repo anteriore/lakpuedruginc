@@ -1,0 +1,71 @@
+/** Checkboxes:
+* `.checboxes` styles.
+*
+*   @example
+*   .form-group
+*     label.label Permissions
+*     .vertical-align
+*       label.checkbox
+*         <input type="checkbox"/>
+*         .caption Read
+*       label.checkbox
+*         <input type="checkbox"/>
+*         .caption Write
+*       label.checkbox
+*         <input type="checkbox"/>
+*         .caption Delete
+*/
+
+
+.checkbox {
+  margin: 0 20px 10px 0;
+  position: relative;
+}
+
+.checkbox > .caption {
+  position: relative;
+  padding-left: 25px;
+  padding-top: 0;
+  color: $dusk;
+}
+
+.checkbox > .caption:after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  left: 0;
+  top: 1px;
+  border-radius: $border-radius-base;
+  -ms-border-radius: $border-radius-base;
+  -moz-border-radius: $border-radius-base;
+  -webkit-border-radius: $border-radius-base;
+  box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border: 1px solid $dark-grey;
+}
+
+.checkbox > input[type='checkbox'] {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+.checkbox > input[type='checkbox']:checked + .caption:after {
+  color: $dark-grey;
+  border-color: $dark-sky-blue;
+}
+
+.checkbox > input[type='checkbox']:checked + .caption:before {
+  content: '✔';
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  color: $dark-sky-blue;
+}

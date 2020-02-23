@@ -1,0 +1,38 @@
+/** Links:
+* `.link` variations.
+*
+*   @example
+*   .action-link
+*     <a class="link" href="#"> Open Link </a>
+*
+*    <a class="link btn btn-create btn-md href="#>Button styled link</a>
+*/
+.action-link > .link {
+  & {
+    color: $link-color;
+    text-decoration: none;
+  }
+
+  &:hover {
+    color: $link-hover-color;
+  }
+}
+
+.action-link > .devider {
+  color: $link-color;
+}
+
+.button-link {
+  & {
+    color: white;
+    line-height: 18px;
+  }
+
+  &:hover {
+    color: white;
+  }
+
+  > .icon, > .caption {
+    color: white;
+  }
+}

@@ -1,0 +1,33 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Material Reevaluation Forms<h3>
+	</div>
+	<a href="#" ng-click="$ctrl.createNewMaterialReevaluation($event);" class="btn btn-create btn-md button-link">Create New Evaluation</a>
+</div>
+<div class="evaluation-content">
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="Control No" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+  </div>
+  <table class="table table-list">
+    <thead>
+      <tr>
+        <th>Control No</th>
+        <th>Date</th>
+        <th>Expiration</th>
+        <th>Extended</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="mr in $ctrl.materialReevaluations">
+        <td>{{mr.approvedItem.controlNumber}}</td>
+        <td>{{mr.date | date}}</td>
+        <td>{{mr.expiration | date}}</td>
+        <td>{{mr.extended | date}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,25 @@
+.searchbox-modal {
+  margin: 5px 0 10px 0;
+}
+
+.searchbox-content {
+  background-color: $white-two;
+  width: 100%;
+  border-radius: $border-radius-base;
+}
+
+.search-modal {
+  padding: 5px;
+}
+
+.search-modal > .search {
+  width: 100%;
+}
+
+.modal-action {
+  width: 30%;
+}
+
+.modal-action > .btn {
+  width: 100%;
+}

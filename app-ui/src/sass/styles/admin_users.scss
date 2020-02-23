@@ -1,0 +1,42 @@
+.total-accounts {
+  background-color: white;
+  border: solid 2px $white-two;
+  border-radius: $border-radius-base;
+  padding: 5px;
+  margin-bottom: 10px;
+
+  > .count {
+    padding: 7px 10px 0 0;
+    margin-bottom: 0;
+    margin-right: 10px;
+    border-right: solid 2px $white-two;
+    font-weight: 300;
+    text-align: center;
+    color: $dusk;
+  }
+
+  > #btn-create-account {
+    width: 30%;
+  }
+}
+
+.user-list {
+  margin-top: 15px;
+
+  > .group {
+    margin-bottom: 0;
+    font-weight: 600;
+    color: $greyish-brown;
+  }
+
+  > .devider {
+    margin: 0 0 5px 0;
+  }
+}
+
+.clear-float {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  clear: both;
+}

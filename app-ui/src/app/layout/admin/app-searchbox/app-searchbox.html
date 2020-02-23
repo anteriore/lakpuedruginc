@@ -1,0 +1,13 @@
+<div class='searchbox-modal'>
+  <div class='searchbox-content'>
+  	<form ng-submit="$ctrl.submitForm();" method="post" novalidate>
+  		<div class="search-modal horizontal-align -between">
+  			<input type="hidden" ng-model="$ctrl.search.form"/>
+  			<input type="text" class="form-control -borderless search" ng-model="$ctrl.search.value" placeholder="{{$ctrl.placeholder}}"/>
+  			<div class="modal-action">
+  				<button type="submit" class="btn btn-action btn-md">{{$ctrl.button}}</button>
+  			</div>
+  		</div>
+  	</form>	
+  </div>
+</div>

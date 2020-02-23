@@ -1,0 +1,182 @@
+[
+    {
+        "code": "MP",
+        "name": "OIL"
+    },
+    {
+        "code": "PM",
+        "name": "PLASTIC"
+    },
+    {
+        "code": "RM",
+        "name": "POWDER"
+    },
+    {
+        "code": "OS",
+        "name": "PAPER"
+    },
+    {
+        "code": "RM",
+        "name": "PACMAT"
+    },
+    {
+        "code": "OS",
+        "name": "FILRL"
+    },
+    {
+        "code": "OS",
+        "name": "FILMS"
+    },
+    {
+        "code": "OS",
+        "name": "ENVELOP"
+    },
+    {
+        "code": "OS",
+        "name": "BROWNEM"
+    },
+    {
+        "code": "OS",
+        "name": "INK"
+    },
+    {
+        "code": "OS",
+        "name": "BLPEN"
+    },
+    {
+        "code": "OS",
+        "name": "BLADE"
+    },
+    {
+        "code": "OS",
+        "name": "CARBON"
+    },
+    {
+        "code": "OS",
+        "name": "CARTDGE"
+    },
+    {
+        "code": "OS",
+        "name": "CD-R"
+    },
+    {
+        "code": "OS",
+        "name": "CLIP"
+    },
+    {
+        "code": "OS",
+        "name": "CLP BRD"
+    },
+    {
+        "code": "OS",
+        "name": "CUTTER"
+    },
+    {
+        "code": "OS",
+        "name": "DISK"
+    },
+    {
+        "code": "OS",
+        "name": "FSTENER"
+    },
+    {
+        "code": "OS",
+        "name": "FAX PPR"
+    },
+    {
+        "code": "OS",
+        "name": "FOLDER"
+    },
+    {
+        "code": "OS",
+        "name": "GLUE"
+    },
+    {
+        "code": "OS",
+        "name": "GT WIRE"
+    },
+    {
+        "code": "OS",
+        "name": "HOLDER"
+    },
+    {
+        "code": "OS",
+        "name": "CARDS"
+    },
+    {
+        "code": "OS",
+        "name": "SP INK"
+    },
+    {
+        "code": "OS",
+        "name": "ERASER"
+    },
+    {
+        "code": "OS",
+        "name": "RACK"
+    },
+    {
+        "code": "OS",
+        "name": "MARKER"
+    },
+    {
+        "code": "OS",
+        "name": "NOTEBK"
+    },
+    {
+        "code": "OS",
+        "name": "FORMS"
+    },
+    {
+        "code": "OS",
+        "name": "PIN"
+    },
+    {
+        "code": "OS",
+        "name": "BOOK"
+    },
+    {
+        "code": "OS",
+        "name": "RIBBON"
+    },
+    {
+        "code": "OS",
+        "name": "RULER"
+    },
+    {
+        "code": "OS",
+        "name": "SCISSOR"
+    },
+    {
+        "code": "OS",
+        "name": "STAPLER"
+    },
+    {
+        "code": "OS",
+        "name": "SW RMVR"
+    },
+    {
+        "code": "OS",
+        "name": "STPL WR"
+    },
+    {
+        "code": "OS",
+        "name": "TAPE"
+    },
+    {
+        "code": "",
+        "name": ""
+    },
+    {
+        "code": "MP",
+        "name": "TIRES"
+    },
+    {
+        "code": "PO",
+        "name": "PROMAT"
+    },
+    {
+        "code": "RM",
+        "name": "RAW MAT"
+    }
+]

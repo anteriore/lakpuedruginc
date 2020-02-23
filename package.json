@@ -1,0 +1,11 @@
+{
+  "engines": {
+    "node": "6.9.4"
+  },
+  "scripts": {
+    "postinstall": "cd app-ui && npm install && ./node_modules/gulp/bin/gulp.js build"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}

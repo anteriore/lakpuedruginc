@@ -1,0 +1,23 @@
+<div class="main-header">
+  <div class="horizontal-align -between content">
+    <h3 class="title">
+      PDC Voucher Form
+    </h3>
+  </div>
+</div>
+<header class="header-form">
+  <a href="/admin/accounting/pdc-voucher" class="btn btn-back back">
+    <i class="ion-ios-arrow-thin-left"></i>
+    <span>Back</span>
+  </a>
+  <span class="divider"></span>
+  <h3 class="heading">
+    New PDC Voucher Form
+  </h3>
+</header>
+<pdc-voucher-form
+            pdc="$ctrl.pdc"
+            message="{{ $ctrl.error }}"
+            button="Create PDC Voucher"
+            on-submit="$ctrl.createPdcVoucher($event);">
+</pdc-voucher-form>

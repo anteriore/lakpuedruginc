@@ -1,0 +1,3272 @@
+[
+    {
+        "code": "P000001",
+        "isActive": null,
+        "name": "ASHLAR INDUSTRIAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "P000002",
+        "isActive": null,
+        "name": "ALMECO MERCHANDISING CO.",
+        "tin": ""
+    },
+    {
+        "code": "P000003",
+        "isActive": null,
+        "name": "ARMEL PLASTIC",
+        "tin": ""
+    },
+    {
+        "code": "P000004",
+        "isActive": null,
+        "name": "CENTRAL CORRUGATED",
+        "tin": ""
+    },
+    {
+        "code": "P000005",
+        "isActive": null,
+        "name": "CHAMPION GLUE, INC.",
+        "tin": ""
+    },
+    {
+        "code": "P000006",
+        "isActive": null,
+        "name": "BALINTAWAK PLASTIC CENTER",
+        "tin": ""
+    },
+    {
+        "code": "P000007",
+        "isActive": null,
+        "name": "FORMEY PLASTIC, INC.",
+        "tin": ""
+    },
+    {
+        "code": "P000008",
+        "isActive": null,
+        "name": "FLEXO MANUFACTURING CO.",
+        "tin": ""
+    },
+    {
+        "code": "P000009",
+        "isActive": null,
+        "name": "INTER POLYMER CORP.",
+        "tin": ""
+    },
+    {
+        "code": "P000010",
+        "isActive": null,
+        "name": "JULY MANUFACTURING CO.",
+        "tin": ""
+    },
+    {
+        "code": "P000011",
+        "isActive": null,
+        "name": "JOSIE SALONGA",
+        "tin": ""
+    },
+    {
+        "code": "P000012",
+        "isActive": null,
+        "name": "RAQUEL LACANILAO",
+        "tin": ""
+    },
+    {
+        "code": "P000013",
+        "isActive": null,
+        "name": "MULTIPRO TRADING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "P000014",
+        "isActive": null,
+        "name": "MEDICAL PLASTIC CORP.",
+        "tin": ""
+    },
+    {
+        "code": "P000015",
+        "isActive": null,
+        "name": "ORIENTAL TIN CAN",
+        "tin": ""
+    },
+    {
+        "code": "P000016",
+        "isActive": null,
+        "name": "POLYSON INDUSTRIES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "P000017",
+        "isActive": null,
+        "name": "PLASTIC CONTAINER",
+        "tin": ""
+    },
+    {
+        "code": "P000018",
+        "isActive": null,
+        "name": "SANWAY PACKAGING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "P000019",
+        "isActive": null,
+        "name": "SOLMAC MARKETING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "P000020",
+        "isActive": null,
+        "name": "SYNBER MANUFACTURING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "P000021",
+        "isActive": null,
+        "name": "VALUE PRO",
+        "tin": ""
+    },
+    {
+        "code": "P000022",
+        "isActive": null,
+        "name": "ULTRA PROMO CRAFT",
+        "tin": ""
+    },
+    {
+        "code": "P000023",
+        "isActive": null,
+        "name": "FLEXIMAR PACKAGING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "R000001",
+        "isActive": null,
+        "name": "BLAINE MARKETING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "R000002",
+        "isActive": null,
+        "name": "BONLEY TRADING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "R000003",
+        "isActive": null,
+        "name": "SUNTAN ENTERPRISES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "R000004",
+        "isActive": null,
+        "name": "RONYTH PHARMA, INC.",
+        "tin": ""
+    },
+    {
+        "code": "R000005",
+        "isActive": null,
+        "name": "MDLD",
+        "tin": ""
+    },
+    {
+        "code": "R000006",
+        "isActive": null,
+        "name": "ANFLO INTERCHEM SUP. CORP.",
+        "tin": ""
+    },
+    {
+        "code": "R000007",
+        "isActive": null,
+        "name": "UNICHEM INTERNATIONAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "R000008",
+        "isActive": null,
+        "name": "ACCORD INTERNATIONAL, INC.",
+        "tin": ""
+    },
+    {
+        "code": "R000009",
+        "isActive": null,
+        "name": "NUMED TRADE PHILS.",
+        "tin": ""
+    },
+    {
+        "code": "R000010",
+        "isActive": null,
+        "name": "SYTENGCO ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "R000011",
+        "isActive": null,
+        "name": "ELBRUS CHEMICAL",
+        "tin": ""
+    },
+    {
+        "code": "R000012",
+        "isActive": null,
+        "name": "ZENO CHEMICAL INDUSTRIES",
+        "tin": ""
+    },
+    {
+        "code": "R000013",
+        "isActive": null,
+        "name": "GELICHEM CORP.",
+        "tin": ""
+    },
+    {
+        "code": "R000014",
+        "isActive": null,
+        "name": "ALYSON'S CHEMICAL ENT.",
+        "tin": ""
+    },
+    {
+        "code": "R000015",
+        "isActive": null,
+        "name": "ANCHOR CHEMICALS, INC.",
+        "tin": ""
+    },
+    {
+        "code": "R000016",
+        "isActive": null,
+        "name": "NECO CHEMICAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "R000017",
+        "isActive": null,
+        "name": "NEWCHEM COMPANY, INC.",
+        "tin": ""
+    },
+    {
+        "code": "R000018",
+        "isActive": null,
+        "name": "UNION CARBIDE",
+        "tin": ""
+    },
+    {
+        "code": "R000019",
+        "isActive": null,
+        "name": "CAMDEN INDUSTRIES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "R000020",
+        "isActive": null,
+        "name": "CLEAN PLUS DETERGENT PTY LTD",
+        "tin": ""
+    },
+    {
+        "code": "R000021",
+        "isActive": null,
+        "name": "PAN LABORATORIES PTY LTD",
+        "tin": ""
+    },
+    {
+        "code": "R000022",
+        "isActive": null,
+        "name": "DELTA LABORATORIES PTY LTD",
+        "tin": ""
+    },
+    {
+        "code": "P000024",
+        "isActive": null,
+        "name": "FLOREMAN ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "P000025",
+        "isActive": null,
+        "name": "BLOSSOMER",
+        "tin": ""
+    },
+    {
+        "code": "P000026",
+        "isActive": null,
+        "name": "WINSAN",
+        "tin": ""
+    },
+    {
+        "code": "FINESR",
+        "isActive": null,
+        "name": "FINESTAR",
+        "tin": ""
+    },
+    {
+        "code": "SHRK PK",
+        "isActive": null,
+        "name": "SHRINKPACK PHIL. CORP.",
+        "tin": ""
+    },
+    {
+        "code": "JOBERT",
+        "isActive": null,
+        "name": "JOBERT PRINTING CO.",
+        "tin": ""
+    },
+    {
+        "code": "LDI",
+        "isActive": null,
+        "name": "LAKPUE DRUG, INC.",
+        "tin": ""
+    },
+    {
+        "code": "RHINE",
+        "isActive": null,
+        "name": "RHINE",
+        "tin": ""
+    },
+    {
+        "code": "CHCTY",
+        "isActive": null,
+        "name": "CHINA CITY",
+        "tin": ""
+    },
+    {
+        "code": "KRANTZ",
+        "isActive": null,
+        "name": "KRANTZ",
+        "tin": ""
+    },
+    {
+        "code": "KRANE",
+        "isActive": null,
+        "name": "KRANE ART ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "ARROW",
+        "isActive": null,
+        "name": "ARROW PTY",
+        "tin": ""
+    },
+    {
+        "code": "CATHAY",
+        "isActive": null,
+        "name": "CATHAY",
+        "tin": ""
+    },
+    {
+        "code": "JASON",
+        "isActive": null,
+        "name": "JASON PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "GOLDEN",
+        "isActive": null,
+        "name": "GOLDENDALE",
+        "tin": ""
+    },
+    {
+        "code": "ASGP",
+        "isActive": null,
+        "name": "A.S. GAMEZ TRADING",
+        "tin": ""
+    },
+    {
+        "code": "YANA",
+        "isActive": null,
+        "name": "YANA",
+        "tin": ""
+    },
+    {
+        "code": "CMRM",
+        "isActive": null,
+        "name": "CALAUAN MASAGANA RICE MILL",
+        "tin": ""
+    },
+    {
+        "code": "NIETO",
+        "isActive": null,
+        "name": "NIETO RICE MILL",
+        "tin": ""
+    },
+    {
+        "code": "MAUREEN",
+        "isActive": null,
+        "name": "MAUREEN INDUSTRIES",
+        "tin": ""
+    },
+    {
+        "code": "REGAN",
+        "isActive": null,
+        "name": "REGAN PRINTER",
+        "tin": ""
+    },
+    {
+        "code": "GLEE CM",
+        "isActive": null,
+        "name": "GLEE CHEMICAL CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "ADVERGZ",
+        "isActive": null,
+        "name": "ADVERGZ PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "LLOYDS",
+        "isActive": null,
+        "name": "LLOYDS LABORATORIES INC.",
+        "tin": ""
+    },
+    {
+        "code": "FRAYLE",
+        "isActive": null,
+        "name": "FRAYLE GARBON",
+        "tin": ""
+    },
+    {
+        "code": "CONCEPT",
+        "isActive": null,
+        "name": "CONCEPT REPACKING SERVICES CO.",
+        "tin": ""
+    },
+    {
+        "code": "CENTRAL",
+        "isActive": null,
+        "name": "CENTRAL DEVELOPMENT CO., INC.",
+        "tin": ""
+    },
+    {
+        "code": "JT00369",
+        "isActive": null,
+        "name": "J T PLASTIC",
+        "tin": ""
+    },
+    {
+        "code": "PASCUAL",
+        "isActive": null,
+        "name": "PASCUAL LABORATORIES",
+        "tin": ""
+    },
+    {
+        "code": "DLI",
+        "isActive": null,
+        "name": "DRUGMAKERS LABORATORIES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "PDC",
+        "isActive": null,
+        "name": "PHARMACHEMICA DIST. CENTER",
+        "tin": ""
+    },
+    {
+        "code": "DJEM",
+        "isActive": null,
+        "name": "D'JEM ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "LCPI",
+        "isActive": null,
+        "name": "LA CROESUS PHARMA, INC",
+        "tin": ""
+    },
+    {
+        "code": "TBPI",
+        "isActive": null,
+        "name": "TROPICAL BIOLOGICAL PHIL., INC",
+        "tin": ""
+    },
+    {
+        "code": "ASGARD",
+        "isActive": null,
+        "name": "ASGARD CORRUGATED BOX MFG.CORP",
+        "tin": ""
+    },
+    {
+        "code": "BUZON",
+        "isActive": null,
+        "name": "BUZON PRESS INC.",
+        "tin": ""
+    },
+    {
+        "code": "NOBLE",
+        "isActive": null,
+        "name": "NOBLE COMMERCIAL",
+        "tin": ""
+    },
+    {
+        "code": "GERIC",
+        "isActive": null,
+        "name": "GREAT EASTERN RESIN IND. CO.",
+        "tin": ""
+    },
+    {
+        "code": "WCI",
+        "isActive": null,
+        "name": "WEISSER CHEMICAL INDUSTRIES",
+        "tin": ""
+    },
+    {
+        "code": "CORMACH",
+        "isActive": null,
+        "name": "CORMACH",
+        "tin": ""
+    },
+    {
+        "code": "RCS",
+        "isActive": null,
+        "name": "RICKY & LUCY'S STORE",
+        "tin": ""
+    },
+    {
+        "code": "PHILVID",
+        "isActive": null,
+        "name": "PHILGRAPHIC VISION DESIGN",
+        "tin": ""
+    },
+    {
+        "code": "DRAGOCO",
+        "isActive": null,
+        "name": "DRAGOCO",
+        "tin": ""
+    },
+    {
+        "code": "EKPI",
+        "isActive": null,
+        "name": "EDWARD KELLER PHIL., INC.",
+        "tin": ""
+    },
+    {
+        "code": "MTC",
+        "isActive": null,
+        "name": "MECCA TRADING CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "BIOSIS",
+        "isActive": null,
+        "name": "BIOSIS CHEMICAL CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "DISC",
+        "isActive": null,
+        "name": "DISC INTERNATIONAL SALES CORP.",
+        "tin": ""
+    },
+    {
+        "code": "GTFCHEM",
+        "isActive": null,
+        "name": "G.T. FORTUNE CHEMICALS",
+        "tin": ""
+    },
+    {
+        "code": "AIRCOM",
+        "isActive": null,
+        "name": "AIR COMMERCIAL",
+        "tin": ""
+    },
+    {
+        "code": "JDD",
+        "isActive": null,
+        "name": "JULIE DRUM DEALER",
+        "tin": ""
+    },
+    {
+        "code": "MORISHI",
+        "isActive": null,
+        "name": "MORISHITA",
+        "tin": ""
+    },
+    {
+        "code": "ANANDA",
+        "isActive": null,
+        "name": "ANANDA",
+        "tin": ""
+    },
+    {
+        "code": "ED GO",
+        "isActive": null,
+        "name": "EDDIE GO",
+        "tin": ""
+    },
+    {
+        "code": "PPC",
+        "isActive": null,
+        "name": "POWER PACKAGING CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "SMCORP.",
+        "isActive": null,
+        "name": "SAN MIGUEL CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "OKYBSGM",
+        "isActive": null,
+        "name": "OKJ BABERY SUPPLIES & GEN.MDSE",
+        "tin": ""
+    },
+    {
+        "code": "PLACO",
+        "isActive": null,
+        "name": "PLACO",
+        "tin": ""
+    },
+    {
+        "code": "SWISS",
+        "isActive": null,
+        "name": "SWISS PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "L&B SYN",
+        "isActive": null,
+        "name": "L & B SYNTHETIC",
+        "tin": ""
+    },
+    {
+        "code": "CCN",
+        "isActive": null,
+        "name": "CCN MULTILINK",
+        "tin": ""
+    },
+    {
+        "code": "B A S F",
+        "isActive": null,
+        "name": "B A S F",
+        "tin": ""
+    },
+    {
+        "code": "MANTRI",
+        "isActive": null,
+        "name": "MANILA TRITON",
+        "tin": ""
+    },
+    {
+        "code": "BUDPRIN",
+        "isActive": null,
+        "name": "BUDGET PRINTER",
+        "tin": ""
+    },
+    {
+        "code": "LAROBE",
+        "isActive": null,
+        "name": "LAROBE PHARMACEUTICAL",
+        "tin": ""
+    },
+    {
+        "code": "CSCC",
+        "isActive": null,
+        "name": "CONCORD SCIENTIFIC & CHEM CORP",
+        "tin": ""
+    },
+    {
+        "code": "ELDON",
+        "isActive": null,
+        "name": "ELDON",
+        "tin": ""
+    },
+    {
+        "code": "VCS COM",
+        "isActive": null,
+        "name": "V C S COMMERCIAL",
+        "tin": ""
+    },
+    {
+        "code": "GERHART",
+        "isActive": null,
+        "name": "GERHART ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "NIBOBO",
+        "isActive": null,
+        "name": "NIBOBO PTY LTD",
+        "tin": ""
+    },
+    {
+        "code": "BELTRAN",
+        "isActive": null,
+        "name": "BELTRAN SACK",
+        "tin": ""
+    },
+    {
+        "code": "KIMSON",
+        "isActive": null,
+        "name": "KIMSON TRADING",
+        "tin": ""
+    },
+    {
+        "code": "NFH",
+        "isActive": null,
+        "name": "NEW FLAVOR HOUSE",
+        "tin": ""
+    },
+    {
+        "code": "PMNC",
+        "isActive": null,
+        "name": "P M N C",
+        "tin": ""
+    },
+    {
+        "code": "KD PRIN",
+        "isActive": null,
+        "name": "K D PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "K&N M P",
+        "isActive": null,
+        "name": "K & N MEDICAL PLASTIC",
+        "tin": ""
+    },
+    {
+        "code": "B.E.SGI",
+        "isActive": null,
+        "name": "B.E. SCNTFC GLASS INSTRUMENTS",
+        "tin": ""
+    },
+    {
+        "code": "VIRCON",
+        "isActive": null,
+        "name": "VIRCON LABORATORIES",
+        "tin": ""
+    },
+    {
+        "code": "SQUARE",
+        "isActive": null,
+        "name": "SQUARE PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "BENCYN",
+        "isActive": null,
+        "name": "BENCYN PRINTHAUS",
+        "tin": ""
+    },
+    {
+        "code": "B & J",
+        "isActive": null,
+        "name": "BRONSON & JACOBS",
+        "tin": ""
+    },
+    {
+        "code": "GLOBAL",
+        "isActive": null,
+        "name": "GLOBALINE TRADING",
+        "tin": ""
+    },
+    {
+        "code": "NEV.WEB",
+        "isActive": null,
+        "name": "NEVILLE WEBB",
+        "tin": ""
+    },
+    {
+        "code": "SCANTEK",
+        "isActive": null,
+        "name": "SCANTEK",
+        "tin": ""
+    },
+    {
+        "code": "JOSE T.",
+        "isActive": null,
+        "name": "JOSE TORRENTE",
+        "tin": ""
+    },
+    {
+        "code": "RHONE",
+        "isActive": null,
+        "name": "RHONE-POULENC",
+        "tin": ""
+    },
+    {
+        "code": "JM E.",
+        "isActive": null,
+        "name": "JM ESGUERRA",
+        "tin": ""
+    },
+    {
+        "code": "A O C T",
+        "isActive": null,
+        "name": "ASIA ORIENT CHEM TRADE",
+        "tin": ""
+    },
+    {
+        "code": "HIMMEL",
+        "isActive": null,
+        "name": "HIMMEL",
+        "tin": ""
+    },
+    {
+        "code": "SK DRUG",
+        "isActive": null,
+        "name": "SHINKEE DRUG CO. LTD",
+        "tin": ""
+    },
+    {
+        "code": "G L O",
+        "isActive": null,
+        "name": "GL OTOMETZ",
+        "tin": ""
+    },
+    {
+        "code": "RP CHEM",
+        "isActive": null,
+        "name": "R P CHEM",
+        "tin": ""
+    },
+    {
+        "code": "J.T.",
+        "isActive": null,
+        "name": "ROCHE PHILIPPINES",
+        "tin": ""
+    },
+    {
+        "code": "ELTA IN",
+        "isActive": null,
+        "name": "ELTA INDUSTRIES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "CJD HP",
+        "isActive": null,
+        "name": "CHINA JIANGSU MEDICINE HEALTH",
+        "tin": ""
+    },
+    {
+        "code": "PHIL. A",
+        "isActive": null,
+        "name": "PHIL ASIA CHEM",
+        "tin": ""
+    },
+    {
+        "code": "ULTIMA",
+        "isActive": null,
+        "name": "ULTIMA PRINTER",
+        "tin": ""
+    },
+    {
+        "code": "LI. HO.",
+        "isActive": null,
+        "name": "LIBERATO HOLLMAN",
+        "tin": ""
+    },
+    {
+        "code": "PACK IN",
+        "isActive": null,
+        "name": "PACKINALL INTERNATIONAL",
+        "tin": ""
+    },
+    {
+        "code": "VA&SONS",
+        "isActive": null,
+        "name": "VA AND SONS",
+        "tin": ""
+    },
+    {
+        "code": "PRINT L",
+        "isActive": null,
+        "name": "PRINT LANDIA",
+        "tin": ""
+    },
+    {
+        "code": "CAP INC",
+        "isActive": null,
+        "name": "CAPSMAKER INC.",
+        "tin": ""
+    },
+    {
+        "code": "HERMANO",
+        "isActive": null,
+        "name": "HERMANO GENERAL MERCHANDISING",
+        "tin": ""
+    },
+    {
+        "code": "PROG. L",
+        "isActive": null,
+        "name": "KEYSTONE MARKETING",
+        "tin": ""
+    },
+    {
+        "code": "ALVETRA",
+        "isActive": null,
+        "name": "ALVETRA",
+        "tin": ""
+    },
+    {
+        "code": "S-HALL",
+        "isActive": null,
+        "name": "SCHWEIZERHALL PHARMA LTD.",
+        "tin": ""
+    },
+    {
+        "code": "L.G. AT",
+        "isActive": null,
+        "name": "L.G. ATKIMSON",
+        "tin": ""
+    },
+    {
+        "code": "COLLINS",
+        "isActive": null,
+        "name": "COLLINS & SON",
+        "tin": ""
+    },
+    {
+        "code": "SHELL C",
+        "isActive": null,
+        "name": "SHELL CHEMICALS",
+        "tin": ""
+    },
+    {
+        "code": "HERVIL",
+        "isActive": null,
+        "name": "HERVIL CHEMICALS",
+        "tin": ""
+    },
+    {
+        "code": "CLEDENT",
+        "isActive": null,
+        "name": "CLEDACOR ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "CANAPHA",
+        "isActive": null,
+        "name": "CANADIAN PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "FORMEY",
+        "isActive": null,
+        "name": "Z-FORMEY PLASTIC",
+        "tin": ""
+    },
+    {
+        "code": "NWBC",
+        "isActive": null,
+        "name": "NORTHWEST BASIC COMMODITIES",
+        "tin": ""
+    },
+    {
+        "code": "PS CORP",
+        "isActive": null,
+        "name": "PACKAGING SPECIALIST CORP.",
+        "tin": ""
+    },
+    {
+        "code": "M V N C",
+        "isActive": null,
+        "name": "MVNC MARKETING",
+        "tin": ""
+    },
+    {
+        "code": "ALINCO",
+        "isActive": null,
+        "name": "ALINCO ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "HALKON",
+        "isActive": null,
+        "name": "HALKON RESOURCES INC.",
+        "tin": ""
+    },
+    {
+        "code": "AUSTRAL",
+        "isActive": null,
+        "name": "AUSTRALIA PTY. LTD",
+        "tin": ""
+    },
+    {
+        "code": "AEROS",
+        "isActive": null,
+        "name": "AEROSPACE TRADERS CORP.",
+        "tin": ""
+    },
+    {
+        "code": "ASIA",
+        "isActive": null,
+        "name": "ASIA BREWERY",
+        "tin": ""
+    },
+    {
+        "code": "G H T I",
+        "isActive": null,
+        "name": "GOOD HOPE TAPES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "SHENZHE",
+        "isActive": null,
+        "name": "SHENZHEN BEST",
+        "tin": ""
+    },
+    {
+        "code": "SIMON",
+        "isActive": null,
+        "name": "SIMON ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "LUCKY",
+        "isActive": null,
+        "name": "LUCKY STAR",
+        "tin": ""
+    },
+    {
+        "code": "EUNICE",
+        "isActive": null,
+        "name": "EUNICE INC.",
+        "tin": ""
+    },
+    {
+        "code": "BAR CHE",
+        "isActive": null,
+        "name": "BAR CHECK",
+        "tin": ""
+    },
+    {
+        "code": "SM",
+        "isActive": null,
+        "name": "SM (SHOE MART)",
+        "tin": ""
+    },
+    {
+        "code": "DHRURAL",
+        "isActive": null,
+        "name": "DHA RURAL",
+        "tin": ""
+    },
+    {
+        "code": "BOMAC",
+        "isActive": null,
+        "name": "BOMAC",
+        "tin": ""
+    },
+    {
+        "code": "G.R P M",
+        "isActive": null,
+        "name": "G. RICHILLINI PRODUCTS & MKTG.",
+        "tin": ""
+    },
+    {
+        "code": "RUDOLF",
+        "isActive": null,
+        "name": "RUDOLF LIETZ INC.",
+        "tin": ""
+    },
+    {
+        "code": "COMLINK",
+        "isActive": null,
+        "name": "COMPULINK",
+        "tin": ""
+    },
+    {
+        "code": "UNITED",
+        "isActive": null,
+        "name": "UNITED POLYRESINS",
+        "tin": ""
+    },
+    {
+        "code": "CLARK",
+        "isActive": null,
+        "name": "CLARKCHEM INC.",
+        "tin": ""
+    },
+    {
+        "code": "ELITE",
+        "isActive": null,
+        "name": "ELITE PRINTER",
+        "tin": ""
+    },
+    {
+        "code": "CHEMWOR",
+        "isActive": null,
+        "name": "CHEMWORLD",
+        "tin": ""
+    },
+    {
+        "code": "I.S.T.",
+        "isActive": null,
+        "name": "IMPERIAL SACK TRADING",
+        "tin": ""
+    },
+    {
+        "code": "JUCOM",
+        "isActive": null,
+        "name": "JUCOM TRADING",
+        "tin": ""
+    },
+    {
+        "code": "GLOBLIN",
+        "isActive": null,
+        "name": "GLOBALINK AUSTRALIA PTY.",
+        "tin": ""
+    },
+    {
+        "code": "EUROCHE",
+        "isActive": null,
+        "name": "EUROCHEM INC.",
+        "tin": ""
+    },
+    {
+        "code": "GERRY",
+        "isActive": null,
+        "name": "GERRY COMMERCIAL",
+        "tin": ""
+    },
+    {
+        "code": "QC EXP.",
+        "isActive": null,
+        "name": "Q C EXPRESS",
+        "tin": ""
+    },
+    {
+        "code": "GUANSON",
+        "isActive": null,
+        "name": "GUANSON PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "CAMCORD",
+        "isActive": null,
+        "name": "CAMCORD PHILIPPINES",
+        "tin": ""
+    },
+    {
+        "code": "TONG Y",
+        "isActive": null,
+        "name": "TONG YAK GROCERIES",
+        "tin": ""
+    },
+    {
+        "code": "STICK",
+        "isActive": null,
+        "name": "STICKWELL SALES CORP.",
+        "tin": ""
+    },
+    {
+        "code": "G.T.L.",
+        "isActive": null,
+        "name": "GREGORIO T. LACANILAO",
+        "tin": ""
+    },
+    {
+        "code": "VISORIA",
+        "isActive": null,
+        "name": "VISORIA FISHING SUPPLY CORP.",
+        "tin": ""
+    },
+    {
+        "code": "JJ D",
+        "isActive": null,
+        "name": "JJ DEGUSA",
+        "tin": ""
+    },
+    {
+        "code": "SGP",
+        "isActive": null,
+        "name": "SGP, INC.",
+        "tin": ""
+    },
+    {
+        "code": "LWT",
+        "isActive": null,
+        "name": "LONG WING TRADING",
+        "tin": ""
+    },
+    {
+        "code": "WINSTON",
+        "isActive": null,
+        "name": "WINDSTONE INDT'L MFG CORP.",
+        "tin": ""
+    },
+    {
+        "code": "ISLANDW",
+        "isActive": null,
+        "name": "ISLAND WIDE CHEM.",
+        "tin": ""
+    },
+    {
+        "code": "MABUHAY",
+        "isActive": null,
+        "name": "MABUHAY RICE MILL",
+        "tin": ""
+    },
+    {
+        "code": "MYCOTEK",
+        "isActive": null,
+        "name": "MYCOTECH INC.",
+        "tin": ""
+    },
+    {
+        "code": "AMCHEM",
+        "isActive": null,
+        "name": "AMCHEM MARKETING, INC.",
+        "tin": ""
+    },
+    {
+        "code": "LSF",
+        "isActive": null,
+        "name": "LSF PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "ADVANCE",
+        "isActive": null,
+        "name": "ADVANCE FOOD CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "TRIMAR",
+        "isActive": null,
+        "name": "TRIMAR INTERNATIONAL",
+        "tin": ""
+    },
+    {
+        "code": "PILIKAO",
+        "isActive": null,
+        "name": "PILIPINAS KAO, INC.",
+        "tin": ""
+    },
+    {
+        "code": "BBA",
+        "isActive": null,
+        "name": "BUSH BOAKE ALLEN",
+        "tin": ""
+    },
+    {
+        "code": "ANDENEX",
+        "isActive": null,
+        "name": "ANDENEX-CHEMIE",
+        "tin": ""
+    },
+    {
+        "code": "AGRAR",
+        "isActive": null,
+        "name": "AGRAR",
+        "tin": ""
+    },
+    {
+        "code": "LONGLIF",
+        "isActive": null,
+        "name": "MALABON LONGLIFE TRADING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "JBOP",
+        "isActive": null,
+        "name": "J.B. ORCHID PHARMACEUTICALS",
+        "tin": ""
+    },
+    {
+        "code": "KJY",
+        "isActive": null,
+        "name": "KJY PRINTING PRESS",
+        "tin": ""
+    },
+    {
+        "code": "APO",
+        "isActive": null,
+        "name": "APO INTERNATIONAL",
+        "tin": ""
+    },
+    {
+        "code": "WPPL",
+        "isActive": null,
+        "name": "WEINSTEIN PRODUCTS PTY LTD",
+        "tin": ""
+    },
+    {
+        "code": "CHEMPRO",
+        "isActive": null,
+        "name": "CHEMICAL PROVIDERS, INC.",
+        "tin": ""
+    },
+    {
+        "code": "PHARCAP",
+        "isActive": null,
+        "name": "PHARMA CAPS",
+        "tin": ""
+    },
+    {
+        "code": "CRISMON",
+        "isActive": null,
+        "name": "CRISMON ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "NCHINA",
+        "isActive": null,
+        "name": "NEW CHINA HARDWARE",
+        "tin": ""
+    },
+    {
+        "code": "PHYTEX",
+        "isActive": null,
+        "name": "PHYTEX AUSTRALIA",
+        "tin": ""
+    },
+    {
+        "code": "ERTESS",
+        "isActive": null,
+        "name": "ERTESS PLASTIC",
+        "tin": ""
+    },
+    {
+        "code": "STANCHE",
+        "isActive": null,
+        "name": "STAN CHEM PHILS.",
+        "tin": ""
+    },
+    {
+        "code": "JUBILEE",
+        "isActive": null,
+        "name": "JUBILEE COMMODITIES",
+        "tin": ""
+    },
+    {
+        "code": "TOPCLAS",
+        "isActive": null,
+        "name": "TOP CLASS SACK STORE",
+        "tin": ""
+    },
+    {
+        "code": "IMPLAS",
+        "isActive": null,
+        "name": "IMPLAS PHILS.",
+        "tin": ""
+    },
+    {
+        "code": "TRISEAL",
+        "isActive": null,
+        "name": "TRI SEAL",
+        "tin": ""
+    },
+    {
+        "code": "BIRTCH",
+        "isActive": null,
+        "name": "BIRTCH ENTERPRISE",
+        "tin": ""
+    },
+    {
+        "code": "OPTIMUS",
+        "isActive": null,
+        "name": "OPTIMUS LAB.",
+        "tin": ""
+    },
+    {
+        "code": "LABELLI",
+        "isActive": null,
+        "name": "LABEL LINE ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "ELIN",
+        "isActive": null,
+        "name": "ELIN PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "STARMAN",
+        "isActive": null,
+        "name": "STARMAN PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "CCBOXES",
+        "isActive": null,
+        "name": "CREATIVE CORRUGATED BOX",
+        "tin": ""
+    },
+    {
+        "code": "ARMELIN",
+        "isActive": null,
+        "name": "ARMEL INDUSTRIES",
+        "tin": ""
+    },
+    {
+        "code": "SYDENP",
+        "isActive": null,
+        "name": "SYDENHAM PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "E.ORTIZ",
+        "isActive": null,
+        "name": "E. ORTIZ",
+        "tin": ""
+    },
+    {
+        "code": "MEINZ",
+        "isActive": null,
+        "name": "MEINZ PHARMACEUTICALS CORP.",
+        "tin": ""
+    },
+    {
+        "code": "AYREN P",
+        "isActive": null,
+        "name": "AYREN PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "PENTACH",
+        "isActive": null,
+        "name": "PENTACHEM, INC.",
+        "tin": ""
+    },
+    {
+        "code": "CAMIPRI",
+        "isActive": null,
+        "name": "CAMINS PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "OCVENTR",
+        "isActive": null,
+        "name": "O.C. VENTURES CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "REYMAG",
+        "isActive": null,
+        "name": "REYMAG TRADING",
+        "tin": ""
+    },
+    {
+        "code": "CRETIVE",
+        "isActive": null,
+        "name": "CREATIVE CONTAINER",
+        "tin": ""
+    },
+    {
+        "code": "PERSEID",
+        "isActive": null,
+        "name": "PERSEID SALES",
+        "tin": ""
+    },
+    {
+        "code": "ANZPHIL",
+        "isActive": null,
+        "name": "ANZ PHILS ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "V-PRO",
+        "isActive": null,
+        "name": "V - PRO ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "SCHWIZ",
+        "isActive": null,
+        "name": "SCHWEIZERHALL",
+        "tin": ""
+    },
+    {
+        "code": "SCHWEIZ",
+        "isActive": null,
+        "name": "SCHWEIZERHALL",
+        "tin": ""
+    },
+    {
+        "code": "ROSCOM",
+        "isActive": null,
+        "name": "ROSCOM AND CO. INC",
+        "tin": ""
+    },
+    {
+        "code": "ASTRO",
+        "isActive": null,
+        "name": "ASTRO EMPTY BOTTLE DEALER",
+        "tin": ""
+    },
+    {
+        "code": "PLA&PAC",
+        "isActive": null,
+        "name": "PLASTIC & PACKAGE",
+        "tin": ""
+    },
+    {
+        "code": "K & R",
+        "isActive": null,
+        "name": "K & R CHEMICAL",
+        "tin": ""
+    },
+    {
+        "code": "ORIENT",
+        "isActive": null,
+        "name": "ORIENT INTEGRATED",
+        "tin": ""
+    },
+    {
+        "code": "PHARMA",
+        "isActive": null,
+        "name": "PHARMA PAC CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "INTER",
+        "isActive": null,
+        "name": "INTERCAPS PHILIPPINES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "GLY-SOL",
+        "isActive": null,
+        "name": "GLY - SOLV VENTURES CORP.",
+        "tin": ""
+    },
+    {
+        "code": "BIOWORL",
+        "isActive": null,
+        "name": "BIOWORLD",
+        "tin": ""
+    },
+    {
+        "code": "NAP PRI",
+        "isActive": null,
+        "name": "NAP PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "BIO PHA",
+        "isActive": null,
+        "name": "BIOSIS PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "LOYOLA",
+        "isActive": null,
+        "name": "LOYOLA SUPPLIES",
+        "tin": ""
+    },
+    {
+        "code": "PACKINA",
+        "isActive": null,
+        "name": "PACKINALL",
+        "tin": ""
+    },
+    {
+        "code": "BELMAN",
+        "isActive": null,
+        "name": "BELMAN LABORATORIES",
+        "tin": ""
+    },
+    {
+        "code": "PRINT",
+        "isActive": null,
+        "name": "PRINT UNIVERSE",
+        "tin": ""
+    },
+    {
+        "code": "DEPENDA",
+        "isActive": null,
+        "name": "DEPENDABLE",
+        "tin": ""
+    },
+    {
+        "code": "I C REY",
+        "isActive": null,
+        "name": "I C REYES ENTERPRISE",
+        "tin": ""
+    },
+    {
+        "code": "EXPRESS",
+        "isActive": null,
+        "name": "EXPRESS LABEL",
+        "tin": ""
+    },
+    {
+        "code": "MERK",
+        "isActive": null,
+        "name": "MERCK INCORPORATED",
+        "tin": ""
+    },
+    {
+        "code": "BUSH",
+        "isActive": null,
+        "name": "BUSH BOAKE/CONNELL BROS CO PHL",
+        "tin": ""
+    },
+    {
+        "code": "BLISTER",
+        "isActive": null,
+        "name": "BLISTER FORME PACKAGING INC.",
+        "tin": ""
+    },
+    {
+        "code": "102 PRI",
+        "isActive": null,
+        "name": "102 PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "TA HSIA",
+        "isActive": null,
+        "name": "TA HSIANG",
+        "tin": ""
+    },
+    {
+        "code": "IPS IND",
+        "isActive": null,
+        "name": "INDUSTRIAL PRECISION STAMPS",
+        "tin": ""
+    },
+    {
+        "code": "HEXAGON",
+        "isActive": null,
+        "name": "HEXAGON CHEMICAL CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "ELIMAR",
+        "isActive": null,
+        "name": "ELIMAR BAG AND PRINT",
+        "tin": ""
+    },
+    {
+        "code": "AMBER",
+        "isActive": null,
+        "name": "AMBER PACKAGING CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "TRI-SUN",
+        "isActive": null,
+        "name": "TRI-SUN",
+        "tin": ""
+    },
+    {
+        "code": "GRAND C",
+        "isActive": null,
+        "name": "GRAND C GRAPHICS",
+        "tin": ""
+    },
+    {
+        "code": "J GRAPH",
+        "isActive": null,
+        "name": "J.GRAPHICS",
+        "tin": ""
+    },
+    {
+        "code": "MEDYSIS",
+        "isActive": null,
+        "name": "MEDISYS DISTRIBUTOR",
+        "tin": ""
+    },
+    {
+        "code": "NEW REY",
+        "isActive": null,
+        "name": "NEW REYMAG",
+        "tin": ""
+    },
+    {
+        "code": "MEDICAL",
+        "isActive": null,
+        "name": "MEDICAL GALLERY",
+        "tin": ""
+    },
+    {
+        "code": "NOVO",
+        "isActive": null,
+        "name": "NOVO PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "UNI",
+        "isActive": null,
+        "name": "UNITED CONTAINER CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "GDL",
+        "isActive": null,
+        "name": "GDL CAPSULE PHILS.,INC.",
+        "tin": ""
+    },
+    {
+        "code": "JPT PRI",
+        "isActive": null,
+        "name": "J P T PRINTING HOUSE",
+        "tin": ""
+    },
+    {
+        "code": "LOVEN",
+        "isActive": null,
+        "name": "LOVEN KER ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "CYBER",
+        "isActive": null,
+        "name": "CYBER INDUSTRIES",
+        "tin": ""
+    },
+    {
+        "code": "ACETO",
+        "isActive": null,
+        "name": "ACETO PTE. LTD.",
+        "tin": ""
+    },
+    {
+        "code": "KESCHER",
+        "isActive": null,
+        "name": "KESCHER TRADING",
+        "tin": ""
+    },
+    {
+        "code": "DAIDO",
+        "isActive": null,
+        "name": "DAIDO IMPEX. CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "UNI PHA",
+        "isActive": null,
+        "name": "UNITED PHARMACHEMICA AGRIVET",
+        "tin": ""
+    },
+    {
+        "code": "SIBESCO",
+        "isActive": null,
+        "name": "SIBESCO MANUFACTURING",
+        "tin": ""
+    },
+    {
+        "code": "NOVO PH",
+        "isActive": null,
+        "name": "NOVO PHARM",
+        "tin": ""
+    },
+    {
+        "code": "ANIMUS",
+        "isActive": null,
+        "name": "ANIMUS INTERNATIONAL",
+        "tin": ""
+    },
+    {
+        "code": "PHIL",
+        "isActive": null,
+        "name": "PHIL CHEM. INC.",
+        "tin": ""
+    },
+    {
+        "code": "YUKON",
+        "isActive": null,
+        "name": "YUKON",
+        "tin": ""
+    },
+    {
+        "code": "GILVAN",
+        "isActive": null,
+        "name": "GILVAN PACKAGING CORP",
+        "tin": ""
+    },
+    {
+        "code": "JAYCA",
+        "isActive": null,
+        "name": "JAYCA PRINTS",
+        "tin": ""
+    },
+    {
+        "code": "NR TRAD",
+        "isActive": null,
+        "name": "NR TRADING",
+        "tin": ""
+    },
+    {
+        "code": "HALCHEM",
+        "isActive": null,
+        "name": "HALCHEM INDUSTRIAL SALES",
+        "tin": ""
+    },
+    {
+        "code": "GOLD",
+        "isActive": null,
+        "name": "GOLDEN HOPEWELL",
+        "tin": ""
+    },
+    {
+        "code": "EXAPRIN",
+        "isActive": null,
+        "name": "EXAPRINT ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "DJSJ",
+        "isActive": null,
+        "name": "D J S J GENERAL TRADING",
+        "tin": ""
+    },
+    {
+        "code": "CROCO",
+        "isActive": null,
+        "name": "CROCODILE TAPE  AND CO., INC.",
+        "tin": ""
+    },
+    {
+        "code": "CTEM",
+        "isActive": null,
+        "name": "CTEM ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "ENVIR",
+        "isActive": null,
+        "name": "ENVIRONMENTAL FLEXO PRINTING",
+        "tin": ""
+    },
+    {
+        "code": "EXCEL",
+        "isActive": null,
+        "name": "EXCEL  PRINTING PRESS",
+        "tin": ""
+    },
+    {
+        "code": "ALS MAK",
+        "isActive": null,
+        "name": "ALS MARKETING",
+        "tin": ""
+    },
+    {
+        "code": "PANACEA",
+        "isActive": null,
+        "name": "PANACEA  PRODUCTS CO.,LTD.",
+        "tin": ""
+    },
+    {
+        "code": "FISH PH",
+        "isActive": null,
+        "name": "FISH PHARMA,  INC.",
+        "tin": ""
+    },
+    {
+        "code": "TFE SAL",
+        "isActive": null,
+        "name": "TFE SALES MKTG CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "AMBERVI",
+        "isActive": null,
+        "name": "AMBERVILLE INDUSTRIAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "OK MINE",
+        "isActive": null,
+        "name": "OK MINERAL MILLER  INC.",
+        "tin": ""
+    },
+    {
+        "code": "VITA SC",
+        "isActive": null,
+        "name": "VITA SCENT",
+        "tin": ""
+    },
+    {
+        "code": "JRD MFG",
+        "isActive": null,
+        "name": "JRD MANUFACTURING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "CONNELL",
+        "isActive": null,
+        "name": "CONNELL BROS.CO.PILIPINAS,INC.",
+        "tin": ""
+    },
+    {
+        "code": "ZELLER",
+        "isActive": null,
+        "name": "ZELLER PLASTIK PHILIPPINES,INC",
+        "tin": ""
+    },
+    {
+        "code": "VISION",
+        "isActive": null,
+        "name": "VISION TAPES & LABELS",
+        "tin": ""
+    },
+    {
+        "code": "HIZON",
+        "isActive": null,
+        "name": "HIZON LABORATORIES,INC.",
+        "tin": ""
+    },
+    {
+        "code": "PHIL PR",
+        "isActive": null,
+        "name": "PHIL.PROSPERITY CHEMICALS INC.",
+        "tin": ""
+    },
+    {
+        "code": "AM FIRS",
+        "isActive": null,
+        "name": "AM FIRST ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "G.M.T.",
+        "isActive": null,
+        "name": "G.M.T. PRINTING CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "DIGITAL",
+        "isActive": null,
+        "name": "DIGITAL CONVERTING & PACKAGING",
+        "tin": ""
+    },
+    {
+        "code": "RICHGRA",
+        "isActive": null,
+        "name": "RICHGRAINS",
+        "tin": ""
+    },
+    {
+        "code": "HUMANA",
+        "isActive": null,
+        "name": "HUMANA PHARMACEUTICALS",
+        "tin": ""
+    },
+    {
+        "code": "CALYPSO",
+        "isActive": null,
+        "name": "CALYPSO PLASTIC",
+        "tin": ""
+    },
+    {
+        "code": "AMELCO",
+        "isActive": null,
+        "name": "AMELCO DESICCANTS",
+        "tin": ""
+    },
+    {
+        "code": "DENSITY",
+        "isActive": null,
+        "name": "DENSITY COMMERCIAL",
+        "tin": ""
+    },
+    {
+        "code": "AMYLUM",
+        "isActive": null,
+        "name": "AMYLUM ENTERPRISES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "S.E.IND",
+        "isActive": null,
+        "name": "S.E.INDUSTRIES (PHILIPPINES)",
+        "tin": ""
+    },
+    {
+        "code": "WILTON",
+        "isActive": null,
+        "name": "WILTON CHEMICAL SUPPLY CO.",
+        "tin": ""
+    },
+    {
+        "code": "GLOTRAD",
+        "isActive": null,
+        "name": "GLOBAL TRADE",
+        "tin": ""
+    },
+    {
+        "code": "ADESSEO",
+        "isActive": null,
+        "name": "ADISSEO / AVENTIS",
+        "tin": ""
+    },
+    {
+        "code": "MEISSCO",
+        "isActive": null,
+        "name": "MEISSCORE MARKETING",
+        "tin": ""
+    },
+    {
+        "code": "MARINE",
+        "isActive": null,
+        "name": "MARINE RESOURCES DEVELOPMENT",
+        "tin": ""
+    },
+    {
+        "code": "POLY",
+        "isActive": null,
+        "name": "POLYSEAL",
+        "tin": ""
+    },
+    {
+        "code": "GLEE IN",
+        "isActive": null,
+        "name": "GLEE INTERNATIONAL RESOURCES",
+        "tin": ""
+    },
+    {
+        "code": "SYMRISE",
+        "isActive": null,
+        "name": "SYMRISE",
+        "tin": ""
+    },
+    {
+        "code": "GLOBAL2",
+        "isActive": null,
+        "name": "GLOBAL 2ND HAND",
+        "tin": ""
+    },
+    {
+        "code": "EXCELLE",
+        "isActive": null,
+        "name": "EXCELLENT PRODUCTS INT'L.CORP.",
+        "tin": ""
+    },
+    {
+        "code": "GREEN",
+        "isActive": null,
+        "name": "GREENLEAF",
+        "tin": ""
+    },
+    {
+        "code": "MANE",
+        "isActive": null,
+        "name": "MANE",
+        "tin": ""
+    },
+    {
+        "code": "ROBICEL",
+        "isActive": null,
+        "name": "ROBICEL TRADING",
+        "tin": ""
+    },
+    {
+        "code": "COLOR",
+        "isActive": null,
+        "name": "COLORCON ASIA PACIFIC PRIVATE",
+        "tin": ""
+    },
+    {
+        "code": "CROWN",
+        "isActive": null,
+        "name": "CROWN PLASTIC PHILS.,INC.",
+        "tin": ""
+    },
+    {
+        "code": "FLAVOR",
+        "isActive": null,
+        "name": "FLAVOR SYSTEMS, INC.",
+        "tin": ""
+    },
+    {
+        "code": "CARRING",
+        "isActive": null,
+        "name": "CARRINGTON TRADING",
+        "tin": ""
+    },
+    {
+        "code": "PHAWORL",
+        "isActive": null,
+        "name": "PHARMAWORLD",
+        "tin": ""
+    },
+    {
+        "code": "GLO COM",
+        "isActive": null,
+        "name": "GLOBAL COMMERCIAL",
+        "tin": ""
+    },
+    {
+        "code": "MC RITZ",
+        "isActive": null,
+        "name": "MC RITZ INTERNATIONAL CORP",
+        "tin": ""
+    },
+    {
+        "code": "EVERSTR",
+        "isActive": null,
+        "name": "EVERSTAR INDUSTRIAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "TRADE",
+        "isActive": null,
+        "name": "TRADESPHERE INDUSTRIAL",
+        "tin": ""
+    },
+    {
+        "code": "R E M S",
+        "isActive": null,
+        "name": "REM'S SYNTHETIC POLYMER MFG.",
+        "tin": ""
+    },
+    {
+        "code": "APT VET",
+        "isActive": null,
+        "name": "APT VET LINK, INC. ( CPD )",
+        "tin": ""
+    },
+    {
+        "code": "Z A B",
+        "isActive": null,
+        "name": "ZAB ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "GRANVIL",
+        "isActive": null,
+        "name": "GRANVILLE TRADING CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "N I C E",
+        "isActive": null,
+        "name": "NICE PRODUCT CO.",
+        "tin": ""
+    },
+    {
+        "code": "RHODIA",
+        "isActive": null,
+        "name": "RHODIA PHILIPPINES INC.",
+        "tin": ""
+    },
+    {
+        "code": "P H I L",
+        "isActive": null,
+        "name": "PHIL-HELLAS LINK CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "EURO",
+        "isActive": null,
+        "name": "EURO-MED",
+        "tin": ""
+    },
+    {
+        "code": "FILSTAR",
+        "isActive": null,
+        "name": "FILSTAR DISTRIBUTOR",
+        "tin": ""
+    },
+    {
+        "code": "NCPPC",
+        "isActive": null,
+        "name": "NEW CENTENNIAL PLASTIC & PRINT",
+        "tin": ""
+    },
+    {
+        "code": "E V E R",
+        "isActive": null,
+        "name": "EVERGOOD PLASTIC INDUSTRY INC.",
+        "tin": ""
+    },
+    {
+        "code": "UK DERM",
+        "isActive": null,
+        "name": "UK DERM PHARMA INC",
+        "tin": ""
+    },
+    {
+        "code": "A S I A",
+        "isActive": null,
+        "name": "ASIA PACIFIC OIL MFG. CO.",
+        "tin": ""
+    },
+    {
+        "code": "NETPAK",
+        "isActive": null,
+        "name": "NETPAK PHILIPPINES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "PHILUSA",
+        "isActive": null,
+        "name": "PHILUSA CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "BN NUTR",
+        "isActive": null,
+        "name": "BN NUTRACEUTICAL CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "WHARTON",
+        "isActive": null,
+        "name": "WARTHON HEALTHCARE",
+        "tin": ""
+    },
+    {
+        "code": "MEDILYN",
+        "isActive": null,
+        "name": "MEDILYN DRUG",
+        "tin": ""
+    },
+    {
+        "code": "BAYER",
+        "isActive": null,
+        "name": "BAYER PHILIPPINES",
+        "tin": ""
+    },
+    {
+        "code": "BOI-STR",
+        "isActive": null,
+        "name": "BIO-STRATA",
+        "tin": ""
+    },
+    {
+        "code": "HP-MULT",
+        "isActive": null,
+        "name": "HP MULTI LINES INC",
+        "tin": ""
+    },
+    {
+        "code": "REACH",
+        "isActive": null,
+        "name": "REACH MED PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "G O O D",
+        "isActive": null,
+        "name": "GOODNESS TRADING",
+        "tin": ""
+    },
+    {
+        "code": "PHARMAC",
+        "isActive": null,
+        "name": "ZHARMACARE PRODUCTS",
+        "tin": ""
+    },
+    {
+        "code": "EDISON",
+        "isActive": null,
+        "name": "EDISON LEE",
+        "tin": ""
+    },
+    {
+        "code": "PENCO",
+        "isActive": null,
+        "name": "PENCO INCORPORATED",
+        "tin": ""
+    },
+    {
+        "code": "SYRODEC",
+        "isActive": null,
+        "name": "SYRODEC CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "NECO",
+        "isActive": null,
+        "name": "NECO PHILIPPINES, INC.",
+        "tin": ""
+    },
+    {
+        "code": "RAKLMN",
+        "isActive": null,
+        "name": "R.A.KELMAN, INC",
+        "tin": ""
+    },
+    {
+        "code": "IV SAN",
+        "isActive": null,
+        "name": "IV SAN BERNARD",
+        "tin": ""
+    },
+    {
+        "code": "SUNTRA",
+        "isActive": null,
+        "name": "SUNTRA INTERNATIONAL TRADING",
+        "tin": ""
+    },
+    {
+        "code": "JT PLAS",
+        "isActive": null,
+        "name": "J.T. PLASTIC MANUFACTURING",
+        "tin": ""
+    },
+    {
+        "code": "R EARTH",
+        "isActive": null,
+        "name": "RED EARTH TRADING",
+        "tin": ""
+    },
+    {
+        "code": "SYNRLNK",
+        "isActive": null,
+        "name": "SYNERLINK PHARMA MARKETING",
+        "tin": ""
+    },
+    {
+        "code": "BESTPCK",
+        "isActive": null,
+        "name": "BESTPAK MANUFACTURING",
+        "tin": ""
+    },
+    {
+        "code": "PETERPL",
+        "isActive": null,
+        "name": "PETER PAUL PHIL. CORP",
+        "tin": ""
+    },
+    {
+        "code": "PCF",
+        "isActive": null,
+        "name": "PCF-PUR",
+        "tin": ""
+    },
+    {
+        "code": "BNC CRP",
+        "isActive": null,
+        "name": "BNC INGREDIENTS CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "NXTPII",
+        "isActive": null,
+        "name": "NEXT PHASE INTERNATIONAL INC.",
+        "tin": ""
+    },
+    {
+        "code": "CMI",
+        "isActive": null,
+        "name": "COMEWARD MARKETING INC",
+        "tin": ""
+    },
+    {
+        "code": "ARVIN",
+        "isActive": null,
+        "name": "ARVIN INTERNATIONAL MKTG INC",
+        "tin": ""
+    },
+    {
+        "code": "PURECHM",
+        "isActive": null,
+        "name": "PURECHEM CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "RMAC",
+        "isActive": null,
+        "name": "RMAC (RAW MATERIALS & CHEMCLS)",
+        "tin": ""
+    },
+    {
+        "code": "TOPBEST",
+        "isActive": null,
+        "name": "TOPBEST PRINTING CORP.",
+        "tin": ""
+    },
+    {
+        "code": "SPLASH",
+        "isActive": null,
+        "name": "SPLASH PHARMACEUTICAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "ARTCHEM",
+        "isActive": null,
+        "name": "ARTSCHEM FAR EAST",
+        "tin": ""
+    },
+    {
+        "code": "SEAMED",
+        "isActive": null,
+        "name": "SEAMMED PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "L212887",
+        "isActive": null,
+        "name": "COMBEE INC",
+        "tin": ""
+    },
+    {
+        "code": "EASTMED",
+        "isActive": null,
+        "name": "EASTMED PHARMACEUTICALS,INC",
+        "tin": ""
+    },
+    {
+        "code": "HIGRADE",
+        "isActive": null,
+        "name": "HI-GRADE PACKAGING",
+        "tin": ""
+    },
+    {
+        "code": "PCARE",
+        "isActive": null,
+        "name": "PHARMACARE",
+        "tin": ""
+    },
+    {
+        "code": "H.O.",
+        "isActive": null,
+        "name": "HEAD OFFICE C/O MOV",
+        "tin": ""
+    },
+    {
+        "code": "NTRCHEM",
+        "isActive": null,
+        "name": "INTERCHEMEX LABORATORIES,INC",
+        "tin": ""
+    },
+    {
+        "code": "SKY COM",
+        "isActive": null,
+        "name": "SKY COMPUTER & OFFICE",
+        "tin": ""
+    },
+    {
+        "code": "PHILDES",
+        "isActive": null,
+        "name": "PHIL.DESSICANTS INC.",
+        "tin": ""
+    },
+    {
+        "code": "ETCDRUG",
+        "isActive": null,
+        "name": "ETC DRUGSTORE",
+        "tin": ""
+    },
+    {
+        "code": "AACI",
+        "isActive": null,
+        "name": "ALL ASIAN COUNTERTRADE,INC.",
+        "tin": ""
+    },
+    {
+        "code": "SIGART",
+        "isActive": null,
+        "name": "SIGART",
+        "tin": ""
+    },
+    {
+        "code": "RAWMAT",
+        "isActive": null,
+        "name": "RAW MATERIALS & CHEM",
+        "tin": ""
+    },
+    {
+        "code": "R&D",
+        "isActive": null,
+        "name": "R&D",
+        "tin": ""
+    },
+    {
+        "code": "DENLY",
+        "isActive": null,
+        "name": "DENLY ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "DONG-A",
+        "isActive": null,
+        "name": "DONG-A PHARMA PHILS. INC",
+        "tin": ""
+    },
+    {
+        "code": "CHMI",
+        "isActive": null,
+        "name": "CHMI PRODUCTS INC",
+        "tin": ""
+    },
+    {
+        "code": "3JNT",
+        "isActive": null,
+        "name": "3JNT ENTERPRISE",
+        "tin": ""
+    },
+    {
+        "code": "CHEMLIN",
+        "isActive": null,
+        "name": "CHEMLINE",
+        "tin": ""
+    },
+    {
+        "code": "FEI",
+        "isActive": null,
+        "name": "FRANFRELUCHE INC.",
+        "tin": ""
+    },
+    {
+        "code": "KMAGONG",
+        "isActive": null,
+        "name": "KAMAGONG TRADING",
+        "tin": ""
+    },
+    {
+        "code": "WYETH",
+        "isActive": null,
+        "name": "WYETH PHILS",
+        "tin": ""
+    },
+    {
+        "code": "PEOTRAC",
+        "isActive": null,
+        "name": "PEOTRACO INDUSTRIES INC.",
+        "tin": ""
+    },
+    {
+        "code": "IAE",
+        "isActive": null,
+        "name": "IAE PHARMACEUTICALS CORP.",
+        "tin": ""
+    },
+    {
+        "code": "CJP",
+        "isActive": null,
+        "name": "CJP INDUSTRIES INT'L",
+        "tin": ""
+    },
+    {
+        "code": "NUTRI",
+        "isActive": null,
+        "name": "NUTRITECH VENTURES,INC",
+        "tin": ""
+    },
+    {
+        "code": "CLASSIQ",
+        "isActive": null,
+        "name": "CLASSIQUE HERBS CORP.",
+        "tin": ""
+    },
+    {
+        "code": "HYGIENI",
+        "isActive": null,
+        "name": "HYGIENIC PACK CORP.",
+        "tin": ""
+    },
+    {
+        "code": "NEW ASI",
+        "isActive": null,
+        "name": "NEW ASIA OIL, CO.",
+        "tin": ""
+    },
+    {
+        "code": "NUTRIMI",
+        "isActive": null,
+        "name": "NUTRAMIN TRADING",
+        "tin": ""
+    },
+    {
+        "code": "RADIANT",
+        "isActive": null,
+        "name": "RADIANT ROPE GEN. MDSE.",
+        "tin": ""
+    },
+    {
+        "code": "TRANS",
+        "isActive": null,
+        "name": "TRANSALES MARKETING",
+        "tin": ""
+    },
+    {
+        "code": "N.R.TRA",
+        "isActive": null,
+        "name": "N.R. TRADING & INDUSTRIES",
+        "tin": ""
+    },
+    {
+        "code": "HANDYW",
+        "isActive": null,
+        "name": "HANDYWARE PHIL. INC",
+        "tin": ""
+    },
+    {
+        "code": "FOONG",
+        "isActive": null,
+        "name": "FOONG CHANG",
+        "tin": ""
+    },
+    {
+        "code": "PPCC",
+        "isActive": null,
+        "name": "POLYPLAST PACKAGING CENTRAL",
+        "tin": ""
+    },
+    {
+        "code": "RX GEN",
+        "isActive": null,
+        "name": "RX GENERICS",
+        "tin": ""
+    },
+    {
+        "code": "JMAQ",
+        "isActive": null,
+        "name": "JMAQ TRADE INTERNATIONAL",
+        "tin": ""
+    },
+    {
+        "code": "MPSI",
+        "isActive": null,
+        "name": "MPSI(MEDICAL PHARM.SPECIALS",
+        "tin": ""
+    },
+    {
+        "code": "SYNER",
+        "isActive": null,
+        "name": "SYNERGOS MGT. INC",
+        "tin": ""
+    },
+    {
+        "code": "NATURE",
+        "isActive": null,
+        "name": "NATURE VET",
+        "tin": ""
+    },
+    {
+        "code": "R-CUBES",
+        "isActive": null,
+        "name": "R-CUBES",
+        "tin": ""
+    },
+    {
+        "code": "BIOTECH",
+        "isActive": null,
+        "name": "BIOTECH,U.P.LOS BANOS COLLEGE,LAGUNA",
+        "tin": ""
+    },
+    {
+        "code": "ADVANSH",
+        "isActive": null,
+        "name": "ADVANSHINE CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "AVENIDA",
+        "isActive": null,
+        "name": "AVENIDA MEDICAL SUPPLY & HOSPITAL EQUIPMENT",
+        "tin": ""
+    },
+    {
+        "code": "REHORTE",
+        "isActive": null,
+        "name": "REHORTELEZA",
+        "tin": ""
+    },
+    {
+        "code": "NIKON",
+        "isActive": null,
+        "name": "NIKON",
+        "tin": ""
+    },
+    {
+        "code": "INCON",
+        "isActive": null,
+        "name": "INCON INDUSTRIAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "GELCAPS",
+        "isActive": null,
+        "name": "GELCAPS INC.",
+        "tin": ""
+    },
+    {
+        "code": "DATRIMA",
+        "isActive": null,
+        "name": "DA TRI MA PACKAGING & IND'L CORP",
+        "tin": ""
+    },
+    {
+        "code": "CORNELL",
+        "isActive": null,
+        "name": "CORNELL INGREDIENTS",
+        "tin": ""
+    },
+    {
+        "code": "GREATSP",
+        "isActive": null,
+        "name": "GREAT SEAL PACKAGING PRODUCT INC.",
+        "tin": ""
+    },
+    {
+        "code": "ALC001",
+        "isActive": null,
+        "name": "ALDRITZ CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "RICHMED",
+        "isActive": null,
+        "name": "RICHMED",
+        "tin": ""
+    },
+    {
+        "code": "PRINTER",
+        "isActive": null,
+        "name": "COLOR LAST PRINTER",
+        "tin": ""
+    },
+    {
+        "code": "WYE",
+        "isActive": null,
+        "name": "WYECHEM",
+        "tin": ""
+    },
+    {
+        "code": "REAL",
+        "isActive": null,
+        "name": "REALITY BITES",
+        "tin": ""
+    },
+    {
+        "code": "SPEEDWA",
+        "isActive": null,
+        "name": "SPEEDWAY COURIER PHILS. INC",
+        "tin": ""
+    },
+    {
+        "code": "PHILFRS",
+        "isActive": null,
+        "name": "PHIL FIRST MANUFACTURING INC.",
+        "tin": ""
+    },
+    {
+        "code": "TOP",
+        "isActive": null,
+        "name": "TOPMARK FORWARDERS",
+        "tin": ""
+    },
+    {
+        "code": "TRICHEM",
+        "isActive": null,
+        "name": "TRICHEMICAL INDUSTRIAL CORP.",
+        "tin": ""
+    },
+    {
+        "code": "SIGJOHN",
+        "isActive": null,
+        "name": "SIGJOHN PHARMACEUTICAL COMPANY, INC.",
+        "tin": ""
+    },
+    {
+        "code": "SHINE",
+        "isActive": null,
+        "name": "SHINE RESOURCES PHILIPPINES",
+        "tin": ""
+    },
+    {
+        "code": "8SOURCE",
+        "isActive": null,
+        "name": "8 SOURCES INCORPORATED",
+        "tin": ""
+    },
+    {
+        "code": "NOVO PA",
+        "isActive": null,
+        "name": "NOVO PACIFIC CORP.",
+        "tin": ""
+    },
+    {
+        "code": "N/A",
+        "isActive": null,
+        "name": "N/A",
+        "tin": ""
+    },
+    {
+        "code": "YEO",
+        "isActive": null,
+        "name": "YEOMAN PLASTIC CENTER",
+        "tin": ""
+    },
+    {
+        "code": "BIOPROT",
+        "isActive": null,
+        "name": "BIOPROTON PTY",
+        "tin": ""
+    },
+    {
+        "code": "BMP",
+        "isActive": null,
+        "name": "BMP SUPER MARKET",
+        "tin": ""
+    },
+    {
+        "code": "JEKK",
+        "isActive": null,
+        "name": "JEKK MEARY PHARMACEUTICALS",
+        "tin": ""
+    },
+    {
+        "code": "WLGRW",
+        "isActive": null,
+        "name": "WILGROW CHEMICAL",
+        "tin": ""
+    },
+    {
+        "code": "PITACH",
+        "isActive": null,
+        "name": "PITACH",
+        "tin": ""
+    },
+    {
+        "code": "TITANIA",
+        "isActive": null,
+        "name": "TITANIA",
+        "tin": ""
+    },
+    {
+        "code": "FIL C",
+        "isActive": null,
+        "name": "FIL CAPS",
+        "tin": ""
+    },
+    {
+        "code": "S.C",
+        "isActive": null,
+        "name": "S.C MICRON CHEMICALS CORP.",
+        "tin": ""
+    },
+    {
+        "code": "VET",
+        "isActive": null,
+        "name": "VET SUPERIOR AQUA",
+        "tin": ""
+    },
+    {
+        "code": "RADL",
+        "isActive": null,
+        "name": "REASEACRH AND DEVELOPTMENT LIQUID REAGENT",
+        "tin": ""
+    },
+    {
+        "code": "RAD",
+        "isActive": null,
+        "name": "RESEARCH AND DEVELOPMENT",
+        "tin": ""
+    },
+    {
+        "code": "QC-MICR",
+        "isActive": null,
+        "name": "QUALITY ASSURANCE CONTROL MICRO",
+        "tin": ""
+    },
+    {
+        "code": "QAC-LR",
+        "isActive": null,
+        "name": "QUALITY ASSURANCE CONTROL LIQUID REAGENTS",
+        "tin": ""
+    },
+    {
+        "code": "QACSR",
+        "isActive": null,
+        "name": "QUALITY ASSURANCE CONTROL SOLID REAGENTS",
+        "tin": ""
+    },
+    {
+        "code": "MEDEX",
+        "isActive": null,
+        "name": "MEDEX PHARMA INC",
+        "tin": ""
+    },
+    {
+        "code": "QXPHRMA",
+        "isActive": null,
+        "name": "QX PHARMA, INC.",
+        "tin": ""
+    },
+    {
+        "code": "POLYTEC",
+        "isActive": null,
+        "name": "POLYTECHNIQUE MANUFACTURING,INC",
+        "tin": ""
+    },
+    {
+        "code": "GRIATIC",
+        "isActive": null,
+        "name": "GERIATICA",
+        "tin": ""
+    },
+    {
+        "code": "EC-TEC",
+        "isActive": null,
+        "name": "EC-TEC COMMERCIAL",
+        "tin": ""
+    },
+    {
+        "code": "PHAR",
+        "isActive": null,
+        "name": "PHARMACHEM PVT",
+        "tin": ""
+    },
+    {
+        "code": "SHANG",
+        "isActive": null,
+        "name": "SHANGHAI FUXIN CHEMICAL CHINA",
+        "tin": ""
+    },
+    {
+        "code": "DALISAY",
+        "isActive": null,
+        "name": "DALISAY PHILIPPINES CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "ASIA OI",
+        "isActive": null,
+        "name": "ASIA OIL & FATS INDUSTRIAL CO. LTD.",
+        "tin": ""
+    },
+    {
+        "code": "SYDNEY",
+        "isActive": null,
+        "name": "SYDNEY ESSENTIAL OIL CO.",
+        "tin": ""
+    },
+    {
+        "code": "CLEO",
+        "isActive": null,
+        "name": "CLEO SINGAPORE PTE",
+        "tin": ""
+    },
+    {
+        "code": "BIESTER",
+        "isActive": null,
+        "name": "BIESTERFELD INTERNATIONAL",
+        "tin": ""
+    },
+    {
+        "code": "KAMAGON",
+        "isActive": null,
+        "name": "KAMAGONG CHEMTRADE CORP.",
+        "tin": ""
+    },
+    {
+        "code": "DANASIA",
+        "isActive": null,
+        "name": "DANASIA, INC.",
+        "tin": ""
+    },
+    {
+        "code": "SYNOVA",
+        "isActive": null,
+        "name": "SYNOVA PHARMACEUTICALS",
+        "tin": ""
+    },
+    {
+        "code": "NATURAL",
+        "isActive": null,
+        "name": "NATURAL INGREDIENTS MERCHANT INC.",
+        "tin": ""
+    },
+    {
+        "code": "SWEET",
+        "isActive": null,
+        "name": "SWEET DYNAMICS",
+        "tin": ""
+    },
+    {
+        "code": "ADANI",
+        "isActive": null,
+        "name": "ADANI PHARMACHEM PRIVATE LIMITED",
+        "tin": ""
+    },
+    {
+        "code": "PHILSTO",
+        "isActive": null,
+        "name": "PHILSTONE INDUSTRIAL & MFG. CORP.",
+        "tin": ""
+    },
+    {
+        "code": "B-PHAR",
+        "isActive": null,
+        "name": "B-PHAR INC.",
+        "tin": ""
+    },
+    {
+        "code": "GEO-PHA",
+        "isActive": null,
+        "name": "GEO-PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "CUREX",
+        "isActive": null,
+        "name": "CUREX PHARMA",
+        "tin": ""
+    },
+    {
+        "code": "HANGZHO",
+        "isActive": null,
+        "name": "HANGZHOU FST PHARMACEUTICALS",
+        "tin": ""
+    },
+    {
+        "code": "IMPERIA",
+        "isActive": null,
+        "name": "IMPERIAL NOVA ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "CADIZ",
+        "isActive": null,
+        "name": "UNITED CADIZ",
+        "tin": ""
+    },
+    {
+        "code": "HANBUL",
+        "isActive": null,
+        "name": "HANBUL PHARM. CO. LTD",
+        "tin": ""
+    },
+    {
+        "code": "ACCUBAR",
+        "isActive": null,
+        "name": "ACCUBAR",
+        "tin": ""
+    },
+    {
+        "code": "UNIFINE",
+        "isActive": null,
+        "name": "UNIFINE ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "PRIMEX",
+        "isActive": null,
+        "name": "PRIMEX PLASTIC AND RUBBER COMPANY",
+        "tin": ""
+    },
+    {
+        "code": "EVEREST",
+        "isActive": null,
+        "name": "EVEREST PLASTIC CONTAINER INDUSTRY, INC.",
+        "tin": ""
+    },
+    {
+        "code": "RMBELTR",
+        "isActive": null,
+        "name": "RMBELTRAN CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "APT-PET",
+        "isActive": null,
+        "name": "APT VET LINK, INC (PET)",
+        "tin": ""
+    },
+    {
+        "code": "DATR",
+        "isActive": null,
+        "name": "DATRIMA",
+        "tin": ""
+    },
+    {
+        "code": "DKSH",
+        "isActive": null,
+        "name": "DKSH PHILS. INC.",
+        "tin": ""
+    },
+    {
+        "code": "IPCA",
+        "isActive": null,
+        "name": "IPCA LABORATORRIES LIMITED",
+        "tin": ""
+    },
+    {
+        "code": "AMERILA",
+        "isActive": null,
+        "name": "AMERICAN LABORATORIES,INC.",
+        "tin": ""
+    },
+    {
+        "code": "LAIWU",
+        "isActive": null,
+        "name": "LAIWU MARKETING INC.",
+        "tin": ""
+    },
+    {
+        "code": "BPI",
+        "isActive": null,
+        "name": "BUREAU OF PLANT INDUSTRY",
+        "tin": ""
+    },
+    {
+        "code": "HANMILL",
+        "isActive": null,
+        "name": "HANMILL PLASTIC",
+        "tin": ""
+    },
+    {
+        "code": "CFA",
+        "isActive": null,
+        "name": "CFA PRINT HAUS",
+        "tin": ""
+    },
+    {
+        "code": "MCBCORP",
+        "isActive": null,
+        "name": "MC BRIDE CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "PHYTO",
+        "isActive": null,
+        "name": "PHYTOTHERA",
+        "tin": ""
+    },
+    {
+        "code": "CHARM",
+        "isActive": null,
+        "name": "CHARMAINE PLASTIC PRODUCT",
+        "tin": ""
+    },
+    {
+        "code": "AIC",
+        "isActive": null,
+        "name": "AIC",
+        "tin": ""
+    },
+    {
+        "code": "XIANTOP",
+        "isActive": null,
+        "name": "XIANTOP TRUST INTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "UDTONG",
+        "isActive": null,
+        "name": "UDTONG ARB-MULTI PUR",
+        "tin": ""
+    },
+    {
+        "code": "CHEMO",
+        "isActive": null,
+        "name": "CHEMO SA, LUGANO BR.",
+        "tin": ""
+    },
+    {
+        "code": "JEBSEN",
+        "isActive": null,
+        "name": "JEBSEN & JESSEN CHEMICALS",
+        "tin": ""
+    },
+    {
+        "code": "MARTI-",
+        "isActive": null,
+        "name": "MARTI-LIAN PHARMA LINK",
+        "tin": ""
+    },
+    {
+        "code": "SPK",
+        "isActive": null,
+        "name": "SPK PHARMA INC",
+        "tin": ""
+    },
+    {
+        "code": "PEARLCH",
+        "isActive": null,
+        "name": "PEARL CHEM ASIA INC.",
+        "tin": ""
+    },
+    {
+        "code": "BALER",
+        "isActive": null,
+        "name": "BALER INDUSTRIAL CORP",
+        "tin": ""
+    },
+    {
+        "code": "HACIENDA",
+        "isActive": true,
+        "name": "HACIENDA LILIA II",
+        "tin": ""
+    },
+    {
+        "code": "TECHNO",
+        "isActive": true,
+        "name": "TECHNO-MARKET CONSOLIDATORS INC.",
+        "tin": ""
+    },
+    {
+        "code": "AGRO",
+        "isActive": true,
+        "name": "AGROSHINE",
+        "tin": ""
+    },
+    {
+        "code": "ENTO",
+        "isActive": true,
+        "name": "ENTOGENEX INDUSTRIES",
+        "tin": ""
+    },
+    {
+        "code": "AUMGENE",
+        "isActive": true,
+        "name": "AUMGENE BIOSCIENCES",
+        "tin": ""
+    },
+    {
+        "code": "NOBOBO",
+        "isActive": true,
+        "name": "NIBOBO",
+        "tin": ""
+    },
+    {
+        "code": "PERFECT",
+        "isActive": true,
+        "name": "PERFECT PRINTS, INC.",
+        "tin": ""
+    },
+    {
+        "code": "G.HABITZ",
+        "isActive": true,
+        "name": "GLOBAL HABITZ CO., LTD",
+        "tin": ""
+    },
+    {
+        "code": "MAKATI",
+        "isActive": true,
+        "name": "MAKATI TRANSFORWARDER CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "INTER-M",
+        "isActive": true,
+        "name": "INTER-MANUFACTURING CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "CHEMSTAR",
+        "isActive": true,
+        "name": "CHEMSTAR IMPORT & EXPORT CORPORATION",
+        "tin": ""
+    },
+    {
+        "code": "RITEMED",
+        "isActive": true,
+        "name": "RITEMED",
+        "tin": ""
+    },
+    {
+        "code": "PALAWAN",
+        "isActive": true,
+        "name": "PALAWAN BIO-FARM ENTERPRISES",
+        "tin": ""
+    },
+    {
+        "code": "FARMTECH",
+        "isActive": true,
+        "name": "FARMTECH FOOD, INC.",
+        "tin": ""
+    },
+    {
+        "code": "ALLASIAN",
+        "isActive": true,
+        "name": "ALL ASIAN TRANSPORT",
+        "tin": ""
+    },
+    {
+        "code": "PREMIER",
+        "isActive": true,
+        "name": "PREMIER CREATIVE PACKAGING, INC",
+        "tin": ""
+    },
+    {
+        "code": "MENZI",
+        "isActive": true,
+        "name": "MENZI & CO, INC.",
+        "tin": ""
+    }
+]

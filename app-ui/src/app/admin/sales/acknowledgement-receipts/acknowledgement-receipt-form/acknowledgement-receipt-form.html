@@ -1,0 +1,279 @@
+<style>
+	.highlightred{
+		background-color:red;
+	}
+	.highlight{
+		background-color:#7ed321;
+	}
+</style>
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+	<div class="form-content">
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">AR Number</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.ar.number"/>
+						</div>
+					</div>
+				</div>
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Date</label>
+								<input type="date" class="form-control -border" ng-model="$ctrl.ar.date"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="horizontal-align -start rmpm-content">
+			<div class="form-group rmpm">
+		<label class="label capitalize-text">Depot</label>
+			 <select class="form-control select -border" ng-change="$ctrl.clearPayments()" ng-model="$ctrl.ar.depot.id"  ng-options="d.id as d.code for d in $ctrl.depots" name="depot">
+           						</select>
+           	</div>
+		</div>
+		<div ng-if="$ctrl.ar.depot">
+		<div class="horizontal-align -start rmpm-content">
+			  <div class="horizontal-align -start rmpm-code">
+			    <div class="form-group rmpm action">
+			    		<a href="#" class="button-link btn btn-action btn-md" data-target="#findClientModal" data-toggle="modal">Select Client</a>
+			    </div>
+			    <div class="form-group rmpm">
+			    		<label class="label capitalize-text">Code</label>
+			    		<input type="text" ng-model="$ctrl.ar.client.code" ng-change="$ctrl.clearPayments()" class="form-control -border"/>
+			    </div>
+			  </div>
+			  <div class="side-two">
+			    <div class="form-group">
+			      	<label class="label capitalize-text">Name</label>
+			    		<input type="text" ng-model="$ctrl.ar.client.name" class="form-control -border"/>
+			    </div>
+			  </div>
+		</div>
+		
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Prepared By</label>
+								<input type="hidden" ng-model="$ctrl.ar.requestedBy"/>
+								<input type="text" class="form-control -border" readonly value="{{$ctrl.ar.preparedBy.firstName}} {{$ctrl.ar.preparedBy.lastName}}" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Requested By</label>
+								<input type="hidden" ng-model="$ctrl.ar.requestedBy"/>
+								<input type="text" class="form-control -border" readonly value="{{$ctrl.ar.requestedBy.firstName}} {{$ctrl.ar.requestedBy.lastName}}" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Checked By</label>
+								<input type="hidden" ng-model="$ctrl.ar.requestedBy"/>
+								<input type="text" class="form-control -border" readonly value="{{$ctrl.ar.checkedBy.firstName}} {{$ctrl.ar.checkedBy.lastName}}" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+				<h5>Terms Of Payment</h5>
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Cash</label>
+							<input type="radio" ng-model="$ctrl.ar.terms" value="CASH"/>
+							<label class="label capitalize-text">Cheque</label>
+							<input type="radio" ng-model="$ctrl.ar.terms" value="CHEQUE"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="step-form" ng-if="$ctrl.ar.terms == 'CHEQUE'">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Cheque #</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.ar.chequeNumber"/>
+						</div>
+					</div>
+				</div>
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Date Of Cheque</label>
+								<input type="date" class="form-control -border" ng-model="$ctrl.ar.chequeDate"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="step-form" >
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Amount Paid</label>
+							<input type="number" class="form-control -border" ng-change="$ctrl.clearPayments()" ng-model="$ctrl.ar.amountPaid"/>
+						</div>
+					</div>
+				</div>
+				<div class="side-two" ng-if="$ctrl.ar.terms == 'CHEQUE'">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Cut Off Date</label>
+								<input type="date" class="form-control -border" ng-model="$ctrl.ar.cutOffDate"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<table class='table table-list'>
+        	<thead>
+        		<tr>
+        			<th>Type</th>
+        			<th>No</th>
+        			<th>Total Amount</th>
+        			<th>Remaining Balance</th>
+        			<th>Payment</th>
+        			<th>Remaining</th>
+        		</tr>
+        	</thead>
+        	<tbody>
+        		<tr ng-repeat="i in $ctrl.ar.payments" ng-class="{highlightred: i.quantity < 0 }">
+        			<td>{{i.reference.salesOrder.type}}</td>
+        			<td>{{i.reference.number}}</td>
+        			<td>{{i.reference.totalAmount}}</td>
+        			<td>{{i.reference.remainingBalance}}</td>
+        			<td><input type="number" ng-change="$ctrl.computeTotalPayment()" ng-model="i.appliedAmount" required/></td>
+        			<td>{{i.reference.remainingBalance - i.appliedAmount}}</td>
+        		</tr>
+        	</tbody>
+        	<tfoot>
+        	<tr>
+        		<th></th>
+        		<th></th>
+        		<th>Total Applied Amount:</th>
+        		<th>{{$ctrl.totalAmount.toFixed(2)}}</th>
+        	</tr>
+        	<tr>
+        		<th></th>
+        		<th></th>
+        		<th>Total SI Amount:</th>
+        		<th>{{$ctrl.siAmount.toFixed(2)}}</th>
+        	</tr>
+        	</tfoot>
+        </table>
+        <div class="request-action">
+			 <a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findSalesSlip()">Select DR_SI/OS</a>
+		</div>
+		
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Remarks</label>
+							<textarea type="text" class="form-control -border" ng-model="$ctrl.ar.remarks"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="request-action">
+			<button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button>
+		</div>
+	</div>
+	</div>
+</form>
+
+
+<find-client-modal
+			client="$ctrl.ar.client"
+            message="{{ $ctrl.error }}"
+            button="Select Client"
+            >
+    </find-client-modal>
+    
+    <div class='modal fade' id='salesSlipsModal'>
+  <div class="modal-dialog -bg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-title">
+				Find OS, DR_SI
+			</h4>
+			<button class="close" data-dismiss="modal" type="button">
+			</button>
+		</div>
+		<div class="modal-body">
+				<div class="search-box horizontal-align -between">
+            <div class=" search-modal horizontal-align -between">
+                    <div class="input-group-addon" style="border: 0	 !imsortant;"><i class="fa fa-search"></i></div>
+                  
+                </div>
+    </div>
+			<div class="wrapper scroll-section">
+				<table class='table table-hover'>
+              <thead>
+                <tr>
+								<th> <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">OS/DR_SI #
+										<span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+										</span>
+										<span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+										</span>
+								</a></th>
+                  <th> <a href="#" ng-click="$ctrl.sortType = 'date';$ctrl.sortReverse = !$ctrl.sortReverse;">Date
+										<span ng-show="$ctrl.sortType == 'date' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+										</span>
+										<span ng-show="$ctrl.sortType == 'date' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+										</span>
+								</a></th>
+                  <th>Total Amount</th>
+                  <th>Remaining Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="os in $ctrl.salesSlips  | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectSalesSlip(os)" ng-class="{highlight: $ctrl.customizedIndexOf($ctrl.selectedSalesSlips, os) !== -1}">
+                  <td>{{os.number}}</td>
+                  <td>{{os.date | date}}</td>
+                  <td>{{os.totalAmount.toFixed(2)}}</td>
+                  <td>{{os.remainingBalance.toFixed(2)}}</td>
+                </tr>
+              </tbody>
+            </table>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+</div>
+    

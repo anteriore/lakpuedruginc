@@ -1,0 +1,167 @@
+@import './vendor';
+@import './variables';
+
+@import './colors/brand_colors';
+
+@import './globals/inputs';
+@import './globals/radio_buttons';
+@import './globals/alignment';
+@import './globals/checkbox';
+@import './globals/label';
+@import './globals/button';
+@import './globals/tables';
+@import './globals/logo';
+@import './globals/user_layout';
+@import './globals/admin_layout';
+@import './globals/layout_navtools';
+@import './globals/layout_selection';
+@import './globals/admin_selection';
+@import './globals/title';
+@import './globals/link';
+@import './globals/panel_card';
+@import './globals/step_indicator';
+@import './globals/button_group';
+@import './globals/nav';
+@import './globals/text_transform';
+
+@import 'overrides/form_group';
+@import 'overrides/form_control';
+@import 'overrides/modal.scss';
+
+@import './utils/base';
+
+@import 'styles/admin_users';
+@import 'styles/searchbox';
+@import 'styles/account_card';
+@import 'styles/create_user';
+@import 'styles/admin_title';
+@import 'styles/mmd_card';
+@import 'styles/pris_list';
+@import 'styles/new_pris';
+@import 'styles/new_rmpm_tolling';
+@import 'styles/tab_block';
+@import 'styles/modal';
+@import 'styles/department_area_code';
+@import 'styles/searchbox_modal';
+@import 'styles/categories';
+@import 'styles/mrs_modal';
+@import 'styles/transfer_of_stocks';
+@import 'styles/rd_modal';
+@import 'styles/costing_modal';
+@import 'styles/pris_find_item_modal';
+@import 'styles/accordion_modal';
+@import 'styles/accounting_modal';
+@import 'styles/accounting';
+@import 'styles/form_header';
+@import 'styles/select_type_modal';
+@import 'styles/new_approved_receipts';
+@import 'styles/form_content';
+@import 'styles/new_material_reevaluation';
+
+
+.pagination {
+    border: 1px #eee solid;
+    background-color: steelblue;
+}
+
+.pagination li {
+    border: 1px #eee solid;
+    // background-color: #eee;
+    padding: 2px 10px;
+}
+
+.pagination li.active {
+    background-color: teal;
+}
+
+.pagination li.disabled {
+    background-color: #ddd;
+}
+
+.pagination li a {
+    color: white;
+}
+
+ul.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: #eee;
+  }
+  
+  /* Display list items side by side */
+  ul.breadcrumb li {
+    display: inline;
+    font-size: 18px;
+  }
+  
+  /* Add a slash symbol (/) before/behind each list item */
+  ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+  }
+  
+  /* Add a color to all links inside the list */
+  ul.breadcrumb li a {
+    color: #0275d8;
+    text-decoration: none;
+  }
+  
+  /* Add a color on mouse-over */
+  ul.breadcrumb li a:hover {
+    color: #01447e;
+    text-decoration: underline;
+  }
+
+
+  .dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #3e8e41;
+  }
+  
+  #myInput {
+    border-box: box-sizing;
+    background-image: url('searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  #myInput:focus {outline: 3px solid #ddd;}
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 230px;
+    overflow: auto;
+    border: 1px solid #ddd;
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown a:hover {background-color: #ddd;}
+  
+  .show {display: block;}

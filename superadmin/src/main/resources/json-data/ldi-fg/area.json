@@ -1,0 +1,34 @@
+[
+    {
+        "code": "01",
+        "name": "QC HO"
+    },
+    {
+        "code": "02",
+        "name": "BINAN"
+    },
+    {
+        "code": "03",
+        "name": "MATATAG"
+    },
+    {
+        "code": "04",
+        "name": "BACOLOD"
+    },
+    {
+        "code": "05",
+        "name": "CEBU"
+    },
+    {
+        "code": "06",
+        "name": "ILOILO"
+    },
+    {
+        "code": "07",
+        "name": "DAVAO"
+    },
+    {
+        "code": "08",
+        "name": "CDO"
+    }
+]

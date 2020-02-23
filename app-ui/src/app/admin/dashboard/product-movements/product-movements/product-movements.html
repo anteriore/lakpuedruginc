@@ -1,0 +1,42 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Product Movements</h3>
+	</div>
+	<a href="#" ng-click="$ctrl.createNewProductMovement($event);" class="btn btn-create btn-md button-link">Create New Request</a>
+</div>
+<div class='client-pris'>
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="Product Movement No" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+        <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate" />
+  </div>
+</div>
+	<table class='table table-list'>
+		<thead>
+		<tr>
+			<th>Ref No.</th>
+			<th>Date</th>
+			<th>Type</th>
+			<th>Depot</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="pm in $ctrl.productMovements | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
+				<td>{{pm.number}}</td>
+				<td>{{pm.date | date}}</td>
+				<td>{{pm.type}}</td>
+				<td>{{pm.depot.name}}</td>
+				<td class='tablebutton-form'>
+					<div class='holder'>
+						<button data-toggle="modal" ng-click="$ctrl.openModal(pm)" class='btn btn-show'>
+		                  <i class='ion-ios-eye-outline'></i>
+		                </button>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>

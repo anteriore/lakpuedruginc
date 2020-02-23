@@ -1,0 +1,28 @@
+<div class="action-link">
+    <a class="link" href="/admin/users">USERS</a>
+    <span class="devider">/</span>
+    <a class="link" href="/admin/users/new">ADD NEW USER</a>
+</div>
+<div class="user-panel">
+    <div class="content horizontal-align -between">
+        <label class="caption">CREATE NEW USER</label>
+        <header>
+            <a class="btn btn-back back" id="btn-back-action" href="/admin/users"><i
+                    class="ion-ios-arrow-thin-left"></i>
+                <span>Cancel</span>
+            </a></header>
+    </div>
+    <hr class="devider">
+    <user-form
+            user="$ctrl.user"
+            permissions="$ctrl.permissions"
+            companies="$ctrl.companies"
+            departments="$ctrl.departments"
+            message="{{ $ctrl.error }}"
+            button="Create user"
+            on-submit="$ctrl.createUser($event);">
+    </user-form>
+
+
+
+</div>

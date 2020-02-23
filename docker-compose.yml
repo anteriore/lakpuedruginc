@@ -1,0 +1,28 @@
+version: '2'
+services:
+    superadmin:
+        container_name: superadmin
+        build:
+            context: superadmin
+            dockerfile: Dockerfile
+        image: superadmin:latest
+        expose:
+            - 8080
+        ports:
+            - "9000:8080"
+        logging:
+            driver: json-file
+    app-ui:
+            container_name: app-ui
+            build:
+                context: app-ui
+                dockerfile: Dockerfile
+            image: app-ui:latest
+            depends_on:
+                  - superadmin
+            expose:
+                - 80
+            ports:
+                - "4000:80"
+            logging:
+                driver: json-file

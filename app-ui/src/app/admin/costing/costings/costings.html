@@ -1,0 +1,70 @@
+<div class="admin-header">
+    <div class="title horizontal-align -between">
+        <h4 class="bg">Costings</h4>
+
+    </div>
+    <hr class="devider">
+</div>
+
+
+<div class="main-header">
+    <a href="/admin/costing-save" class="btn btn-create btn-md button-link">Add new costing</a>
+</div>
+<!-- <div class="search-box horizontal-align -between">
+        <div class=" search-modal horizontal-align -between">
+                <div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
+                <input class="form-control -borderless search" placeholder="id" type="text" name="search" ng-model="$ctrl.searchId"/>
+                <input class="form-control -borderless search" placeholder="moNumber" type="text" name="search" ng-model="$ctrl.searchMoNumber"/>
+                <input class="form-control -borderless search" placeholder="lotNumber" type="text" name="search" ng-model="$ctrl.searchLotNumber"/>
+            </div>
+    </div> -->
+<table ng-if="$ctrl.costings" class='table table-list'>
+    <thead>
+        <tr>
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">MO #
+                    <span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'moNumber';$ctrl.sortReverse = !$ctrl.sortReverse;">FinishedGood
+                    <span ng-show="$ctrl.sortType == 'moNumber' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'moNumber' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'lotNumber';$ctrl.sortReverse = !$ctrl.sortReverse;">Total Cost
+                    <span ng-show="$ctrl.sortType == 'lotNumber' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'lotNumber' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="cost in $ctrl.costings">
+            <td>{{cost.moInventory.moNumber || 'N/A'}}</td>
+            <td>{{cost.moInventory.finishedGood.name}}</td>
+            <td>{{cost.totalCost}}</td>
+            <td>
+                <i class="ion-ios-compose-outline" ng-click="$ctrl.view(cost.id)"></i>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="clear-float"></div>
+</div>
