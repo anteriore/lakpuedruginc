@@ -3,7 +3,7 @@
     "globalConfig": {
       "environment": "local",
       "version": "dev-1.0.18",
-      "baseUrl": "http://172.104.160.144:9000"
+      "baseUrl": "http://localhost:9000"
     }
   },
   "production": {

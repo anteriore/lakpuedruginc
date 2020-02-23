@@ -45,6 +45,9 @@ const paths = {
   ]
 };
 
+// Get the env variables from .env
+env({file: '.env'})
+
 if (!process.env.NODE_ENV || process.env.NODE_ENV == 'development') {
     server.create();
 }
