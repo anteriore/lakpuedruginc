@@ -10,7 +10,7 @@
     "start": "gulp",
     "test": "karma start",
     "build": "gulp build",
-    "deploy": "gulp production --deploy"
+    "deploy": "gulp production"
   },
   "license": "MIT",
   "repository": "https://github.com/toddmotto/angular-1-5-components-app",
