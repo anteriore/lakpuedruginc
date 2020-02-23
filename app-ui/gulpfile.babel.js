@@ -158,14 +158,6 @@ gulp.task('watch', ['serve', 'scripts'], () => {
   gulp.watch(paths.styles, ['styles']);
 });
 
-gulp.task('firebase', ['styles', 'scripts'], cb => {
-  return exec('firebase deploy', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-});
-
 gulp.task('default', [
   'copy',
   'styles',
@@ -184,7 +176,6 @@ gulp.task('build', [
 gulp.task('production', [
   'copy',
   'scripts',
-  'firebase'
 ]);
 
 gulp.task('copyDocs', () => {

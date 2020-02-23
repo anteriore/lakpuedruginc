@@ -9,6 +9,7 @@
   "scripts": {
     "start": "gulp",
     "test": "karma start",
+    "build": "gulp build",
     "deploy": "gulp production --deploy"
   },
   "license": "MIT",
