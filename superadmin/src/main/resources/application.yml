@@ -7,5 +7,12 @@ app:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-
+    url: jdbc:mysql://localhost/test2?useSSL=false
+    username: root
+    password: 123456789
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: create
