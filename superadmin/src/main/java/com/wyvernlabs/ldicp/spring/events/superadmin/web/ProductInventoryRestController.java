@@ -42,109 +42,111 @@ public class ProductInventoryRestController {
 	private ProductRepository productRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
-	
+
 	@GetMapping("/{id}")
-    public ProductInventory get(@PathVariable Long id) {
-        return productInventoryRepository.getOne(id);
-    }
+	public ProductInventory get(@PathVariable Long id) {
+		return productInventoryRepository.getOne(id);
+	}
 
-    @GetMapping()
-    public List<ProductInventory> list() {
-        return productInventoryRepository.findAll();
-    }
+	@GetMapping()
+	public List<ProductInventory> list() {
+		return productInventoryRepository.findAll();
+	}
 
-    @PostMapping()
-    public ProductInventory upsert(@RequestBody ProductInventory item) {
-        return productInventoryRepository.save(item);
-    }
-    
-    @PostMapping("/delete")
+	@PostMapping()
+	public ProductInventory upsert(@RequestBody ProductInventory item) {
+		return productInventoryRepository.save(item);
+	}
+
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
 		productInventoryRepository.delete(id);
 		return true;
 	}
-    
-    @GetMapping("/depot/{depotId}")
+
+	@GetMapping("/depot/{depotId}")
 	public List<ProductInventory> listByDepot(@PathVariable Long depotId) {
 		Depot depot = depotRepository.findOne(depotId);
 		return productInventoryRepository.findByDepot(depot);
 	}
-    
-    @GetMapping("/company/{companyId}/view")
-    public List<Map<String, Object>> listByCompanyView(@PathVariable Long companyId){
-    	Company company = companyRepository.findOne(companyId);
-    	return productInventoryRepository.findSumQuantityByCompanyGroupByFinishedGood(company);
-    }
-    
-    @GetMapping("/company/{companyId}/view/fg-modal")
-    public List<Map<String, Object>> listByCompanyViewForFgModal(@PathVariable Long companyId){
-    	Company company = companyRepository.findOne(companyId);
-    	List<FinishedGood> fgList = finishedGoodRepository.findAll();
-    	List<FinishedGood> finishedGoodInventoryViewList = new ArrayList();
-    	List<Map<String,Object>> productInventoryViewList = productInventoryRepository.findSumQuantityByCompanyGroupByFinishedGoodId(company);
-    	List<Map<String,Object>> finishedGoodModalList = new ArrayList();
-    	
-    	for(Map<String,Object> productInventory: productInventoryViewList) {
-    		finishedGoodInventoryViewList.add((FinishedGood)productInventory.get("finishedGood"));
-    	}
-    	
-    	finishedGoodModalList.addAll(productInventoryViewList);
-    	fgList.removeAll(finishedGoodInventoryViewList);
-    	
-    	for(FinishedGood fg : fgList) {
-    		Map<String, Object> map = new HashMap();
-    		map.put("finishedGood", fg);
-    		map.put("sum", 0);
-    		finishedGoodModalList.add(map);
-    	}
-    	return finishedGoodModalList;
-    }
-    
-    @GetMapping("/company/{companyId}/depot/{depotId}/view")
-    public List<Map<String, Object>> listByCompanyDepotView(@PathVariable Long companyId, @PathVariable Long depotId){
-    	Company company = companyRepository.findOne(companyId);
-    	Depot depot = depotRepository.findOne(depotId);
-    	return productInventoryRepository.findSumQuantityByCompanyAndDepotGroupByFinishedGood(company, depot);
-    }
-    
-    @GetMapping("/company/{companyId}/depot/{depotId}/report")
-    public List<Map<String, Object>> listByCompanyDepotReport(@PathVariable Long companyId, @PathVariable Long depotId){
-    	Company company = companyRepository.findOne(companyId);
-    	Depot depot = depotRepository.findOne(depotId);
-    	List<Map<String, Object>> mapList = productInventoryRepository.findSumQuantityByCompanyAndDepotGroupByFinishedGood(company, depot);
-    	
-    	return mapList.stream().map(obj -> {
-    		Map map = new LinkedHashMap();
-    		Product product = (Product) obj.get("product");
-    		map.put("code", product.getFinishedGood().getCode());
-    		map.put("fg", product.getFinishedGood().getName());
-    		map.put("unit" ,  product.getSmallUnit().getCode() + "/" + product.getBigUnit().getCode());
-    		map.put("quantity", obj.get("sum"));
-    		return map;
-    	}).collect(Collectors.toList());
-    }
-    
-    @GetMapping("/company/{companyId}")
-    public List<ProductInventory> listByCompany(@PathVariable Long companyId){
-    	Company company = companyRepository.findOne(companyId);
-    	return productInventoryRepository.findByCompany(company);
-    }
-    
-    
-    @GetMapping("/company/{companyId}/finished-good/{finishedGoodId}")
-    public List<ProductInventory> listByCompanyAndFinishedGood(@PathVariable Long companyId, @PathVariable Long finishedGoodId){
-    	Company company = companyRepository.findOne(companyId);
-    	FinishedGood fg = finishedGoodRepository.findOne(finishedGoodId);
-    	return productInventoryRepository.findByCompanyAndFinishedGood(company, fg);
-    }
-    
-    @GetMapping("/depot/{depotId}/finished-good/{finishedGoodId}")
-    public List<ProductInventory> listByDepotAndFinishedGood(@PathVariable Long depotId, @PathVariable Long finishedGoodId){
-    	Depot depot = depotRepository.findOne(depotId);
-    	FinishedGood fg = finishedGoodRepository.findOne(finishedGoodId);
-    	return productInventoryRepository.findByDepotAndFinishedGood(depot, fg);
-    }
-	
-	
-	
+
+	@GetMapping("/company/{companyId}/view")
+	public List<Map<String, Object>> listByCompanyView(@PathVariable Long companyId) {
+		Company company = companyRepository.findOne(companyId);
+		return productInventoryRepository.findSumQuantityByCompanyGroupByFinishedGood(company);
+	}
+
+	@GetMapping("/company/{companyId}/view/fg-modal")
+	public List<Map<String, Object>> listByCompanyViewForFgModal(@PathVariable Long companyId) {
+		Company company = companyRepository.findOne(companyId);
+		List<FinishedGood> fgList = finishedGoodRepository.findAll();
+		List<FinishedGood> finishedGoodInventoryViewList = new ArrayList();
+		List<Map<String, Object>> productInventoryViewList = productInventoryRepository
+				.findSumQuantityByCompanyGroupByFinishedGoodId(company);
+		List<Map<String, Object>> finishedGoodModalList = new ArrayList();
+
+		for (Map<String, Object> productInventory : productInventoryViewList) {
+			finishedGoodInventoryViewList.add((FinishedGood) productInventory.get("finishedGood"));
+		}
+
+		finishedGoodModalList.addAll(productInventoryViewList);
+		fgList.removeAll(finishedGoodInventoryViewList);
+
+		for (FinishedGood fg : fgList) {
+			Map<String, Object> map = new HashMap();
+			map.put("finishedGood", fg);
+			map.put("sum", 0);
+			finishedGoodModalList.add(map);
+		}
+		return finishedGoodModalList;
+	}
+
+	@GetMapping("/company/{companyId}/depot/{depotId}/view")
+	public List<Map<String, Object>> listByCompanyDepotView(@PathVariable Long companyId, @PathVariable Long depotId) {
+		Company company = companyRepository.findOne(companyId);
+		Depot depot = depotRepository.findOne(depotId);
+		return productInventoryRepository.findSumQuantityByCompanyAndDepotGroupByFinishedGood(company, depot);
+	}
+
+	@GetMapping("/company/{companyId}/depot/{depotId}/report")
+	public List<Map<String, Object>> listByCompanyDepotReport(@PathVariable Long companyId,
+			@PathVariable Long depotId) {
+		Company company = companyRepository.findOne(companyId);
+		Depot depot = depotRepository.findOne(depotId);
+		List<Map<String, Object>> mapList = productInventoryRepository
+				.findSumQuantityByCompanyAndDepotGroupByFinishedGood(company, depot);
+
+		return mapList.stream().map(obj -> {
+			Map map = new LinkedHashMap();
+			Product product = (Product) obj.get("product");
+			map.put("code", product.getFinishedGood().getCode());
+			map.put("fg", product.getFinishedGood().getName());
+			map.put("unit", product.getSmallUnit().getCode() + "/" + product.getBigUnit().getCode());
+			map.put("quantity", obj.get("sum"));
+			return map;
+		}).collect(Collectors.toList());
+	}
+
+	@GetMapping("/company/{companyId}")
+	public List<ProductInventory> listByCompany(@PathVariable Long companyId) {
+		Company company = companyRepository.findOne(companyId);
+		return productInventoryRepository.findByCompany(company);
+	}
+
+	@GetMapping("/company/{companyId}/finished-good/{finishedGoodId}")
+	public List<ProductInventory> listByCompanyAndFinishedGood(@PathVariable Long companyId,
+			@PathVariable Long finishedGoodId) {
+		Company company = companyRepository.findOne(companyId);
+		FinishedGood fg = finishedGoodRepository.findOne(finishedGoodId);
+		return productInventoryRepository.findByCompanyAndFinishedGood(company, fg);
+	}
+
+	@GetMapping("/depot/{depotId}/finished-good/{finishedGoodId}")
+	public List<ProductInventory> listByDepotAndFinishedGood(@PathVariable Long depotId,
+			@PathVariable Long finishedGoodId) {
+		Depot depot = depotRepository.findOne(depotId);
+		FinishedGood fg = finishedGoodRepository.findOne(finishedGoodId);
+		return productInventoryRepository.findByDepotAndFinishedGood(depot, fg);
+	}
+
 }

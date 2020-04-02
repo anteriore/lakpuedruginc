@@ -12,14 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ProcedureArea;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProcedureAreaRepository;
-
 @RestController
 @RequestMapping("rest/procedure-areas")
 public class ProcedureAreaRestController {
-    @Autowired
-    private ProcedureAreaRepository procedureAreaRepository;
-
-    @GetMapping("/{id}")
+	@Autowired
+	private ProcedureAreaRepository procedureAreaRepository;
+	
+	@GetMapping("/{id}")
     public ProcedureArea get(@PathVariable Long id) {
         return procedureAreaRepository.getOne(id);
     }
@@ -33,10 +32,10 @@ public class ProcedureAreaRestController {
     public ProcedureArea upsert(@RequestBody ProcedureArea depot) {
         return procedureAreaRepository.save(depot);
     }
-
+    
     @PostMapping("/delete")
-    public boolean delete(@RequestBody Long id) {
-        procedureAreaRepository.delete(id);
-        return true;
+	public boolean delete(@RequestBody Long id) {
+    	procedureAreaRepository.delete(id);
+		return true;
     }
 }

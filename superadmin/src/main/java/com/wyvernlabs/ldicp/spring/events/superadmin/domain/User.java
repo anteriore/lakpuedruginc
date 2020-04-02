@@ -4,15 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
     @GeneratedValue
@@ -33,7 +32,7 @@ public class User {
     private String[] roles;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @MapKey(name = "code")
+    @MapKey(name="code")
     private Map<String, UserPermission> permissions;
 
     public Long getId() {
@@ -84,15 +83,16 @@ public class User {
         this.email = email;
     }
 
+    
     public Department getDepartment() {
-        return department;
-    }
+		return department;
+	}
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
 
-    public String getPassword() {
+	public String getPassword() {
         return password;
     }
 
@@ -132,12 +132,13 @@ public class User {
         this.permissions = permissions;
     }
 
-    @Override
-    public String toString() {
-        return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleInitial="
-                + middleInitial + ", email=" + email + ", password=" + password + ", company=" + company
-                + ", employeeType=" + employeeType + ", department=" + department + ", depots=" + depots + ", roles="
-                + Arrays.toString(roles) + ", permissions=" + permissions + "]";
-    }
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleInitial="
+				+ middleInitial + ", email=" + email + ", password=" + password + ", company=" + company
+				+ ", employeeType=" + employeeType + ", department=" + department + ", depots=" + depots + ", roles="
+				+ Arrays.toString(roles) + ", permissions=" + permissions + "]";
+	}
 
+   
 }

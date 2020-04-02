@@ -38,6 +38,7 @@ public class ReceivingReceiptRestController {
 	private ReceivedItemRepository receivedItemRepository;
 	@Autowired
 	private ReceivingReceiptService receivingReceiptService;
+
 	@GetMapping("/{id}")
 	public ReceivingReceipt get(@PathVariable Long id) {
 		return receivingReceiptRepository.getOne(id);
@@ -58,47 +59,44 @@ public class ReceivingReceiptRestController {
 		Company company = companyRepository.findOne(companyId);
 		return receivingReceiptRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
 		receivingReceiptRepository.delete(id);
 		return true;
 	}
-	
+
 	@GetMapping("/company/{companyId}/po/{poId}")
-	public List<ReceivingReceipt> listByCompanyAndPurchaseOrder(
-			@PathVariable Long companyId,
-			@PathVariable Long poId){
+	public List<ReceivingReceipt> listByCompanyAndPurchaseOrder(@PathVariable Long companyId, @PathVariable Long poId) {
 		Company company = companyRepository.findOne(companyId);
 		PurchaseOrder po = purchaseOrderRepository.findOne(poId);
 		return receivingReceiptRepository.findByCompanyAndPurchaseOrder(company, po);
-		
+
 	}
-	
+
 	@GetMapping("/company/{companyId}/status/{status}")
-	public List<ReceivingReceipt> listByStatus(
-			@PathVariable String status,
-			@PathVariable Long companyId){
+	public List<ReceivingReceipt> listByStatus(@PathVariable String status, @PathVariable Long companyId) {
 		Company company = companyRepository.findOne(companyId);
 		return receivingReceiptRepository.findByCompanyAndStatus(company, status);
 	}
-	
+
 	@GetMapping("/company/{companyId}/stock/{itemId}")
 	public int getQuarantinedQuantityOfItem(@PathVariable Long companyId, @PathVariable Long itemId) {
 		int sum = 0;
 		Company company = companyRepository.findOne(companyId);
-		
-		List<ReceivingReceipt> receivingReceipts = receivingReceiptRepository.findByCompanyAndStatus(company, "Pending");
-		
-		for(ReceivingReceipt rr : receivingReceipts) {
-			sum+=rr.getQuantityOfItem(itemId);
+
+		List<ReceivingReceipt> receivingReceipts = receivingReceiptRepository.findByCompanyAndStatus(company,
+				"Pending");
+
+		for (ReceivingReceipt rr : receivingReceipts) {
+			sum += rr.getQuantityOfItem(itemId);
 		}
-		
+
 		return sum;
 	}
-	
+
 	@GetMapping("/company/{companyId}/no-purchase-voucher")
-	public List<ReceivingReceipt> ListRrWithoutPurchaseVoucher(@PathVariable Long companyId){
+	public List<ReceivingReceipt> ListRrWithoutPurchaseVoucher(@PathVariable Long companyId) {
 		Company company = companyRepository.findOne(companyId);
 		return receivingReceiptRepository.findByCompanyAndPurchaseVoucher(company, null);
 	}
