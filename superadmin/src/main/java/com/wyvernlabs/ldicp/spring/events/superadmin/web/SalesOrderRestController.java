@@ -1,5 +1,6 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.web;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ public class SalesOrderRestController {
 
 	@PostMapping()
 	public SalesOrder upsert(@RequestBody SalesOrder salesOrder) {
+		System.out.println("just before saveSalesOrder()");
 		return salesOrderService.saveSalesOrder(salesOrder);
 	}
 

@@ -20,6 +20,8 @@ public class SalesOrderService {
 			soProduct.setSoNumber(salesOrder.getNumber());
 			soProduct.setCompany(salesOrder.getCompany());
 			soProduct.setQuantityRemaining(soProduct.getQuantity());
+
+			System.out.println(salesOrder.getNumber());
 		}
 		return salesOrderRepository.save(salesOrder);
 	}

@@ -5,6 +5,7 @@ function SalesOrdersService($http, globalConfig) {
 	};
 
 	this.save = function(purchaseRequest) {
+		console.log('inside save function')
 		return $http.post(globalConfig.baseUrl + '/rest/sales-orders', purchaseRequest);
 	};
 
