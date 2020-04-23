@@ -1,0 +1,37 @@
+
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Report:
+            <span class='content'>{{$ctrl.reportType}}</span>
+          </p>
+          <p class='title'>
+            Dates:
+            <span class='content'>{{$ctrl.dates}}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Company:
+            <span class='content'>{{$ctrl.company.name}}</span>
+          </p>
+        </div>
+        <div class='wrapper scroll-section'>
+          <table class='table table-list'>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th ng-repeat="n in range($ctrl.startDate.getMonth(), $ctrl.endDate.getMonth())">{{$ctrl.months[n]}}</th>
+                <th>Total Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="entry in entries">
+                <td>{{vp.number}}</td>
+				<td>{{vp.date | date}}</td>
+				<td>{{vp.bank}}</td>
+				<td>{{vp.voucher}}</td>
+				<td>{{vp.amount}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>

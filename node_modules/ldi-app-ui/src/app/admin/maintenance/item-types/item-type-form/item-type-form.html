@@ -1,0 +1,17 @@
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+
+<div class="horizontal-align -between" id="add-group">
+	<input type="hidden" ng-model="$ctrl.itemtype.id"/>
+	<div class="form-group col-md-4">
+		<label for="code">Code</label> <input ng-model="$ctrl.itemtype.code" class="form-control -border"
+			autofocus="autofocus" placeholder="Code" type="text" name="code">
+	</div>
+	<div class="form-group col-md-4">
+		<label for="name">Name</label> <input ng-model="$ctrl.itemtype.name" class="form-control -border"
+			placeholder="Name" type="text" name="name">
+	</div>
+</div>
+<div class="action-button horizontal-align -end">
+        <input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save">
+    </div>
+</form>

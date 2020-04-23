@@ -1,0 +1,22 @@
+<div class="main-header">
+  <div class="horizontal-align -between content">
+    <h3 class="title">
+      Material Issuance Slip
+    </h3>
+  </div>
+</div>
+<header class="header-form">
+  <a href="/admin/dashboard/material-issuance" class="btn btn-back back">
+    <i class="ion-ios-arrow-thin-left"></i>
+    <span>Back</span>
+  </a>
+  <span class="divider"></span>
+  <h3 class="heading">
+  </h3>
+</header>
+<material-issuance-form
+            mis="$ctrl.mis"
+            message="{{ $ctrl.error }}"
+            button="Submit"
+            on-submit="$ctrl.createMIS($event);">
+</material-issuance-form>

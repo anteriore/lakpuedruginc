@@ -1,0 +1,288 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Approved Receipts</h3>
+    </div>
+    
+    <!-- <a href="/admin/dashboard/approved-receipt-tolling/new" ng-click="" class="btn btn-create btn-md button-link" style="background-color:blueviolet;">Create AR Tolling</a> -->
+	<a href="/admin/dashboard/approved-receipt/new" ng-click="" class="btn btn-create btn-md button-link">Create AR</a>
+</div>
+<div class='client-pris'>
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="AR No" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+        <input class="form-control -borderless search" placeholder="RR No" type="text" name="search" ng-model="$ctrl.searchRRNumber" />
+  </div>
+</div>
+	<table ng-if="$ctrl.approvalReceipts" class='table table-list'>
+		<thead>
+			<tr>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">AR No
+                <span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'rrNumber';$ctrl.sortReverse = !$ctrl.sortReverse;">RR No
+                <span ng-show="$ctrl.sortType == 'rrNumber' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'rrNumber' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'materialType';$ctrl.sortReverse = !$ctrl.sortReverse;">Material Type
+                <span ng-show="$ctrl.sortType == 'materialType' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'materialType' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'quantity';$ctrl.sortReverse = !$ctrl.sortReverse;">No of items
+                <span ng-show="$ctrl.sortType == 'quantity' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'quantity' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+          
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'drNumber';$ctrl.sortReverse = !$ctrl.sortReverse;">Control Number
+                <span ng-show="$ctrl.sortType == 'drNumber' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'drNumber' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'drsi';$ctrl.sortReverse = !$ctrl.sortReverse;">DR/SI
+                <span ng-show="$ctrl.sortType == 'drsi' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'drsi' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+
+          </th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="ar in $ctrl.approvalReceipts | filter: {number: $ctrl.searchNumber, rrNumber: $ctrl.searchRRNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
+				<td>{{ar.number}}</td>
+				<td>{{ar.rrNumber}}</td>
+				<td>{{ar.item.type.name}}</td>
+				<td>{{ar.approvedQuantity}}</td>
+				<td>{{ar.controlNumber}}</td>
+				<td>{{ar.receivingReceipt.drNumber}}/{{ar.receivingReceipt.siNumber}}</td>
+				<td class='tablebutton-form'>
+					<div class='holder'>
+                        <button class='btn btn-compose' data-toggle="modal" ng-click="$ctrl.openModal(ar)" data-target="#arModal" class='btn btn-show'>
+                            <i class="ion-ios-eye-outline" ></i>
+                        </button>
+						<button class='btn btn-compose'>
+							<i class='ion-ios-compose-outline'  data-toggle="modal" ng-click=""></i>
+						</button>
+						<button class='btn btn-archive' ng-click="">
+							<i class='ion-ios-box-outline'></i>
+						</button>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>	
+</div>
+
+
+
+<div class='modal fade' id='arModal'>
+    <div class='modal-dialog -bg'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h4 class='modal-title'>Approved Receipt No. {{$ctrl.ar.number}}</h4>
+                <button data-dismiss="modal" class='close'>
+                    <span class='ion-android-close close-modal'></span>
+                </button>
+            </div>
+            <div class='modal-body'>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                            A.R No:
+                            <span class='content'>{{$ctrl.ar.number}}</span>
+                        </p>
+                    <p class='title'>
+                        R.R No:
+                        <span class='content'>{{$ctrl.ar.rrNumber}}</span>
+                    </p>
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                        <p class='title'>
+                                DR / SI:
+                                <span class='content'>{{$ctrl.ar.receivingReceipt.drNumber}}/{{$ctrl.ar.receivingReceipt.siNumber}}</span>
+                            </p>
+                            <p class='title'>
+                                   Source:
+                                    <span class='content'>{{$ctrl.ar.company.name}}</span>
+                                </p>
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                        <p class='title'>
+                               Max Containers:
+                                <span class='content'>{{$ctrl.ar.maxContainers}}</span>
+                            </p>
+                            <p class='title'>
+                                   Control Number:
+                                    <span class='content'>{{$ctrl.ar.controlNumber}}</span>
+                                </p>
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                        <p class='title'>
+                               Spec. Gravity:
+                                <span class='content'>{{$ctrl.ar.specifiedGravity}}</span>
+                            </p>
+                        
+                </div>
+                <div class='wrapper scroll-section'>
+                    <table class='table table-list'>
+                        <thead>
+                            <tr>
+                                <th>Item Code</th>
+                                <th>Item Name</th>
+                                <th>Material Type</th>
+                                <th>Total</th>
+                                <th>Expiration</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr >
+                                <td>{{$ctrl.ar.item.code}}</td>
+                                <td>{{$ctrl.ar.item.name}}</td>
+                                <td>
+                                    <label class='custom-label -narrow' ng-class="{'-apple':$ctrl.ar.item.type.code == 'RM', '-orangish':$ctrl.ar.item.type.code =='PM'}">{{$ctrl.ar.item.type.name}}</label>
+                                </td>
+                 
+                                <td>{{$ctrl.ar.approvedQuantity}} {{$ctrl.ar.unit}}</td>
+                                <td>{{$ctrl.ar.expiration | date}}</td>
+                                <td>
+                                    <button class='btn btn-compose' data-toggle="modal" ng-click="$ctrl.openModalApprovedItem($ctrl.ar)" data-target="#approvedItemModal" class='btn btn-show'>
+                                        <i class="ion-ios-eye-outline" ></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class='modal-footer'>
+                <p class='date'>Created at {{$ctrl.ar.date | date}}</p>
+                <button class='btn btn-cancel' data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class='modal fade' id='approvedItemModal'>
+    <div class='modal-dialog -bg'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h4 class='modal-title'>Approved Item</h4>
+                <button data-dismiss="modal" class='close'>
+                    <span class='ion-android-close close-modal'></span>
+                </button>
+            </div>
+            <div class='modal-body'>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                        Item Name:
+                        <span class='content'>{{$ctrl.approvedItem.item.name}} {{$ctrl.approvedItem.item.code}}</span>
+                    </p>
+                    <p class='title'>
+                            <!-- EMPTY -->
+                    </p>
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                        Material Type:
+                        <span class='content'>
+                            <label class='custom-label -narrow' ng-class="{'-apple':$ctrl.approvedItem.item.type.code == 'RM', '-orangish':$ctrl.approvedItem.item.type.code =='PM'}">{{$ctrl.approvedItem.item.type.name}}</label>
+                        </span>
+                    </p>
+                    <p class='title'>
+                            <!-- EMPTY -->
+                    </p>
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                        Received Quantity:
+                        <span class='content'>{{$ctrl.approvedItem.receivedQuantity}}</span>
+                    </p>
+                    <p class='title'>
+                        Approved Quantity:
+                        <span class='content'>{{$ctrl.approvedItem.approvedQuantity}}</span>
+                    </p>
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                        Rejected Quantity:
+                        <span class='content'>{{$ctrl.approvedItem.rejectedQuantity}}</span>
+                    </p>
+
+                    <p class='title'>
+                        QC Samples:
+                        <span class='content'>{{$ctrl.approvedItem.qcSamples}}</span>
+                    </p>
+
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                        Total Quantity:
+                        <span class='content'>{{$ctrl.approvedItem.totalQuantity}}</span>
+                    </p>
+
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                        Expiration:
+                        <span class='content'>{{$ctrl.approvedItem.expiration | date}}</span>
+                    </p>
+
+                    <p class='title'>
+                        Best before:
+                        <span class='content'>{{$ctrl.approvedItem.bestBefore | date}}</span>
+                    </p>
+
+                </div>
+                <div class='horizontal-align -between modal-information'>
+                    <p class='title'>
+                        Re-evaluation:
+                        <span class='content'>{{$ctrl.approvedItem.reevaluation | date}}</span>
+                    </p>
+
+                    <p class='title'>
+                        Re-test:
+                        <span class='content'>{{$ctrl.approvedItem.retest | date}}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    

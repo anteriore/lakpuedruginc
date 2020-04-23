@@ -1,0 +1,58 @@
+<h4 class="modal-title">Groups &amp; Categories</h4>
+<button class="close" data-dismiss="modal" type="button">
+    <span class="ion-android-close close-modal"></span>
+</button>
+</div>
+<div class="modal-body">
+    <div class="horizontal-align -between">
+        <div class="groups-section">
+            <div class="horizontal-align -between">
+                <p>Groups</p>
+                <div class="action-link bold-link">
+                    <a class="link" href="#" ng-click="$ctrl.toggleGroupForm()">+ Add</a>
+                </div>
+            </div>
+            <form ng-show="!$ctrl.hideGroup" novalidate ng-submit="$ctrl.submitGroup();" method="post">
+                <div class="horizontal-align -between" id="add-group">
+                    <input type="hidden" ng-model="$ctrl.group.id"/>
+                    <div class="form-group">
+                        <label for="name">Name</label> <input ng-model="$ctrl.group.name" class="form-control -border"
+                                                              placeholder="Name" type="text" name="name">
+                    </div>
+                </div>
+                <div class="action-button horizontal-align -end">
+                    <input type="submit" name="commit" value="{{ $ctrl.groupButtonText }}" class="btn btn-create btn-md" data-disable-with="Save">
+                </div>
+            </form>
+            <ul class="groups-list">
+                <li ng-repeat="group in $ctrl.groups" class="{{ $ctrl.selectedGroup && $ctrl.selectedGroup.id == group.id ? '-active' : ''}}" ng-click="$ctrl.onSelectGroup(group)">{{group.name}}</li>
+            </ul>
+        </div>
+        <div class="categories-section">
+            <div class="horizontal-align -between">
+                <p>Categories</p>
+                <div class="action-link bold-link">
+                    <a class="link" href="#" ng-click="$ctrl.toggleCategoryForm()">+ Add</a>
+                </div>
+            </div>
+            <form ng-show="!$ctrl.hideCategory" novalidate ng-submit="$ctrl.submitCategory();" method="post">
+                <div class="horizontal-align -between" id="add-category">
+                    <input type="hidden" ng-model="$ctrl.category.id"/>
+                    <div class="form-group">
+                        <label for="name">Name</label> <input ng-model="$ctrl.category.name" class="form-control -border"
+                                                              placeholder="Name" type="text" name="name">
+                    </div>
+                </div>
+                <div class="action-button horizontal-align -end">
+                    <input type="submit" name="commit" value="{{ $ctrl.categoryButtonText }}" class="btn btn-create btn-md" data-disable-with="Save">
+                </div>
+            </form>
+            <div  class="categories scroll-section">
+                <p ng-repeat="category in $ctrl.selectedGroup.categories" class="list">
+                    {{category.name}}
+                    <span class="delete ion-android-close float-xl-right" ng-click="$ctrl.removeCategory($index);"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

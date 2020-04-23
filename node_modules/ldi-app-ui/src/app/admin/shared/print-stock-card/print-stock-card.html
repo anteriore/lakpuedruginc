@@ -1,0 +1,46 @@
+
+        <h4>Control #{{$ctrl.stockcards[0].controlNumber}}</h4>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Item Code:
+            <span class='content'>{{$ctrl.item.code}}</span>
+          </p>
+          <p class='title'>
+            Name:
+            <span class='content'>{{$ctrl.item.name}}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information' ng-if="$ctrl.item.unit != null">
+          <p class='title'>
+            Unit:
+            <span class='content'>{{$ctrl.item.unit.code}}</span>
+          </p>
+          <p class='title'>
+            Type:
+            <span class='content'>{{$ctrl.item.type.name}}</span>
+          </p>
+        </div>
+        <div class='wrapper scroll-section'>
+          <table class='table table-list'>
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Date</th>
+                <th>User</th>
+                <th>IN/OUT</th>
+                <th>Quantity</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="stockCard in $ctrl.stockcards">
+                <td>{{stockCard.action}}</td>
+                <td>{{stockCard.date | date}}</td>
+                <td>{{stockCard.user.firstName}} {{stockCard.user.lastName}}</td>
+                <td>{{stockCard.sign}}</td>
+                <td>{{stockCard.quantity}}</td>
+                <td>{{stockCard.remarks}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>

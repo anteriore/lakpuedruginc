@@ -1,0 +1,93 @@
+
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Material Receiving Slips<h3>
+	</div>
+	<a href="#" ng-click="$ctrl.createNewMRS($event);" class="btn btn-create btn-md button-link">Create MRS</a>
+</div>
+<div class="evaluation-content">
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="Control No" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+  </div>
+  <table class="table table-list">
+  
+  
+  
+    <thead>
+      <tr>
+        <th>MRS No</th>
+        <th>Date</th>
+        <th>Received By</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="mrs in $ctrl.materialReceivingSlips">
+        <td>{{mrs.mrsNo}}</td>
+        <td>{{mrs.date | date}}</td>
+        <td>{{mrs.receivedBy.firstName}} {{mrs.receivedBy.lastName}}</td>
+        <td><a href="#" class="btn btn-info" data-target="#mrsModal" data-toggle="modal" ng-click="$ctrl.openModal(mrs)">View</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class='modal fade' id='mrsModal'>
+  <div class='modal-dialog -bg'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h4 class='modal-title'>MRS No. {{ $ctrl.mrs.mrsNo }}</h4>
+        <button class='close'>
+          <span class='ion-android-close close-modal' data-dismiss="modal"></span>
+        </button>
+      </div>
+      <div class='modal-body'>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Date 
+            <span class='content'>{{ $ctrl.mrs.date | date }}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+        	  <p class='title'>
+            Requested By:
+            <span class='content'>{{$ctrl.mrs.receivedBy.firstName}} {{$ctrl.mrs.receivedBy.lastName}}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Remarks:
+            <span class='content'>{{$ctrl.mrs.remarks}}</span>
+          </p>
+        </div>
+      </div>
+      <table class="table table-list">
+      	<thead>
+      		<tr>
+      			<td>Control #</td>
+      			<td>Item</td>
+      			<td>Type</td>
+      			<td>Quantity</td>
+      		</tr>
+      	</thead>
+      	<tbody>
+      		<tr ng-repeat="inventory in $ctrl.mrs.mis.inventoryList">
+      			<td>{{inventory.controlNumber}}</td>
+      			<td>{{inventory.item.code}} {{inventory.item.name}}</td>
+      			<td>
+      				<label class='custom-label -narrow' ng-class="{'-apple':inventory.item.type.code == 'RM', '-orangish':inventory.item.type.code =='PM'}">{{inventory.item.type.name}}</label>
+      			</td>
+      			<td>{{inventory.quantity}}</td>
+      		</tr>
+      	</tbody>
+      </table>
+      <div class='modal-footer'>
+        <p class='date'>Created at {{$ctrl.mis.date | date}}</p>
+        <button class='btn btn-cancel' data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

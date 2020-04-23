@@ -1,0 +1,95 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Official Receipts Forms</h3>
+	</div>
+	<a href="#" ng-click="$ctrl.createNewOrderReceipt($event);" class="btn btn-create btn-md button-link">Create New OR</a>
+</div>
+<div class='client-pris'>
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"
+        />
+        <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate" />
+  </div>
+</div>
+<div class="search-box horizontal-align -between">
+	 <select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots">
+           					</select>	
+  </div>
+	<table ng-if="$ctrl.orderReceipts" class='table table-list'>
+		<thead>
+			<tr>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'date';$ctrl.sortReverse = !$ctrl.sortReverse;">Date
+                <span ng-show="$ctrl.sortType == 'date' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'date' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th>
+            <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">OR No
+                <span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+        		<th>
+            <a href="#" ng-click="$ctrl.sortType = 'acknowledgementReceipt.number';$ctrl.sortReverse = !$ctrl.sortReverse;">AR No
+                <span ng-show="$ctrl.sortType == 'acknowledgementReceipt.number' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'acknowledgementReceipt.number' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+        <th>
+            <a href="#" ng-click="$ctrl.sortType = 'acknowledgementReceipt.client.name';$ctrl.sortReverse = !$ctrl.sortReverse;">Client
+                <span ng-show="$ctrl.sortType == 'acknowledgementReceipt.client.name' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'acknowledgementReceipt.client.name' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+        <th>
+            <a href="#" ng-click="$ctrl.sortType = 'acknowledgementReceipt.siAmount';$ctrl.sortReverse = !$ctrl.sortReverse;">SI Amount Paid
+                <span ng-show="$ctrl.sortType == 'acknowledgementReceipt.siAmount' && !$ctrl.sortReverse">
+                    <i class="fa fa-caret-down"></i>
+                </span>
+                <span ng-show="$ctrl.sortType == 'acknowledgementReceipt.siAmount' && $ctrl.sortReverse">
+                    <i class="fa fa-caret-up"></i>
+                </span>
+            </a>
+        </th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="orderReceipt in $ctrl.orderReceipts | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
+				<td>{{orderReceipt.date | date}}</td>
+				<td>{{orderReceipt.number}}</td>
+				<td>{{orderReceipt.acknowledgementReceipt.number}}</td>
+				<td>{{orderReceipt.acknowledgementReceipt.client.name}}</td>
+				<td>{{orderReceipt.acknowledgementReceipt.siAmount}}</td>
+				<td class='tablebutton-form'>
+					<div class='holder'>
+						<button class='btn btn-compose'>
+							<i class='ion-ios-compose-outline' ng-click="$ctrl.openModal(orderReceipt)" data-toggle="modal" data-target="#orderReceiptInfoModal"></i>
+						</button>
+					</div>
+					
+				</td>
+			</tr>
+		</tbody>
+	</table>
+

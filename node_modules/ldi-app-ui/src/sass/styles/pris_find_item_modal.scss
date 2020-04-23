@@ -1,0 +1,40 @@
+#materials-tab {
+  list-style: none;
+  padding: 0px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+#materials-tab > .list {
+  & {
+    padding: 5px;
+    width: 50%;
+    background-color: $dusk;
+    border: 1px solid $dark;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 350ms ease;
+    color: white;
+  }
+
+  &:hover, &.-tab {
+    transition: all 350ms ease;
+    background-color: $dark;
+    color: white;
+    border: 1px solid $dark;
+  }
+}
+
+.quantity-form {
+  margin-top: 20px;
+}
+
+.quantity-action {
+  margin-top: 22px;
+  width: 25%;
+
+  > .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,59 @@
+<style>
+	.highlight{
+		background-color:#7ed321;
+	}
+</style>
+<div class='modal fade' id='findFgInventoryModal'>
+  <div class="modal-dialog -bg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-title">
+				Finished Good
+			</h4>
+			<button class="close" data-dismiss="modal" type="button">
+			</button>
+		</div>
+		<div class="modal-body">
+				<div class="search-box horizontal-align -between">
+            <div class=" search-modal horizontal-align -between">
+                    <div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
+                    <input class="form-control -borderless search" placeholder="FG Code" type="text" name="search" ng-model="$ctrl.searchFG"/>
+                  
+                </div>
+    </div>
+			<div class="wrapper scroll-section">
+				<table class='table table-hover'>
+              <thead>
+                <tr>
+										<th> <a href="#" ng-click="$ctrl.sortType = 'fg';$ctrl.sortReverse = !$ctrl.sortReverse;">FG Code
+												<span ng-show="$ctrl.sortType == 'fg' && !$ctrl.sortReverse">
+														<i class="fa fa-caret-down"></i>
+												</span>
+												<span ng-show="$ctrl.sortType == 'fg' && $ctrl.sortReverse">
+														<i class="fa fa-caret-up"></i>
+												</span>
+										</a></th>
+				  <th>Name</th>
+				  <th>Reserved</th>
+				  <th>Stock on Hand</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="fg in $ctrl.fglistview | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectFG(fg)" ng-class="{highlight: $ctrl.fglist.indexOf(fg) !== -1}">
+                  <td>{{fg.finishedGood.code}}</td>
+                  <td>{{fg.finishedGood.name}}</td>
+                  <td>{{ctrl.reserved[$index]}}</td>
+                  <td>{{fg.sum}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="request-action">
+			<button type="button" data-dismiss="modal" class="btn btn-create btn-md">Select</button>
+		</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+</div>

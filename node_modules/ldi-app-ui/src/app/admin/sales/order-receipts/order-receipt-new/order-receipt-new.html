@@ -1,0 +1,23 @@
+<div class="main-header">
+  <div class="horizontal-align -between content">
+    <h3 class="title">
+      Order Receipt Form
+    </h3>
+  </div>
+</div>
+<header class="header-form">
+  <a href="/admin/sales/order-receipt" class="btn btn-back back">
+    <i class="ion-ios-arrow-thin-left"></i>
+    <span>Back</span>
+  </a>
+  <span class="divider"></span>
+  <h3 class="heading">
+    New Order Receipt Form
+  </h3>
+</header>
+<order-receipt-form
+            or="$ctrl.or"
+            message="{{ $ctrl.error }}"
+            button="Create Order Receipt"
+            on-submit="$ctrl.createOrderReceipt($event);">
+</order-receipt-form>

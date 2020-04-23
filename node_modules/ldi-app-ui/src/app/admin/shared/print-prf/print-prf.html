@@ -1,0 +1,53 @@
+<div id='prfInfoModal'>
+  <div>
+    <div>
+      <div>
+        <h4>PRF No. {{ $ctrl.prf.number }} {{$ctrl.prf.date | date}}</h4>
+      </div>
+      <div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Date Needed
+            <span class='content'>{{ $ctrl.prf.dateNeeded | date }}</span>
+          </p>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Requested By:
+            <span class='content'>{{$ctrl.prf.requestedBy.firstName}} {{$ctrl.prf.requestedBy.lastName}}</span>
+          </p>
+        </div>
+    
+        <div id="purchaseRequestsDiv">
+          <table class='table table-hover'>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="requestedItem in $ctrl.prf.requestedItems">
+                <td>{{requestedItem.item.code}}</td>
+                <td>{{requestedItem.item.name}}</td>
+                <td>{{requestedItem.quantityRequested}}</td>
+                <td>{{requestedItem.item.unit.code}}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Remarks:
+            <span class='content'>{{$ctrl.prf.remarks}}</span>
+          </p>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+</div>

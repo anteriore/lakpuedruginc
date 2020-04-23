@@ -1,0 +1,99 @@
+.modal-backdrop {
+  background: rgba(64, 64, 64, 0.6);
+}
+
+.modal-content {
+  border-radius: 4px;
+  background-color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 0.5px 2px 0 rgba(62, 73, 102, 0.6);
+}
+
+.modal-header {
+  padding: 10px;
+  border-bottom: 0;
+}
+
+.modal-body {
+  padding: 0 10px 10px 10px;
+}
+
+.modal-title {
+  font-family: $font-family-base;
+  color: $dark;
+  font-size: 17px;
+  font-weight: normal;
+  width: 100%;
+  margin-right: 10px;
+}
+
+.modal-title > .btn {
+  width: 25%;
+}
+
+.modal-header > .close {
+  margin-left: 0;
+}
+
+.close-modal:before {
+  font-size: 25px
+}
+
+.scroll-section {
+  height: 20em;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+}
+
+.modal-footer {
+  & {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  > .btn {
+    width: 15%;
+  }
+
+  > .date {
+    margin-bottom: 0;
+    color: #9b9b9b;
+    font-size: 14px;
+  }
+}
+
+.modal-information {
+  > .title > .content {
+    margin-left: 5px;
+  }
+}
+
+.modal-information > .title {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+#table-less-padding > tr > td {
+  padding: 5px;
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    // & {
+    //   max-width: 500px; // use .modal-sm or create new class for this
+    // }
+
+    &.-bg {
+      max-width: 700px;
+    }
+
+    &.-md {
+      max-width: 600px;
+    }
+
+    &.-lg {
+      max-width: 768px;
+    }
+  }
+}

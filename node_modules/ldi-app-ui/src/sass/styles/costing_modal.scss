@@ -1,0 +1,19 @@
+
+#custom-body {
+  margin-bottom: 3em;
+}
+
+.close-content {
+  width: 35%;
+
+  > .date {
+    line-height: 35px;
+    margin-bottom: 0;
+    color: #9b9b9b;
+    font-size: 14px;
+  }
+
+  > .btn {
+    width: 45%;
+  }
+}

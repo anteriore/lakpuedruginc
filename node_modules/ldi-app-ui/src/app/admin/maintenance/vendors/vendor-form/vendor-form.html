@@ -1,0 +1,168 @@
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+	
+	<div class="form-content" >
+	
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">name</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.name" />
+						</div>
+					</div>
+				</div>
+				
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">code</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.code" />
+						</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
+
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Full Name</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.fullName" />
+						</div>
+					</div>
+				</div>
+				
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Address</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.address" />
+						</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
+
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Contact Person</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.contactPerson" />
+						</div>
+					</div>
+				</div>
+				
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Phone Number</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.phoneNumber" />
+						</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
+		
+
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Terms</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.terms" />
+						</div>
+					</div>
+				</div>
+				
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Vat</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.vat" />
+						</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
+
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Tin</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.vendor.tin" />
+						</div>
+					</div>
+				</div>
+		
+				
+				</div>
+			</div>
+		</div>
+		
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Area</label>
+							<select class="form-control select -border" ng-model="$ctrl.vendor.area.id" ng-options="i.id as i.name for i in $ctrl.areas" >
+							</select>
+						</div>
+					</div>
+				</div>
+				
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Group</label>
+							<select class="form-control select -border" ng-model="$ctrl.vendor.group.id" ng-options="i.id as i.name for i in $ctrl.groups" >
+							</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
+
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Department</label>
+							<select class="form-control select -border" ng-model="$ctrl.vendor.department.id" ng-options="i.id as i.code for i in $ctrl.departments" >
+							</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
+
+			
+		
+	</div>
+		<div class="request-action">
+				<button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button>
+			</div>
+</div>
+
+</form>
+
+

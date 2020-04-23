@@ -1,0 +1,138 @@
+<div class="modal-dialog -bg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-area">
+				Find Zip Codes <a
+					class="button-link btn btn-create btn-sm float-lg-right"
+					ng-click="$ctrl.showAddZipCode(true)">+ Add Zip Codes</a>
+			</h4>
+			<button class="close" data-dismiss="modal" type="button">
+				<span ng-click="$ctrl.showAddZipCode(false)"
+					class="ion-android-close close-modal"></span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="searchbox-modal">
+				<form>
+
+					<div class="searchbox-content">
+						<div class=" search-modal horizontal-align -between">
+							<div class="input-group-addon" style="border: 0 !important;">
+								<i class="fa fa-search"></i>
+							</div>
+							<input class="form-control -borderless search" placeholder="code"
+								type="text" name="search" ng-model="$ctrl.searchCode" /> <input
+								class="form-control -borderless search" placeholder="name"
+								type="text" name="search" ng-model="$ctrl.searchName" />
+						</div>
+					</div>
+				</form>
+			</div>
+			<form novalidate ng-submit="$ctrl.saveZipCode()"
+				ng-if="$ctrl.addZipCode" method="post">
+				<div class="horizontal-align -between" id="add-group">
+					<input type="hidden" ng-model="$ctrl.zipCode.id" />
+					<div class="form-group col-md-3">
+						<label for="code">Code</label> <input
+							ng-model="$ctrl.zipCode.code" class="form-control -border"
+							autofocus="autofocus" placeholder="Code" type="text" name="code">
+					</div>
+					<div class="form-group col-md-3">
+						<label for="name">Description</label> <input
+							ng-model="$ctrl.zipCode.description" class="form-control -border"
+							placeholder="Title" type="text" name="description">
+					</div>
+					<div class="form-group col-md-3">
+						<label for="type">Region Codes</label> <select
+							class="form-control select -border"
+							ng-model="$ctrl.zipCode.regionCode"
+							ng-options="a as a.code for a in $ctrl.regionCodes"
+							name="regionCodes">
+						</select>
+					</div>
+					<div class="form-group col-md-3">
+						<label for="type">Province Code</label> <select
+							class="form-control select -border"
+							ng-model="$ctrl.zipCode.provinceCode"
+							ng-options="a as a.code for a in $ctrl.provinceCodes"
+							name="productCategory">
+						</select>
+					</div>
+				</div>
+				<div class="action-button horizontal-align -end">
+					<input type="submit" name="commit" value="Save"
+						class="btn btn-create btn-md" data-disable-with="Save">
+				</div>
+			</form>
+			<div class="wrapper scroll-section">
+				<table class="table find-vendor">
+					<thead>
+						<tr>
+							<th><a href="#"
+								ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
+									<span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
+										<i class="fa fa-caret-down"></i>
+								</span> <span ng-show="$ctrl.sortType == 'code' && $ctrl.sortReverse">
+										<i class="fa fa-caret-up"></i>
+								</span>
+							</a></th>
+							<th><a href="#"
+								ng-click="$ctrl.sortType = 'description';$ctrl.sortReverse = !$ctrl.sortReverse;">Description
+									<span
+									ng-show="$ctrl.sortType == 'description' && !$ctrl.sortReverse">
+										<i class="fa fa-caret-down"></i>
+								</span> <span
+									ng-show="$ctrl.sortType == 'description' && $ctrl.sortReverse">
+										<i class="fa fa-caret-up"></i>
+								</span>
+							</a></th>
+							<th><a href="#"
+								ng-click="$ctrl.sortType = 'regionCode';$ctrl.sortReverse = !$ctrl.sortReverse;">Region
+									Code <span
+									ng-show="$ctrl.sortType == 'regionCode' && !$ctrl.sortReverse">
+										<i class="fa fa-caret-down"></i>
+								</span> <span
+									ng-show="$ctrl.sortType == 'regionCode' && $ctrl.sortReverse">
+										<i class="fa fa-caret-up"></i>
+								</span>
+							</a></th>
+							<th><a href="#"
+								ng-click="$ctrl.sortType = 'provinceCode';$ctrl.sortReverse = !$ctrl.sortReverse;">Province
+									Code <span
+									ng-show="$ctrl.sortType == 'provinceCode' && !$ctrl.sortReverse">
+										<i class="fa fa-caret-down"></i>
+								</span> <span
+									ng-show="$ctrl.sortType == 'provinceCode' && $ctrl.sortReverse">
+										<i class="fa fa-caret-up"></i>
+								</span>
+							</a></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							ng-repeat="zipCode in $ctrl.zipCodes | filter: {code: $ctrl.searchCode, description: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse">
+							<td>{{zipCode.code}}</td>
+							<td>{{zipCode.description}}</td>
+							<td>{{zipCode.regionCode.code}}</td>
+							<td>{{zipCode.provinceCode.code}}</td>
+							<td class="tablebutton-form">
+								<div class="holder">
+									<button ng-click="$ctrl.editZipCode(zipCode.id)"
+										class="btn btn-compose">
+										<i class="ion-ios-compose-outline"></i>
+									</button>
+									<button ng-click="$ctrl.deleteZipCode(zipCode.id)"
+										class="btn btn-archive">
+										<i class="ion-android-close"></i>
+									</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
