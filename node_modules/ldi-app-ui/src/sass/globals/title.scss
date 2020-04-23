@@ -1,0 +1,19 @@
+.main-header {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding: 5px 0 5px 0;
+  border-bottom: 3px solid $dusk;
+  > .content {
+    flex: 1;
+  }
+  > .content > .title {
+    display: inline-block;
+    font-family: $font-family-brand;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 2;
+    color: $dusk;
+  }
+}

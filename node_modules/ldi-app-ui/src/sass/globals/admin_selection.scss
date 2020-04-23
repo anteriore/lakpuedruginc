@@ -1,0 +1,48 @@
+#admin-selection {
+  background-color: $dusk;
+  height: 100%;
+  width: 100%;
+  margin-left: 50px;
+}
+
+#admin-ul {
+  list-style: none;
+  padding: 0px;
+}
+
+#admin-ul > .list > .link {
+  & {
+    display: block;
+    padding: 10px 10px 5px 10px;
+    transition: all 350ms ease;
+    text-align: left;
+    background-color: $white-two;
+    border-bottom: solid 1px $dark-grey;
+    text-decoration: none;
+    color: $dusk;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  > .icon {
+    color: $dark;
+    font-size: 25px;
+    margin: 0 20px 0 10px;
+  }
+
+  > .caption {
+    margin-top: 8px;
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  &:hover, &.-active {
+    transition: all 350ms ease;
+    background-color: $orangish;
+    color: white;
+
+    > .icon, > .caption {
+      color: white;
+    }
+  }
+}

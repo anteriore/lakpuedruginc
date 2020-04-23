@@ -1,0 +1,40 @@
+.user-panel {
+  border: 2px solid $white-two;
+  padding: 10px;
+  width: auto;
+  margin-top: 10px;
+}
+
+.user-panel > .content > .caption {
+  color: $dark;
+  font-size: 18px;
+}
+
+.user-panel > .content > #btn-back-action {
+  width: 15%;
+}
+
+.user-panel > .devider {
+  border: 1px solid $white-two;
+  margin: 10px 0;
+}
+
+#name-group > .initial > .middle {
+  text-transform: uppercase;
+}
+
+#name-group > .form-group,
+#security-group > .form-group,
+#account-group > .form-group {
+  width: 100%;
+  margin-top: 5px;
+}
+
+#name-group > .initial {
+  width: 70%;
+}
+
+.action-button > input[type='submit'] {
+  margin-top: 10px;
+  width: 20%;
+}

@@ -1,0 +1,94 @@
+<div class="admin-header">
+    <div class="title horizontal-align -between">
+        <h4 class="bg">Job Order Cost Sheets</h4>
+
+    </div>
+    <hr class="devider">
+</div>
+
+
+<div class="main-header">
+    <a href="/admin/joCost-save" class="btn btn-create btn-md button-link">Add new job order cost sheet</a>
+</div>
+<!-- <div class="search-box horizontal-align -between">
+        <div class=" search-modal horizontal-align -between">
+                <div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
+                <input class="form-control -borderless search" placeholder="id" type="text" name="search" ng-model="$ctrl.searchId"/>
+                <input class="form-control -borderless search" placeholder="moNumber" type="text" name="search" ng-model="$ctrl.searchMoNumber"/>
+                <input class="form-control -borderless search" placeholder="lotNumber" type="text" name="search" ng-model="$ctrl.searchLotNumber"/>
+            </div>
+    </div> -->
+<table ng-if="$ctrl.joCosts" class='table table-list'>
+    <thead>
+        <tr>
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">Date Created
+                    <span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'finishedGood';$ctrl.sortReverse = !$ctrl.sortReverse;">Finished Good
+                    <span ng-show="$ctrl.sortType == 'finishedGood' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'finishedGood' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">Jo Estimate #
+                    <span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'lastUpdate';$ctrl.sortReverse = !$ctrl.sortReverse;">Last Update
+                    <span ng-show="$ctrl.sortType == 'lastUpdate' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'lastUpdate' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+
+            <th>
+                <a href="#" ng-click="$ctrl.sortType = 'active';$ctrl.sortReverse = !$ctrl.sortReverse;">Active
+                    <span ng-show="$ctrl.sortType == 'active' && !$ctrl.sortReverse">
+                        <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span ng-show="$ctrl.sortType == 'active' && $ctrl.sortReverse">
+                        <i class="fa fa-caret-up"></i>
+                    </span>
+                </a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="joCost in $ctrl.joCosts">
+            <td>{{ joCost.createdDate || 'N/A'}}</td>
+            <td>{{joCost.finishedGood.name}} ({{joCost.finishedGood.code}})</td>
+            <td>{{joCost.id}}</td>
+            <td>{{joCost.lastUpdate || 'N/A'}}</td>
+            <td>{{joCost.active || false}}</td>
+            <td>
+                <i class="ion-ios-compose-outline" ng-click="$ctrl.view(cost.id)"></i>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="clear-float"></div>
+</div>

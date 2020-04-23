@@ -1,0 +1,89 @@
+<div class="main-header">
+	<div class="horizontal-align -between content">
+		<h3 class="title">Inventory Movement Slip<h3>
+	</div>
+	<a href="#" ng-click="$ctrl.createNewMRIS($event);" class="btn btn-create btn-md button-link">Create MRIS</a>
+</div>
+<div class="evaluation-content">
+  <div class="search-box horizontal-align -between">
+      <div class="input-group-addon" style="border: 0	 !important;">
+          <i class="fa fa-search"></i>
+        </div>
+        <input class="form-control -borderless search" placeholder="MRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"/>
+  </div>
+  <table class="table table-list">
+    <thead>
+      <tr>
+        <th>MRIS No.</th>
+        <th>Date</th>
+        <th>IN/OUT</th>
+        <th>Requested By</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="inventoryMovement in $ctrl.inventoryMovementList">
+        <td>{{inventoryMovement.number}}</td>
+        <td>{{inventoryMovement.date | date}}</td>
+        <td>{{inventoryMovement.type}}</td>
+        <td>{{inventoryMovement.requestedBy.firstName}} {{inventoryMovement.requestedBy.lastName}}</td>
+        <td><button type="button" class="btn btn-info" data-target="#inventoryMovementModal" data-toggle="modal" ng-click="$ctrl.openModal(inventoryMovement)">View</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class='modal fade' id='inventoryMovementModal'>
+  <div class='modal-dialog -bg'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h4 class='modal-title'>MRIS No. {{ $ctrl.mris.number }} {{$ctrl.mris.date | date}}</h4>
+        <button class='close'>
+          <span class='ion-android-close close-modal' data-dismiss="modal"></span>
+        </button>
+      </div>
+      <div class='modal-body'>
+        <div class='horizontal-align -between modal-information'>
+        	  <p class='title'>
+            Requested By:
+            <span class='content'>{{$ctrl.mris.requestedBy.firstName}} {{$ctrl.mris.requestedBy.lastName}}</span>
+          </p>
+        </div>
+        <div id="purchaseRequestsDiv">
+			<table class='table table-hover'>
+              <thead>
+                <tr>
+                  <th>Control #</th>
+                  <th>Code</th>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Unit</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="inventory in $ctrl.mris.inventory">
+                  <td>{{inventory.controlNumber}}</td>
+                  <td>{{inventory.item.code}}</td>
+                  <td>{{inventory.item.name}}</td>
+                  <td>{{inventory.quantity}}</td>
+                  <td>{{inventory.item.unit.code}}</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+		</div>
+        <div class='horizontal-align -between modal-information'>
+          <p class='title'>
+            Remarks:
+            <span class='content'>{{$ctrl.mris.remarks}}</span>
+          </p>
+        </div>
+      </div>
+      <div class='modal-footer'>
+        <p class='date'>Created at {{$ctrl.mris.date | date}}</p>
+        <button class='btn btn-cancel' data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

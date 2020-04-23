@@ -1,0 +1,195 @@
+ <div id="admin-content">
+    <div class="account">
+        <p class="name">{{$ctrl.currentUser.firstName}} {{$ctrl.currentUser.lastName}}</p>
+        <label class="type">{{$ctrl.currentUser.department.name}} Account</label>
+    </div>
+    <div class="admin-selection">
+        <ul id="admin-ul">
+            <li ng-show="$ctrl.showTabs('DASHBOARD')" class="list">
+                <a class="link {{ $ctrl.getPathname().indexOf('/admin/dashboard') == 0 ? '-active' : ''}}"
+                   ng-click="$ctrl.checkSub('/admin/dashboard')"
+                   href="/admin/dashboard"
+                ><i class="icon ion-ios-list-outline"></i>
+                    <span class="caption">DASHBOARD</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('DASHBOARD')" class="list">
+                <a class="link {{ $ctrl.getPathname().indexOf('/admin/maintenance') == 0 ? '-active' : ''}}"
+                   ng-click="$ctrl.checkSub('/admin/maintenance')"
+                   href="/admin/maintenance"
+                ><i class="icon ion-ios-list-outline"></i>
+                    <span class="caption">MAINTENANCE</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('USERS')" class="list">
+                <a class="link {{ $ctrl.getPathname().indexOf('/admin/users') == 0 ? '-active' : ''}}"
+                   ng-click="$ctrl.checkSub('/admin/users')"
+                   href="/admin/users"
+                ><i class="icon ion-ios-people-outline"></i>
+                    <span class="caption">USERS</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('USERS')" class="list">
+                <a class="link {{ $ctrl.getPathname().indexOf('/admin/accounting') == 0 ? '-active' : ''}}"
+                   ng-click="$ctrl.checkSub('/admin/accounting')"
+                   href="/admin/accounting"
+                ><i class="icon ion-ios-people-outline"></i>
+                    <span class="caption">ACCOUNTING</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('USERS')" class="list">
+                <a class="link {{ $ctrl.getPathname().indexOf('/admin/sales') == 0 ? '-active' : ''}}"
+                   ng-click="$ctrl.checkSub('/admin/sales')"
+                   href="/admin/sales"
+                ><i class="icon ion-ios-people-outline"></i>
+                    <span class="caption">SALES</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('MMD')" class="list">
+                <a class="link" ng-click="$ctrl.checkSub('/admin/mmd')" href="/admin/mmd"><i class="icon ion-ios-list-outline"></i>
+                    <span class="caption">MMD</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('RND')" class="list">
+                <a class="link " ng-click="$ctrl.checkSub('/admin/rnd')" href="/admin/rnd"><i class="icon ion-ios-flask-outline"></i>
+                    <span class="caption">R &amp; D</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('PURCHASING')" class="list">
+                <a class="link {{ $ctrl.getPathname().indexOf('/admin/purchasing') == 0 ? '-active' : ''}}"
+                   ng-click="$ctrl.checkSub('/admin/purchasing')" href="/admin/purchasing"><i class="icon ion-ios-cart-outline"></i>
+                    <span class="caption">PURCHASING</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('COSTING')" class="list">
+                <a class="link {{ $ctrl.getPathname().indexOf('/admin/costing') == 0 ? '-active' : ''}}" href="/admin/costing" ng-click="$ctrl.checkSub('/admin/costing')"><i class="icon ion-ios-pricetags-outline"></i>
+                    <span class="caption">COSTING</span>
+                </a>
+            </li>
+            <li ng-show="$ctrl.showTabs('BUILDING1')" class="list">
+                <a class="link " ng-click="$ctrl.checkSub('/admin/job_order')"><i class="icon ion-ios-briefcase-outline"></i>
+                    <span class="caption">BUILDING 1</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+     <!--<div ng-show="$ctrl.isPageWithSubMenu" class="navigation">-->
+         <!--<div id="navtools">-->
+             <!--<ul class="nav-list" id="navtools-ul">-->
+                 <!--<li class="list"> &lt;!&ndash; DASHBOARD &ndash;&gt;-->
+                     <!--<a class="ion-ios-list-outline link" ng-click="$ctrl.checkSub('/admin/dashboard')" href="/admin/dashboard"></a>-->
+                 <!--</li>-->
+                 <!--<li class="list"> &lt;!&ndash; USERS &ndash;&gt;-->
+                     <!--<a class="ion-ios-people-outline link" ng-click="$ctrl.checkSub('/admin/users')" href="/admin/users"></a>-->
+                 <!--</li>-->
+                 <!--<li class="list"> &lt;!&ndash; MMD &ndash;&gt;-->
+                     <!--<a class="ion-ios-list-outline link {{ $ctrl.getPathname().indexOf('/admin/mmd') == 0 ? '-active' : ''}}"-->
+                        <!--ng-click="$ctrl.checkSub('/admin/mmd')"-->
+                        <!--href="/admin/mmd"></a>-->
+                 <!--</li>-->
+                 <!--<li class="list"> &lt;!&ndash; R &amp; D &ndash;&gt;-->
+                     <!--<a class="ion-ios-flask-outline link {{ $ctrl.getPathname().indexOf('/admin/rnd') == 0 ? '-active' : ''}}"-->
+                        <!--ng-click="$ctrl.checkSub('/admin/rnd')"-->
+                        <!--href="/admin/rnd"-->
+                     <!--&gt;</a>-->
+                 <!--</li>-->
+                 <!--<li class="list"> &lt;!&ndash; PURCHASING &ndash;&gt;-->
+                     <!--<a class="ion-ios-briefcase-outline link"></a>-->
+                 <!--</li>-->
+                 <!--<li class="list"> &lt;!&ndash; COSTING &ndash;&gt;-->
+                     <!--<a class="ion-ios-star-outline link"></a>-->
+                 <!--</li>-->
+                 <!--<li class="list"> &lt;!&ndash; BUILDING 1 &ndash;&gt;-->
+                     <!--<a class="ion-ios-calculator-outline link"></a>-->
+                 <!--</li>-->
+             <!--</ul>-->
+         <!--</div>-->
+
+         <!--<div class="selections" id="selection">-->
+             <!--&lt;!&ndash; DASHBOARD &ndash;&gt;-->
+             <!--<section class="section">-->
+                 <!--<ul class="ul-style">-->
+                 <!--</ul>-->
+             <!--</section>-->
+             <!--&lt;!&ndash; USERS &ndash;&gt;-->
+             <!--<section class="section">-->
+                 <!--<ul class="ul-style">-->
+                 <!--</ul>-->
+             <!--</section>-->
+             <!--&lt;!&ndash; MMD &ndash;&gt;-->
+             <!--<section class="section {{ $ctrl.getPathname().indexOf('/admin/mmd') == 0 ? '-display' : ''}}">-->
+                 <!--<ul class="ul-style">-->
+                     <!--<li class="list">-->
+                         <!--<a class="link -selected" href="/mmd/pris">Production Request Inventory Slip</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link " href="/mmd/rs/tolling">Receiving Slip | Tolling</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link " href="/mmd/rs/rmpm">Receiving Slip | RM / PM</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link " href="/mmd/approved_receipt">Approved Receipts</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link " href="/mmd/material_receive">Material Receiving</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link " href="/mmd/material_adjustment">Material Adjustment</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link " href="/mmd/transfer-of-stocks">Transfer of Stocks</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link " href="/mmd/material_evaluation">Material Re-Evaluation</a>-->
+                     <!--</li>-->
+                 <!--</ul>-->
+             <!--</section>-->
+             <!--&lt;!&ndash; R &amp; D &ndash;&gt;-->
+             <!--<section class="section {{ $ctrl.getPathname().indexOf('/admin/rnd') == 0 ? '-display' : ''}}">-->
+                 <!--<ul class="ul-style">-->
+                     <!--<li class="list">-->
+                         <!--<a class="link -selected" href="#">F.G Recipe Form</a>-->
+                     <!--</li>-->
+                 <!--</ul>-->
+             <!--</section>-->
+             <!--&lt;!&ndash; COSTING &ndash;&gt;-->
+             <!--<section class="section">-->
+                 <!--<ul class="ul-style">-->
+                     <!--<li class="list">-->
+                         <!--<a class="link -selected" href="#">Job Order</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link" href="#">Production Process</a>-->
+                     <!--</li>-->
+                 <!--</ul>-->
+             <!--</section>-->
+             <!--&lt;!&ndash; PURCHASING &ndash;&gt;-->
+             <!--<section class="section">-->
+                 <!--<ul class="ul-style">-->
+                     <!--<li class="list">-->
+                         <!--<a class="link -selected" href="#">Delivery Receipts</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link" href="#">Order Slops</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link" href="#">Return Slips</a>-->
+                     <!--</li>-->
+                     <!--<li class="list">-->
+                         <!--<a class="link" href="#">A.R / P.R</a>-->
+                     <!--</li>-->
+                 <!--</ul>-->
+             <!--</section>-->
+             <!--&lt;!&ndash; BUILDING 1 &ndash;&gt;-->
+             <!--<section class="section">-->
+                 <!--<ul class="ul-style">-->
+                     <!--<li class="list">-->
+                         <!--<a class="link -selected" href="#">No Content yet</a>-->
+                     <!--</li>-->
+                 <!--</ul>-->
+             <!--</section>-->
+         <!--</div>-->
+
+     <!--</div>-->
+</div>

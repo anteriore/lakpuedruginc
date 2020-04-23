@@ -1,0 +1,224 @@
+<style>
+	.highlightred{
+		background-color:red;
+	}
+	.highlight{
+		background-color:#7ed321;
+	}
+</style>
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+	<div class="form-content">
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">OR Number</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.or.number"/>
+						</div>
+					</div>
+				</div>
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Date</label>
+								<input type="date" class="form-control -border" ng-model="$ctrl.or.date"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="horizontal-align -start rmpm-content">
+			<div class="form-group rmpm">
+		<label class="label capitalize-text">Depot</label>
+			 <select class="form-control select -border"  ng-model="$ctrl.or.depot.id"  ng-options="d.id as d.code for d in $ctrl.depots" name="depot">
+           						</select>
+           	</div>
+		</div>
+		<div ng-if="$ctrl.or.depot">
+		<div class="horizontal-align -start rmpm-content">
+			  <div class="horizontal-align -start rmpm-code">
+			    <div class="form-group rmpm action">
+			    		<a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findAcknowledgementReceipt()" data-target="#acknowledgementReceiptsModal" data-toggle="modal">Select AR</a>
+			    </div>
+			    <div class="form-group rmpm">
+			    		<label class="label capitalize-text">AR Number</label>
+			    		<input type="text" ng-model="$ctrl.or.acknowledgementReceipt.number" readonly class="form-control -border"/>
+			    </div>
+			  </div>
+			  <div class="side-two">
+			    <div class="form-group">
+			      	<label class="label capitalize-text">Date</label>
+			    		<input type="text" readonly value="{{$ctrl.or.acknowledgementReceipt.date | date}}" class="form-control -border"/>
+			    </div>
+			  </div>
+		</div>
+		<div class="horizontal-align -start rmpm-content">
+			  <div class="horizontal-align -start rmpm-code">
+			    <div class="form-group rmpm">
+			    		<label class="label capitalize-text">Customer Code</label>
+			    		<input type="text" ng-model="$ctrl.or.acknowledgementReceipt.client.code" readonly class="form-control -border"/>
+			    </div>
+			  </div>
+			  <div class="side-two">
+			    <div class="form-group">
+			      	<label class="label capitalize-text">Received From</label>
+			    		<input type="text" readonly ng-model="$ctrl.or.acknowledgementReceipt.client.name" class="form-control -border"/>
+			    </div>
+			  </div>
+		</div>
+		<div class="horizontal-align -start rmpm-content">
+			  <div class="horizontal-align -start rmpm-code">
+			    <div class="form-group rmpm">
+			    		<label class="label capitalize-text">TIN</label>
+			    		<input type="text" ng-model="$ctrl.or.acknowledgementReceipt.client.tin" readonly class="form-control -border"/>
+			    </div>
+			  </div>
+			  <div class="side-two">
+			    <div class="form-group">
+			      	<label class="label capitalize-text">Business Address</label>
+			    		<input type="text" readonly ng-model="$ctrl.or.acknowledgementReceipt.client.businessAddress" class="form-control -border"/>
+			    </div>
+			  </div>
+		</div>
+		
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Prepared By</label>
+								<input type="text" class="form-control -border" readonly value="{{$ctrl.or.preparedBy.firstName}} {{$ctrl.or.preparedBy.lastName}}" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<table class='table table-list'>
+        	<thead>
+        		<tr>
+        			<th>SI</th>
+        			<th>Amount</th>
+        			<th>Discount</th>
+        			<th>Others</th>
+        			<th>Withholding Tax</th>
+        			<th>NET</th>
+        		</tr>
+        	</thead>
+        	<tbody>
+        		<tr ng-repeat="payment in $ctrl.payments">
+        			<td>{{payment.reference.number}}</td>
+        			<td>{{payment.appliedAmount}}</td>
+        			<td></td>
+        			<td></td>
+        			<td></td>
+        			<td>{{payment.appliedAmount}}</td>
+        		</tr>
+        	</tbody>
+        	<tfoot>
+        	<tr>
+        		<th>VATABLE Sales</th>
+        		<th>{{($ctrl.or.acknowledgementReceipt.siAmount / 1.12).toFixed(2)}}</th>
+        		<th>Total Sales (Vat Inclusive)</th>
+        		        		<th>{{$ctrl.or.acknowledgementReceipt.siAmount.toFixed(2)}}</th>
+        		
+        	</tr>
+        	<tr>
+        		<th>VAT Exempt Sales</th>
+        		<th></th>
+        		<th>less VAT</th>
+        		 <th>{{($ctrl.or.acknowledgementReceipt.siAmount / 1.12 * 0.12).toFixed(2)}}</th>
+        	</tr>
+        	<tr>
+        		<th>Zero-Rated Sales</th>
+        		<th></th>
+        		<th>NET</th>
+        		 <th>{{($ctrl.or.acknowledgementReceipt.siAmount / 1.12).toFixed(2)}}</th>
+        		
+        	</tr>
+        	</tfoot>
+        </table>
+		
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Remarks</label>
+							<textarea type="text" class="form-control -border" ng-model="$ctrl.or.remarks"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="request-action">
+			<button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button>
+		</div>
+	</div>
+	</div>
+</form>
+
+
+    
+    <div class='modal fade' id='acknowledgementReceiptsModal'>
+  <div class="modal-dialog -bg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-title">
+				Find AR
+			</h4>
+			<button class="close" data-dismiss="modal" type="button">
+			</button>
+		</div>
+		<div class="modal-body">
+				<div class="search-box horizontal-align -between">
+            <div class=" search-modal horizontal-align -between">
+                    <div class="input-group-addon" style="border: 0	 !imsortant;"><i class="fa fa-search"></i></div>
+                  
+                </div>
+    </div>
+			<div class="wrapper scroll-section">
+				<table class='table table-hover'>
+              <thead>
+                <tr>
+								<th> <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">AR #
+										<span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+										</span>
+										<span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+										</span>
+								</a></th>
+                  <th> <a href="#" ng-click="$ctrl.sortType = 'date';$ctrl.sortReverse = !$ctrl.sortReverse;">Date
+										<span ng-show="$ctrl.sortType == 'date' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+										</span>
+										<span ng-show="$ctrl.sortType == 'date' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+										</span>
+								</a></th>
+				  <th>Client</th>
+                  <th>Total SI Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="or in $ctrl.acknowledgementReceipts  | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectAcknowledgementReceipt(or)" data-dismiss="modal">
+                  <td>{{or.number}}</td>
+                  <td>{{or.date | date}}</td>
+                  <td>{{or.client.name}}</td>
+                  <td>{{or.siAmount.toFixed(2)}}</td>
+                </tr>
+              </tbody>
+            </table>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+</div>
+    

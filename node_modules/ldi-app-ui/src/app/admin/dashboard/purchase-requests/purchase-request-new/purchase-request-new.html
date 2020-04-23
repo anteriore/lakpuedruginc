@@ -1,0 +1,23 @@
+<div class="main-header">
+  <div class="horizontal-align -between content">
+    <h3 class="title">
+      Purchase Request Forms
+    </h3>
+  </div>
+</div>
+<header class="header-form">
+  <a href="/admin/dashboard/purchase-request" class="btn btn-back back">
+    <i class="ion-ios-arrow-thin-left"></i>
+    <span>Back</span>
+  </a>
+  <span class="divider"></span>
+  <h3 class="heading">
+    New Purchase Request Form
+  </h3>
+</header>
+<purchase-request-form
+            prf="$ctrl.prf"
+            message="{{ $ctrl.error }}"
+            button="Create Purchase Request"
+            on-submit="$ctrl.createPurchaseRequest($event);">
+</purchase-request-form>

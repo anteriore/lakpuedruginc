@@ -1,0 +1,192 @@
+<style>
+	.highlightred{
+		background-color:red;
+	}
+</style>
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+	<div class="form-content">
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">RS Number</label>
+							<input type="text" class="form-control -border" ng-model="$ctrl.rs.number"/>
+						</div>
+					</div>
+				</div>
+				<div class="side-two">
+					<div class="form-group">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Date</label>
+								<input type="date" class="form-control -border" ng-model="$ctrl.rs.date"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="horizontal-align -start rmpm-content">
+			<div class="form-group rmpm">
+		<label class="label capitalize-text">Depot</label>
+			 <select class="form-control select -border" ng-model="$ctrl.rs.depot.id"  ng-options="d.id as d.code for d in $ctrl.depots" name="depot">
+           						</select>
+           	</div>
+		</div>
+		<div ng-if="$ctrl.rs.depot">
+		<div class="horizontal-align -start rmpm-content">
+			  <div class="horizontal-align -start rmpm-code">
+			    <div class="form-group rmpm action">
+			    		<a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findSalesSlip()">Select DR/OS</a>
+			    </div>
+			    <div class="form-group rmpm">
+			    		<label class="label capitalize-text">DR#</label>
+			    		<input type="text" ng-model="$ctrl.rs.salesNumber" class="form-control -border"/>
+			    </div>
+			  </div>
+			  
+		</div>
+		<div class="horizontal-align -start rmpm-content">
+			  <div class="horizontal-align -start rmpm-code">
+			    <div class="form-group rmpm action">
+			    		<a href="#" class="button-link btn btn-action btn-md" data-target="#findClientModal" data-toggle="modal">Select Client</a>
+			    </div>
+			    <div class="form-group rmpm">
+			    		<input type="hidden" ng-model="$ctrl.po.vendor.id"/>
+			    		<label class="label capitalize-text">Code</label>
+			    		<input type="text" ng-model="$ctrl.rs.client.code" class="form-control -border"/>
+			    </div>
+			  </div>
+			  <div class="side-two">
+			    <div class="form-group">
+			      	<label class="label capitalize-text">Name</label>
+			    		<input type="text" ng-model="$ctrl.rs.client.name" class="form-control -border"/>
+			    </div>
+			  </div>
+		</div>
+		<table class='table table-list'>
+        	<thead>
+        		<tr>
+        			<th>Product</th>
+        			<th>Lot #</th>
+        			<th>Good Qty</th>
+        			<th>Bad Qty</th>
+        			<th>Unit Price</th>
+        			<th>Amount</th>
+        		</tr>
+        	</thead>
+        	<tbody>
+        		<tr ng-repeat="i in $ctrl.rs.returnSlipProducts" >
+        			<td>{{i.product.finishedGood.name}}
+        			<td>{{i.product.lotNumber}}</td>
+        			<td><input ng-change="$ctrl.computeTotalAmount(i.goodQuantity* i.unitPrice, $index)" type="number" ng-model="i.goodQuantity" required/></td>
+        			<td><input  type="number" ng-model="i.badQuantity" required/></td>
+        			<td><input ng-change="$ctrl.computeTotalAmount(i.goodQuantity * i.unitPrice, $index)" type="number" ng-model="i.unitPrice" required/></td>
+        			<td>{{i.goodQuantity * i.unitPrice}}</td>
+        		</tr>
+        	</tbody>
+        	<tfoot>
+        	<tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th>Total Amount </th>
+              <th>{{$ctrl.rs.totalAmount.toFixed(2)}}</th>
+              </tr>
+              </tfoot>
+        </table>
+        <div class="request-action">
+			 <a href="#" class="button-link btn btn-action btn-md" ng-if="$ctrl.rs.salesNumber == null" ng-click="$ctrl.findProduct()">Select Item</a>
+		</div>
+		
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Remarks</label>
+							<textarea type="text" class="form-control -border" ng-model="$ctrl.rs.remarks"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="request-action">
+			<button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button>
+		</div>
+	</div>
+	</div>
+</form>
+
+ <div class='modal fade' id='salesSlipsModal'>
+  <div class="modal-dialog -bg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-title">
+				Find OS, DR_SI
+			</h4>
+			<button class="close" data-dismiss="modal" type="button">
+			</button>
+		</div>
+		<div class="modal-body">
+				<div class="search-box horizontal-align -between">
+            <div class=" search-modal horizontal-align -between">
+                    <div class="input-group-addon" style="border: 0	 !imsortant;"><i class="fa fa-search"></i></div>
+                  
+                </div>
+    </div>
+			<div class="wrapper scroll-section">
+				<table class='table table-hover'>
+              <thead>
+                <tr>
+								<th> <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">OS/DR_SI #
+										<span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+										</span>
+										<span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+										</span>
+								</a></th>
+                  <th> <a href="#" ng-click="$ctrl.sortType = 'date';$ctrl.sortReverse = !$ctrl.sortReverse;">Date
+										<span ng-show="$ctrl.sortType == 'date' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+										</span>
+										<span ng-show="$ctrl.sortType == 'date' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+										</span>
+								</a></th>
+                  <th>Total Amount</th>
+                  <th>Remaining Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="os in $ctrl.salesSlips  | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectSalesSlip(os)" ng-class="{highlight: $ctrl.customizedIndexOf($ctrl.selectedSalesSlips, os) !== -1}">
+                  <td>{{os.number}}</td>
+                  <td>{{os.date | date}}</td>
+                  <td>{{os.totalAmount.toFixed(2)}}</td>
+                  <td>{{os.remainingBalance.toFixed(2)}}</td>
+                </tr>
+              </tbody>
+            </table>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+</div>
+    
+<find-product-modal
+	productlist="$ctrl.productsInDepot"
+	issuedlist="$ctrl.rs.returnSlipProducts"	
+	stockonhand="$ctrl.stockOnHandList"
+></find-product-modal>
+
+<find-client-modal
+			client="$ctrl.rs.client"
+            message="{{ $ctrl.error }}"
+            button="Select Client"
+            >
+    </find-client-modal>

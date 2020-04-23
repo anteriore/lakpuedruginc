@@ -1,0 +1,126 @@
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+    <div class="horizontal-align -between" id="name-group">
+        <div class="form-group">
+            <label for="first_name">First name</label>
+            <input class="form-control -border" ng-model="$ctrl.user.firstName" autofocus="autofocus" placeholder="First name" type="text"
+                name="first_name">
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last name</label>
+            <input class="form-control -border" ng-model="$ctrl.user.lastName" placeholder="Last name" type="text" name="last_name">
+        </div>
+        <div class="form-group initial">
+            <label class="middle" for="M.I">M.i</label>
+            <input class="form-control -border" placeholder="MI" ng-model="$ctrl.user.middleInitial" type="text" name="middle_initial">
+        </div>
+    </div>
+    <div class="horizontal-align -between" id="security-group">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input class="form-control -border" placeholder="Email address" ng-model="$ctrl.user.email" type="email" name="email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input class="form-control -border" type="password" ng-model="$ctrl.user.password" name="password">
+        </div>
+        <div class="form-group">
+            <label for="Confirm password">Confirm password</label>
+            <input class="form-control -border" type="password" ng-model="$ctrl.user.confirmPassword" name="confirm_password">
+        </div>
+    </div>
+    <div class="horizontal-align -between" id="account-group">
+    		 <div class="form-group">
+            <label for="company">Company</label>
+            <select class="form-control select -borderless" ng-change="$ctrl.user.department = null; $ctrl.loadDepartments($ctrl.user.company.id)" ng-options="c.id as c.name for c in $ctrl.companies" ng-model="$ctrl.user.company.id" name="company">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="department">Department</label>
+            <select class="form-control select -borderless" ng-model="$ctrl.user.department.id" ng-options="d.id as d.name for d in $ctrl.departments" name="department">
+            </select>
+        </div>
+        <div class="form-group initial">
+            <label for="Employee type">Employee type</label>
+            <input class="form-control -border" type="text" ng-model="$ctrl.user.employeeType" name="employee_type">
+        </div>
+    </div>
+    <div class="horizontal-align -between">
+        <div class="side-one">
+            <div class="horizontal-align -between content">
+                <div class="form-group field">
+                    <label class="label capitalize-text">Depots</label>
+                    <select class="form-control select -borderless" ng-model="$ctrl.depot" ng-options="d.code for d in $ctrl.depots"
+                            name="depot">
+                    </select>
+
+                </div>
+                <div class="form-group field">
+                    <button type="button" class="btn btn-create btn-md" ng-click="$ctrl.addDepotToUser()">Add Depot to User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="horizontal-align -between">
+        <table  class="table table-list"> <!-- ng-if="$ctrl.mo.inventoryList.length > 0" -->
+            <thead>
+                <tr>
+                    <td>Depot</td>
+                    <td>Area</td>
+                    <td>Remove</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="d in $ctrl.user.depots">
+                    <td>
+                        {{d.name}} {{d.code}}
+                    </td>
+                    <td>
+                        {{d.area.name}} {{d.area.code}}
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-create btn-md" ng-click="$ctrl.removeDepotFromUser(d)">X</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+    </div>
+    
+    <div>
+        <div>
+            <label class="type">Account Permissions</label>
+        </div>
+        <div class="content -between">
+            <div class="user-panel" ng-repeat="permission in $ctrl.permissions">
+                <div class="horizontal-align">
+                    <div>
+                        <label class="type">{{permission.category}}</label>
+                    </div>
+                </div>
+                <hr class="devider">
+                <div class="horizontal-align" ng-repeat="permissionSub in permission.permissionSubs">
+                    <div class="col">
+                        <label class="checkbox">
+                            <input name="choice" type="hidden" value="0">
+                            <input ng-if="!$ctrl.hasCrud($ctrl.user.permissions[permissionSub.code].actions)" value="1" type="checkbox" ng-click="$ctrl.checkAction($event, permissionSub.code)" name="choice">
+                            <input ng-if="$ctrl.hasCrud($ctrl.user.permissions[permissionSub.code].actions)" value="1" type="checkbox" ng-click="$ctrl.checkAction($event, permissionSub.code)" checked="checked" name="choice">
+                            <span class="caption">{{ permissionSub.name }}</span>
+                        </label>
+                    </div>
+                    <div class="form-group horizontal-align">
+                        <label class="checkbox" ng-repeat="(key, name) in $ctrl.baseAction">
+                            <input checklist-model="$ctrl.user.permissions[permissionSub.code].actions" checklist-value="key" type="checkbox" name="{{permissionSub.code}}" />
+                            <span class="caption">{{name}}</span>
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="action-button horizontal-align -end">
+        <input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save">
+    </div>
+
+</form>

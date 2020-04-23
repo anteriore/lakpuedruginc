@@ -1,0 +1,24 @@
+.form-content {
+  width: 80%;
+}
+
+.form-button {
+  display: flex;
+  > .btn {
+    padding: 8px 45px;
+  }
+  &:last-child {
+    justify-content: flex-end;
+  }
+}
+
+.form-selection {
+  > .button {
+    display: flex;
+    flex: 0 0 24%;
+    > .btn {
+      flex: 1;
+      margin-top: 22px;
+    }
+  }
+}

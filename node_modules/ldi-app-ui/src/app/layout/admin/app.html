@@ -1,0 +1,9 @@
+<div class="admin-layout">
+    <app-nav id="navigation-bar"></app-nav>
+    <app-sidenav class="sidenav"></app-sidenav>
+
+    <div class="main" ui-view></div>
+</div>
+<div class="horizontal-align -center">
+    <div><p style="border:1px solid black"><b>App Development Version:</b> {{$ctrl.appVersion}}  <b>Backend: </b>{{$ctrl.superadminServerVersion}}</p></div>
+</div>

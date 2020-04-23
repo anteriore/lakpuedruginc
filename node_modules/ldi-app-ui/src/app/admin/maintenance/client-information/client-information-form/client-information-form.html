@@ -1,0 +1,220 @@
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+	
+		<div class="form-content" >
+		
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">name</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.name" />
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">code</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.code" />
+							</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">businessAddress</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.businessAddress" />
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">deliveryAddress</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.deliveryAddress" />
+							</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">lineOfBusiness</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.lineOfBusiness" />
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">telephoneNumbers</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.telephoneNumbers" />
+							</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+			
+
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">yearsInBusiness</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.yearsInBusiness" />
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">proprietor</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.proprietor" />
+							</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Tin</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.tin" />
+							</div>
+						</div>
+					</div>
+			
+					
+					</div>
+				</div>
+			</div>
+			
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Terms</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.terms" />
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Max Credit Limit</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.maxCreditLimit" />
+							</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Sales Rep</label>
+								<select class="form-control select -border" ng-model="$ctrl.client.salesRep.id" ng-options="i.id as i.name for i in $ctrl.salesReps" >
+								</select>
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Cluster</label>
+								<select class="form-control select -border" ng-model="$ctrl.client.clusterCode.id" ng-options="i.id as i.code for i in $ctrl.clusters" >
+								</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Institutional</label>
+								<select class="form-control select -border" ng-model="$ctrl.client.institutionalCode.id" ng-options="i.id as i.code for i in $ctrl.institutionalCodes" >
+								</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Discount</label>
+								<input type="number" class="form-control -border" ng-model="$ctrl.client.discount" />
+							</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+
+				
+			
+		</div>
+		<div><button class="btn btn-create btn-md" type="button" ng-click="$ctrl.addReference()">Add Client Reference</button></div>
+		<table class='table table-list'>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Branch</th>
+                  <th>TelephoneNumber</th>
+                </tr>
+              </thead>
+              <tbody id='table-less-padding'>
+                <tr ng-repeat="ref in $ctrl.client.clientReferencesList ">
+                  <td><input type="text" placeholder="type" class="form-control -border" ng-model="ref.type" class="form-control -border"  /> </td>
+				  <td><input type="text" placeholder="name" class="form-control -border" ng-model="ref.name" class="form-control -border"  /> </td>
+				  <td><input type="text" placeholder="branch" class="form-control -border" ng-model="ref.branch" class="form-control -border"  /> </td>
+				  <td><input type="text" placeholder="telephoneNumber" class="form-control -border" ng-model="ref.telephoneNumber" class="form-control -border"  /> </td>
+                </tr>
+              </tbody>
+			</table>
+			<div class="request-action">
+					<button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button>
+				</div>
+	</div>
+	
+</form>
+
+

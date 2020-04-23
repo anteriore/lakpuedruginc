@@ -1,0 +1,83 @@
+<div class="modal-dialog -bg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-title">
+				Find Unit <a
+					class="button-link btn btn-create btn-sm float-lg-right"
+					ng-click="$ctrl.showAddUnit(true)">+ Add Unit</a>
+			</h4>
+			<button class="close" data-dismiss="modal" type="button">
+				<span class="ion-android-close close-modal" ng-click="$ctrl.showAddUnit(false)"></span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="searchbox-modal">
+				<div class="searchbox-content">
+						<div class=" search-modal horizontal-align -between">
+								<div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
+								<input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"/>
+								<input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"/>
+							</div>
+				</div>
+			</div>
+			<unit-form ng-show="$ctrl.addUnit" unit="$ctrl.unit"
+				message="{{ $ctrl.error }}" button="Save"
+				on-submit="$ctrl.saveUnit($event);"> </unit-form>
+			<div class="wrapper scroll-section">
+				<table class="table find-vendor">
+					<thead>
+						<tr>
+								<th>
+										<a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">ID
+											<span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span>
+											<span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span>
+										</a>
+									</th>
+									<th>
+										<a href="#" ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
+											<span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+											</span>
+											<span ng-show="$ctrl.sortType == 'code' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+											</span>
+										</a>
+									</th>
+									<th>
+										<a href="#" ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
+											<span ng-show="$ctrl.sortType == 'name' && !$ctrl.sortReverse">
+												<i class="fa fa-caret-down"></i>
+											</span>
+											<span ng-show="$ctrl.sortType == 'name' && $ctrl.sortReverse">
+												<i class="fa fa-caret-up"></i>
+											</span>
+										</a>
+									</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+
+						<tr ng-repeat="unit in $ctrl.units | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse">
+							<td>{{unit.id}}</td>
+							<td>{{unit.code}}</td>
+							<td>{{unit.name}}</td>
+							<td class="tablebutton-form">
+								<div class="holder">
+									<button ng-click="$ctrl.editUnit(unit.id)"
+										class="btn btn-compose">
+										<i class="ion-ios-compose-outline"></i>
+									</button>
+									<button ng-click="$ctrl.deleteUnit(unit.id)" class="btn btn-archive">
+										<i class="ion-android-close"></i>
+									</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+</div>

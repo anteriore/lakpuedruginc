@@ -1,0 +1,18 @@
+#nav-tab-item > .nav-form {
+  max-width: 100%;
+}
+
+#nav-tab-item > .nav > .nav-item > .nav-link {
+  padding: 8px;
+  border-radius: 0;
+  color: white;
+  background-color: $dusk;
+  transition: all 250ms ease;
+  border: 0;
+
+  &:hover, &.active {
+    transition: all 250ms ease;
+    background-color: $dark;
+    color: white;
+  }
+}
