@@ -60,10 +60,10 @@ public class ExecuteInitData {
     private ProductData productData;
     @Autowired
     private ProductMovementData productMovementData;
-	@Autowired
-	private ProductIssuanceData productIssuanceData;
-	@Autowired
-	private ProductReceivingData productReceivingData;
+    @Autowired
+    private ProductIssuanceData productIssuanceData;
+    @Autowired
+    private ProductReceivingData productReceivingData;
     @Autowired
     private EmployeeData employeeData;
     @Autowired
@@ -90,49 +90,25 @@ public class ExecuteInitData {
     private ProductDivisionData divisionData;
     @Autowired
     private ProductCategoryData categoryData;
+
     @PostConstruct
     public void init() {
-
-		unitData.init();
-		classificationData.init();
-        companyData.init();
-        departmentData.init();
-        areaData.init();
-        depotData.init();
-        userData.init();
-        clientData.init();
-        vendorData.init();
-        groupData.init();
-        permissionData.init();
-        itemTypeData.init();
-        itemData.init();
-        finishedGoodData.init();
-        recipeData.init();
-        purchaseRequestData.init();
-        purchaseOrderData.init();
-        receivingReceiptData.init();
-        approvedReceiptData.init();
-        materialReevaluationData.init();
-        materialIssuanceData.init();
-        materialReceivingData.init();
-        inventoryMovementData.init();
-        divisionData.init();
-        categoryData.init();
-        productData.init();
-        productMovementData.init();
-        moInventoryData.init();
-        productIssuanceData.init();
-        productReceivingData.init();
-        employeeData.init();
-        procedureAreaData.init();
-        procedureData.init();
-        salesOrderData.init();
-        orderSlipData.init();
-        deliveryReceiptData.init();
-        moCostingData.init();
-        memoTypeData.init();
-        accountTitleData.init();
-        bankAccountData.init();
-        purchaseVoucherData.init();
-	}
+        /*
+         * unitData.init(); classificationData.init(); companyData.init();
+         * departmentData.init(); areaData.init(); depotData.init(); userData.init();
+         * clientData.init(); vendorData.init(); groupData.init();
+         * permissionData.init(); itemTypeData.init(); itemData.init();
+         * finishedGoodData.init(); recipeData.init(); purchaseRequestData.init();
+         * purchaseOrderData.init(); receivingReceiptData.init();
+         * approvedReceiptData.init(); materialReevaluationData.init();
+         * materialIssuanceData.init(); materialReceivingData.init();
+         * inventoryMovementData.init(); divisionData.init(); categoryData.init();
+         * productData.init(); productMovementData.init(); moInventoryData.init();
+         * productIssuanceData.init(); productReceivingData.init(); employeeData.init();
+         * procedureAreaData.init(); procedureData.init(); salesOrderData.init();
+         * orderSlipData.init(); deliveryReceiptData.init(); moCostingData.init();
+         * memoTypeData.init(); accountTitleData.init(); bankAccountData.init();
+         * purchaseVoucherData.init();
+         */
+    }
 }

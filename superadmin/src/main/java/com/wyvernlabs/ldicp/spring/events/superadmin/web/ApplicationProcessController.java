@@ -44,10 +44,6 @@ public class ApplicationProcessController {
 	}
 
 	@Autowired
-	@Qualifier("authenticationManager")
-	private AuthenticationManager authManager;
-
-	@Autowired
 	private UserRepository userRepository;
 
 	@GetMapping("/rest/me")
@@ -62,15 +58,14 @@ public class ApplicationProcessController {
 	 * @return The generated access token.
 	 */
 	@PostMapping("/api/login")
-	public AccessToken authenticate(@RequestBody LoginRequest loginRequest)
-	{
+	public AccessToken authenticate(@RequestBody LoginRequest loginRequest) {
 		LOGGER.info("authenticate:  " + loginRequest.getUsername());
-		UsernamePasswordAuthenticationToken authenticationToken =
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-		Authentication authentication = this.authManager.authenticate(authenticationToken);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+				loginRequest.getUsername(), loginRequest.getPassword());
+		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-		MyUserPrincipal principal = (MyUserPrincipal) authentication.getPrincipal();
+		MyUserPrincipal principal = (MyUserPrincipal) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 
 		return this.userService.createAccessToken(userRepository.getOne(principal.getId()));
 	}
