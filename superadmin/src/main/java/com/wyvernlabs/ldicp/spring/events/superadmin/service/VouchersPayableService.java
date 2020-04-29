@@ -26,37 +26,37 @@ public class VouchersPayableService {
 	private VoucherRepository voucherRepository;
 	@Autowired
 	private JournalVoucherRepository journalVoucherRepository;
-	
+
 	@Transactional
 	public VouchersPayable saveVouchersPayable(VouchersPayable vp) {
 		Long id = vouchersPayableRepository.getMaxIdByStatus("Pending");
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		
-		if(!vp.hasEqualDebitAndCreditAmount())
+
+		if (!vp.hasEqualDebitAndCreditAmount())
 			throw new RuntimeException("Debit and Credit not the same");
-		
-		
+
 		vp.setNumber("VPFA-" + ++id);
-		
-		switch(vp.getVariation()) {
-			case "1 Voucher": 
-				Voucher voucher = voucherRepository.findOne(vp.getVoucher().getId());
+
+		switch (vp.getVariation()) {
+			case "1 Voucher":
+				Voucher voucher = voucherRepository.getOne(vp.getVoucher().getId());
 				voucher.setStatus("Completed");
-				if(voucher.isHasAdjustment()) {
-					List<JournalVoucher> adjustments = journalVoucherRepository.findByCompanyAndVoucher(vp.getCompany(), voucher);
+				if (voucher.isHasAdjustment()) {
+					List<JournalVoucher> adjustments = journalVoucherRepository.findByCompanyAndVoucher(vp.getCompany(),
+							voucher);
 					adjustments.forEach(jv -> {
 						jv.setStatus("Completed");
 					});
-					journalVoucherRepository.save(adjustments);
+					journalVoucherRepository.saveAll(adjustments);
 				}
 				voucherRepository.save(voucher);
 				break;
 			case "Multiple PJV":
 			case "Multiple JV":
 				vp.getVouchers().forEach(v -> {
-					Voucher voucher2 = voucherRepository.findOne(v.getId());
+					Voucher voucher2 = voucherRepository.getOne(v.getId());
 					voucher2.setStatus("Completed");
 					voucherRepository.save(voucher2);
 				});
@@ -64,20 +64,20 @@ public class VouchersPayableService {
 		}
 		return vouchersPayableRepository.save(vp);
 	}
-	
+
 	@Transactional
 	public VouchersPayable approveVouchersPayable(Long id, Long userId) {
-		VouchersPayable vp = vouchersPayableRepository.findOne(id);
-		User approvedBy = userRepository.findOne(userId);
-		
-		Long maxId = vouchersPayableRepository.getMaxIdInStatus(new String[] {"Approved", "Completed"});
-		
-		if(maxId == null) {
+		VouchersPayable vp = vouchersPayableRepository.getOne(id);
+		User approvedBy = userRepository.getOne(userId);
+
+		Long maxId = vouchersPayableRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+
+		if (maxId == null) {
 			maxId = 0L;
 		}
-		
+
 		vp.setNumber("VP-" + ++maxId);
-		
+
 		vp.setStatus("Approved");
 		vp.setApprovedBy(approvedBy);
 		return vouchersPayableRepository.save(vp);

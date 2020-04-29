@@ -1,200 +1,201 @@
-
 <div class="main-header">
 	<div class="horizontal-align -between content">
 		<h3 class="title">PDC Disbursements</h3>
-    </div>
-    
-    <a ng-click="$ctrl.exportReport()" class="btn btn-warning btn-md button-link">Export</a>
-	
-	<a href="/admin/shared/print-pdc-report/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class="btn btn-primary btn-md button-link">Generate Report</a>
-    <!-- <a href="/admin/accounting/pdc-disbursement-tolling/new" ng-click="" class="btn btn-create btn-md button-link" style="background-color:blueviolet;">Create AR Tolling</a> -->
-	<a href="/admin/accounting/pdc-disbursement/new" ng-click="" class="btn btn-create btn-md button-link">Create PJV</a>
+	</div>
+
+	<a ng-click="$ctrl.exportReport()" class="btn btn-warning btn-md button-link">Export</a>
+
+	<a href="/admin/shared/print-pdc-report/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}"
+		class="btn btn-primary btn-md button-link">Generate Report</a>
+	<!-- <a href="/admin/accounting/pdc-disbursement-tolling/new" ng-click="" class="btn btn-create btn-md button-link" style="background-color:blueviolet;">Create AR Tolling</a> -->
+	<a href="/admin/accounting/pdc-disbursement/new" ng-click="" class="btn btn-create btn-md button-link">Create
+		PJV</a>
 </div>
 <div class='client-pris'>
-  <div class="search-box horizontal-align -between">
-      <div class="input-group-addon" style="border: 0	 !important;">
-          <i class="fa fa-search"></i>
-        </div>
-        <input class="form-control -borderless search" placeholder="PJV No" type="text" name="search" ng-model="$ctrl.searchNumber"
-        />
-        <input class="form-control -borderless search" placeholder="RR No" type="text" name="search" ng-model="$ctrl.searchRRNumber" />
-  </div>
-  <div class="search-box horizontal-align -between">
-   		<input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.startDate"
-        />
-        <input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.endDate" />
+	<div class="search-box horizontal-align -between">
+		<div class="input-group-addon" style="border: 0	 !important;">
+			<i class="fa fa-search"></i>
+		</div>
+		<input class="form-control -borderless search" placeholder="PJV No" type="text" name="search"
+			ng-model="$ctrl.searchNumber" />
+		<input class="form-control -borderless search" placeholder="RR No" type="text" name="search"
+			ng-model="$ctrl.searchRRNumber" />
+	</div>
+	<div class="search-box horizontal-align -between">
+		<input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.startDate" />
+		<input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.endDate" />
 	</div>
 </div>
-	<table class='table table-list'>
-		<thead>
-			<tr>
-				<th>
-            <a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">#
-                <span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
-                    <i class="fa fa-caret-down"></i>
-                </span>
-                <span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
-                    <i class="fa fa-caret-up"></i>
-                </span>
-            </a>
-        </th>
-				<th>
-            <a href="#" ng-click="$ctrl.sortType = 'materialType';$ctrl.sortReverse = !$ctrl.sortReverse;">Date
-                <span ng-show="$ctrl.sortType == 'materialType' && !$ctrl.sortReverse">
-                    <i class="fa fa-caret-down"></i>
-                </span>
-                <span ng-show="$ctrl.sortType == 'materialType' && $ctrl.sortReverse">
-                    <i class="fa fa-caret-up"></i>
-                </span>
-            </a>
-        </th>
-				<th>
-            <a href="#" ng-click="$ctrl.sortType = 'quantity';$ctrl.sortReverse = !$ctrl.sortReverse;">Payee
-                <span ng-show="$ctrl.sortType == 'quantity' && !$ctrl.sortReverse">
-                    <i class="fa fa-caret-down"></i>
-                </span>
-                <span ng-show="$ctrl.sortType == 'quantity' && $ctrl.sortReverse">
-                    <i class="fa fa-caret-up"></i>
-                </span>
-            </a>
-          
-        </th>
-          <th> <a href="#" ng-click="$ctrl.sortType = 'drsi';$ctrl.sortReverse = !$ctrl.sortReverse;">Status
-                <span ng-show="$ctrl.sortType == 'drsi' && !$ctrl.sortReverse">
-                    <i class="fa fa-caret-down"></i>
-                </span>
-                <span ng-show="$ctrl.sortType == 'drsi' && $ctrl.sortReverse">
-                    <i class="fa fa-caret-up"></i>
-                </span>
-            </a>
-          </th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="pdc in $ctrl.pdcDisbursements "  >
-				<td>{{pdc.number}}</td>
-				<td>{{pdc.date | date}}</td>
-				<td>{{pdc.payee.name}}</td>
-				<td>{{pdc.status}}</td>
-				<td class='tablebutton-form'>
-					<div class='holder'>
-                        <button class='btn btn-compose' data-toggle="modal" ng-click="$ctrl.openModal(pdc)" data-target="#pdcModal" class='btn btn-show'>
-                            <i class="ion-ios-eye-outline" ></i>
-                        </button>
-					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>	
+<table class='table table-list'>
+	<thead>
+		<tr>
+			<th>
+				<a href="#" ng-click="$ctrl.sortType = 'number';$ctrl.sortReverse = !$ctrl.sortReverse;">#
+					<span ng-show="$ctrl.sortType == 'number' && !$ctrl.sortReverse">
+						<i class="fa fa-caret-down"></i>
+					</span>
+					<span ng-show="$ctrl.sortType == 'number' && $ctrl.sortReverse">
+						<i class="fa fa-caret-up"></i>
+					</span>
+				</a>
+			</th>
+			<th>
+				<a href="#" ng-click="$ctrl.sortType = 'materialType';$ctrl.sortReverse = !$ctrl.sortReverse;">Date
+					<span ng-show="$ctrl.sortType == 'materialType' && !$ctrl.sortReverse">
+						<i class="fa fa-caret-down"></i>
+					</span>
+					<span ng-show="$ctrl.sortType == 'materialType' && $ctrl.sortReverse">
+						<i class="fa fa-caret-up"></i>
+					</span>
+				</a>
+			</th>
+			<th>
+				<a href="#" ng-click="$ctrl.sortType = 'quantity';$ctrl.sortReverse = !$ctrl.sortReverse;">Payee
+					<span ng-show="$ctrl.sortType == 'quantity' && !$ctrl.sortReverse">
+						<i class="fa fa-caret-down"></i>
+					</span>
+					<span ng-show="$ctrl.sortType == 'quantity' && $ctrl.sortReverse">
+						<i class="fa fa-caret-up"></i>
+					</span>
+				</a>
+
+			</th>
+			<th> <a href="#" ng-click="$ctrl.sortType = 'drsi';$ctrl.sortReverse = !$ctrl.sortReverse;">Status
+					<span ng-show="$ctrl.sortType == 'drsi' && !$ctrl.sortReverse">
+						<i class="fa fa-caret-down"></i>
+					</span>
+					<span ng-show="$ctrl.sortType == 'drsi' && $ctrl.sortReverse">
+						<i class="fa fa-caret-up"></i>
+					</span>
+				</a>
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="pdc in $ctrl.pdcDisbursements ">
+			<td>{{pdc.number}}</td>
+			<td>{{pdc.date | date}}</td>
+			<td>{{pdc.payee.name}}</td>
+			<td>{{pdc.status}}</td>
+			<td class='tablebutton-form'>
+				<div class='holder'>
+					<button class='btn btn-compose' data-toggle="modal" ng-click="$ctrl.openModal(pdc)"
+						data-target="#pdcModal" class='btn btn-show'>
+						<i class="ion-ios-eye-outline"></i>
+					</button>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
 </div>
 
 
 
 <div class='modal fade' id='pdcModal'>
-  <div class='modal-dialog -bg'>
-    <div class='modal-content'>
-      <div class='modal-header'>
-        <h4 class='modal-title'>{{ $ctrl.pdc.number }} {{$ctrl.pdc.date | date}}</h4>
-        <button class='close'>
-          <span class='ion-android-close close-modal' data-dismiss="modal"></span>
-        </button>
-      </div>
-      <div class='modal-body'>
-      <div class="step-form">
-			<div class="horizontal-align -between">
-				<div class="side-one">
-					<div class="horizontal-align -between content">
-						<div class="form-group field">
-							<label class="label capitalize-text">PDC Disbursement #</label>
-			    			<input type="text" readonly class="form-control -border" ng-model="$ctrl.pdc.number" />
+	<div class='modal-dialog -bg'>
+		<div class='modal-content'>
+			<div class='modal-header'>
+				<h4 class='modal-title'>{{ $ctrl.pdc.number }} {{$ctrl.pdc.date | date}}</h4>
+				<button class='close'>
+					<span class='ion-android-close close-modal' data-dismiss="modal"></span>
+				</button>
+			</div>
+			<div class='modal-body'>
+				<div class="step-form">
+					<div class="horizontal-align -between">
+						<div class="side-one">
+							<div class="horizontal-align -between content">
+								<div class="form-group field">
+									<label class="label capitalize-text">PDC Disbursement #</label>
+									<input type="text" readonly class="form-control -border"
+										ng-model="$ctrl.pdc.number" />
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
-				<div class="side-two">
-					<div class="form-group">
-						<div class="horizontal-align -between content">
-							<div class="form-group field">
-								<label class="label capitalize-text">Date</label>
-								<input type="text" readonly class="form-control -border" ng-value="$ctrl.pdc.date | date"/>
+						<div class="side-two">
+							<div class="form-group">
+								<div class="horizontal-align -between content">
+									<div class="form-group field">
+										<label class="label capitalize-text">Date</label>
+										<input type="text" readonly class="form-control -border"
+											ng-value="$ctrl.pdc.date | date" />
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class="horizontal-align -start rmpm-content">
-			  <div class="horizontal-align -start rmpm-code">
-			    <div class="form-group rmpm">
-			    		<label class="label capitalize-text">Payee Code</label>
-			    		<input type="text" readonly ng-model="$ctrl.pdc.payee.code" class="form-control -border"/>
-			    </div>
-			  </div>
-			  <div class="side-two">
-			    <div class="form-group">
-			      	<label class="label capitalize-text">Payee</label>
-			    		<input type="text" readonly ng-model="$ctrl.pdc.payee.name" class="form-control -border"/>
-			    </div>
-			  </div>
-			</div>
-		<table class="table table-list">
-	<thead>
-		<tr>
-			<th>Cheque #</th>
-			<th>Date</th>
-			<th>Amount</th>
-			<th>Remarks</th>
-			<th ng-if="!$ctrl.readonly">Action</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr ng-if="!$ctrl.readonly">
-			<td>
-				<input type="text" class="form-control -border" ng-model="$ctrl.chequeNumber"/>
-			</td>
-			<td>
-				<input type="date" class="form-control -border" ng-model="$ctrl.chequeDate"/>
-			</td>
-			<td>
-				<input type="number" class="form-control -border" ng-model="$ctrl.amount"/>
-			</td>
-			<td>
-				<input type="text" class="form-control -border" ng-model="$ctrl.remarks"/>
-			</td>
-			<td><button type="button" ng-click="$ctrl.addRow()" class="btn btn-success">Add</button></td>
-		</tr>
-		
-		<tr ng-repeat="cheque in $ctrl.pdc.cheques">
-			<td>{{cheque.number}}</td>
-			<td>{{cheque.date | date}}</td>
-			<td>{{cheque.amount.toFixed(2)}}</td>
-			<td>{{cheque.remarks}}</td>
-			<td><button type="button" ng-click="$ctrl.deleteRow($index)" ng-if="!$ctrl.readonly" class="btn btn-danger">Remove</button></td>
-		</tr>
-	</tbody>
-</table>
-			<div class="step-form">
-			<div class="horizontal-align -between">
-				<div class="side-one">
-					<div class="horizontal-align -between content">
-						<div class="form-group field">
-							<label class="label capitalize-text">Remarks</label>
-							<textarea type="text" class="form-control -border" readonly ng-model="$ctrl.pdc.remarks"></textarea>
+				<div class="horizontal-align -start rmpm-content">
+					<div class="horizontal-align -start rmpm-code">
+						<div class="form-group rmpm">
+							<label class="label capitalize-text">Payee Code</label>
+							<input type="text" readonly ng-model="$ctrl.pdc.payee.code" class="form-control -border" />
+						</div>
+					</div>
+					<div class="side-two">
+						<div class="form-group">
+							<label class="label capitalize-text">Payee</label>
+							<input type="text" readonly ng-model="$ctrl.pdc.payee.name" class="form-control -border" />
 						</div>
 					</div>
 				</div>
+				<table class="table table-list">
+					<thead>
+						<tr>
+							<th>Cheque #</th>
+							<th>Date</th>
+							<th>Amount</th>
+							<th>Remarks</th>
+							<th ng-if="!$ctrl.readonly">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-if="!$ctrl.readonly">
+							<td>
+								<input type="text" class="form-control -border" ng-model="$ctrl.chequeNumber" />
+							</td>
+							<td>
+								<input type="date" class="form-control -border" ng-model="$ctrl.chequeDate" />
+							</td>
+							<td>
+								<input type="number" class="form-control -border" ng-model="$ctrl.amount" />
+							</td>
+							<td>
+								<input type="text" class="form-control -border" ng-model="$ctrl.remarks" />
+							</td>
+							<td><button type="button" ng-click="$ctrl.addRow()" class="btn btn-success">Add</button>
+							</td>
+						</tr>
+
+						<tr ng-repeat="cheque in $ctrl.pdc.cheques">
+							<td>{{cheque.number}}</td>
+							<td>{{cheque.date | date}}</td>
+							<td>{{cheque.amount.toFixed(2)}}</td>
+							<td>{{cheque.remarks}}</td>
+							<td><button type="button" ng-click="$ctrl.deleteRow($index)" ng-if="!$ctrl.readonly"
+									class="btn btn-danger">Remove</button></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="step-form">
+					<div class="horizontal-align -between">
+						<div class="side-one">
+							<div class="horizontal-align -between content">
+								<div class="form-group field">
+									<label class="label capitalize-text">Remarks</label>
+									<textarea type="text" class="form-control -border" readonly
+										ng-model="$ctrl.pdc.remarks"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
 			</div>
 		</div>
-		
-
-      
-      </div>
-    </div>
-  </div>
+	</div>
 </div>
-
-
-
-
-
-    

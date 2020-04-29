@@ -55,12 +55,12 @@ public class PurchaseRequestRestController {
 	private ItemRepository itemRepository;
 	@Autowired
 	private DepartmentRepository departmentRepository;
-	
+
 	@GetMapping("/{id}")
 	public PurchaseRequest get(@PathVariable Long id) {
 		return purchaseRequestRepository.getOne(id);
 	}
-	
+
 	@GetMapping()
 	public List<PurchaseRequest> list() {
 		return purchaseRequestRepository.findAll();
@@ -74,64 +74,63 @@ public class PurchaseRequestRestController {
 
 	@GetMapping("/company/{companyId}")
 	public Set<PurchaseRequest> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return purchaseRequestRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		purchaseRequestRepository.delete(id);
+		purchaseRequestRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@PostMapping("/approve/{prfId}")
 	public PurchaseRequest approvePurchaseRequest(@PathVariable Long prfId) {
 		return purchaseRequestService.approvePurchaseRequest(prfId);
 	}
-	
+
 	@PostMapping("/reject/{prfId}")
 	public PurchaseRequest rejectPurchaseRequest(@PathVariable Long prfId) {
-		PurchaseRequest purchaseRequest = purchaseRequestRepository.findOne(prfId);
+		PurchaseRequest purchaseRequest = purchaseRequestRepository.getOne(prfId);
 		purchaseRequest.setStatus("Rejected");
 		return purchaseRequestRepository.save(purchaseRequest);
 	}
-	
-	
+
 	@GetMapping("/company/{companyId}/stock/{itemId}")
 	public int getPrfQuantityOfItem(@PathVariable Long companyId, @PathVariable Long itemId) {
-		Company company = companyRepository.findOne(companyId);
-		Item item = itemRepository.findOne(itemId);
-		List<RequestedItem> requestedItems = purchaseRequestService.getNotCompletedRequestedItemsByCompanyAndItem(company, item );
+		Company company = companyRepository.getOne(companyId);
+		Item item = itemRepository.getOne(itemId);
+		List<RequestedItem> requestedItems = purchaseRequestService
+				.getNotCompletedRequestedItemsByCompanyAndItem(company, item);
 		int sum = 0;
-		for(RequestedItem requestedItem : requestedItems) {
-			if(requestedItem.getStatus().equals("Pending")) {
+		for (RequestedItem requestedItem : requestedItems) {
+			if (requestedItem.getStatus().equals("Pending")) {
 				sum += requestedItem.getQuantityRequested();
-			}else if(requestedItem.getStatus().equals("Incomplete")) {
+			} else if (requestedItem.getStatus().equals("Incomplete")) {
 				sum += requestedItem.getQuantityRemaining();
 			}
 		}
 		return sum;
 	}
-	
+
 	@GetMapping("/cancelled-reqs/{prfId}")
-	public List<CancelRequestedItem> getCanceleldReqsOfPrf(@PathVariable Long prfId){
-		PurchaseRequest prf = purchaseRequestRepository.findOne(prfId);
+	public List<CancelRequestedItem> getCanceleldReqsOfPrf(@PathVariable Long prfId) {
+		PurchaseRequest prf = purchaseRequestRepository.getOne(prfId);
 		List<CancelRequestedItem> list = new ArrayList<CancelRequestedItem>();
-		for(RequestedItem item : prf.getRequestedItems()) {
-			if(item.getStatus().equals("Cancelled")) {
+		for (RequestedItem item : prf.getRequestedItems()) {
+			if (item.getStatus().equals("Cancelled")) {
 				list.add(cancelRequestedItemRepository.findLastByRequestedItem(item));
 			}
 		}
 		return list;
 	}
-	
+
 	@GetMapping("/company/{companyId}/department/{department}")
-	public List<PurchaseRequest> getPurchaseRequestsByCompanyAndDepartment(@PathVariable Long companyId, @PathVariable String department){
-		Company company = companyRepository.findOne(companyId);
+	public List<PurchaseRequest> getPurchaseRequestsByCompanyAndDepartment(@PathVariable Long companyId,
+			@PathVariable String department) {
+		Company company = companyRepository.getOne(companyId);
 		Department d = departmentRepository.findByName(department);
 		return purchaseRequestRepository.findByCompanyAndDepartment(company, d);
 	}
-	
-	
-	
+
 }

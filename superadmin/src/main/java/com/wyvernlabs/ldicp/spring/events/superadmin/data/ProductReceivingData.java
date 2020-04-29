@@ -29,13 +29,14 @@ public class ProductReceivingData {
 	private DepotRepository depotRepository;
 	@Autowired
 	private UserRepository userRepository;
+
 	public void init() {
-		ProductIssuance pis = productIssuanceRepository.findOne(1L);
+		ProductIssuance pis = productIssuanceRepository.getOne(1L);
 		ProductReceiving prs = new ProductReceiving();
-		Company company = companyRepository.findOne(1L);
-		Depot depot = depotRepository.findOne(1L);
-		User receivedBy = userRepository.findOne(1L);
-		
+		Company company = companyRepository.getOne(1L);
+		Depot depot = depotRepository.getOne(1L);
+		User receivedBy = userRepository.getOne(1L);
+
 		prs.setCompany(company);
 		prs.setDate(new Date());
 		prs.setDepot(depot);
@@ -44,6 +45,6 @@ public class ProductReceivingData {
 		prs.setRemarks("remarks 1");
 
 		productReceivingService.saveProductReceiving(prs);
-		
+
 	}
 }

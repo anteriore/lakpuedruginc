@@ -20,12 +20,13 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.StockCardReposit
 @RestController
 @RequestMapping("rest/stock-cards")
 public class StockCardRestController {
-    private static final Logger logger = LoggerFactory.getLogger(StockCardRestController.class);
-    @Autowired
-    private StockCardRepository stockCardRepository;
-    @Autowired
-    private CompanyRepository companyRepository;
-    @GetMapping("/{id}")
+	private static final Logger logger = LoggerFactory.getLogger(StockCardRestController.class);
+	@Autowired
+	private StockCardRepository stockCardRepository;
+	@Autowired
+	private CompanyRepository companyRepository;
+
+	@GetMapping("/{id}")
 	public StockCard get(@PathVariable Long id) {
 		return stockCardRepository.getOne(id);
 	}
@@ -42,13 +43,14 @@ public class StockCardRestController {
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		stockCardRepository.delete(id);
+		stockCardRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@GetMapping("/company/{companyId}/control-number/{controlNumber}")
-	public List<StockCard> listByControlNumberAndCompany(@PathVariable Long companyId, @PathVariable String controlNumber){
-		Company company = companyRepository.findOne(companyId);
+	public List<StockCard> listByControlNumberAndCompany(@PathVariable Long companyId,
+			@PathVariable String controlNumber) {
+		Company company = companyRepository.getOne(companyId);
 		return stockCardRepository.findByControlNumberAndCompany(controlNumber, company);
 	}
 

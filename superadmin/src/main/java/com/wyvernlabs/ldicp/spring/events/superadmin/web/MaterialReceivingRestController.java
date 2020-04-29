@@ -28,32 +28,32 @@ public class MaterialReceivingRestController {
 	private MaterialReceivingRepository materialReceivingRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+
 	@GetMapping("/{id}")
-    public MaterialReceiving get(@PathVariable Long id) {
-        return materialReceivingRepository.getOne(id);
-    }
+	public MaterialReceiving get(@PathVariable Long id) {
+		return materialReceivingRepository.getOne(id);
+	}
 
-    @GetMapping()
-    public List<MaterialReceiving> list() {
-        return materialReceivingRepository.findAll();
-    }
+	@GetMapping()
+	public List<MaterialReceiving> list() {
+		return materialReceivingRepository.findAll();
+	}
 
-    @PostMapping()
-    public MaterialReceiving upsert(@RequestBody MaterialReceiving item) {
-        return materialReceivingService.saveMaterialReceiving(item);
-    }
-    
-    @PostMapping("/delete")
+	@PostMapping()
+	public MaterialReceiving upsert(@RequestBody MaterialReceiving item) {
+		return materialReceivingService.saveMaterialReceiving(item);
+	}
+
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		materialReceivingRepository.delete(id);
+		materialReceivingRepository.deleteById(id);
 		return true;
 	}
-    @GetMapping("/company/{companyId}")
+
+	@GetMapping("/company/{companyId}")
 	public List<MaterialReceiving> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return materialReceivingRepository.findByCompany(company);
 	}
-    
-    
 
 }

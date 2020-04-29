@@ -31,10 +31,10 @@ public class InventoryMovementData {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private InventoryRepository inventoryRepository;
-	
+
 	public void init() {
 		InventoryMovement inventoryMovement = new InventoryMovement();
-		Company company = companyRepository.findOne(1L);
+		Company company = companyRepository.getOne(1L);
 		User user = userRepository.getOne(1L);
 		inventoryMovement.setCompany(company);
 		inventoryMovement.setDate(new Date());
@@ -43,13 +43,13 @@ public class InventoryMovementData {
 		inventoryMovement.setType(InventoryMovementType.IN);
 		List<InventoryMovementItem> inventoryList = new ArrayList<InventoryMovementItem>();
 		InventoryMovementItem inventoryMovementItem = new InventoryMovementItem();
-		Inventory inventory = inventoryRepository.findOne(1L); //TUNA
+		Inventory inventory = inventoryRepository.getOne(1L); // TUNA
 		inventoryMovementItem.setControlNumber(inventory.getControlNumber());
 		inventoryMovementItem.setItem(inventory.getItem());
 		inventoryMovementItem.setQuantity(200);
 		inventoryList.add(inventoryMovementItem);
 		inventoryMovement.setInventory(inventoryList);
-		
+
 		inventoryMovementService.saveInventoryMovement(inventoryMovement);
 	}
 }

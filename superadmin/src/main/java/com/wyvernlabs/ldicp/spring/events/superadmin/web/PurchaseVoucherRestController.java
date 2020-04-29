@@ -34,7 +34,7 @@ public class PurchaseVoucherRestController {
 	private PurchaseVoucherService purchaseVoucherService;
 	@Autowired
 	private VendorRepository vendorRepository;
-	
+
 	@GetMapping("/{id}")
 	public PurchaseVoucher get(@PathVariable Long id) {
 		return purchaseVoucherRepository.getOne(id);
@@ -47,60 +47,65 @@ public class PurchaseVoucherRestController {
 
 	@PostMapping()
 	public PurchaseVoucher upsert(@RequestBody PurchaseVoucher vendor) {
-		
+
 		return purchaseVoucherService.savePurchaseVoucher(vendor);
 	}
 
 	@GetMapping("/company/{companyId}")
 	public List<PurchaseVoucher> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return purchaseVoucherRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		purchaseVoucherRepository.delete(id);
+		purchaseVoucherRepository.deleteById(id);
 		return true;
 	}
 	/*
-	@GetMapping("/company/{companyId}/rr-number/{rrNumber}/id/{id}")
-	public boolean isRrNumberValid(@PathVariable Long companyId, @PathVariable String rrNumber, @PathVariable Long id) {
-		Company company = companyRepository.findOne(companyId);
-		PurchaseVoucher pv = purchaseVoucherRepository.findOne(id);
-		return purchaseVoucherService.isRrNumberValid(rrNumber, company, pv);
-	}*/
-	
+	 * @GetMapping("/company/{companyId}/rr-number/{rrNumber}/id/{id}") public
+	 * boolean isRrNumberValid(@PathVariable Long companyId, @PathVariable String
+	 * rrNumber, @PathVariable Long id) { Company company =
+	 * companyRepository.getOne(companyId); PurchaseVoucher pv =
+	 * purchaseVoucherRepository.getOne(id); return
+	 * purchaseVoucherService.isRrNumberValid(rrNumber, company, pv); }
+	 */
+
 	@GetMapping("/company/{companyId}/rr-number/{rrNumber}")
 	public boolean isRrNumberValid(@PathVariable Long companyId, @PathVariable String rrNumber) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return purchaseVoucherService.isRrNumberValid(rrNumber, company);
 	}
-	
+
 	@PostMapping("/approve/{pvId}/user/{userId}")
 	public PurchaseVoucher approve(@PathVariable Long pvId, @PathVariable Long userId) {
 		return purchaseVoucherService.approvePurchaseVoucher(pvId, userId);
 	}
-	
+
 	@GetMapping("/company/{companyId}/number/{number}")
 	public Long getIdByCompanyAndNumber(@PathVariable Long companyId, @PathVariable String number) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return purchaseVoucherRepository.findByCompanyAndNumber(company, number).getId();
 	}
-	
+
 	@GetMapping("/company/{companyId}/vendor/{vendorId}/status/{status}/purchase-vouchers-no-adjustment")
-	public List<PurchaseVoucher> listPvWithNoAdjustmentByCompanyAndVendor(@PathVariable Long companyId, @PathVariable Long vendorId, @PathVariable String status){
-		Company company = companyRepository.findOne(companyId);
-		Vendor vendor = vendorRepository.findOne(vendorId);
-		return purchaseVoucherRepository.findByCompanyAndVendorAndStatusAndHasAdjustment(company, vendor, status, false);
+	public List<PurchaseVoucher> listPvWithNoAdjustmentByCompanyAndVendor(@PathVariable Long companyId,
+			@PathVariable Long vendorId, @PathVariable String status) {
+		Company company = companyRepository.getOne(companyId);
+		Vendor vendor = vendorRepository.getOne(vendorId);
+		return purchaseVoucherRepository.findByCompanyAndVendorAndStatusAndHasAdjustment(company, vendor, status,
+				false);
 	}
-	
+
 	@GetMapping("/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Company company = companyRepository.findOne(companyId);
-		List<PurchaseVoucher> vpList = purchaseVoucherRepository.findByCompanyAndDateBetween(company, startDate, endDate);
+	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Company company = companyRepository.getOne(companyId);
+		List<PurchaseVoucher> vpList = purchaseVoucherRepository.findByCompanyAndDateBetween(company, startDate,
+				endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
-			Map<String, Object>  map = new LinkedHashMap();
+			Map<String, Object> map = new LinkedHashMap();
 			map.put("number", elt.getNumber());
 			map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(elt.getDate()));
 			map.put("payee", elt.getVendor().getName());
@@ -108,7 +113,7 @@ public class PurchaseVoucherRestController {
 			map.put("status", elt.getStatus());
 			vpMapList.add(map);
 		});
-		
+
 		return vpMapList;
 	}
 }

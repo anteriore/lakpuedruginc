@@ -19,14 +19,14 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.ProductMovementServ
 @RestController
 @RequestMapping("rest/product-movements")
 public class ProductMovementRestController {
-	@Autowired
-	private ProductMovementService productMovementService;
-	@Autowired
-	private ProductMovementRepository productMovementRepository;
-	@Autowired
-	private CompanyRepository companyRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private ProductMovementService productMovementService;
+    @Autowired
+    private ProductMovementRepository productMovementRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    @GetMapping("/{id}")
     public ProductMovement get(@PathVariable Long id) {
         return productMovementRepository.getOne(id);
     }
@@ -40,17 +40,17 @@ public class ProductMovementRestController {
     public ProductMovement upsert(@RequestBody ProductMovement productMovement) {
         return productMovementService.saveProductMovement(productMovement);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		productMovementRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        productMovementRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/company/{id}")
     public List<ProductMovement> listByCompany(@PathVariable Long id) {
-    		Company company = companyRepository.findOne(id);
-    		return productMovementRepository.findByCompany(company);
+        Company company = companyRepository.getOne(id);
+        return productMovementRepository.findByCompany(company);
     }
-	
-}	
+
+}

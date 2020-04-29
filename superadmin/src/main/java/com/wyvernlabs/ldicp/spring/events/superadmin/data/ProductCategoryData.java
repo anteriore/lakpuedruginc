@@ -13,13 +13,13 @@ public class ProductCategoryData {
 	private ProductCategoryRepository categoryRepository;
 	@Autowired
 	private ProductDivisionRepository divisionRepository;
-	
+
 	public void init() {
 		ProductCategory category = new ProductCategory();
 		category.setCode("CAT1");
 		category.setDescription("DESC1");
 		category.setTitle("Category 1");
-		category.setProductDivision(divisionRepository.findOne(1L));
+		category.setProductDivision(divisionRepository.getOne(1L));
 		categoryRepository.save(category);
 	}
 }

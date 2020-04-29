@@ -1,6 +1,7 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,11 +14,15 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.PurchaseRequest;
 public interface PurchaseRequestRepository extends JpaRepository<PurchaseRequest, Long> {
 
 	Set<PurchaseRequest> findByCompany(Company company);
+
 	PurchaseRequest findByNumber(String prfNumber);
-	PurchaseRequest findById(Long id);
+
+	PurchaseRequest getOne(Long id);
+
 	Set<PurchaseRequest> findByCompanyAndStatusNot(Company company, String string);
+
 	List<PurchaseRequest> findByCompanyAndDepartment(Company company, Department d);
-	
+
 	@Query("SELECT MAX(prf.id) FROM PurchaseRequest prf")
 	public Long getMaxId();
 }

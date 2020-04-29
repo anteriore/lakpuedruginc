@@ -24,8 +24,9 @@ public class MaterialReevaluationData {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private UserRepository userRepository;
+
 	public void init() {
-		Company c1 = companyRepository.findOne(1L);
+		Company c1 = companyRepository.getOne(1L);
 		MaterialReevaluation mr = new MaterialReevaluation();
 		List<ApprovedReceipt> approvedItems = approvedItemRepository.findAll();
 		mr.setApprovedReceipt(approvedItems.get(0));

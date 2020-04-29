@@ -18,17 +18,17 @@ public class DepotData {
 	private AreaRepository areaRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
-	
+
 	public void init() {
 		Depot depot = new Depot();
-		Area luzon = areaRepository.findOne(1L);
-		Company c1 = companyRepository.findOne(1L);
+		Area luzon = areaRepository.getOne(1L);
+		Company c1 = companyRepository.getOne(1L);
 		depot.setCode("BAC-007");
 		depot.setName("BACOLOD");
 		depot.setArea(luzon);
 		depot.setCompany(c1);
 		depotRepository.save(depot);
-		
+
 		depot = new Depot();
 		depot.setCode("CEB-001");
 		depot.setName("CEBU");

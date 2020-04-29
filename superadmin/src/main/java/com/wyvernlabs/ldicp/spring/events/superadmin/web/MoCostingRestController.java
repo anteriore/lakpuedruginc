@@ -21,20 +21,19 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MoCostingEmploye
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MoCostingInventoryRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MoCostingRepository;
 
-
 @RestController
 @RequestMapping("rest/moCosting")
 public class MoCostingRestController {
     private static final Logger logger = LoggerFactory.getLogger(MoCostingRestController.class);
 
-   @Autowired
-   private MoCostingRepository moCostingRepository;
-   @Autowired
-   private MoCostingEmployeeRepository moCostingEmployeeRepository;
-   @Autowired
-   private MoCostingInventoryRepository moCostingInventoryRepository;
-   @Autowired
-   private CompanyRepository companyRepository;
+    @Autowired
+    private MoCostingRepository moCostingRepository;
+    @Autowired
+    private MoCostingEmployeeRepository moCostingEmployeeRepository;
+    @Autowired
+    private MoCostingInventoryRepository moCostingInventoryRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @PostMapping
     public MoCosting upsert(@RequestBody MoCosting moCosting) {
@@ -55,9 +54,10 @@ public class MoCostingRestController {
 
     @GetMapping("/company/{companyId}")
     public List<MoCosting> listByCompany(@PathVariable Long companyId) {
-        Company company = companyRepository.findOne(companyId);
+        Company company = companyRepository.getOne(companyId);
         return moCostingRepository.findByCompany(company);
     }
+
     @GetMapping()
     public List<MoCosting> list() {
         return moCostingRepository.findAll();

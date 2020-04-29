@@ -17,7 +17,7 @@ public class ProcedureData {
 
 	public void init() {
 		Procedures procedure = new Procedures();
-		ProcedureArea procedureArea = procedureAreaRepository.findOne(1L);
+		ProcedureArea procedureArea = procedureAreaRepository.getOne(1L);
 		procedure.setCode("PROC1");
 		procedure.setName("Procedure 1");
 		procedure.setProcedureArea(procedureArea);

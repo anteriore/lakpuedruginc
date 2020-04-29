@@ -32,14 +32,14 @@ public class ProductMovementData {
 	private UserRepository userRepository;
 	@Autowired
 	private ProductRepository productRepository;
-	
+
 	public void init() {
 		ProductMovement pm = new ProductMovement();
-		Company company = companyRepository.findOne(1L);
-		Depot depot = depotRepository.findOne(1L);
-		User requestedBy = userRepository.findOne(1L);
-		Product product = productRepository.findOne(1L);
-		
+		Company company = companyRepository.getOne(1L);
+		Depot depot = depotRepository.getOne(1L);
+		User requestedBy = userRepository.getOne(1L);
+		Product product = productRepository.getOne(1L);
+
 		List<ProductMovementItem> products = new ArrayList<ProductMovementItem>();
 		pm.setCompany(company);
 		pm.setDate(new Date());
@@ -52,7 +52,7 @@ public class ProductMovementData {
 		pm.setRemarks("remarks 1");
 		pm.setRequestedBy(requestedBy);
 		pm.setType(ProductMovementType.IN);
-		
+
 		productMovementService.saveProductMovement(pm);
 	}
 }

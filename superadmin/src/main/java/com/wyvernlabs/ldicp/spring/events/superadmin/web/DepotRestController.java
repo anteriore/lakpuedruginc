@@ -18,10 +18,11 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
 @RestController
 @RequestMapping("rest/depots")
 public class DepotRestController {
-	private static final Logger logger = LoggerFactory.getLogger(DepotRestController.class);
-	@Autowired
-	private DepotRepository depotRepository;
-	@GetMapping("/{id}")
+    private static final Logger logger = LoggerFactory.getLogger(DepotRestController.class);
+    @Autowired
+    private DepotRepository depotRepository;
+
+    @GetMapping("/{id}")
     public Depot get(@PathVariable Long id) {
         return depotRepository.getOne(id);
     }
@@ -35,10 +36,10 @@ public class DepotRestController {
     public Depot upsert(@RequestBody Depot depot) {
         return depotRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		depotRepository.delete(id);
-		return true;
-	}
+    public boolean delete(@RequestBody Long id) {
+        depotRepository.deleteById(id);
+        return true;
+    }
 }

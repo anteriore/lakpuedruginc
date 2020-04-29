@@ -23,7 +23,7 @@ public class AreaRestController {
 
 	private AreaRepository areaRepository;
 	private CompanyRepository companyRepository;
-	
+
 	public AreaRestController(AreaRepository areaRepository, CompanyRepository companyRepository) {
 		this.areaRepository = areaRepository;
 		this.companyRepository = companyRepository;
@@ -46,13 +46,13 @@ public class AreaRestController {
 
 	@GetMapping("/company/{companyId}")
 	public List<Area> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return areaRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		areaRepository.delete(id);
+		areaRepository.deleteById(id);
 		return true;
 	}
 }

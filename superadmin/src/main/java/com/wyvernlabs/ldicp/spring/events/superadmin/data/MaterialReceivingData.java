@@ -23,17 +23,18 @@ public class MaterialReceivingData {
 	private MaterialIssuanceRepository materialIssuanceRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+
 	public void init() {
 		MaterialReceiving mr = new MaterialReceiving();
-		User receivedBy = userRepository.findOne(1L);
-		MaterialIssuance mis = materialIssuanceRepository.findOne(1L);
-		
+		User receivedBy = userRepository.getOne(1L);
+		MaterialIssuance mis = materialIssuanceRepository.getOne(1L);
+
 		mr.setDate(new Date());
 		mr.setMis(mis);
 		mr.setReceivedBy(receivedBy);
 		mr.setRemarks("Remarks");
-		mr.setCompany(companyRepository.findOne(1L));
+		mr.setCompany(companyRepository.getOne(1L));
 		materialReceivingService.saveMaterialReceiving(mr);
-		
+
 	}
 }

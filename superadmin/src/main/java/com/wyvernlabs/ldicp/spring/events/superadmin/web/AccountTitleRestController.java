@@ -18,16 +18,17 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.AccountTitleRepo
 public class AccountTitleRestController {
 	@Autowired
 	private AccountTitleRepository accountTitleRepository;
-	
+
 	@GetMapping("/{id}")
 	public AccountTitle get(@PathVariable Long id) {
 		return accountTitleRepository.getOne(id);
 	}
-	
+
 	@GetMapping("/title/{name}")
 	public AccountTitle getByName(@PathVariable String name) {
-		return accountTitleRepository.findByTitleStartingWith(name).size() > 0 ? 
-				accountTitleRepository.findByTitleStartingWith(name).get(0): null;
+		return accountTitleRepository.findByTitleStartingWith(name).size() > 0
+				? accountTitleRepository.findByTitleStartingWith(name).get(0)
+				: null;
 	}
 
 	@GetMapping()
@@ -39,23 +40,22 @@ public class AccountTitleRestController {
 	public AccountTitle upsert(@RequestBody AccountTitle accountTitle) {
 		return accountTitleRepository.save(accountTitle);
 	}
-	
+
 	@GetMapping("/level/{level}/parent/{parentId}")
 	public List<AccountTitle> listByLevelAndParent(@PathVariable int level, @PathVariable Long parentId) {
-		if(parentId < 0 && level == 1) {
+		if (parentId < 0 && level == 1) {
 			return accountTitleRepository.findByLevel(1);
 		}
-		
-		AccountTitle parent = accountTitleRepository.findOne(parentId);
-		
+
+		AccountTitle parent = accountTitleRepository.getOne(parentId);
+
 		return accountTitleRepository.findByLevelAndParent(level, parent);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		accountTitleRepository.delete(id);
+		accountTitleRepository.deleteById(id);
 		return true;
 	}
-	
-	
+
 }

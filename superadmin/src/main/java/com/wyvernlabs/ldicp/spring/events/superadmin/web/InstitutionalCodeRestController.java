@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.InstitutionalCod
 @RequestMapping("rest/institutional-codes")
 public class InstitutionalCodeRestController {
 
-	@Autowired
-	private InstitutionalCodeRepository institutionalCodeRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private InstitutionalCodeRepository institutionalCodeRepository;
+
+    @GetMapping("/{id}")
     public InstitutionalCode get(@PathVariable Long id) {
         return institutionalCodeRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class InstitutionalCodeRestController {
     public InstitutionalCode upsert(@RequestBody InstitutionalCode depot) {
         return institutionalCodeRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	institutionalCodeRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        institutionalCodeRepository.deleteById(id);
+        return true;
     }
 }

@@ -25,44 +25,49 @@ public class OrderSlipService {
 	private SalesOrderRepository salesOrderRepository;
 	@Autowired
 	private ProductInventoryRepository productInventoryRepository;
+
 	@Transactional
 	public OrderSlip saveOrderSlip(OrderSlip orderSlip) {
-		for(OrderedProduct orderedProduct: orderSlip.getOrderedProducts()) {
+		for (OrderedProduct orderedProduct : orderSlip.getOrderedProducts()) {
 			orderedProduct.setOrderSlipNo(orderSlip.getNumber());
-			SalesOrderProduct salesOrderProduct = salesOrderProductRepository.findOne(orderedProduct.getSalesOrderProductId());
+			SalesOrderProduct salesOrderProduct = salesOrderProductRepository
+					.getOne(orderedProduct.getSalesOrderProductId());
 			orderedProduct.setUnitPrice(salesOrderProduct.getUnitPrice());
-			if(salesOrderProduct.getStatus().equals("Pending")) {
-				if(orderedProduct.getQuantity() >= salesOrderProduct.getQuantity()) {
+			if (salesOrderProduct.getStatus().equals("Pending")) {
+				if (orderedProduct.getQuantity() >= salesOrderProduct.getQuantity()) {
 					salesOrderProduct.setStatus("In Transit");
-				}else {
+				} else {
 					salesOrderProduct.setStatus("Incomplete");
-					salesOrderProduct.setQuantityRemaining(salesOrderProduct.getQuantity() - orderedProduct.getQuantity());
+					salesOrderProduct
+							.setQuantityRemaining(salesOrderProduct.getQuantity() - orderedProduct.getQuantity());
 				}
-			}else if(salesOrderProduct.getStatus().equals("Incomplete")) {
-				if(orderedProduct.getQuantity() >= salesOrderProduct.getQuantityRemaining()) {
+			} else if (salesOrderProduct.getStatus().equals("Incomplete")) {
+				if (orderedProduct.getQuantity() >= salesOrderProduct.getQuantityRemaining()) {
 					salesOrderProduct.setStatus("In Transit");
-				}else {
-					salesOrderProduct.setQuantityRemaining(salesOrderProduct.getQuantity() - orderedProduct.getQuantity());
+				} else {
+					salesOrderProduct
+							.setQuantityRemaining(salesOrderProduct.getQuantity() - orderedProduct.getQuantity());
 				}
 			}
-			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(orderedProduct.getProduct(), orderSlip.getDepot());
+			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(orderedProduct.getProduct(),
+					orderSlip.getDepot());
 			inventory.setQuantity(inventory.getQuantity() - orderedProduct.getQuantity());
 			productInventoryRepository.save(inventory);
-			
+
 			orderedProduct.setDepot(orderSlip.getDepot());
 		}
-		
-		SalesOrder so = salesOrderRepository.findOne(orderSlip.getSalesOrder().getId());
-		if(so.allProductsInTransit()) {
+
+		SalesOrder so = salesOrderRepository.getOne(orderSlip.getSalesOrder().getId());
+		if (so.allProductsInTransit()) {
 			so.setStatus("In Transit");
 			salesOrderRepository.save(so);
-		}else {
-			if(!orderSlip.getOrderedProducts().isEmpty()) {
+		} else {
+			if (!orderSlip.getOrderedProducts().isEmpty()) {
 				so.setStatus("Incomplete");
 				salesOrderRepository.save(so);
 			}
 		}
-		
+
 		return orderSlipRepository.save(orderSlip);
 	}
 }

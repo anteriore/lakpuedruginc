@@ -27,7 +27,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.RecipeRepository
 @RequestMapping("rest/inventory")
 public class InventoryRestController {
     private static final Logger logger = LoggerFactory.getLogger(InventoryRestController.class);
-    
+
     @Autowired
     private InventoryRepository inventoryRepository;
     @Autowired
@@ -36,7 +36,7 @@ public class InventoryRestController {
     private ItemRepository itemRepository;
     @Autowired
     private RecipeRepository recipeRepository;
-    
+
     @GetMapping("/{id}")
     public Inventory get(@PathVariable Long id) {
         return inventoryRepository.getOne(id);
@@ -51,56 +51,56 @@ public class InventoryRestController {
     public Inventory upsert(@RequestBody Inventory item) {
         return inventoryRepository.save(item);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		inventoryRepository.delete(id);
-		return true;
-	}
-    
-    @GetMapping("/company/{companyId}")
-	public List<Inventory> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
-		return inventoryRepository.findByCompanyOrderByDateCreatedDesc(company);
-	}
-    
-    @GetMapping("/company/{companyId}/item/{itemId}")
-	public List<Inventory> listByCompany(@PathVariable Long companyId, @PathVariable Long itemId) {
-		Company company = companyRepository.findOne(companyId);
-		Item item = itemRepository.findOne(itemId);
-		return inventoryRepository.findByCompanyAndItemOrderByDateCreatedDesc(company, item);
-	}
-    
-    @GetMapping("/company/{companyId}/view")
-    public List<Inventory> listByCompanyView(@PathVariable Long companyId){
-    	Company company = companyRepository.findOne(companyId);
-    	return inventoryRepository.findSumQuantityByCompanyGroupByItem(company);
+    public boolean delete(@RequestBody Long id) {
+        inventoryRepository.deleteById(id);
+        return true;
     }
-    
+
+    @GetMapping("/company/{companyId}")
+    public List<Inventory> listByCompany(@PathVariable Long companyId) {
+        Company company = companyRepository.getOne(companyId);
+        return inventoryRepository.findByCompanyOrderByDateCreatedDesc(company);
+    }
+
+    @GetMapping("/company/{companyId}/item/{itemId}")
+    public List<Inventory> listByCompany(@PathVariable Long companyId, @PathVariable Long itemId) {
+        Company company = companyRepository.getOne(companyId);
+        Item item = itemRepository.getOne(itemId);
+        return inventoryRepository.findByCompanyAndItemOrderByDateCreatedDesc(company, item);
+    }
+
+    @GetMapping("/company/{companyId}/view")
+    public List<Inventory> listByCompanyView(@PathVariable Long companyId) {
+        Company company = companyRepository.getOne(companyId);
+        return inventoryRepository.findSumQuantityByCompanyGroupByItem(company);
+    }
+
     @GetMapping("/item/control-number/{controlNumber}")
     public Item findItemByControlNumber(@PathVariable String controlNumber) {
-    	List<Inventory> inventoryList = inventoryRepository.findByControlNumber(controlNumber);
-    	return inventoryList.size() > 0 ? inventoryList.get(0).getItem() : new Item();
+        List<Inventory> inventoryList = inventoryRepository.findByControlNumber(controlNumber);
+        return inventoryList.size() > 0 ? inventoryList.get(0).getItem() : new Item();
     }
-    
+
     @GetMapping("/company/{companyId}/stock/{itemId}")
-	public int getStockQuantityOfItem(@PathVariable Long companyId, @PathVariable Long itemId) {
-		Item item = itemRepository.findOne(itemId);
-		Company company = companyRepository.findOne(companyId);
-		int sum = 0;
-		
-		List<Inventory> inventoryList = inventoryRepository.findByItemAndCompany(item, company);
-		for(Inventory inventory : inventoryList) {
-			sum += inventory.getQuantity();
-		}
-		
-		return sum;
-	}
+    public int getStockQuantityOfItem(@PathVariable Long companyId, @PathVariable Long itemId) {
+        Item item = itemRepository.getOne(itemId);
+        Company company = companyRepository.getOne(companyId);
+        int sum = 0;
+
+        List<Inventory> inventoryList = inventoryRepository.findByItemAndCompany(item, company);
+        for (Inventory inventory : inventoryList) {
+            sum += inventory.getQuantity();
+        }
+
+        return sum;
+    }
 
     @GetMapping("/company/{companyId}/recipe/{recipeId}")
     public List<Inventory> getRecipeItemsOnInventory(@PathVariable Long companyId, @PathVariable Long recipeId) {
         Recipe recipe = recipeRepository.getOne(recipeId);
-        Company company = companyRepository.findOne(companyId);
+        Company company = companyRepository.getOne(companyId);
 
         List<Inventory> inventoryList = new ArrayList<>();
         for (Ingredient ingredient : recipe.getActiveIngredientGroup().getIngredients()) {
@@ -108,12 +108,7 @@ public class InventoryRestController {
             inventoryList.addAll(inventories);
         }
 
-
         return inventoryList;
     }
 
-
-    
-    
-    
 }

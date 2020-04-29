@@ -21,16 +21,17 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.MemoSlipService;
 @RestController
 @RequestMapping("rest/debit-memos")
 public class DebitMemoRestController {
-private static final Logger logger = LoggerFactory.getLogger(DebitMemoRestController.class);
-    
+    private static final Logger logger = LoggerFactory.getLogger(DebitMemoRestController.class);
+
     @Autowired
     private DebitMemoRepository debitMemoRepository;
-    
+
     @Autowired
     private DepotRepository depotRepository;
-    
+
     @Autowired
     private MemoSlipService memoSlipService;
+
     @GetMapping("/{id}")
     public DebitMemo get(@PathVariable Long id) {
         return debitMemoRepository.getOne(id);
@@ -45,16 +46,16 @@ private static final Logger logger = LoggerFactory.getLogger(DebitMemoRestContro
     public DebitMemo upsert(@RequestBody DebitMemo debitMemo) {
         return (DebitMemo) memoSlipService.saveMemoSlip(debitMemo);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		debitMemoRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        debitMemoRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/depot/{depotId}")
     public List<DebitMemo> listByDepot(@PathVariable Long depotId) {
-    	Depot depot = depotRepository.findOne(depotId);
+        Depot depot = depotRepository.getOne(depotId);
         return debitMemoRepository.findByDepot(depot);
     }
 }

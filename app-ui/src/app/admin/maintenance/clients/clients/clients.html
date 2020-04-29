@@ -2,8 +2,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<h4 class="modal-title">
-				Find Client <a
-					class="button-link btn btn-create btn-sm float-lg-right"
+				Find Client <a class="button-link btn btn-create btn-sm float-lg-right"
 					ng-click="$ctrl.showAddClient(true)">+ Add Client</a>
 			</h4>
 			<button class="close" data-dismiss="modal" type="button">
@@ -13,88 +12,90 @@
 		<div class="modal-body">
 			<div class="searchbox-modal">
 				<div class="searchbox-content">
-						<div class=" search-modal horizontal-align -between">
-								<div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
-								<input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"/>
-								<input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"/>
-								<input class="form-control -borderless search" placeholder="tin" type="text" name="search" ng-model="$ctrl.searchTin"/>
-							</div>
+					<div class=" search-modal horizontal-align -between">
+						<div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
+						<input class="form-control -borderless search" placeholder="code" type="text" name="search"
+							ng-model="$ctrl.searchCode" />
+						<input class="form-control -borderless search" placeholder="name" type="text" name="search"
+							ng-model="$ctrl.searchName" />
+						<input class="form-control -borderless search" placeholder="tin" type="text" name="search"
+							ng-model="$ctrl.searchTin" />
+					</div>
 				</div>
 			</div>
-			<client-form ng-show="$ctrl.addClient" client="$ctrl.client"
-				message="{{ $ctrl.error }}" button="Save"
+			<client-form ng-show="$ctrl.addClient" client="$ctrl.client" message="{{ $ctrl.error }}" button="Save"
 				on-submit="$ctrl.saveClient($event);"> </client-form>
 			<div class="wrapper scroll-section">
 				<table class="table find-vendor">
 					<thead>
 						<tr>
-								<th>
-										<a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">ID
-											<span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span>
-											<span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span>
-										</a>
-									</th>
-									<th>
-										<a href="#" ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
-											<span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
-												<i class="fa fa-caret-down"></i>
-											</span>
-											<span ng-show="$ctrl.sortType == 'code' && $ctrl.sortReverse">
-												<i class="fa fa-caret-up"></i>
-											</span>
-										</a>
-									</th>
-									<th>
-										<a href="#" ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
-											<span ng-show="$ctrl.sortType == 'name' && !$ctrl.sortReverse">
-												<i class="fa fa-caret-down"></i>
-											</span>
-											<span ng-show="$ctrl.sortType == 'name' && $ctrl.sortReverse">
-												<i class="fa fa-caret-up"></i>
-											</span>
-										</a>
-									</th>
 							<th>
-									<a href="#" ng-click="$ctrl.sortType = 'tin';$ctrl.sortReverse = !$ctrl.sortReverse;">T.I.N No.
-										<span ng-show="$ctrl.sortType == 'tin' && !$ctrl.sortReverse">
-											<i class="fa fa-caret-down"></i>
-										</span>
-										<span ng-show="$ctrl.sortType == 'tin' && $ctrl.sortReverse">
-											<i class="fa fa-caret-up"></i>
-										</span>
-									</a>
-								</th>
+								<a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">ID
+									<span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse"><i
+											class="fa fa-caret-down"></i></span>
+									<span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse"><i
+											class="fa fa-caret-up"></i></span>
+								</a>
+							</th>
+							<th>
+								<a href="#"
+									ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
+									<span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
+										<i class="fa fa-caret-down"></i>
+									</span>
+									<span ng-show="$ctrl.sortType == 'code' && $ctrl.sortReverse">
+										<i class="fa fa-caret-up"></i>
+									</span>
+								</a>
+							</th>
+							<th>
+								<a href="#"
+									ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
+									<span ng-show="$ctrl.sortType == 'name' && !$ctrl.sortReverse">
+										<i class="fa fa-caret-down"></i>
+									</span>
+									<span ng-show="$ctrl.sortType == 'name' && $ctrl.sortReverse">
+										<i class="fa fa-caret-up"></i>
+									</span>
+								</a>
+							</th>
+							<th>
+								<a href="#"
+									ng-click="$ctrl.sortType = 'tin';$ctrl.sortReverse = !$ctrl.sortReverse;">T.I.N No.
+									<span ng-show="$ctrl.sortType == 'tin' && !$ctrl.sortReverse">
+										<i class="fa fa-caret-down"></i>
+									</span>
+									<span ng-show="$ctrl.sortType == 'tin' && $ctrl.sortReverse">
+										<i class="fa fa-caret-up"></i>
+									</span>
+								</a>
+							</th>
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 
-						<tr dir-paginate="client in $ctrl.clients | itemsPerPage: $ctrl.itemsPerPage" total-items="$ctrl.totalCount"">
+						<tr dir-paginate="client in $ctrl.clients | itemsPerPage: $ctrl.itemsPerPage"
+							total-items="$ctrl.totalCount"">
 							<td>{{client.id}}</td>
 							<td>{{client.code}}</td>
 							<td>{{client.name}}</td>
 							<td>{{client.tin}}</td>
-							<td class="tablebutton-form">
-								<div class="holder">
-									<button ng-click="$ctrl.editClient(client.id)"
-										class="btn btn-compose">
-										<i class="ion-ios-compose-outline"></i>
-									</button>
-									<button ng-click="$ctrl.deleteClient(client.id)" class="btn btn-archive">
-										<i class="ion-android-close"></i>
-									</button>
-								</div>
+							<td class=" tablebutton-form">
+							<div class="holder">
+								<button ng-click="$ctrl.editClient(client.id)" class="btn btn-compose">
+									<i class="ion-ios-compose-outline"></i>
+								</button>
+								<button ng-click="$ctrl.deleteClient(client.id)" class="btn btn-archive">
+									<i class="ion-android-close"></i>
+								</button>
+							</div>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<dir-pagination-controls
-					max-size="$ctrl.totalCount"
-					direction-links="false"
-					boundary-links="false" 
-					on-page-change="$ctrl.getData(newPageNumber)"
-					style="float:right; padding-right:10px;"
-					>
+				<dir-pagination-controls max-size="$ctrl.totalCount" direction-links="false" boundary-links="false"
+					on-page-change="$ctrl.getData(newPageNumber)" style="float:right; padding-right:10px;">
 				</dir-pagination-controls>
 			</div>
 		</div>

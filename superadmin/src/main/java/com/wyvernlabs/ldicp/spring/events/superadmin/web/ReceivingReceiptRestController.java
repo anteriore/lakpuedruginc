@@ -56,34 +56,34 @@ public class ReceivingReceiptRestController {
 
 	@GetMapping("/company/{companyId}")
 	public List<ReceivingReceipt> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return receivingReceiptRepository.findByCompany(company);
 	}
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		receivingReceiptRepository.delete(id);
+		receivingReceiptRepository.deleteById(id);
 		return true;
 	}
 
 	@GetMapping("/company/{companyId}/po/{poId}")
 	public List<ReceivingReceipt> listByCompanyAndPurchaseOrder(@PathVariable Long companyId, @PathVariable Long poId) {
-		Company company = companyRepository.findOne(companyId);
-		PurchaseOrder po = purchaseOrderRepository.findOne(poId);
+		Company company = companyRepository.getOne(companyId);
+		PurchaseOrder po = purchaseOrderRepository.getOne(poId);
 		return receivingReceiptRepository.findByCompanyAndPurchaseOrder(company, po);
 
 	}
 
 	@GetMapping("/company/{companyId}/status/{status}")
 	public List<ReceivingReceipt> listByStatus(@PathVariable String status, @PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return receivingReceiptRepository.findByCompanyAndStatus(company, status);
 	}
 
 	@GetMapping("/company/{companyId}/stock/{itemId}")
 	public int getQuarantinedQuantityOfItem(@PathVariable Long companyId, @PathVariable Long itemId) {
 		int sum = 0;
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 
 		List<ReceivingReceipt> receivingReceipts = receivingReceiptRepository.findByCompanyAndStatus(company,
 				"Pending");
@@ -97,7 +97,7 @@ public class ReceivingReceiptRestController {
 
 	@GetMapping("/company/{companyId}/no-purchase-voucher")
 	public List<ReceivingReceipt> ListRrWithoutPurchaseVoucher(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return receivingReceiptRepository.findByCompanyAndPurchaseVoucher(company, null);
 	}
 }

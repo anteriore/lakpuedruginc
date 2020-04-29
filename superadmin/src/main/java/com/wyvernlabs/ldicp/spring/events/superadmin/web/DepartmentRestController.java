@@ -20,44 +20,45 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepartmentReposi
 @RequestMapping("rest/departments")
 public class DepartmentRestController {
 	private static final Logger logger = LoggerFactory.getLogger(DepartmentRestController.class);
-	
+
 	private DepartmentRepository departmentRepository;
 	private CompanyRepository companyRepository;
+
 	public DepartmentRestController(DepartmentRepository departmentRepository, CompanyRepository companyRepository) {
 		this.departmentRepository = departmentRepository;
 		this.companyRepository = companyRepository;
 	}
-	
+
 	@GetMapping("/{id}")
-    public Department get(@PathVariable Long id) {
-        return departmentRepository.getOne(id);
-    }
+	public Department get(@PathVariable Long id) {
+		return departmentRepository.getOne(id);
+	}
 
-    @GetMapping()
-    public List<Department> list() {
-        return departmentRepository.findAll();
-    }
+	@GetMapping()
+	public List<Department> list() {
+		return departmentRepository.findAll();
+	}
 
-    @PostMapping()
-    public Department upsert(@RequestBody Department department) {
-        return departmentRepository.save(department);
-    }
-	
-    @GetMapping("/company/{companyId}")
+	@PostMapping()
+	public Department upsert(@RequestBody Department department) {
+		return departmentRepository.save(department);
+	}
+
+	@GetMapping("/company/{companyId}")
 	public List<Department> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return departmentRepository.findByCompany(company);
 	}
-	
-    @PostMapping("/delete")
+
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		departmentRepository.delete(id);
+		departmentRepository.deleteById(id);
 		return true;
 	}
-    
-    @GetMapping("/name/{departmentName}")
-    public Department getByName(@PathVariable String departmentName) {
-    	return departmentRepository.findByName(departmentName);
-    }
-	
+
+	@GetMapping("/name/{departmentName}")
+	public Department getByName(@PathVariable String departmentName) {
+		return departmentRepository.findByName(departmentName);
+	}
+
 }

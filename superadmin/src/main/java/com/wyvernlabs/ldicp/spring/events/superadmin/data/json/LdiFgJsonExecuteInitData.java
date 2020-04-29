@@ -63,7 +63,7 @@ public class LdiFgJsonExecuteInitData {
     @Autowired
     private ItemRepository itemRepository;
 
-    //@PostConstruct
+    // @PostConstruct
     public void init() {
         logger.info("LDI Loading data from client");
         DbxRequestConfig config = new DbxRequestConfig("ldi-project");
@@ -72,90 +72,106 @@ public class LdiFgJsonExecuteInitData {
         try {
             FullAccount account = cliente.users().getCurrentAccount();
             System.out.println(account.getName().getDisplayName());
-        }
-        catch (DbxException dbxe)
-        {
+        } catch (DbxException dbxe) {
             dbxe.printStackTrace();
         }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-//            companyData.init();
-                    List<Unit> units = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/unit.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Unit>>() {
-                    });
-                    unitRepository.save(units);
-                    List<Classification> classifications = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/classification.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Classification>>() {
-                    });
-                    classificationRepository.save(classifications);
+                    // companyData.init();
+                    List<Unit> units = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/ldi-fg/unit.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Unit>>() {
+                            });
+                    unitRepository.saveAll(units);
+                    List<Classification> classifications = om
+                            .readValue(
+                                    IOUtils.toString(
+                                            cliente.files().downloadBuilder("/json-data/ldi-fg/classification.json")
+                                                    .start().getInputStream(),
+                                            "UTF-8"),
+                                    new TypeReference<List<Classification>>() {
+                                    });
+                    classificationRepository.saveAll(classifications);
 
                     Company lcpi = companyRepository.findAll().get(0);
                     logger.info("====> company: " + lcpi.getName() + ", id: " + lcpi.getId());
-                    //lcpi department
-                    List<Department> departments = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/department.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Department>>() {
-                    });
+                    // lcpi department
+                    List<Department> departments = om.readValue(IOUtils.toString(cliente.files()
+                            .downloadBuilder("/json-data/ldi-fg/department.json").start().getInputStream(), "UTF-8"),
+                            new TypeReference<List<Department>>() {
+                            });
 
                     for (Department department : departments) {
                         department.setCompany(lcpi);
                     }
 
-                    departmentRepository.save(departments);
+                    departmentRepository.saveAll(departments);
 
-
-                    //lcpi area
-                    List<Area> areas = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/area.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Area>>() {
-                    });
+                    // lcpi area
+                    List<Area> areas = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/ldi-fg/area.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Area>>() {
+                            });
 
                     for (Area area : areas) {
                         area.setCompany(lcpi);
                     }
 
-                    areaRepository.save(areas);
+                    areaRepository.saveAll(areas);
 
-
-                    //lcpi depot
-                    List<Depot> depots = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/depot.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Depot>>() {
-                    });
+                    // lcpi depot
+                    List<Depot> depots = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/ldi-fg/depot.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Depot>>() {
+                            });
 
                     for (Depot depot : depots) {
                         depot.setCompany(lcpi);
                         depot.setArea(areaRepository.findByCompanyAndCode(lcpi, depot.getCode()));
                     }
 
-                    depotRepository.save(depots);
+                    depotRepository.saveAll(depots);
 
-//            userData.init();
+                    // userData.init();
 
-
-                    //lcpi clients
-                    List<Client> clients = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/client.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Client>>() {
-                    });
+                    // lcpi clients
+                    List<Client> clients = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/ldi-fg/client.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Client>>() {
+                            });
 
                     for (Client client : clients) {
                         client.setCompany(lcpi);
                     }
 
-                    clientRepository.save(clients);
+                    clientRepository.saveAll(clients);
 
-                    //lcpi vendors
-                    List<Vendor> vendors = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/supplier.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Vendor>>() {
-                    });
+                    // lcpi vendors
+                    List<Vendor> vendors = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/ldi-fg/supplier.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Vendor>>() {
+                            });
 
                     for (Vendor vendor : vendors) {
                         vendor.setCompany(lcpi);
                     }
 
-                    vendorRepository.save(vendors);
+                    vendorRepository.saveAll(vendors);
 
+                    // permissionData.init();
 
-//            permissionData.init();
+                    // lcpi itemtypes
 
-
-                    //lcpi itemtypes
-
-
-                    List<Item> items = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/materialrmpm.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Item>>() {
-                    });
+                    List<Item> items = om
+                            .readValue(
+                                    IOUtils.toString(
+                                            cliente.files().downloadBuilder("/json-data/ldi-fg/materialrmpm.json")
+                                                    .start().getInputStream(),
+                                            "UTF-8"),
+                                    new TypeReference<List<Item>>() {
+                                    });
                     for (Item item : items) {
                         List<ItemType> itemTypes = itemTypeRepository.findByCode(item.getCode());
                         ItemType itemType = new ItemType();
@@ -173,19 +189,24 @@ public class LdiFgJsonExecuteInitData {
                         }
                     }
 
-
                     groupData.init();
 
+                    // lcpi itemtypes
+                    List<FinishedGood> finishedGoods = om.readValue(
+                            IOUtils.toString(
+                                    cliente.files().downloadBuilder("/json-data/ldi-fg/ldi-fg-finishedgood2.json")
+                                            .start().getInputStream(),
+                                    "UTF-8"),
+                            new TypeReference<List<FinishedGood>>() {
+                            });
+                    finishedGoodRepository.saveAll(finishedGoods);
 
-                    //lcpi itemtypes
-                    List<FinishedGood> finishedGoods = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/ldi-fg/ldi-fg-finishedgood2.json").start().getInputStream(), "UTF-8"), new TypeReference<List<FinishedGood>>() {
-                    });
-                    finishedGoodRepository.save(finishedGoods);
-
-//            //lcpi itemtypes
-//            List<Employee> employees = om.readValue(new File(classLoader.getResource("/json-data/ldi-fg/employee.json").getFile()), new TypeReference<List<Employee>>() {
-//            });
-//            employeeRepository.save(employees);
+                    // //lcpi itemtypes
+                    // List<Employee> employees = om.readValue(new
+                    // File(classLoader.getResource("/json-data/ldi-fg/employee.json").getFile()),
+                    // new TypeReference<List<Employee>>() {
+                    // });
+                    // employeeRepository.save(employees);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -197,4 +218,3 @@ public class LdiFgJsonExecuteInitData {
 
     }
 }
-

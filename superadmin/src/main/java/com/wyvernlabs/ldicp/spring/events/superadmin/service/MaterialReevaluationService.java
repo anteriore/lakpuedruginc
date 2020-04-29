@@ -32,19 +32,25 @@ public class MaterialReevaluationService {
 	private InventoryRepository inventoryRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+
 	@Transactional
 	public MaterialReevaluation save(MaterialReevaluation materialEvaluation) {
 		String controlNumber = materialEvaluation.getApprovedReceipt().getControlNumber();
-		
-		//Company company = companyRepository.findOne(materialEvaluation.getCompany().getId());
-		Inventory inventory = inventoryRepository.findByControlNumberAndCompany(controlNumber, materialEvaluation.getCompany());
+
+		// Company company =
+		// companyRepository.getOne(materialEvaluation.getCompany().getId());
+		Inventory inventory = inventoryRepository.findByControlNumberAndCompany(controlNumber,
+				materialEvaluation.getCompany());
 		inventory.setBestBefore(materialEvaluation.getBestBefore());
 		inventory.setExpiration(materialEvaluation.getExpiration());
 		inventory.setReevaluation(materialEvaluation.getReevaluation());
 		inventory.setRetest(materialEvaluation.getRetest());
 		inventoryRepository.save(inventory);
-		
-		stockCardService.saveStockCard("MR(EVAL)", companyRepository.findOne(materialEvaluation.getCompany().getId()), materialEvaluation.getApprovedReceipt().getControlNumber(), new Date(), materialEvaluation.getApprovedReceipt().getApprovedQuantity(), materialEvaluation.getRemarks(), "NONE", materialEvaluation.getReevaluatedBy());
+
+		stockCardService.saveStockCard("MR(EVAL)", companyRepository.getOne(materialEvaluation.getCompany().getId()),
+				materialEvaluation.getApprovedReceipt().getControlNumber(), new Date(),
+				materialEvaluation.getApprovedReceipt().getApprovedQuantity(), materialEvaluation.getRemarks(), "NONE",
+				materialEvaluation.getReevaluatedBy());
 		return materialReevaluationRepository.save(materialEvaluation);
 	}
 

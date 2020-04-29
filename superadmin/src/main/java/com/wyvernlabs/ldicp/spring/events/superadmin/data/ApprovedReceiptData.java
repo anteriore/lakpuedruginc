@@ -41,18 +41,18 @@ public class ApprovedReceiptData {
 	private PurchaseRequestRepository purchaseRequestRepository;
 	@Autowired
 	private ApprovedReceiptService approvedReceiptService;
-	public void init() {
-		Company c1 = companyRepository.findOne(1L);
-		User u1 = userRepository.findOne(1L);
-		ReceivingReceipt rr1 = receivingReceiptRepository.findOne(1L);
-		ReceivingReceipt rr2 = receivingReceiptRepository.findOne(2L);
-		Item i1 = itemRepository.findOne(1L);
-		Item i2 = itemRepository.findOne(2L);
 
+	public void init() {
+		// https://stackoverflow.com/questions/24482117/when-use-getone-and-findone-methods-spring-data-jpa
+		Company c1 = companyRepository.getOne(1L);
+		User u1 = userRepository.getOne(1L);
+		ReceivingReceipt rr1 = receivingReceiptRepository.getOne(1L);
+		ReceivingReceipt rr2 = receivingReceiptRepository.getOne(2L);
+		Item i1 = itemRepository.getOne(1L);
+		Item i2 = itemRepository.getOne(2L);
 
 		logger.info("===> item to be moved to inventory: {} {}", i1.getName(), i1.getCode());
 		logger.info("===> item to be moved to inventory: {} {}", i2.getName(), i2.getCode());
-
 
 		ApprovedReceipt ar1 = new ApprovedReceipt();
 		ar1.setDate(new Date());
@@ -65,8 +65,8 @@ public class ApprovedReceiptData {
 		ar1.setReceivingReceipt(rr1);
 		ar1.setApprovedQuantity(100);
 		ar1.setReceivedQuantity(100);
-//		ar1.setApprovedQuantity(101);
-//		ar1.setRejectedQuantity(102);
+		// ar1.setApprovedQuantity(101);
+		// ar1.setRejectedQuantity(102);
 		ar1.setQcSamples(51);
 		ar1.setTotalQuantity(49);
 		ar1.setExpiration(new Date());
@@ -91,8 +91,8 @@ public class ApprovedReceiptData {
 		ar2.setReceivingReceipt(rr1);
 		ar2.setApprovedQuantity(50);
 		ar2.setReceivedQuantity(50);
-//		ar1.setApprovedQuantity(101);
-//		ar1.setRejectedQuantity(102);
+		// ar1.setApprovedQuantity(101);
+		// ar1.setRejectedQuantity(102);
 		ar2.setQcSamples(1);
 		ar2.setTotalQuantity(49);
 		ar2.setExpiration(new Date());
@@ -110,6 +110,5 @@ public class ApprovedReceiptData {
 		System.out.println(approvedReceipt.getControlNumber());
 
 	}
-	
-	
+
 }

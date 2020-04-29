@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductDivisionR
 @RequestMapping("rest/product-division-codes")
 public class ProductDivisionRestController {
 
-	@Autowired
-	private ProductDivisionRepository productDivisionRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private ProductDivisionRepository productDivisionRepository;
+
+    @GetMapping("/{id}")
     public ProductDivision get(@PathVariable Long id) {
         return productDivisionRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class ProductDivisionRestController {
     public ProductDivision upsert(@RequestBody ProductDivision depot) {
         return productDivisionRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	productDivisionRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        productDivisionRepository.deleteById(id);
+        return true;
     }
 }

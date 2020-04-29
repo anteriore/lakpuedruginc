@@ -21,30 +21,34 @@ public class SalesInvoiceService {
 	private SalesOrderProductRepository salesOrderProductRepository;
 	@Autowired
 	private SalesOrderRepository salesOrderRepository;
+
 	@Transactional
 	public SalesInvoice saveSalesInvoice(SalesInvoice salesInvoice) {
-		for(OrderedProduct salesInvoiceProduct: salesInvoice.getOrderedProducts()) {
+		for (OrderedProduct salesInvoiceProduct : salesInvoice.getOrderedProducts()) {
 			salesInvoiceProduct.setOrderSlipNo(salesInvoice.getNumber());
-			SalesOrderProduct salesOrderProduct = salesOrderProductRepository.findOne(salesInvoiceProduct.getSalesOrderProductId());
+			SalesOrderProduct salesOrderProduct = salesOrderProductRepository
+					.getOne(salesInvoiceProduct.getSalesOrderProductId());
 			salesInvoiceProduct.setUnitPrice(salesOrderProduct.getUnitPrice());
-			if(salesOrderProduct.getStatus().equals("Pending")) {
-				if(salesInvoiceProduct.getQuantity() >= salesOrderProduct.getQuantityRequested()) {
+			if (salesOrderProduct.getStatus().equals("Pending")) {
+				if (salesInvoiceProduct.getQuantity() >= salesOrderProduct.getQuantityRequested()) {
 					salesOrderProduct.setStatus("In Transit");
-				}else {
+				} else {
 					salesOrderProduct.setStatus("Incomplete");
-					salesOrderProduct.setQuantityRemaining(salesInvoiceProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
+					salesOrderProduct.setQuantityRemaining(
+							salesInvoiceProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
 				}
-			}else if(salesOrderProduct.getStatus().equals("Incomplete")) {
-				if(salesInvoiceProduct.getQuantity() >= salesOrderProduct.getQuantityRemaining()) {
+			} else if (salesOrderProduct.getStatus().equals("Incomplete")) {
+				if (salesInvoiceProduct.getQuantity() >= salesOrderProduct.getQuantityRemaining()) {
 					salesOrderProduct.setStatus("In Transit");
-				}else {
-					salesOrderProduct.setQuantityRemaining(salesInvoiceProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
+				} else {
+					salesOrderProduct.setQuantityRemaining(
+							salesInvoiceProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
 				}
 			}
 		}
-		
-		SalesOrder so = salesOrderRepository.findOne(salesInvoice.getSalesOrder().getId());
-		if(so.allProductsInTransit()) {
+
+		SalesOrder so = salesOrderRepository.getOne(salesInvoice.getSalesOrder().getId());
+		if (so.allProductsInTransit()) {
 			so.setStatus("In Transit");
 			salesOrderRepository.save(so);
 		}

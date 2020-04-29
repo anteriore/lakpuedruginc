@@ -17,31 +17,34 @@ public class DeliveryReceiptService {
 	private DeliveryReceiptRepository deliveryReceiptRepository;
 	@Autowired
 	private SalesOrderProductRepository salesOrderProductRepository;
-	
+
 	@Transactional
 	public DeliveryReceipt saveDeliveryReceipt(DeliveryReceipt deliveryReceipt) {
-		for(DeliveredProduct deliveredProduct: deliveryReceipt.getDeliveredProducts()) {
+		for (DeliveredProduct deliveredProduct : deliveryReceipt.getDeliveredProducts()) {
 			deliveredProduct.setDeliveryReceiptNo(deliveryReceipt.getNumber());
-			SalesOrderProduct salesOrderProduct = salesOrderProductRepository.findOne(deliveredProduct.getSalesOrderProductId());
-			if(salesOrderProduct.getStatus().equals("Pending")) {
-				if(deliveredProduct.getQuantity() >= salesOrderProduct.getQuantityRequested()) {
+			SalesOrderProduct salesOrderProduct = salesOrderProductRepository
+					.getOne(deliveredProduct.getSalesOrderProductId());
+			if (salesOrderProduct.getStatus().equals("Pending")) {
+				if (deliveredProduct.getQuantity() >= salesOrderProduct.getQuantityRequested()) {
 					salesOrderProduct.setStatus("In Transit");
-				}else {
+				} else {
 					salesOrderProduct.setStatus("Incomplete");
-					salesOrderProduct.setQuantityRemaining(deliveredProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
+					salesOrderProduct.setQuantityRemaining(
+							deliveredProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
 				}
-			}else if(salesOrderProduct.getStatus().equals("Incomplete")) {
-				if(deliveredProduct.getQuantity() >= salesOrderProduct.getQuantityRemaining()) {
+			} else if (salesOrderProduct.getStatus().equals("Incomplete")) {
+				if (deliveredProduct.getQuantity() >= salesOrderProduct.getQuantityRemaining()) {
 					salesOrderProduct.setStatus("In Transit");
-				}else {
-					salesOrderProduct.setQuantityRemaining(deliveredProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
+				} else {
+					salesOrderProduct.setQuantityRemaining(
+							deliveredProduct.getQuantity() - salesOrderProduct.getQuantityRequested());
 				}
 			}
 		}
-		
-		if(deliveryReceipt.allProductsInTransit())
+
+		if (deliveryReceipt.allProductsInTransit())
 			deliveryReceipt.setStatus("In Transit");
-		
+
 		return deliveryReceiptRepository.save(deliveryReceipt);
 	}
 }

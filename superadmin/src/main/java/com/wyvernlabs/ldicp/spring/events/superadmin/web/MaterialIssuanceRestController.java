@@ -31,37 +31,37 @@ public class MaterialIssuanceRestController {
 	private InventoryRepository inventoryRepository;
 	@Autowired
 	private MaterialIssuanceService materialIssuanceService;
+
 	@GetMapping("/{id}")
-    public MaterialIssuance get(@PathVariable Long id) {
-        return materialIssuanceRepository.getOne(id);
-    }
+	public MaterialIssuance get(@PathVariable Long id) {
+		return materialIssuanceRepository.getOne(id);
+	}
 
-    @GetMapping()
-    public List<MaterialIssuance> list() {
-        return materialIssuanceRepository.findAll();
-    }
+	@GetMapping()
+	public List<MaterialIssuance> list() {
+		return materialIssuanceRepository.findAll();
+	}
 
-    @PostMapping()
-    public MaterialIssuance upsert(@RequestBody MaterialIssuance item) {
-    	return materialIssuanceService.saveMaterialIssuance(item);
-    }
-    
-    @PostMapping("/delete")
+	@PostMapping()
+	public MaterialIssuance upsert(@RequestBody MaterialIssuance item) {
+		return materialIssuanceService.saveMaterialIssuance(item);
+	}
+
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		materialIssuanceRepository.delete(id);
+		materialIssuanceRepository.deleteById(id);
 		return true;
 	}
-    
-    @GetMapping("/company/{companyId}")
+
+	@GetMapping("/company/{companyId}")
 	public List<MaterialIssuance> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return materialIssuanceRepository.findByCompany(company);
 	}
-    
-    @GetMapping("/status/{status}")
-    public List<MaterialIssuance> listByStatus(@PathVariable String status){
-    	return materialIssuanceRepository.findByStatus(status);
-    }
-    
+
+	@GetMapping("/status/{status}")
+	public List<MaterialIssuance> listByStatus(@PathVariable String status) {
+		return materialIssuanceRepository.findByStatus(status);
+	}
 
 }

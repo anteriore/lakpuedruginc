@@ -23,7 +23,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.InventoryMovementSe
 @RequestMapping("rest/inventory-movements")
 public class InventoryMovementRestController {
     private static final Logger logger = LoggerFactory.getLogger(InventoryMovementRestController.class);
-    
+
     @Autowired
     private InventoryMovementRepository inventoryMovementRepository;
     @Autowired
@@ -32,7 +32,7 @@ public class InventoryMovementRestController {
     private ItemRepository itemRepository;
     @Autowired
     private InventoryMovementService inventoryMovementService;
-    
+
     @GetMapping("/{id}")
     public InventoryMovement get(@PathVariable Long id) {
         return inventoryMovementRepository.getOne(id);
@@ -42,21 +42,21 @@ public class InventoryMovementRestController {
     public List<InventoryMovement> list() {
         return inventoryMovementRepository.findAll();
     }
-    
+
     @GetMapping("/company/{companyId}")
-	public List<InventoryMovement> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
-		return inventoryMovementRepository.findByCompany(company);
-	}
+    public List<InventoryMovement> listByCompany(@PathVariable Long companyId) {
+        Company company = companyRepository.getOne(companyId);
+        return inventoryMovementRepository.findByCompany(company);
+    }
 
     @PostMapping()
     public InventoryMovement upsert(@RequestBody InventoryMovement item) {
         return inventoryMovementService.saveInventoryMovement(item);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	inventoryMovementRepository.delete(id);
-		return true;
-	}
+    public boolean delete(@RequestBody Long id) {
+        inventoryMovementRepository.deleteById(id);
+        return true;
+    }
 }

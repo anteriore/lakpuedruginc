@@ -42,40 +42,45 @@ public class SalesOrderProductRestController {
 	private ProductInventoryRepository productInventoryRepository;
 	@Autowired
 	private FinishedGoodRepository finishedGoodRepository;
+
 	@PostMapping("/cancel")
-	public CancelSalesOrderProduct cancelSalesOrderProduct(@RequestBody CancelSalesOrderProduct cancelSalesOrderProduct){
+	public CancelSalesOrderProduct cancelSalesOrderProduct(
+			@RequestBody CancelSalesOrderProduct cancelSalesOrderProduct) {
 		return cancelSalesOrderProductService.cancelSalesOrderProduct(cancelSalesOrderProduct);
 	}
-	
+
 	@GetMapping("/so/{soNumber}")
-	public List<ProductInventory> listBySoNumber(@PathVariable String soNumber){
+	public List<ProductInventory> listBySoNumber(@PathVariable String soNumber) {
 		SalesOrder so = salesOrderRepository.findByNumber(soNumber);
 		logger.info(so.toString());
-		List<SalesOrderProduct> soProductList = salesOrderProductRepository.findByDepotAndSoNumber(so.getDepot(), soNumber);
+		List<SalesOrderProduct> soProductList = salesOrderProductRepository.findByDepotAndSoNumber(so.getDepot(),
+				soNumber);
 		logger.info(soProductList.toString());
 		List<ProductInventory> productInventoryList = new ArrayList();
-		for(SalesOrderProduct soProduct : soProductList) {
-			productInventoryList.addAll(productInventoryRepository.findByDepotAndFinishedGood(so.getDepot(), soProduct.getFinishedGood()));
+		for (SalesOrderProduct soProduct : soProductList) {
+			productInventoryList.addAll(
+					productInventoryRepository.findByDepotAndFinishedGood(so.getDepot(), soProduct.getFinishedGood()));
 		}
-		
+
 		return productInventoryList;
 	}
-	
+
 	@GetMapping("/fg/{fgId}/depot/{depotId}/reserved-quantity")
 	public int getReservedQuantityOfFG(@PathVariable Long fgId, @PathVariable Long depotId) {
-		FinishedGood fg = finishedGoodRepository.findOne(fgId);
-		Depot depot = depotRepository.findOne(depotId);
-		String[] status = {"Pending", "Incomplete"};
-		List<SalesOrderProduct> soProductList = salesOrderProductRepository.findByStatusInAndDepotAndFinishedGood(status, depot, fg);
+		FinishedGood fg = finishedGoodRepository.getOne(fgId);
+		Depot depot = depotRepository.getOne(depotId);
+		String[] status = { "Pending", "Incomplete" };
+		List<SalesOrderProduct> soProductList = salesOrderProductRepository
+				.findByStatusInAndDepotAndFinishedGood(status, depot, fg);
 		int sum = 0;
-		for(SalesOrderProduct soProduct : soProductList) {
-			if(soProduct.getStatus().equals("Pending")) {
+		for (SalesOrderProduct soProduct : soProductList) {
+			if (soProduct.getStatus().equals("Pending")) {
 				sum += soProduct.getQuantity();
-			}else if(soProduct.getStatus().equals("Incomplete")) {
+			} else if (soProduct.getStatus().equals("Incomplete")) {
 				sum += soProduct.getQuantity() - soProduct.getQuantityRemaining();
 			}
 		}
-		
+
 		return sum;
 	}
 }

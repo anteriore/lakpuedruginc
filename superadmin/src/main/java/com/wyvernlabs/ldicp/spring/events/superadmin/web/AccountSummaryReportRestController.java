@@ -34,40 +34,46 @@ public class AccountSummaryReportRestController {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private AccountTitleEntryRepository accountTitleEntryRepository;
-	
+
 	@RequestMapping("/jv/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getListOfJVAccountSummary(@PathVariable Date startDate, @PathVariable Date endDate, @PathVariable Long companyId){
-		Company company = companyRepository.findOne(companyId);
-		List<JournalVoucher> jvs = journalVoucherRepository.findByCompanyAndStatusAndDateBetween(company, "Approved", startDate, endDate);
+	public List<Map<String, Object>> getListOfJVAccountSummary(@PathVariable Date startDate, @PathVariable Date endDate,
+			@PathVariable Long companyId) {
+		Company company = companyRepository.getOne(companyId);
+		List<JournalVoucher> jvs = journalVoucherRepository.findByCompanyAndStatusAndDateBetween(company, "Approved",
+				startDate, endDate);
 		List<Long> entryIds = new ArrayList<Long>();
 		jvs.stream().map(pjv -> pjv.getAccountTitles()).forEach(entryList -> {
 			entryList.forEach(elt -> {
 				entryIds.add(elt.getId());
 			});
 		});
-		
+
 		return formatMap(entryIds);
 	}
-	
+
 	@RequestMapping("/pjv/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getListOfPJVAccountSummary(@PathVariable Date startDate, @PathVariable Date endDate, @PathVariable Long companyId){
-		Company company = companyRepository.findOne(companyId);
-		List<PurchaseVoucher> pjvs = purchaseVoucherRepository.findByCompanyAndStatusAndDateBetween(company, "Approved", startDate, endDate);
+	public List<Map<String, Object>> getListOfPJVAccountSummary(@PathVariable Date startDate,
+			@PathVariable Date endDate, @PathVariable Long companyId) {
+		Company company = companyRepository.getOne(companyId);
+		List<PurchaseVoucher> pjvs = purchaseVoucherRepository.findByCompanyAndStatusAndDateBetween(company, "Approved",
+				startDate, endDate);
 		List<Long> entryIds = new ArrayList<Long>();
 		pjvs.stream().map(pjv -> pjv.getAccountTitles()).forEach(entryList -> {
 			entryList.forEach(elt -> {
 				entryIds.add(elt.getId());
 			});
 		});
-		
+
 		return formatMap(entryIds);
 
 	}
-	
+
 	@RequestMapping("/vp/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>>  getListOfVPAccountSummary(@PathVariable Date startDate, @PathVariable Date endDate, @PathVariable Long companyId){
-		Company company = companyRepository.findOne(companyId);
-		List<VouchersPayable> vps = vouchersPayableRepository.findByCompanyAndStatusAndDateBetween(company, "Approved", startDate, endDate);
+	public List<Map<String, Object>> getListOfVPAccountSummary(@PathVariable Date startDate, @PathVariable Date endDate,
+			@PathVariable Long companyId) {
+		Company company = companyRepository.getOne(companyId);
+		List<VouchersPayable> vps = vouchersPayableRepository.findByCompanyAndStatusAndDateBetween(company, "Approved",
+				startDate, endDate);
 		List<Long> entryIds = new ArrayList<Long>();
 		vps.stream().map(pjv -> pjv.getAccountTitles()).forEach(entryList -> {
 			entryList.forEach(elt -> {
@@ -76,14 +82,15 @@ public class AccountSummaryReportRestController {
 		});
 		return formatMap(entryIds);
 	}
-	
-	private List<Map<String, Object>> formatMap (List<Long> entryIds) {
-		List<Map<String, Object>> tempList = accountTitleEntryRepository.testfunction(entryIds.toArray(new Long[entryIds.size()]));
+
+	private List<Map<String, Object>> formatMap(List<Long> entryIds) {
+		List<Map<String, Object>> tempList = accountTitleEntryRepository
+				.testfunction(entryIds.toArray(new Long[entryIds.size()]));
 		double creditAmount = 0;
 		double debitAmount = 0;
-		for(Map<String,Object> temp : tempList){
-			
-			if(temp.get("type").equals("Credit")) {
+		for (Map<String, Object> temp : tempList) {
+
+			if (temp.get("type").equals("Credit")) {
 				temp.put("credit", temp.get("amount"));
 				temp.put("debit", "");
 				creditAmount += (double) temp.get("amount");
@@ -94,7 +101,8 @@ public class AccountSummaryReportRestController {
 			}
 			temp.remove("amount");
 			temp.remove("type");
-		};
+		}
+		;
 		Map<String, Object> totalMap = new HashMap();
 		totalMap.put("title", "TOTAL");
 		totalMap.put("credit", creditAmount);

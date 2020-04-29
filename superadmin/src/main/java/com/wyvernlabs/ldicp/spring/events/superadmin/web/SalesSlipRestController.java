@@ -35,46 +35,43 @@ public class SalesSlipRestController {
 	private DepotRepository depotRepository;
 	@Autowired
 	private SalesSlipRepository salesSlipRepository;
-	
+
 	@GetMapping("/depot/{depotId}")
-	public List<SalesSlip> listByDepot(@PathVariable Long depotId){
-		Depot depot = depotRepository.findOne(depotId);
+	public List<SalesSlip> listByDepot(@PathVariable Long depotId) {
+		Depot depot = depotRepository.getOne(depotId);
 		return salesSlipRepository.findByDepot(depot);
 	}
-	
+
 	@GetMapping("/depot/{depotId}/client/{clientId}/status/{status}")
-    public List<SalesSlip> listByDepotAndClientAndStatus(
-    		@PathVariable Long depotId,
-    		@PathVariable Long clientId,
-    		@PathVariable String[] status) {
-    	Depot depot = depotRepository.findOne(depotId);
-    	Client client = clientRepository.findOne(clientId);
-    	List<SalesSlip> salesSlips = new ArrayList<>();
-    	salesSlips.addAll(orderSlipRepository.findByDepotAndClientAndStatus(depot, client, status));
-        salesSlips.addAll(salesInvoiceRepository.findByDepotAndClientAndStatus(depot, client, status));
-        return salesSlips;
-	}
-	
-	@GetMapping("/depot/{depotId}/status/{status}")
-	public List<SalesSlip> listByDepotAndStatus(
-			@PathVariable Long depotId,
-			@PathVariable String[] status){
-		Depot depot = depotRepository.findOne(depotId);
+	public List<SalesSlip> listByDepotAndClientAndStatus(@PathVariable Long depotId, @PathVariable Long clientId,
+			@PathVariable String[] status) {
+		Depot depot = depotRepository.getOne(depotId);
+		Client client = clientRepository.getOne(clientId);
 		List<SalesSlip> salesSlips = new ArrayList<>();
-    	salesSlips.addAll(orderSlipRepository.findByDepotAndStatus(depot, status));
-        salesSlips.addAll(salesInvoiceRepository.findByDepotAndStatus(depot, status));
-        return salesSlips;
-        
+		salesSlips.addAll(orderSlipRepository.findByDepotAndClientAndStatus(depot, client, status));
+		salesSlips.addAll(salesInvoiceRepository.findByDepotAndClientAndStatus(depot, client, status));
+		return salesSlips;
 	}
-	
+
+	@GetMapping("/depot/{depotId}/status/{status}")
+	public List<SalesSlip> listByDepotAndStatus(@PathVariable Long depotId, @PathVariable String[] status) {
+		Depot depot = depotRepository.getOne(depotId);
+		List<SalesSlip> salesSlips = new ArrayList<>();
+		salesSlips.addAll(orderSlipRepository.findByDepotAndStatus(depot, status));
+		salesSlips.addAll(salesInvoiceRepository.findByDepotAndStatus(depot, status));
+		return salesSlips;
+
+	}
+
 	@GetMapping("/depot/{depotId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getByDepotAndDates(@PathVariable Long depotId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Depot depot = depotRepository.findOne(depotId);
+	public List<Map<String, Object>> getByDepotAndDates(@PathVariable Long depotId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Depot depot = depotRepository.getOne(depotId);
 		List<SalesSlip> vpList = salesSlipRepository.findByDepotAndDateBetween(depot, startDate, endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
 			elt.getOrderedProducts().forEach(elt2 -> {
-				Map<String, Object>  map = new LinkedHashMap();
+				Map<String, Object> map = new LinkedHashMap();
 				map.put("soNumber", elt.getSalesOrder().getNumber());
 				map.put("soDate", new SimpleDateFormat("yyyy-MM-dd").format(elt.getSalesOrder().getDate()));
 				map.put("number", elt.getNumber());
@@ -87,8 +84,8 @@ public class SalesSlipRestController {
 				vpMapList.add(map);
 			});
 		});
-		
+
 		return vpMapList;
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-    package com.wyvernlabs.ldicp.spring.events.superadmin.data.json;
+package com.wyvernlabs.ldicp.spring.events.superadmin.data.json;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
@@ -64,7 +64,7 @@ public class LcpiJsonExecuteInitData {
     @Autowired
     private MemoTypeData memoTypeData;
 
-    //@PostConstruct
+    // @PostConstruct
     public void init() {
         logger.info("LCPI Loading data from client");
 
@@ -75,9 +75,7 @@ public class LcpiJsonExecuteInitData {
             FullAccount account = cliente.users().getCurrentAccount();
             System.out.println(account.getName().getDisplayName());
             System.out.println(account.getEmail());
-        }
-        catch (DbxException dbxe)
-        {
+        } catch (DbxException dbxe) {
             dbxe.printStackTrace();
         }
         companyData.init();
@@ -91,101 +89,114 @@ public class LcpiJsonExecuteInitData {
             public void run() {
                 try {
 
-                    List<Unit> units = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/unit.json")
-                            .start().getInputStream(), "UTF-8"), new TypeReference<List<Unit>>() {
-                    });
+                    List<Unit> units = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/lcpi-mmd/unit.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Unit>>() {
+                            });
 
-
-                    unitRepository.save(units);
-                    List<Classification> classifications = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/classification.json")
-                            .start().getInputStream(), "UTF-8"), new TypeReference<List<Classification>>() {
-                    });
-                    classificationRepository.save(classifications);
+                    unitRepository.saveAll(units);
+                    List<Classification> classifications = om
+                            .readValue(
+                                    IOUtils.toString(
+                                            cliente.files().downloadBuilder("/json-data/lcpi-mmd/classification.json")
+                                                    .start().getInputStream(),
+                                            "UTF-8"),
+                                    new TypeReference<List<Classification>>() {
+                                    });
+                    classificationRepository.saveAll(classifications);
 
                     Company lcpi = companyRepository.findAll().get(1);
                     logger.info("====> company: " + lcpi.getName() + ", id: " + lcpi.getId());
-                    //lcpi department
-                    List<Department> departments = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/department.json")
-                            .start().getInputStream(), "UTF-8"), new TypeReference<List<Department>>() {
-                    });
+                    // lcpi department
+                    List<Department> departments = om
+                            .readValue(
+                                    IOUtils.toString(
+                                            cliente.files().downloadBuilder("/json-data/lcpi-mmd/department.json")
+                                                    .start().getInputStream(),
+                                            "UTF-8"),
+                                    new TypeReference<List<Department>>() {
+                                    });
 
                     for (Department department : departments) {
                         department.setCompany(lcpi);
                     }
 
-                    departmentRepository.save(departments);
+                    departmentRepository.saveAll(departments);
 
-
-                    //lcpi area
-                    List<Area> areas = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/area.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Area>>() {
-                    });
+                    // lcpi area
+                    List<Area> areas = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/lcpi-mmd/area.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Area>>() {
+                            });
 
                     for (Area area : areas) {
                         area.setCompany(lcpi);
                     }
 
-                    areaRepository.save(areas);
+                    areaRepository.saveAll(areas);
 
-
-                    //lcpi depot
-                    List<Depot> depots = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/depot.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Depot>>() {
-                    });
+                    // lcpi depot
+                    List<Depot> depots = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/lcpi-mmd/depot.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Depot>>() {
+                            });
 
                     for (Depot depot : depots) {
                         depot.setCompany(lcpi);
                         depot.setArea(areaRepository.findByCompanyAndCode(lcpi, depot.getCode()));
                     }
 
-                    depotRepository.save(depots);
+                    depotRepository.saveAll(depots);
 
-
-
-
-                    //lcpi clients
-                    List<Client> clients = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/client.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Client>>() {
-                    });
+                    // lcpi clients
+                    List<Client> clients = om.readValue(IOUtils.toString(
+                            cliente.files().downloadBuilder("/json-data/lcpi-mmd/client.json").start().getInputStream(),
+                            "UTF-8"), new TypeReference<List<Client>>() {
+                            });
 
                     for (Client client : clients) {
                         client.setCompany(lcpi);
                     }
 
-                    clientRepository.save(clients);
+                    clientRepository.saveAll(clients);
 
-                    //lcpi vendors
-                    List<Vendor> vendors = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/supplier.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Vendor>>() {
-                    });
+                    // lcpi vendors
+                    List<Vendor> vendors = om.readValue(IOUtils.toString(cliente.files()
+                            .downloadBuilder("/json-data/lcpi-mmd/supplier.json").start().getInputStream(), "UTF-8"),
+                            new TypeReference<List<Vendor>>() {
+                            });
 
                     for (Vendor vendor : vendors) {
                         vendor.setCompany(lcpi);
                     }
 
-                    vendorRepository.save(vendors);
+                    vendorRepository.saveAll(vendors);
 
-
-
-
-
-//                    //lcpi itemtypes
-//                    List<ItemType> itemTypes = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/itemtype.json").start().getInputStream(), "UTF-8"), new TypeReference<List<ItemType>>() {
-//                    });
-//                    itemTypeRepository.save(itemTypes);
+                    // //lcpi itemtypes
+                    // List<ItemType> itemTypes =
+                    // om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/itemtype.json").start().getInputStream(),
+                    // "UTF-8"), new TypeReference<List<ItemType>>() {
+                    // });
+                    // itemTypeRepository.save(itemTypes);
 
                     groupData.init();
 
+                    // //lcpi itemtypes
+                    // List<FinishedGood> finishedGoods =
+                    // om.readValue(IOUtils.toString(cliente.files().downloadBuilder(
+                    //// "/json-data/lcpi-mmd/finishedgood.json"
+                    // "/json-data/ldi-fg/ldi-fg-finishedgood2.json"
+                    // ).start().getInputStream(), "UTF-8"), new TypeReference<List<FinishedGood>>()
+                    // {
+                    // });
+                    // finishedGoodRepository.save(finishedGoods);
 
-//                    //lcpi itemtypes
-//                    List<FinishedGood> finishedGoods = om.readValue(IOUtils.toString(cliente.files().downloadBuilder(
-////                            "/json-data/lcpi-mmd/finishedgood.json"
-//                            "/json-data/ldi-fg/ldi-fg-finishedgood2.json"
-//                    ).start().getInputStream(), "UTF-8"), new TypeReference<List<FinishedGood>>() {
-//                    });
-//                    finishedGoodRepository.save(finishedGoods);
-
-                    //lcpi itemtypes
-                    List<Employee> employees = om.readValue(IOUtils.toString(cliente.files().downloadBuilder("/json-data/lcpi-mmd/employee.json").start().getInputStream(), "UTF-8"), new TypeReference<List<Employee>>() {
-                    });
-                    employeeRepository.save(employees);
-
+                    // lcpi itemtypes
+                    List<Employee> employees = om.readValue(IOUtils.toString(cliente.files()
+                            .downloadBuilder("/json-data/lcpi-mmd/employee.json").start().getInputStream(), "UTF-8"),
+                            new TypeReference<List<Employee>>() {
+                            });
+                    employeeRepository.saveAll(employees);
 
                     memoTypeData.init();
                 } catch (IOException e) {
@@ -197,4 +208,3 @@ public class LcpiJsonExecuteInitData {
         }).start();
     }
 }
-

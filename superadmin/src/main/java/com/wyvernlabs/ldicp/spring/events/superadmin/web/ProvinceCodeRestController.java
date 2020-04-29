@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProvinceCodeRepo
 @RequestMapping("rest/province-codes")
 public class ProvinceCodeRestController {
 
-	@Autowired
-	private ProvinceCodeRepository provinceCodeRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private ProvinceCodeRepository provinceCodeRepository;
+
+    @GetMapping("/{id}")
     public ProvinceCode get(@PathVariable Long id) {
         return provinceCodeRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class ProvinceCodeRestController {
     public ProvinceCode upsert(@RequestBody ProvinceCode depot) {
         return provinceCodeRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	provinceCodeRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        provinceCodeRepository.deleteById(id);
+        return true;
     }
 }

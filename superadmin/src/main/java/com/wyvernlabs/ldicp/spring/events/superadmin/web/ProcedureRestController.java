@@ -44,13 +44,13 @@ public class ProcedureRestController {
 
     @PostMapping("/delete")
     public boolean delete(@RequestBody Long id) {
-        procedureRepository.delete(id);
+        procedureRepository.deleteById(id);
         return true;
     }
 
     @GetMapping("/area/{id}")
     public List<Procedures> listByArea(@PathVariable Long id) {
-        ProcedureArea procedureArea = procedureAreaRepository.findOne(id);
+        ProcedureArea procedureArea = procedureAreaRepository.getOne(id);
         return procedureRepository.findByProcedureArea(procedureArea);
     }
 

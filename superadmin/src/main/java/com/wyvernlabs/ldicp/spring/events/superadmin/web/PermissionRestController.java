@@ -42,7 +42,7 @@ public class PermissionRestController {
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		permissionRepository.delete(id);
+		permissionRepository.deleteById(id);
 		return true;
 	}
 }

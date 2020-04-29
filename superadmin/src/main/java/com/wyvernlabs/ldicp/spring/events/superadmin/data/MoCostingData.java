@@ -25,61 +25,60 @@ public class MoCostingData {
 	@Autowired
 	private CompanyRepository companyRepository;
 	@Autowired
-    private MoCostingInventoryRepository moCostingInventoryRepository;
+	private MoCostingInventoryRepository moCostingInventoryRepository;
 	@Autowired
-    private MoCostingEmployeeRepository moCostingEmployeeRepository;
+	private MoCostingEmployeeRepository moCostingEmployeeRepository;
 
-    public MoCostingData() {
+	public MoCostingData() {
 	}
 
 	public void init() {
-//		Company c1 = companyRepository.findOne(1L);
-//
-//		List<MoInventory> moInventoryList = moInventoryRepository.findByCompany(c1);
-//
-//		double totalCost = 0.00;
-//
-//		MoCosting moCosting = new MoCosting();
-//		moCosting.setCompany(c1);
-//
-//		MoInventory moInventory = moInventoryList.get(0);
-//		Set<MoCostingInventory> moCostingInventories = new HashSet<>();
-//		List<Inventory> inventoryList = moInventory.getInventoryList();
-//		for (Inventory inventory : inventoryList) {
-//			MoCostingInventory moCostingInventory = new MoCostingInventory();
-//			moCostingInventory.setInventory(inventory);
-//			int inputCost = 1;
-//			moCostingInventory.setCost(inputCost);
-//			totalCost += inputCost;
-//
-//			moCostingInventories.add(moCostingInventory);
-//		}
-//
-//		Set<MoCostingEmployee> moCostingEmployees = new HashSet<>();
-//		Employee employee = employeeRepository.getOne(1L);
-//		MoCostingEmployee moCostingEmployee = new MoCostingEmployee();
-//		moCostingEmployee.setEmployee(employee);
-//		int inputHoursSpent = 2;
-//		moCostingEmployee.setHoursSpent(inputHoursSpent);
-//		moCostingEmployee.setCost(100);
-//		moCostingEmployees.add(moCostingEmployee);
-//		totalCost += 100;
-//
-//        moCosting.setMoInventory(moInventory);
-//		moCosting.setMoCostingEmployees(moCostingEmployees);
-//		moCosting.setMoCostingInventories(moCostingInventories);
-//		moCosting.setTotalCost(totalCost);
-//
-//
-//
-//        for (MoCostingInventory moCostingInventory : moCostingInventories) {
-//            moCostingInventoryRepository.save(moCostingInventory);
-//        }
-//
-//        moCostingEmployeeRepository.save(moCostingEmployee);
-//
-//		moCostingRepository.save(moCosting);
+		// Company c1 = companyRepository.getOne(1L);
+		//
+		// List<MoInventory> moInventoryList = moInventoryRepository.findByCompany(c1);
+		//
+		// double totalCost = 0.00;
+		//
+		// MoCosting moCosting = new MoCosting();
+		// moCosting.setCompany(c1);
+		//
+		// MoInventory moInventory = moInventoryList.get(0);
+		// Set<MoCostingInventory> moCostingInventories = new HashSet<>();
+		// List<Inventory> inventoryList = moInventory.getInventoryList();
+		// for (Inventory inventory : inventoryList) {
+		// MoCostingInventory moCostingInventory = new MoCostingInventory();
+		// moCostingInventory.setInventory(inventory);
+		// int inputCost = 1;
+		// moCostingInventory.setCost(inputCost);
+		// totalCost += inputCost;
+		//
+		// moCostingInventories.add(moCostingInventory);
+		// }
+		//
+		// Set<MoCostingEmployee> moCostingEmployees = new HashSet<>();
+		// Employee employee = employeeRepository.getOne(1L);
+		// MoCostingEmployee moCostingEmployee = new MoCostingEmployee();
+		// moCostingEmployee.setEmployee(employee);
+		// int inputHoursSpent = 2;
+		// moCostingEmployee.setHoursSpent(inputHoursSpent);
+		// moCostingEmployee.setCost(100);
+		// moCostingEmployees.add(moCostingEmployee);
+		// totalCost += 100;
+		//
+		// moCosting.setMoInventory(moInventory);
+		// moCosting.setMoCostingEmployees(moCostingEmployees);
+		// moCosting.setMoCostingInventories(moCostingInventories);
+		// moCosting.setTotalCost(totalCost);
+		//
+		//
+		//
+		// for (MoCostingInventory moCostingInventory : moCostingInventories) {
+		// moCostingInventoryRepository.save(moCostingInventory);
+		// }
+		//
+		// moCostingEmployeeRepository.save(moCostingEmployee);
+		//
+		// moCostingRepository.save(moCosting);
 	}
-	
-	
+
 }

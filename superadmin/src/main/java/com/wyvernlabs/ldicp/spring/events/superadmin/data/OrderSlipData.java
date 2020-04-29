@@ -34,10 +34,11 @@ public class OrderSlipData {
 	private ProductRepository productRepository;
 	@Autowired
 	private SalesOrderProductRepository salesOrderProductRepository;
+
 	public void init() {
-		SalesOrder salesOrder = salesOrderRepository.findOne(1L);
-		Company company = companyRepository.findOne(1L);
-		User user = userRepository.findOne(1L);
+		SalesOrder salesOrder = salesOrderRepository.getOne(1L);
+		Company company = companyRepository.getOne(1L);
+		User user = userRepository.getOne(1L);
 
 		OrderSlip orderSlip = new OrderSlip();
 		orderSlip.setApprovedBy(user);
@@ -46,11 +47,11 @@ public class OrderSlipData {
 		orderSlip.setDate(new Date());
 		orderSlip.setNumber("OS1");
 		List<OrderedProduct> orderedProducts = new ArrayList<OrderedProduct>();
-		for(SalesOrderProduct soProduct : salesOrder.getProducts()) {
-			soProduct = salesOrderProductRepository.findOne(soProduct.getId());
+		for (SalesOrderProduct soProduct : salesOrder.getProducts()) {
+			soProduct = salesOrderProductRepository.getOne(soProduct.getId());
 			OrderedProduct orderedProduct = new OrderedProduct();
 			orderedProduct.setOrderSlipNo(orderSlip.getNumber());
-			//orderedProduct.setProduct(productRepository.findOne(soProduct.getProduct().getId()));
+			// orderedProduct.setProduct(productRepository.getOne(soProduct.getProduct().getId()));
 			orderedProduct.setQuantity(50);
 			orderedProduct.setSalesOrderProductId(soProduct.getId());
 			orderedProducts.add(orderedProduct);
@@ -60,7 +61,7 @@ public class OrderSlipData {
 		orderSlip.setReleasedBy(user);
 		orderSlip.setRemarks("MOCK DATA ORDER SLIP");
 		orderSlip.setSalesOrder(salesOrder);
-		
-		//orderSlipService.saveOrderSlip(orderSlip);
+
+		// orderSlipService.saveOrderSlip(orderSlip);
 	}
 }

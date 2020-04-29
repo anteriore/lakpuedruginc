@@ -22,46 +22,43 @@ public class PurchaseRequestService {
 	private PurchaseRequestRepository purchaseRequestRepository;
 	@Autowired
 	private RequestedItemRepository requestedItemRepository;
-	
+
 	@Transactional
 	public PurchaseRequest savePurchaseRequest(PurchaseRequest prf) {
 		Long id = purchaseRequestRepository.getMaxId();
 		prf.setStatus("Pending");
-		if(id == null) {
+		if (id == null) {
 			prf.setNumber("PRF-0");
-		}else {
+		} else {
 			prf.setNumber("PRF-" + ++id);
 		}
-		
-		
-		for(RequestedItem item : prf.getRequestedItems()) {
+
+		for (RequestedItem item : prf.getRequestedItems()) {
 			item.setPrfNumber(prf.getNumber());
 			item.setCompany(prf.getCompany());
 			item.setStatus("Pending");
 		}
-		
+
 		return purchaseRequestRepository.save(prf);
 	}
-	
-	public List<RequestedItem> getNotCompletedRequestedItemsByCompanyAndItem(Company company, Item item){
+
+	public List<RequestedItem> getNotCompletedRequestedItemsByCompanyAndItem(Company company, Item item) {
 		return requestedItemRepository.findByStatusNotAndCompanyAndItem("PO Created", company, item);
 	}
-	
-	public List<RequestedItem> getNotCompletedRequestedItemsByCompany(Company company){
+
+	public List<RequestedItem> getNotCompletedRequestedItemsByCompany(Company company) {
 		return requestedItemRepository.findByStatusNotAndCompany("PO Created", company);
 	}
-	
+
 	public PurchaseRequest approvePurchaseRequest(Long prfId) {
-		PurchaseRequest prf = purchaseRequestRepository.findOne(prfId);
+		PurchaseRequest prf = purchaseRequestRepository.getOne(prfId);
 		prf.setStatus("Approved");
 		return purchaseRequestRepository.save(prf);
 	}
 
 	public List<RequestedItem> getNotCompletedRequestedItemsByCompanyAndType(Company company, ItemType itemType) {
 		List<RequestedItem> requestedItems = requestedItemRepository.findByStatusNotAndCompany("PO Created", company);
-		return requestedItems
-				.stream()
-				.filter(i -> itemType.getCode().equals(i.getItem().getType().getCode()))
+		return requestedItems.stream().filter(i -> itemType.getCode().equals(i.getItem().getType().getCode()))
 				.collect(Collectors.toList());
 	}
 }

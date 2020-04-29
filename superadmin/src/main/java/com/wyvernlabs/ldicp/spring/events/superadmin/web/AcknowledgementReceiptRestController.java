@@ -48,19 +48,19 @@ public class AcknowledgementReceiptRestController {
 
     @GetMapping("/company/{id}")
     public List<AcknowledgementReceipt> listByCompany(@PathVariable Long id) {
-        Company company = companyRepository.findOne(id);
+        Company company = companyRepository.getOne(id);
         return acknowledgementReceiptRepository.findByCompany(company);
     }
 
     @GetMapping("/depot/{id}")
     public List<AcknowledgementReceipt> listByDepot(@PathVariable Long id) {
-        Depot depot = depotRepository.findOne(id);
+        Depot depot = depotRepository.getOne(id);
         return acknowledgementReceiptRepository.findByDepot(depot);
     }
 
     @GetMapping("/depot/{id}/with-si")
     public List<AcknowledgementReceipt> listByDepotWithSI(@PathVariable Long id) {
-        Depot depot = depotRepository.findOne(id);
+        Depot depot = depotRepository.getOne(id);
         return acknowledgementReceiptRepository.findByDepot(depot).stream()
                 .filter(ar -> ar.getSiAmount() > 0 && ar.getStatus().equals("Pending")).collect(Collectors.toList());
     }

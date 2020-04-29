@@ -1,4 +1,3 @@
-
 <div class="admin-header">
     <div class="title horizontal-align -between">
         <h4 class="bg">ACCOUNTING</h4>
@@ -11,96 +10,119 @@
 
 <div class="mmd-content">
     <company-nav></company-nav>
-    
-    <a ng-if="$ctrl.checkPermission('superadmin')" href="/admin/accounting/purchase-voucher"><div class="mmd-card">
-        <i class="icon ion-ios-paper-outline">
-            <span class="caption">Purchase Vouchers</span>
-        </i>
-    </div>
+
+    <a ng-if="$ctrl.checkPermission('superadmin')" href="/admin/accounting/purchase-voucher">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Purchase Vouchers</span>
+            </i>
+        </div>
     </a>
-    
-
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/journal-voucher"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Journal Vouchers</span>
-    </i>
-</div>
-</a>
-
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/vouchers-payable"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Vouchers Payables</span>
-    </i>
-</div>
-</a>
-
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/account-title"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Account Titles</span>
-    </i>
-</div>
-</a>
-    
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/cheque-printing"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Cheque Printings</span>
-    </i>
-</div>
-</a>
-
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/cheque-disbursement"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Cheque Disbursement Vouchers</span>
-    </i>
-</div>
-</a>
 
 
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/credit-memo"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Credit Memos</span>
-    </i>
-</div>
-</a>
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/journal-voucher">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Journal Vouchers</span>
+            </i>
+        </div>
+    </a>
 
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/debit-memo"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Debit Memos</span>
-    </i>
-</div>
-</a>
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/vouchers-payable">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Vouchers Payables</span>
+            </i>
+        </div>
+    </a>
 
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/cash-receipt-voucher"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Cash Receipt Vouchers</span>
-    </i>
-</div>
-</a>
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/account-title">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Account Titles</span>
+            </i>
+        </div>
+    </a>
+
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/cheque-printing">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Cheque Printings</span>
+            </i>
+        </div>
+    </a>
+
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/cheque-disbursement">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Cheque Disbursement Vouchers</span>
+            </i>
+        </div>
+    </a>
 
 
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/pdc-disbursement"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">PDC Disbursements</span>
-    </i>
-</div>
-</a>
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/credit-memo">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Credit Memos</span>
+            </i>
+        </div>
+    </a>
 
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/accounting/pdc-voucher"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">PDC Vouchers</span>
-    </i>
-</div>
-</a>
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/debit-memo">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Debit Memos</span>
+            </i>
+        </div>
+    </a>
 
-<a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')" href="/admin/sales/sales-journal-voucher"><div class="mmd-card">
-    <i class="icon ion-ios-paper-outline">
-        <span class="caption">Sales Journal Vouchers</span>
-    </i>
-</div>
-</a>
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/cash-receipt-voucher">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Cash Receipt Vouchers</span>
+            </i>
+        </div>
+    </a>
 
 
-<div class="clear-float"></div>
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/pdc-disbursement">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">PDC Disbursements</span>
+            </i>
+        </div>
+    </a>
+
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/accounting/pdc-voucher">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">PDC Vouchers</span>
+            </i>
+        </div>
+    </a>
+
+    <a ng-if="$ctrl.checkPermission('superadmin') || $ctrl.checkPermission('purchasing-me')"
+        href="/admin/sales/sales-journal-voucher">
+        <div class="mmd-card">
+            <i class="icon ion-ios-paper-outline">
+                <span class="caption">Sales Journal Vouchers</span>
+            </i>
+        </div>
+    </a>
+
+
+    <div class="clear-float"></div>
 </div>
 
 
@@ -108,411 +130,411 @@
 
 
 <!--<div class="accounting-content">-->
-    <!--<div class="admin-header">-->
-        <!--<div class="title">-->
-            <!--<h4 class="md">Dashboard</h4>-->
-        <!--</div>-->
-    <!--</div>-->
-    <!--<div class="action-link">-->
-        <!--<a data-target="#departmentCodeModal" data-toggle="modal" class="link" href="#">Department &amp; Area Code</a>-->
-    <!--</div>-->
-    <!--<div class="action-link">-->
-        <!--<a data-target="#findVendorModal" data-toggle="modal" class="link" href="#">Find Vendor</a>-->
-    <!--</div>-->
-    <!--<div class="action-link">-->
-        <!--<a data-target="#findClientModal" data-toggle="modal" class="link" href="#">Find Client</a>-->
-    <!--</div>-->
-    <!--<div class="action-link">-->
-        <!--<a data-target="#findGroupAndCategoriesModal" data-toggle="modal" class="link" href="#">Groups &amp; Categories</a>-->
-    <!--</div>-->
+<!--<div class="admin-header">-->
+<!--<div class="title">-->
+<!--<h4 class="md">Dashboard</h4>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="action-link">-->
+<!--<a data-target="#departmentCodeModal" data-toggle="modal" class="link" href="#">Department &amp; Area Code</a>-->
+<!--</div>-->
+<!--<div class="action-link">-->
+<!--<a data-target="#findVendorModal" data-toggle="modal" class="link" href="#">Find Vendor</a>-->
+<!--</div>-->
+<!--<div class="action-link">-->
+<!--<a data-target="#findClientModal" data-toggle="modal" class="link" href="#">Find Client</a>-->
+<!--</div>-->
+<!--<div class="action-link">-->
+<!--<a data-target="#findGroupAndCategoriesModal" data-toggle="modal" class="link" href="#">Groups &amp; Categories</a>-->
+<!--</div>-->
 <!--</div>-->
 <!--<div class="modal fade" id="departmentCodeModal">-->
-    <!--<div class="modal-dialog -bg">-->
-        <!--<div class="modal-content">-->
-            <!--<div class="modal-header">-->
-                <!--<h4 class="modal-title">Department &amp; Area Code</h4>-->
-                <!--<button class="close" data-dismiss="modal" type="button">-->
-                    <!--<span class="ion-android-close close-modal"></span>-->
-                <!--</button>-->
-            <!--</div>-->
-            <!--<div class="modal-body">-->
-                <!--<div class="horizontal-align -between">-->
-                    <!--<div class="section department-area -left">-->
-                        <!--<div class="horizontal-align -start header">-->
-                            <!--<p class="caption">Departments</p>-->
-                            <!--<div class="action-link bold-link">-->
-                                <!--<a class="link" href="#">+ Add</a>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="wrapper scroll-section">-->
-                            <!--<p class="department-list horizontal-align -between">-->
-                                <!--<span class="code">CA-AHOL</span>-->
-                                <!--<span class="dept">Accounting Holdings</span>-->
-                                <!--<span class="ion-android-close delete"></span>-->
-                            <!--</p>-->
-                            <!--<p class="department-list horizontal-align -between">-->
-                                <!--<span class="code">CA-AHOL</span>-->
-                                <!--<span class="dept">Accounting Holdings</span>-->
-                                <!--<span class="ion-android-close delete"></span>-->
-                            <!--</p>-->
-                            <!--<p class="department-list horizontal-align -between">-->
-                                <!--<span class="code">CA-AHOL</span>-->
-                                <!--<span class="dept">Accounting Holdings</span>-->
-                                <!--<span class="ion-android-close delete"></span>-->
-                            <!--</p>-->
-                            <!--<p class="department-list horizontal-align -between">-->
-                                <!--<span class="code">CA-AHOL</span>-->
-                                <!--<span class="dept">Accounting Holdings</span>-->
-                                <!--<span class="ion-android-close delete"></span>-->
-                            <!--</p>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="section department-area -left">-->
-                        <!--<div class="horizontal-align -start header">-->
-                            <!--<p class="caption">Area Code</p>-->
-                            <!--<div class="action-link bold-link">-->
-                                <!--<a class="link" href="#">+ Add</a>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="wrapper scroll-section">-->
-                            <!--<p class="department-list horizontal-align -between">-->
-                                <!--<span class="code">033</span>-->
-                                <!--<span class="dept">Quezon City</span>-->
-                                <!--<span class="ion-android-close delete"></span>-->
-                            <!--</p>-->
-                            <!--<p class="department-list horizontal-align -between">-->
-                                <!--<span class="code">044</span>-->
-                                <!--<span class="dept">Cebu</span>-->
-                                <!--<span class="ion-android-close delete"></span>-->
-                            <!--</p>-->
-                            <!--<p class="department-list horizontal-align -between">-->
-                                <!--<span class="code">055</span>-->
-                                <!--<span class="dept">Bulacan</span>-->
-                                <!--<span class="ion-android-close delete"></span>-->
-                            <!--</p>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+<!--<div class="modal-dialog -bg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<h4 class="modal-title">Department &amp; Area Code</h4>-->
+<!--<button class="close" data-dismiss="modal" type="button">-->
+<!--<span class="ion-android-close close-modal"></span>-->
+<!--</button>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<div class="horizontal-align -between">-->
+<!--<div class="section department-area -left">-->
+<!--<div class="horizontal-align -start header">-->
+<!--<p class="caption">Departments</p>-->
+<!--<div class="action-link bold-link">-->
+<!--<a class="link" href="#">+ Add</a>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="wrapper scroll-section">-->
+<!--<p class="department-list horizontal-align -between">-->
+<!--<span class="code">CA-AHOL</span>-->
+<!--<span class="dept">Accounting Holdings</span>-->
+<!--<span class="ion-android-close delete"></span>-->
+<!--</p>-->
+<!--<p class="department-list horizontal-align -between">-->
+<!--<span class="code">CA-AHOL</span>-->
+<!--<span class="dept">Accounting Holdings</span>-->
+<!--<span class="ion-android-close delete"></span>-->
+<!--</p>-->
+<!--<p class="department-list horizontal-align -between">-->
+<!--<span class="code">CA-AHOL</span>-->
+<!--<span class="dept">Accounting Holdings</span>-->
+<!--<span class="ion-android-close delete"></span>-->
+<!--</p>-->
+<!--<p class="department-list horizontal-align -between">-->
+<!--<span class="code">CA-AHOL</span>-->
+<!--<span class="dept">Accounting Holdings</span>-->
+<!--<span class="ion-android-close delete"></span>-->
+<!--</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="section department-area -left">-->
+<!--<div class="horizontal-align -start header">-->
+<!--<p class="caption">Area Code</p>-->
+<!--<div class="action-link bold-link">-->
+<!--<a class="link" href="#">+ Add</a>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="wrapper scroll-section">-->
+<!--<p class="department-list horizontal-align -between">-->
+<!--<span class="code">033</span>-->
+<!--<span class="dept">Quezon City</span>-->
+<!--<span class="ion-android-close delete"></span>-->
+<!--</p>-->
+<!--<p class="department-list horizontal-align -between">-->
+<!--<span class="code">044</span>-->
+<!--<span class="dept">Cebu</span>-->
+<!--<span class="ion-android-close delete"></span>-->
+<!--</p>-->
+<!--<p class="department-list horizontal-align -between">-->
+<!--<span class="code">055</span>-->
+<!--<span class="dept">Bulacan</span>-->
+<!--<span class="ion-android-close delete"></span>-->
+<!--</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
 <!--</div>-->
 <!--<div class="modal fade" id="findVendorModal">-->
-    <!--<div class="modal-dialog -bg">-->
-        <!--<div class="modal-content">-->
-            <!--<div class="modal-header">-->
-                <!--<h4 class="modal-title">-->
-                    <!--Find Vendor-->
-                    <!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Vendor</a>-->
-                <!--</h4>-->
-                <!--<button class="close" data-dismiss="modal" type="button">-->
-                    <!--<span class="ion-android-close close-modal"></span>-->
-                <!--</button>-->
-            <!--</div>-->
-            <!--<div class="modal-body">-->
-                <!--<div class="searchbox-modal">-->
-                    <!--<div class="searchbox-content">-->
-                        <!--<form action="/admin/accounting" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="✓"><input type="hidden" name="authenticity_token" value="edMWCmgwo1u+dK9VTCWnBNMaDxrv8skefxqMlkkXSEVDtfqpuX9YCPBOsbrPdkCH7EpcCZecvSzuWRjbgDPJrQ=="><div class="search-modal horizontal-align -between">-->
-                            <!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">-->
-                            <!--<div class="modal-action">-->
-                                <!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--</form></div>-->
-                <!--</div>-->
+<!--<div class="modal-dialog -bg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<h4 class="modal-title">-->
+<!--Find Vendor-->
+<!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Vendor</a>-->
+<!--</h4>-->
+<!--<button class="close" data-dismiss="modal" type="button">-->
+<!--<span class="ion-android-close close-modal"></span>-->
+<!--</button>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<div class="searchbox-modal">-->
+<!--<div class="searchbox-content">-->
+<!--<form action="/admin/accounting" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="✓"><input type="hidden" name="authenticity_token" value="edMWCmgwo1u+dK9VTCWnBNMaDxrv8skefxqMlkkXSEVDtfqpuX9YCPBOsbrPdkCH7EpcCZecvSzuWRjbgDPJrQ=="><div class="search-modal horizontal-align -between">-->
+<!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">-->
+<!--<div class="modal-action">-->
+<!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">-->
+<!--</div>-->
+<!--</div>-->
+<!--</form></div>-->
+<!--</div>-->
 
-                <!--<div class="wrapper scroll-section">-->
-                    <!--<table class="table table-list">-->
-                        <!--<thead>-->
-                        <!--<tr>-->
-                            <!--<th>Code</th>-->
-                            <!--<th>Vendor Description</th>-->
-                            <!--<th>T.I.N No.</th>-->
-                            <!--<th></th>-->
-                        <!--</tr>-->
-                        <!--</thead>-->
-                        <!--<tbody>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--</tbody>-->
-                    <!--</table>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+<!--<div class="wrapper scroll-section">-->
+<!--<table class="table table-list">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>Code</th>-->
+<!--<th>Vendor Description</th>-->
+<!--<th>T.I.N No.</th>-->
+<!--<th></th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--</tbody>-->
+<!--</table>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
 <!--</div>-->
 <!--<div class="modal fade" id="findClientModal">-->
-    <!--<div class="modal-dialog -bg">-->
-        <!--<div class="modal-content">-->
-            <!--<div class="modal-header">-->
-                <!--<h4 class="modal-title">-->
-                    <!--Find Client-->
-                    <!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Client</a>-->
-                <!--</h4>-->
-                <!--<button class="close" data-dismiss="modal" type="button">-->
-                    <!--<span class="ion-android-close close-modal"></span>-->
-                <!--</button>-->
-            <!--</div>-->
-            <!--<div class="modal-body">-->
-                <!--<div class="searchbox-modal">-->
-                    <!--<div class="searchbox-content">-->
-                        <!--<form action="/admin/accounting" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="✓"><input type="hidden" name="authenticity_token" value="SL26hNGK3mMCGVEcQjOKGDGDeQ9/eniHnp4mtRpVb2xy21YnAMUlMEwjT/PBYG2bDtMqHAcUDLUP3bL403HuhA=="><div class="search-modal horizontal-align -between">-->
-                            <!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">-->
-                            <!--<div class="modal-action">-->
-                                <!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--</form></div>-->
-                <!--</div>-->
+<!--<div class="modal-dialog -bg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<h4 class="modal-title">-->
+<!--Find Client-->
+<!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Client</a>-->
+<!--</h4>-->
+<!--<button class="close" data-dismiss="modal" type="button">-->
+<!--<span class="ion-android-close close-modal"></span>-->
+<!--</button>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<div class="searchbox-modal">-->
+<!--<div class="searchbox-content">-->
+<!--<form action="/admin/accounting" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="✓"><input type="hidden" name="authenticity_token" value="SL26hNGK3mMCGVEcQjOKGDGDeQ9/eniHnp4mtRpVb2xy21YnAMUlMEwjT/PBYG2bDtMqHAcUDLUP3bL403HuhA=="><div class="search-modal horizontal-align -between">-->
+<!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">-->
+<!--<div class="modal-action">-->
+<!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">-->
+<!--</div>-->
+<!--</div>-->
+<!--</form></div>-->
+<!--</div>-->
 
-                <!--<div class="wrapper scroll-section">-->
-                    <!--<table class="table find-vendor">-->
-                        <!--<thead>-->
-                        <!--<tr>-->
-                            <!--<th>Code</th>-->
-                            <!--<th>Vendor Description</th>-->
-                            <!--<th>T.I.N No.</th>-->
-                            <!--<th></th>-->
-                        <!--</tr>-->
-                        <!--</thead>-->
-                        <!--<tbody>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>CN10330</td>-->
-                            <!--<td>Chad Mendez</td>-->
-                            <!--<td>030-623-391-429</td>-->
-                            <!--<td class="tablebutton-form">-->
-                                <!--<div class="holder">-->
-                                    <!--<button class="btn btn-compose">-->
-                                        <!--<i class="ion-ios-compose-outline"></i>-->
-                                    <!--</button>-->
-                                    <!--<button class="btn btn-archive">-->
-                                        <!--<i class="ion-android-close"></i>-->
-                                    <!--</button>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--</tbody>-->
-                    <!--</table>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+<!--<div class="wrapper scroll-section">-->
+<!--<table class="table find-vendor">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>Code</th>-->
+<!--<th>Vendor Description</th>-->
+<!--<th>T.I.N No.</th>-->
+<!--<th></th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<td>CN10330</td>-->
+<!--<td>Chad Mendez</td>-->
+<!--<td>030-623-391-429</td>-->
+<!--<td class="tablebutton-form">-->
+<!--<div class="holder">-->
+<!--<button class="btn btn-compose">-->
+<!--<i class="ion-ios-compose-outline"></i>-->
+<!--</button>-->
+<!--<button class="btn btn-archive">-->
+<!--<i class="ion-android-close"></i>-->
+<!--</button>-->
+<!--</div>-->
+<!--</td>-->
+<!--</tr>-->
+<!--</tbody>-->
+<!--</table>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
 <!--</div>-->
 <!--<div class="modal fade" id="findGroupAndCategoriesModal">-->
-    <!--<div class="modal-dialog -bg">-->
-        <!--<div class="modal-content">-->
-            <!--<div class="modal-header">-->
-                <!--<h4 class="modal-title">Groups &amp; Categories</h4>-->
-                <!--<button class="close" data-dismiss="modal" type="button">-->
-                    <!--<span class="ion-android-close close-modal"></span>-->
-                <!--</button>-->
-            <!--</div>-->
-            <!--<div class="modal-body">-->
-                <!--<div class="horizontal-align -between">-->
-                    <!--<div class="groups-section">-->
-                        <!--<div class="horizontal-align -between">-->
-                            <!--<p>Groups</p>-->
-                            <!--<div class="action-link bold-link">-->
-                                <!--<a class="link" href="#">+ Add</a>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<ul class="groups-list">-->
-                            <!--<li class="-active">Miscellaneous</li>-->
-                            <!--<li>Office Supplies</li>-->
-                            <!--<li>Project</li>-->
-                        <!--</ul>-->
-                    <!--</div>-->
-                    <!--<div class="categories-section">-->
-                        <!--<div class="horizontal-align -between">-->
-                            <!--<p>Categories</p>-->
-                            <!--<div class="action-link bold-link">-->
-                                <!--<a class="link" href="#">+ Add</a>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="categories scroll-section">-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                            <!--<p class="list">-->
-                                <!--Capital Expenditures-->
-                                <!--<span class="delete ion-android-close float-xl-right"></span>-->
-                            <!--</p>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+<!--<div class="modal-dialog -bg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<h4 class="modal-title">Groups &amp; Categories</h4>-->
+<!--<button class="close" data-dismiss="modal" type="button">-->
+<!--<span class="ion-android-close close-modal"></span>-->
+<!--</button>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<div class="horizontal-align -between">-->
+<!--<div class="groups-section">-->
+<!--<div class="horizontal-align -between">-->
+<!--<p>Groups</p>-->
+<!--<div class="action-link bold-link">-->
+<!--<a class="link" href="#">+ Add</a>-->
+<!--</div>-->
+<!--</div>-->
+<!--<ul class="groups-list">-->
+<!--<li class="-active">Miscellaneous</li>-->
+<!--<li>Office Supplies</li>-->
+<!--<li>Project</li>-->
+<!--</ul>-->
+<!--</div>-->
+<!--<div class="categories-section">-->
+<!--<div class="horizontal-align -between">-->
+<!--<p>Categories</p>-->
+<!--<div class="action-link bold-link">-->
+<!--<a class="link" href="#">+ Add</a>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="categories scroll-section">-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--<p class="list">-->
+<!--Capital Expenditures-->
+<!--<span class="delete ion-android-close float-xl-right"></span>-->
+<!--</p>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
 <!--</div>-->
 
 <!--&lt;!&ndash;-->
-  <!--.action-link-->
-    <!--= link_to 'Department & Area Code', '#', { data: { target: '#departmentCodeModal', toggle: :modal }, class: 'link' }-->
-  <!--.action-link-->
-    <!--= link_to 'Find Vendor', '#', { data: { target: '#findVendorModal', toggle: :modal }, class: 'link' }-->
-  <!--.action-link-->
-    <!--= link_to 'Find Client', '#', { data: { target: '#findClientModal', toggle: :modal }, class: 'link' }-->
-  <!--.action-link-->
-    <!--= link_to 'Groups & Categories', '#', { data: { target: '#findGroupAndCategoriesModal', toggle: :modal }, class: 'link' }-->
+<!--.action-link-->
+<!--= link_to 'Department & Area Code', '#', { data: { target: '#departmentCodeModal', toggle: :modal }, class: 'link' }-->
+<!--.action-link-->
+<!--= link_to 'Find Vendor', '#', { data: { target: '#findVendorModal', toggle: :modal }, class: 'link' }-->
+<!--.action-link-->
+<!--= link_to 'Find Client', '#', { data: { target: '#findClientModal', toggle: :modal }, class: 'link' }-->
+<!--.action-link-->
+<!--= link_to 'Groups & Categories', '#', { data: { target: '#findGroupAndCategoriesModal', toggle: :modal }, class: 'link' }-->
 
 <!--= render 'admin/accountings/department_and_area_code'-->
 <!--= render 'admin/accountings/find_vendor'-->

@@ -28,10 +28,11 @@ public class MemoSlipRestController {
 	private MemoSlipRepository memoSlipRepository;
 	@Autowired
 	private DepotRepository depotRepository;
-	
+
 	@GetMapping("/report/depot/{depotId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getCMDMReport(@PathVariable Long depotId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Depot depot = depotRepository.findOne(depotId);
+	public List<Map<String, Object>> getCMDMReport(@PathVariable Long depotId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Depot depot = depotRepository.getOne(depotId);
 		List<MemoSlip> memoSlips = memoSlipRepository.findByDepot(depot);
 		return memoSlips.stream().map(memoSlip -> {
 			Map map = new LinkedHashMap();

@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ZipCodeRepositor
 @RequestMapping("rest/zip-codes")
 public class ZipCodeRestController {
 
-	@Autowired
-	private ZipCodeRepository zipCodeRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private ZipCodeRepository zipCodeRepository;
+
+    @GetMapping("/{id}")
     public ZipCode get(@PathVariable Long id) {
         return zipCodeRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class ZipCodeRestController {
     public ZipCode upsert(@RequestBody ZipCode depot) {
         return zipCodeRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	zipCodeRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        zipCodeRepository.deleteById(id);
+        return true;
     }
 }

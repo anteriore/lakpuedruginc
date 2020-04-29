@@ -31,20 +31,21 @@ public class ReceivingReceiptData {
 	@Autowired
 	private CompanyRepository companyRepository;
 	@Autowired
-	private UserRepository userRepository;	
+	private UserRepository userRepository;
 	@Autowired
 	private ReceivingReceiptService receivingReceiptService;
 	@Autowired
 	private ItemRepository itemRepository;
 	@Autowired
 	private UnitRepository unitRepository;
+
 	public void init() {
-		Company c2 = companyRepository.findOne(1L);
-		PurchaseOrder po1 = purchaseOrderRepository.findOne(1L);
-		User u1 = userRepository.findOne(1L);
+		Company c2 = companyRepository.getOne(1L);
+		PurchaseOrder po1 = purchaseOrderRepository.getOne(1L);
+		User u1 = userRepository.getOne(1L);
 		List<ReceivedItem> receivedItems = new ArrayList<ReceivedItem>();
 		ReceivingReceipt rr1 = new ReceivingReceipt();
-		
+
 		rr1.setCompany(c2);
 		rr1.setDate(new Date());
 		rr1.setDeliveryType("Complete");
@@ -52,20 +53,19 @@ public class ReceivingReceiptData {
 		rr1.setPurchaseOrder(po1);
 		rr1.setReceivedBy(u1);
 		int a = 0;
-		for(OrderedItem orderedItem : po1.getOrderedItems()) {
-				ReceivedItem item = new ReceivedItem();
-				item.setQuantity(orderedItem.getQuantity());
-				item.setUnit(orderedItem.getUnit());
-				item.setItem(orderedItem.getItem());
-				receivedItems.add(item);
+		for (OrderedItem orderedItem : po1.getOrderedItems()) {
+			ReceivedItem item = new ReceivedItem();
+			item.setQuantity(orderedItem.getQuantity());
+			item.setUnit(orderedItem.getUnit());
+			item.setItem(orderedItem.getItem());
+			receivedItems.add(item);
 		}
 		rr1.setReceivedItems(receivedItems);
 		rr1.setSiNumber("SI12345");
 		rr1.setRemarks("remarks");
 		rr1.setOrigin("Unknown");
-		
+
 		receivingReceiptService.saveReceivingReceipt(rr1);
-		
 
 		// RR TOlling
 		ReceivingReceipt rr2 = new ReceivingReceipt();
@@ -75,9 +75,8 @@ public class ReceivingReceiptData {
 		rr2.setDate(new Date());
 		rr2.setDeliveryType("Complete");
 		rr2.setDrNumber("DR12345");
-		//rr1.setPurchaseOrder(po1);
+		// rr1.setPurchaseOrder(po1);
 		rr2.setReceivedBy(u1);
-
 
 		ReceivedItem item = new ReceivedItem();
 		item.setQuantity(10);
@@ -85,12 +84,11 @@ public class ReceivingReceiptData {
 		item.setItem(itemRepository.getOne(1L));
 		receivedItems.add(item);
 		rr2.setReceivedItems(receivedItems);
-		rr2.setSiNumber("PRF SIZE "+ a);
+		rr2.setSiNumber("PRF SIZE " + a);
 		rr2.setRemarks("remarks");
 		rr2.setOrigin("Unknown");
 		rr2.setTolling(true);
 
 	}
-	
-	
+
 }

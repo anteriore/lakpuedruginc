@@ -25,38 +25,38 @@ public class AcknowledgementReceiptService {
 	private SalesInvoiceRepository salesInvoiceRepository;
 	@Autowired
 	private OrderSlipRepository orderSlipRepository;
-	
+
 	@Transactional
 	public AcknowledgementReceipt saveAcknowledgementReceipt(AcknowledgementReceipt acknowledgementReceipt) {
 		List<AcknowledgementPayment> payments = acknowledgementReceipt.getPayments();
-		for(AcknowledgementPayment payment : payments) {
-				updateStatusOfSalesSlip(payment.getReference(), payment.getAppliedAmount());
+		for (AcknowledgementPayment payment : payments) {
+			updateStatusOfSalesSlip(payment.getReference(), payment.getAppliedAmount());
 		}
-		
+
 		return acknowledgementReceiptRepository.save(acknowledgementReceipt);
 	}
-	
+
 	private void updateStatusOfSalesSlip(SalesSlip reference, Double amount) {
 		OrderSlipType type = reference.getSalesOrder().getType();
-		if(type.equals(OrderSlipType.DR_SI)) {
-			SalesInvoice si = salesInvoiceRepository.findOne(reference.getId());
+		if (type.equals(OrderSlipType.DR_SI)) {
+			SalesInvoice si = salesInvoiceRepository.getOne(reference.getId());
 			si.deductFromRemainingBalance(amount);
-			if(si.getRemainingBalance() == 0) {
+			if (si.getRemainingBalance() == 0) {
 				si.setStatus("Completed");
 			} else {
 				si.setStatus("Incomplete");
 			}
 			salesInvoiceRepository.save(si);
-		}else if(type.equals(OrderSlipType.OS)) {
-			OrderSlip os = orderSlipRepository.findOne(reference.getId());
+		} else if (type.equals(OrderSlipType.OS)) {
+			OrderSlip os = orderSlipRepository.getOne(reference.getId());
 			os.deductFromRemainingBalance(amount);
-			if(os.getRemainingBalance() == 0) {
+			if (os.getRemainingBalance() == 0) {
 				os.setStatus("Completed");
 			} else {
 				os.setStatus("Incomplete");
 			}
 			orderSlipRepository.save(os);
-		}else {
+		} else {
 			throw new IllegalArgumentException("Invalid Sales Order Type");
 		}
 	}

@@ -19,7 +19,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.InventoryReposit
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MoInventoryRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PpInventoryRepository;
 
-
 @RestController
 @RequestMapping("rest/ppInventory")
 public class PpInventoryRestController {
@@ -34,10 +33,9 @@ public class PpInventoryRestController {
     @Autowired
     private MoInventoryRepository moInventoryRepository;
 
-
     @PostMapping
     public PpInventory upsert(@RequestBody PpInventory ppInventory) {
-        inventoryRepository.save(ppInventory.getMoInventory().getInventoryList());
+        inventoryRepository.saveAll(ppInventory.getMoInventory().getInventoryList());
         moInventoryRepository.save(ppInventory.getMoInventory());
         return ppInventoryRepository.save(ppInventory);
     }
@@ -49,10 +47,9 @@ public class PpInventoryRestController {
 
     @GetMapping("/company/{companyId}")
     public List<PpInventory> listByCompany(@PathVariable Long companyId) {
-        Company company = companyRepository.findOne(companyId);
+        Company company = companyRepository.getOne(companyId);
         return ppInventoryRepository.findByCompany(company);
     }
-
 
     @GetMapping()
     public List<PpInventory> list() {

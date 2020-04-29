@@ -40,7 +40,7 @@ public class UnitRestController {
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		unitRepository.delete(id);
+		unitRepository.deleteById(id);
 		return true;
 	}
 }

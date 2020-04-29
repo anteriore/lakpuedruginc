@@ -22,15 +22,15 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductStockCard
 @RestController
 @RequestMapping("rest/product-stock-cards")
 public class ProductStockCardRestController {
-    private static final Logger logger = LoggerFactory.getLogger(ProductStockCardRestController.class);
-    @Autowired
-    private ProductStockCardRepository productStockCardRepository;
-    @Autowired
-    private CompanyRepository companyRepository;
-    @Autowired
-    private ProductRepository productRepository;
-    
-    @GetMapping("/{id}")
+	private static final Logger logger = LoggerFactory.getLogger(ProductStockCardRestController.class);
+	@Autowired
+	private ProductStockCardRepository productStockCardRepository;
+	@Autowired
+	private CompanyRepository companyRepository;
+	@Autowired
+	private ProductRepository productRepository;
+
+	@GetMapping("/{id}")
 	public ProductStockCard get(@PathVariable Long id) {
 		return productStockCardRepository.getOne(id);
 	}
@@ -47,14 +47,14 @@ public class ProductStockCardRestController {
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		productStockCardRepository.delete(id);
+		productStockCardRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@GetMapping("/company/{companyId}/product/{productId}")
-	public List<ProductStockCard> listByProductAndCompany(@PathVariable Long companyId, @PathVariable Long productId){
-		Company company = companyRepository.findOne(companyId);
-		Product product = productRepository.findOne(productId);
+	public List<ProductStockCard> listByProductAndCompany(@PathVariable Long companyId, @PathVariable Long productId) {
+		Company company = companyRepository.getOne(companyId);
+		Product product = productRepository.getOne(productId);
 		return productStockCardRepository.findByProductAndCompany(product, company);
 	}
 }
