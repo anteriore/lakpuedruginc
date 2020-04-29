@@ -16,7 +16,7 @@ public class CompanyData {
     public void init() {
         Company c1 = new Company();
         c1.setName("Lakpue Drug Inc.");
-        companyRepository.save(c1);
+        System.out.println(companyRepository.save(c1));
 
         Company c2 = new Company();
         c2.setName("La Croesus Pharma, Inc.");

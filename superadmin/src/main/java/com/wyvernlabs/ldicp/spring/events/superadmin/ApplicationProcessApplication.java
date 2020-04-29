@@ -19,19 +19,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 
-
 @SpringBootApplication
-public class ApplicationProcessApplication  {
-	
+public class ApplicationProcessApplication {
+
 	public static void main(String[] args) {
-		
+
 		SpringApplication.run(ApplicationProcessApplication.class, args);
 	}
 
@@ -42,14 +40,13 @@ public class ApplicationProcessApplication  {
 
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurerAdapter() {
+		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**");
 			}
 		};
 	}
-
 
 	/**
 	 * Start internal H2 server so we can query the DB from IDE
@@ -62,20 +59,16 @@ public class ApplicationProcessApplication  {
 		return org.h2.tools.Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 	}
 
-	@Component( "restAuthenticationEntryPoint" )
-	public class RestAuthenticationEntryPoint
-			implements AuthenticationEntryPoint {
+	@Component("restAuthenticationEntryPoint")
+	public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 		@Override
-		public void commence(
-				HttpServletRequest request,
-				HttpServletResponse response,
+		public void commence(HttpServletRequest request, HttpServletResponse response,
 				AuthenticationException authException) throws IOException {
 
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 		}
 	}
-
 
 	@EnableWebSecurity
 	@Configuration
@@ -93,37 +86,28 @@ public class ApplicationProcessApplication  {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.headers().frameOptions().disable();
-			http.csrf().disable()
-					.addFilterBefore(authenticationTokenProcessingFilter, BasicAuthenticationFilter.class)
-					.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
-					.and()
-					.authorizeRequests()
-						.antMatchers("/rest/**")
-							.fullyAuthenticated()
-						.anyRequest().permitAll();
+			http.csrf().disable().addFilterBefore(authenticationTokenProcessingFilter, BasicAuthenticationFilter.class)
+					.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
+					.authorizeRequests().antMatchers("/rest/**").fullyAuthenticated().anyRequest().permitAll();
 		}
 
-
-
 		@Override
-		protected void configure(AuthenticationManagerBuilder auth)
-				throws Exception {
+		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 			auth.authenticationProvider(authenticationProvider());
 		}
 
 		@Bean
 		public DaoAuthenticationProvider authenticationProvider() {
-			DaoAuthenticationProvider authProvider
-					= new DaoAuthenticationProvider();
+			DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 			authProvider.setUserDetailsService(userDetailsService);
-//			authProvider.setPasswordEncoder(encoder());
+			// authProvider.setPasswordEncoder(encoder());
 			return authProvider;
 		}
 
-//		@Bean
-//		public PasswordEncoder encoder() {
-//			return new BCryptPasswordEncoder(11);
-//		}
+		// @Bean
+		// public PasswordEncoder encoder() {
+		// return new BCryptPasswordEncoder(11);
+		// }
 
 	}
 }
