@@ -7,11 +7,12 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Recipe {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
 	private Date date;
 	private String status;
@@ -24,57 +25,67 @@ public class Recipe {
 	private FinishedGood finishedGood;
 	@OneToOne
 	private IngredientGroup activeIngredientGroup;
-	
+
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<IngredientGroup> ingredientGroups;
-
 
 	@PrePersist
 	protected void onCreate() {
 		date = new Date();
 	}
 
-
-
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public Date getDate() {
 		return date;
 	}
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public String getApprovedBy() {
 		return approvedBy;
 	}
+
 	public void setApprovedBy(String approvedBy) {
 		this.approvedBy = approvedBy;
 	}
+
 	public Date getApprovedDate() {
 		return approvedDate;
 	}
+
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
+
 	public String getRemarks() {
 		return remarks;
 	}
+
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
 	public FinishedGood getFinishedGood() {
 		return finishedGood;
 	}
+
 	public void setFinishedGood(FinishedGood finishedGood) {
 		this.finishedGood = finishedGood;
 	}

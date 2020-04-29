@@ -14,6 +14,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PurchaseOrderRep
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ReceivingReceiptRepository;
 
 @Component
+@Transactional
 public class ReceivingReceiptService {
 	@Autowired
 	private ReceivingReceiptRepository receivingReceiptRepository;

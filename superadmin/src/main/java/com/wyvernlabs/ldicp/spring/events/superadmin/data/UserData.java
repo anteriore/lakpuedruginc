@@ -14,6 +14,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepartmentReposi
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UserRepository;
 
 @Component
+@Transactional
 public class UserData {
 
     @Autowired
@@ -24,7 +25,7 @@ public class UserData {
     private DepartmentRepository departmentRepository;
     @Autowired
     private DepotRepository depotRepository;
-    
+
     @Transactional
     public void init() {
         Company c1 = companyRepository.getOne(1L);
@@ -43,7 +44,7 @@ public class UserData {
         depots.add(depot);
         u.setDepots(depots);
 
-        u.setRoles(new String[]{"ACTUATOR", "USER"});
+        u.setRoles(new String[] { "ACTUATOR", "USER" });
 
         Map<String, UserPermission> permissions = new HashMap<>();
         UserPermission p0 = new UserPermission();
@@ -60,9 +61,9 @@ public class UserData {
         p2.setCode("superadmin");
         p2.setActions("crud");
         permissions.put(p2.getCode(), p2);
-        
+
         u.setPermissions(permissions);
         userRepository.save(u);
-        
+
     }
 }

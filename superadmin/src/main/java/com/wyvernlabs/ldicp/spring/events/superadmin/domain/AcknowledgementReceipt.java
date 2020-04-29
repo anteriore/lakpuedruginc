@@ -4,9 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -20,7 +22,8 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.enums.TermsOfPayment;
 @Entity
 public class AcknowledgementReceipt {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
 	private String number;
 	private Date date;
@@ -64,7 +67,7 @@ public class AcknowledgementReceipt {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 
@@ -72,7 +75,7 @@ public class AcknowledgementReceipt {
 		return number;
 	}
 
-	public void setNumber(String number) {
+	public void setNumber(final String number) {
 		this.number = number;
 	}
 
@@ -80,7 +83,7 @@ public class AcknowledgementReceipt {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(final Date date) {
 		this.date = date;
 	}
 
@@ -88,7 +91,7 @@ public class AcknowledgementReceipt {
 		return terms;
 	}
 
-	public void setTerms(TermsOfPayment terms) {
+	public void setTerms(final TermsOfPayment terms) {
 		this.terms = terms;
 	}
 
@@ -96,7 +99,7 @@ public class AcknowledgementReceipt {
 		return amountPaid;
 	}
 
-	public void setAmountPaid(Double amountPaid) {
+	public void setAmountPaid(final Double amountPaid) {
 		this.amountPaid = amountPaid;
 	}
 
@@ -104,7 +107,7 @@ public class AcknowledgementReceipt {
 		return chequeNumber;
 	}
 
-	public void setChequeNumber(String chequeNumber) {
+	public void setChequeNumber(final String chequeNumber) {
 		this.chequeNumber = chequeNumber;
 	}
 
@@ -112,7 +115,7 @@ public class AcknowledgementReceipt {
 		return chequeDate;
 	}
 
-	public void setChequeDate(Date chequeDate) {
+	public void setChequeDate(final Date chequeDate) {
 		this.chequeDate = chequeDate;
 	}
 
@@ -120,7 +123,7 @@ public class AcknowledgementReceipt {
 		return cutOffDate;
 	}
 
-	public void setCutOffDate(Date cutOffDate) {
+	public void setCutOffDate(final Date cutOffDate) {
 		this.cutOffDate = cutOffDate;
 	}
 
@@ -128,7 +131,7 @@ public class AcknowledgementReceipt {
 		return dateCreated;
 	}
 
-	public void setDateCreated(Date dateCreated) {
+	public void setDateCreated(final Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
@@ -136,7 +139,7 @@ public class AcknowledgementReceipt {
 		return company;
 	}
 
-	public void setCompany(Company company) {
+	public void setCompany(final Company company) {
 		this.company = company;
 	}
 
@@ -144,7 +147,7 @@ public class AcknowledgementReceipt {
 		return depot;
 	}
 
-	public void setDepot(Depot depot) {
+	public void setDepot(final Depot depot) {
 		this.depot = depot;
 	}
 
@@ -152,7 +155,7 @@ public class AcknowledgementReceipt {
 		return client;
 	}
 
-	public void setClient(Client client) {
+	public void setClient(final Client client) {
 		this.client = client;
 	}
 
@@ -160,7 +163,7 @@ public class AcknowledgementReceipt {
 		return preparedBy;
 	}
 
-	public void setPreparedBy(User preparedBy) {
+	public void setPreparedBy(final User preparedBy) {
 		this.preparedBy = preparedBy;
 	}
 
@@ -168,7 +171,7 @@ public class AcknowledgementReceipt {
 		return checkedBy;
 	}
 
-	public void setCheckedBy(User checkedBy) {
+	public void setCheckedBy(final User checkedBy) {
 		this.checkedBy = checkedBy;
 	}
 
@@ -176,7 +179,7 @@ public class AcknowledgementReceipt {
 		return approvedBy;
 	}
 
-	public void setApprovedBy(User approvedBy) {
+	public void setApprovedBy(final User approvedBy) {
 		this.approvedBy = approvedBy;
 	}
 
@@ -184,7 +187,7 @@ public class AcknowledgementReceipt {
 		return remarks;
 	}
 
-	public void setRemarks(String remarks) {
+	public void setRemarks(final String remarks) {
 		this.remarks = remarks;
 	}
 
@@ -192,7 +195,7 @@ public class AcknowledgementReceipt {
 		return payments;
 	}
 
-	public void setPayments(List<AcknowledgementPayment> payments) {
+	public void setPayments(final List<AcknowledgementPayment> payments) {
 		this.payments = payments;
 	}
 
@@ -200,7 +203,7 @@ public class AcknowledgementReceipt {
 		return osAmount;
 	}
 
-	public void setOsAmount(Double osAmount) {
+	public void setOsAmount(final Double osAmount) {
 		this.osAmount = osAmount;
 	}
 
@@ -208,7 +211,7 @@ public class AcknowledgementReceipt {
 		return siAmount;
 	}
 
-	public void setSiAmount(Double siAmount) {
+	public void setSiAmount(final Double siAmount) {
 		this.siAmount = siAmount;
 	}
 
@@ -216,7 +219,7 @@ public class AcknowledgementReceipt {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(final String status) {
 		this.status = status;
 	}
 

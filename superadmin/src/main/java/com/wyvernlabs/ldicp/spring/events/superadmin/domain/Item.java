@@ -1,18 +1,21 @@
 
 package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Item {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
 	private String name;
 	private String code;
@@ -23,34 +26,43 @@ public class Item {
 	private String typeString;
 	private String unitString;
 	private boolean active;
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
+
 	public ItemType getType() {
 		return type;
 	}
+
 	public void setType(ItemType type) {
 		this.type = type;
 	}
+
 	public Unit getUnit() {
 		return unit;
 	}
+
 	public void setUnit(Unit unit) {
 		this.unit = unit;
 	}
@@ -83,6 +95,7 @@ public class Item {
 	public String toString() {
 		return "Item [id=" + id + ", name=" + name + ", code=" + code + ", type=" + type + "]";
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -93,6 +106,7 @@ public class Item {
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -124,7 +138,5 @@ public class Item {
 			return false;
 		return true;
 	}
-	
-	
-	
+
 }

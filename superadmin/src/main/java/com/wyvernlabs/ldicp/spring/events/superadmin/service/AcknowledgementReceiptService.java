@@ -18,6 +18,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.OrderSlipReposit
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesInvoiceRepository;
 
 @Service
+@Transactional
 public class AcknowledgementReceiptService {
 	@Autowired
 	private AcknowledgementReceiptRepository acknowledgementReceiptRepository;

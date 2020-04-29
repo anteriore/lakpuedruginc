@@ -6,11 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.Date;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class AccessToken {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
     private Long id;
 
     @Column(nullable = false)
@@ -23,45 +24,37 @@ public class AccessToken {
     @Column
     private Date expiry;
 
-    protected AccessToken()
-    {
+    protected AccessToken() {
         /* Reflection instantiation */
     }
 
-    public AccessToken(User user, String token)
-    {
+    public AccessToken(User user, String token) {
         this.user = user;
         this.token = token;
     }
 
-    public AccessToken(User user, String token, Date expiry)
-    {
+    public AccessToken(User user, String token, Date expiry) {
         this(user, token);
         this.expiry = expiry;
     }
 
-    public Long getId()
-    {
+    public Long getId() {
         return this.id;
     }
 
-    public String getToken()
-    {
+    public String getToken() {
         return this.token;
     }
 
-    public User getUser()
-    {
+    public User getUser() {
         return this.user;
     }
 
-    public Date getExpiry()
-    {
+    public Date getExpiry() {
         return this.expiry;
     }
 
-    public boolean isExpired()
-    {
+    public boolean isExpired() {
         if (null == this.expiry) {
             return false;
         }
@@ -71,11 +64,6 @@ public class AccessToken {
 
     @Override
     public String toString() {
-        return "AccessToken{" +
-                "id=" + id +
-                ", token='" + token + '\'' +
-                ", user=" + user +
-                ", expiry=" + expiry +
-                '}';
+        return "AccessToken{" + "id=" + id + ", token='" + token + '\'' + ", user=" + user + ", expiry=" + expiry + '}';
     }
 }

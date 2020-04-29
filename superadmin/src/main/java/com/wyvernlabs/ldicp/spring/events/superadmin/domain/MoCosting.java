@@ -6,24 +6,25 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class MoCosting {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
     @OneToOne
     private MoInventory moInventory;
     @OneToOne
     private Company company;
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<MoCostingEmployee> moCostingEmployees;
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<MoCostingInventory> moCostingInventories;
     private double totalCost;
     private double employeeTotalCost;
     private double moTotalCost;
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<JobOrder> jobOrders;
 
     public Long getId() {

@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.List;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 @Table(name = "LDI_GROUP")
 public class Group {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
     private String name;
 
@@ -58,11 +59,7 @@ public class Group {
 
     @Override
     public String toString() {
-        return "Group{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", company=" + company +
-                ", categories=" + categories +
-                '}';
+        return "Group{" + "id=" + id + ", name='" + name + '\'' + ", company=" + company + ", categories=" + categories
+                + '}';
     }
 }

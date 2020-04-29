@@ -1,18 +1,21 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class RequestedItem {
 	@Id
-    @GeneratedValue
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id;
 	private int quantityRequired;
 	private int quantityRequested;
 	private int quantityLacking;
@@ -26,7 +29,7 @@ public class RequestedItem {
 	private String status = "Pending";
 	@OneToOne
 	private Company company;
-	
+
 	private Double unitPrice;
 
 	public Long getId() {
@@ -81,12 +84,10 @@ public class RequestedItem {
 		return unit;
 	}
 
-
 	public void setUnit(Unit unit) {
 		this.unit = unit;
 	}
 
-	
 	public String getPrfNumber() {
 		return prfNumber;
 	}
@@ -94,8 +95,7 @@ public class RequestedItem {
 	public void setPrfNumber(String prfNumber) {
 		this.prfNumber = prfNumber;
 	}
-	
-	
+
 	public String getStatus() {
 		return status;
 	}
@@ -104,7 +104,6 @@ public class RequestedItem {
 		this.status = status;
 	}
 
-	
 	public Company getCompany() {
 		return company;
 	}
@@ -120,19 +119,19 @@ public class RequestedItem {
 	public void setQuantityRemaining(int quantityRemaining) {
 		this.quantityRemaining = quantityRemaining;
 	}
-	
+
 	public void deductQuantityRequestedFromQuantity(OrderedItem orderedItem) {
-		if(status.equals("Pending")) {
-			if(orderedItem.getQuantity() >= quantityRequested) {
+		if (status.equals("Pending")) {
+			if (orderedItem.getQuantity() >= quantityRequested) {
 				status = "PO Created";
-			}else {
+			} else {
 				status = "Incomplete";
 				quantityRemaining = orderedItem.getQuantity() - quantityRequested;
 			}
-		}else if(status.equals("Incomplete")) {
-			if(orderedItem.getQuantity() >= quantityRemaining) {
+		} else if (status.equals("Incomplete")) {
+			if (orderedItem.getQuantity() >= quantityRemaining) {
 				status = "PO Created";
-			}else {
+			} else {
 				quantityRemaining = orderedItem.getQuantity() - quantityRequested;
 			}
 		}
@@ -140,14 +139,8 @@ public class RequestedItem {
 
 	@Override
 	public String toString() {
-		return "RequestedItem{" +
-				"id=" + id +
-				", quantityRequired=" + quantityRequired +
-				", quantityRequested=" + quantityRequested +
-				", quantityLacking=" + quantityLacking +
-				", item=" + item +
-				", moqQuantity=" + moqQuantity +
-				", unit=" + unit +
-				'}';
+		return "RequestedItem{" + "id=" + id + ", quantityRequired=" + quantityRequired + ", quantityRequested="
+				+ quantityRequested + ", quantityLacking=" + quantityLacking + ", item=" + item + ", moqQuantity="
+				+ moqQuantity + ", unit=" + unit + '}';
 	}
 }

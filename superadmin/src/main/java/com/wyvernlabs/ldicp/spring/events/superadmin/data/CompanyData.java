@@ -14,16 +14,13 @@ public class CompanyData {
     }
 
     public void init() {
-        Company c1 = new Company();
-        c1.setName("Lakpue Drug Inc.");
+        Company c1 = new Company("Lakpue Drug Inc.");
         System.out.println(companyRepository.save(c1));
 
-        Company c2 = new Company();
-        c2.setName("La Croesus Pharma, Inc.");
+        Company c2 = new Company("La Croesus Pharma, Inc.");
         companyRepository.save(c2);
 
-        Company c3 = new Company();
-        c3.setName("Fanfreluche Enterprises Inc.");
+        Company c3 = new Company("Fanfreluche Enterprises Inc.");
         companyRepository.save(c3);
     }
 }

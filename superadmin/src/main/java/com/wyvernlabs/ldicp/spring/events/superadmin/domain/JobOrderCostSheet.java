@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.Set;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class JobOrderCostSheet {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
     @OneToOne
@@ -17,9 +18,9 @@ public class JobOrderCostSheet {
     @OneToOne
     private Recipe recipe;
 
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<JobOrderCostSheetIngredient> jobOrderCostSheetIngredients;
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<JobOrderCostSheetProcedureArea> jobOrderCostSheetProcedureAreas;
 
     private Integer grandTotal;
@@ -63,7 +64,8 @@ public class JobOrderCostSheet {
         return jobOrderCostSheetProcedureAreas;
     }
 
-    public void setJobOrderCostSheetProcedureAreas(Set<JobOrderCostSheetProcedureArea> jobOrderCostSheetProcedureAreas) {
+    public void setJobOrderCostSheetProcedureAreas(
+            Set<JobOrderCostSheetProcedureArea> jobOrderCostSheetProcedureAreas) {
         this.jobOrderCostSheetProcedureAreas = jobOrderCostSheetProcedureAreas;
     }
 

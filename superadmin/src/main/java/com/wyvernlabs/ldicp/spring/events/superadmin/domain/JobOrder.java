@@ -2,8 +2,10 @@ package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -14,7 +16,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 public class JobOrder {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
 	@OneToOne
 	private MoInventory moInventory;
