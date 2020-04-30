@@ -13,6 +13,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PurchaseRequestR
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.RequestedItemRepository;
 
 @Service
+@Transactional
 public class CancelRequestedItemService {
 	@Autowired
 	private CancelRequestedItemRepository cancelRequestedItemRepository;
