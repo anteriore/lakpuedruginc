@@ -16,6 +16,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderProduc
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderRepository;
 
 @Service
+@Transactional
 public class OrderSlipService {
 	@Autowired
 	private OrderSlipRepository orderSlipRepository;

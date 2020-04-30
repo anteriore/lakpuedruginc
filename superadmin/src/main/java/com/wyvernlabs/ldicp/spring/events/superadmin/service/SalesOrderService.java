@@ -10,6 +10,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.SalesOrderProduct;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderRepository;
 
 @Service
+@Transactional
 public class SalesOrderService {
 	@Autowired
 	private SalesOrderRepository salesOrderRepository;

@@ -16,6 +16,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductIssuanceR
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductReceivingRepository;
 
 @Service
+@Transactional
 public class ProductReceivingService {
 	@Autowired
 	private ProductReceivingRepository productReceivingRepository;

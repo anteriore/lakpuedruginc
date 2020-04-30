@@ -17,6 +17,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MaterialIssuance
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.StockCardRepository;
 
 @Component
+@Transactional
 public class MaterialIssuanceService {
 	@Autowired
 	private MaterialIssuanceRepository materialIssuanceRepository;

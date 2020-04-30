@@ -11,6 +11,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Item;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.EngineeringInventoryRepository;
 
 @Service
+@Transactional
 public class EngineeringInventoryService {
 	@Autowired
 	private EngineeringInventoryRepository engineeringInventoryRepository;

@@ -11,6 +11,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductInventory
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ReturnSlipRepository;
 
 @Service
+@Transactional
 public class ReturnSlipService {
 	@Autowired
 	private ReturnSlipRepository returnSlipRepository;

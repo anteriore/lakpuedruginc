@@ -21,6 +21,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.OrderReceiptRepo
 
 @RestController
 @RequestMapping("/rest/order-receipts")
+@Transactional
 public class OrderReceiptRestController {
     @Autowired
     private OrderReceiptRepository orderReceiptRepository;

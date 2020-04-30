@@ -9,6 +9,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.MemoSlip;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MemoSlipRepository;
 
 @Service
+@Transactional
 public class MemoSlipService {
 	@Autowired
 	private MemoSlipRepository memoSlipRepository;

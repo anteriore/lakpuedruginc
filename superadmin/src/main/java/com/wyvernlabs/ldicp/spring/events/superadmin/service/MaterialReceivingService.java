@@ -18,6 +18,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MaterialReceivin
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.StockCardRepository;
 
 @Component
+@Transactional
 public class MaterialReceivingService {
 	@Autowired
 	private MaterialReceivingRepository materialReceivingRepository;

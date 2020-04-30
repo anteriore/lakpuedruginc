@@ -21,6 +21,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PostDatedChequeV
 
 @RestController
 @RequestMapping("rest/pdc-vouchers")
+@Transactional
 public class PostDatedChequeVoucherRestController {
 	private static final Logger logger = LoggerFactory.getLogger(PostDatedChequeVoucherRestController.class);
 

@@ -13,6 +13,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderProduc
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderRepository;
 
 @Service
+@Transactional
 public class CancelSalesOrderProductService {
 	@Autowired
 	private CancelSalesOrderProductRepository cancelSalesOrderProductRepository;
