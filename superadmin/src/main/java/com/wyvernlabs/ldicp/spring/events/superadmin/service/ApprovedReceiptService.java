@@ -18,7 +18,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ReceivedItemRepo
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ReceivingReceiptRepository;
 
 @Service
-@Transactional
 public class ApprovedReceiptService {
 	@Autowired
 	private ApprovedReceiptRepository approvedReceiptRepository;

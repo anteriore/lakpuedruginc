@@ -20,7 +20,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UserRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.service.MaterialIssuanceService;
 
 @Component
-@Transactional
 public class MaterialIssuanceData {
 	@Autowired
 	private MaterialIssuanceRepository materialIssuanceRepository;

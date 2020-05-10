@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.*;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,7 @@ public class ReceivingReceiptData {
 	@Autowired
 	private UnitRepository unitRepository;
 
+	@Transactional
 	public void init() {
 		Company c2 = companyRepository.getOne(1L);
 		PurchaseOrder po1 = purchaseOrderRepository.getOne(1L);

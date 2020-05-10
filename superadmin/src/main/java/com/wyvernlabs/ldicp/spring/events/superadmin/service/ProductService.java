@@ -13,13 +13,12 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductInventory
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductRepository;
 
 @Service
-@Transactional
 public class ProductService {
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
 	private ProductInventoryRepository productInventoryRepository;
-	
+
 	@Transactional
 	public Product saveProduct(Product product) {
 		ProductInventory inventory = new ProductInventory();

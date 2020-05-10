@@ -26,7 +26,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.ApprovedReceiptServ
 
 @RestController
 @RequestMapping("rest/approved-receipts")
-@Transactional
 public class ApprovedReceiptRestController {
 	private static final Logger logger = LoggerFactory.getLogger(ApprovedReceiptRestController.class);
 

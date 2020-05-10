@@ -87,52 +87,93 @@ public class ExecuteInitData {
     @Autowired
     private BankAccountData bankAccountData;
     @Autowired
-    private ProductDivisionData divisionData;
+    private ProductDivisionData productDivisionData;
     @Autowired
-    private ProductCategoryData categoryData;
+    private ProductCategoryData productCategoryData;
 
     @PostConstruct
     public void init() {
         unitData.init();
+        System.out.println("Units initialized.");
         classificationData.init();
+        System.out.println("Classifications initialized.");
         companyData.init();
+        System.out.println("Companies initialized.");
         departmentData.init();
+        System.out.println("Departments initialized.");
         areaData.init();
+        System.out.println("Areas initialized.");
         depotData.init();
+        System.out.println("Depots initialized.");
         userData.init();
+        System.out.println("Users initialized.");
         clientData.init();
+        System.out.println("Clients initialized.");
         vendorData.init();
+        System.out.println("Vendors initialized.");
         groupData.init();
+        System.out.println("Groups initialized.");
         permissionData.init();
+        System.out.println("Permissions initialized.");
         itemTypeData.init();
+        System.out.println("Item Types initialized.");
         itemData.init();
+        System.out.println("Items initialized.");
         finishedGoodData.init();
+        System.out.println("finishedGoods initialized.");
         recipeData.init();
+        System.out.println("Recipes initialized.");
         purchaseRequestData.init();
+        System.out.println("Purchase Requests initialized.");
         purchaseOrderData.init();
+        System.out.println("Purchase Orders initialized.");
         receivingReceiptData.init();
+        System.out.println("Receiving Receipts initialized.");
         approvedReceiptData.init();
+        System.out.println("Approved Receipts initialized");
         materialReevaluationData.init();
+        System.out.println("Material Reevaluations initialized");
         materialIssuanceData.init();
+        System.out.println("Material Issuance initialized");
         materialReceivingData.init();
+        System.out.println("Material Receiving initialized");
         inventoryMovementData.init();
-        divisionData.init();
-        categoryData.init();
+        System.out.println("Inventory Movement initialized");
+        productDivisionData.init();
+        System.out.println("Division initialized");
+        productCategoryData.init();
+        System.out.println("Category initialized");
         productData.init();
+        System.out.println("Product initialized");
         productMovementData.init();
+        System.out.println("Product Movement initialized");
         moInventoryData.init();
+        System.out.println("moInventory initialized");
         productIssuanceData.init();
+        System.out.println("Product Issuance initialized");
         productReceivingData.init();
+        System.out.println("Product Receiving initialized");
         employeeData.init();
+        System.out.println("Employee initialized");
         procedureAreaData.init();
+        System.out.println("Procedure Area initialized");
         procedureData.init();
+        System.out.println("Procedure initialized");
         salesOrderData.init();
+        System.out.println("Sales Order initialized");
         orderSlipData.init();
+        System.out.println("Order Slip initialized");
         deliveryReceiptData.init();
+        System.out.println("Delivery Receipt initialized");
         moCostingData.init();
+        System.out.println("moCosting initialized");
         memoTypeData.init();
+        System.out.println("Memo initialized");
         accountTitleData.init();
+        System.out.println("Account Title initialized");
         bankAccountData.init();
+        System.out.println("Bank Account initialized");
         purchaseVoucherData.init();
+        System.out.println("Purchase Voucher initialized");
     }
 }

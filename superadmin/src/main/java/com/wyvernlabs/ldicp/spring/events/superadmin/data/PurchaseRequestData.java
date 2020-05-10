@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +38,7 @@ public class PurchaseRequestData {
 	@Autowired
 	private DepartmentRepository departmentRepository;
 
+	@Transactional
 	public void init() {
 		PurchaseRequest pr1 = new PurchaseRequest();
 		Company c1 = companyRepository.getOne(1L);

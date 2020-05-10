@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,7 @@ public class OrderSlipData {
 	@Autowired
 	private SalesOrderProductRepository salesOrderProductRepository;
 
+	@Transactional
 	public void init() {
 		SalesOrder salesOrder = salesOrderRepository.getOne(1L);
 		Company company = companyRepository.getOne(1L);

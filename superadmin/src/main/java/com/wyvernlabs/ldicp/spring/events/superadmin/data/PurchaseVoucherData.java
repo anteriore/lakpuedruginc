@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +40,7 @@ public class PurchaseVoucherData {
 	@Autowired
 	private GroupRepository groupRepository;
 
+	@Transactional
 	public void init() {
 		PurchaseVoucher pv = new PurchaseVoucher();
 		ReceivingReceipt rr = receivingReceiptRepository.getOne(1L);

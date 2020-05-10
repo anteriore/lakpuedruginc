@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,7 @@ public class InventoryMovementData {
 	@Autowired
 	private InventoryRepository inventoryRepository;
 
+	@Transactional
 	public void init() {
 		InventoryMovement inventoryMovement = new InventoryMovement();
 		Company company = companyRepository.getOne(1L);

@@ -1,6 +1,7 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.data;
 
 import java.util.Date;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class ApprovedReceiptData {
 	@Autowired
 	private ApprovedReceiptService approvedReceiptService;
 
+	@Transactional
 	public void init() {
 		// https://stackoverflow.com/questions/24482117/when-use-getone-and-findone-methods-spring-data-jpa
 		Company c1 = companyRepository.getOne(1L);

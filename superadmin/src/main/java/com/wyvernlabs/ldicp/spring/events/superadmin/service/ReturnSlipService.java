@@ -11,17 +11,17 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductInventory
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ReturnSlipRepository;
 
 @Service
-@Transactional
 public class ReturnSlipService {
 	@Autowired
 	private ReturnSlipRepository returnSlipRepository;
 	@Autowired
 	private ProductInventoryRepository productInventoryRepository;
-	
+
 	@Transactional
 	public ReturnSlip saveReturnSlip(ReturnSlip returnSlip) {
 		returnSlip.getReturnSlipProducts().forEach(product -> {
-			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(product.getProduct(), returnSlip.getDepot());
+			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(product.getProduct(),
+					returnSlip.getDepot());
 			inventory.add(product.getGoodQuantity());
 			productInventoryRepository.save(inventory);
 		});

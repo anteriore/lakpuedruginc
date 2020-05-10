@@ -11,17 +11,16 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Item;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.EngineeringInventoryRepository;
 
 @Service
-@Transactional
 public class EngineeringInventoryService {
 	@Autowired
 	private EngineeringInventoryRepository engineeringInventoryRepository;
-	
+
 	@Transactional
 	public EngineeringInventory addEngineeringInventory(Item item, int quantity, Company company) {
 		EngineeringInventory engineeringInventory = engineeringInventoryRepository.findByItem(item);
-		if(engineeringInventory != null) {
+		if (engineeringInventory != null) {
 			engineeringInventory.setQuantity(engineeringInventory.getQuantity() + quantity);
-		}else {
+		} else {
 			engineeringInventory = new EngineeringInventory();
 			engineeringInventory.setCompany(company);
 			engineeringInventory.setItem(item);

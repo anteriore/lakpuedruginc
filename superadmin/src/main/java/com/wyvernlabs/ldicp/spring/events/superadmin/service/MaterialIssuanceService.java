@@ -17,7 +17,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MaterialIssuance
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.StockCardRepository;
 
 @Component
-@Transactional
 public class MaterialIssuanceService {
 	@Autowired
 	private MaterialIssuanceRepository materialIssuanceRepository;
@@ -29,18 +28,20 @@ public class MaterialIssuanceService {
 	@Transactional
 	public MaterialIssuance saveMaterialIssuance(MaterialIssuance mis) {
 		Long id = materialIssuanceRepository.getMaxId();
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		
+
 		mis.setMisNo("MIS-" + ++id);
-		for(IssuedInventory ii : mis.getInventoryList()) {
-    		Inventory inventory = inventoryRepository.findByControlNumberAndCompany(ii.getControlNumber(), mis.getCompany());
-    		inventory.setQuantity(inventory.getQuantity() - ii.getQuantity());
-    		inventoryRepository.save(inventory);
-    		
-    		stockCardService.saveStockCard("MIS", mis.getCompany(), ii.getControlNumber(), new Date(), ii.getQuantity(), mis.getRemarks(), "OUT", mis.getRequestedBy());
-    	}
-        return materialIssuanceRepository.save(mis);
+		for (IssuedInventory ii : mis.getInventoryList()) {
+			Inventory inventory = inventoryRepository.findByControlNumberAndCompany(ii.getControlNumber(),
+					mis.getCompany());
+			inventory.setQuantity(inventory.getQuantity() - ii.getQuantity());
+			inventoryRepository.save(inventory);
+
+			stockCardService.saveStockCard("MIS", mis.getCompany(), ii.getControlNumber(), new Date(), ii.getQuantity(),
+					mis.getRemarks(), "OUT", mis.getRequestedBy());
+		}
+		return materialIssuanceRepository.save(mis);
 	}
 }

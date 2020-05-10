@@ -14,7 +14,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepartmentReposi
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UserRepository;
 
 @Component
-@Transactional
 public class UserData {
 
     @Autowired

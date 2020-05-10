@@ -12,7 +12,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DeliveryReceiptR
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderProductRepository;
 
 @Service
-@Transactional
 public class DeliveryReceiptService {
 	@Autowired
 	private DeliveryReceiptRepository deliveryReceiptRepository;

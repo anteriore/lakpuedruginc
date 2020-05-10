@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 @Component
 public class MoInventoryData {
 	private static final Logger logger = LoggerFactory.getLogger(MoInventoryData.class);
@@ -30,6 +32,7 @@ public class MoInventoryData {
 	public MoInventoryData() {
 	}
 
+	@Transactional
 	public void init() {
 		Company c1 = companyRepository.getOne(1L);
 		User u1 = userRepository.getOne(1L);

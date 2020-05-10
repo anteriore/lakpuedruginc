@@ -21,7 +21,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.StockCardReposit
 import com.wyvernlabs.ldicp.spring.events.superadmin.web.MaterialReevaluationRestController;
 
 @Component
-@Transactional
 public class MaterialReevaluationService {
 	private static final Logger logger = LoggerFactory.getLogger(MaterialReevaluationService.class);
 

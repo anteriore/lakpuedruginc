@@ -26,7 +26,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PostDatedChequeD
 
 @RestController
 @RequestMapping("rest/pdc-disbursements")
-@Transactional
 public class PostDatedChequeDisbursementRestController {
 	private static final Logger logger = LoggerFactory.getLogger(PostDatedChequeDisbursementRestController.class);
 

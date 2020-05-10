@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,7 @@ public class DeliveryReceiptData {
 	@Autowired
 	private SalesOrderProductRepository salesOrderProductRepository;
 
+	@Transactional
 	public void init() {
 		SalesOrder salesOrder = salesOrderRepository.getOne(1L);
 		Company company = companyRepository.getOne(1L);
@@ -48,17 +51,17 @@ public class DeliveryReceiptData {
 		deliveryReceipt.setNumber("OS1");
 		List<DeliveredProduct> deliveredProducts = new ArrayList<DeliveredProduct>();
 
-		/*
-		 * for(SalesOrderProduct soProduct : salesOrder.getProducts()) { soProduct =
-		 * salesOrderProductRepository.getOne(soProduct.getId()); DeliveredProduct
-		 * deliveredProduct = new DeliveredProduct();
-		 * deliveredProduct.setDeliveryReceiptNo(deliveryReceipt.getNumber());
-		 * deliveredProduct.setProduct(productRepository.getOne(soProduct.getProduct().
-		 * getId())); deliveredProduct.setQuantity(50);
-		 * deliveredProduct.setSalesOrderProductId(soProduct.getId());
-		 * deliveredProducts.add(deliveredProduct); }
-		 * deliveryReceipt.setDeliveredProducts(deliveredProducts);
-		 */
+		// for (SalesOrderProduct soProduct : salesOrder.getProducts()) {
+		// soProduct = salesOrderProductRepository.getOne(soProduct.getId());
+		// DeliveredProduct deliveredProduct = new DeliveredProduct();
+		// deliveredProduct.setDeliveryReceiptNo(deliveryReceipt.getNumber());
+		// deliveredProduct.setProduct(productRepository.getOne(soProduct.getProduct().getId()));
+		// deliveredProduct.setQuantity(50);
+		// deliveredProduct.setSalesOrderProductId(soProduct.getId());
+		// deliveredProducts.add(deliveredProduct);
+		// }
+		// deliveryReceipt.setDeliveredProducts(deliveredProducts);
+
 		deliveryReceipt.setPreparedBy(user);
 		deliveryReceipt.setReleasedBy(user);
 		deliveryReceipt.setRemarks("MOCK DATA ORDER SLIP");

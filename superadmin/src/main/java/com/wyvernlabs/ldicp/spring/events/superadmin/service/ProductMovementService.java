@@ -19,7 +19,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductRepositor
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductStockCardRepository;
 
 @Service
-@Transactional
 public class ProductMovementService {
 	@Autowired
 	private ProductMovementRepository productMovementRepository;

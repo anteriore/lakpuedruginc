@@ -17,7 +17,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PurchaseRequestR
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.RequestedItemRepository;
 
 @Component
-@Transactional
 public class PurchaseRequestService {
 	@Autowired
 	private PurchaseRequestRepository purchaseRequestRepository;

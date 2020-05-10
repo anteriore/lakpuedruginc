@@ -25,7 +25,7 @@ public class MyUserDetailsService implements UserDetailsService {
     private AccessTokenRepository accessTokenRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
+    public MyUserPrincipal loadUserByUsername(String username) {
         List<User> users = userRepository.findByEmail(username);
         // logger.info("loadUserByUsername: users.size(): {} username: {}",
         // users.size(), username);

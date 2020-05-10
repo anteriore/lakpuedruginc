@@ -59,13 +59,15 @@ public class ApplicationProcessController {
 	 */
 	@PostMapping("/api/login")
 	public AccessToken authenticate(@RequestBody LoginRequest loginRequest) {
-		LOGGER.info("authenticate:  " + loginRequest.getUsername());
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-				loginRequest.getUsername(), loginRequest.getPassword());
-		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+		System.out.println("authenticate:  " + loginRequest.getUsername());
+		MyUserPrincipal principal = userService.loadUserByUsername(loginRequest.getUsername());
+		Authentication authentication = new UsernamePasswordAuthenticationToken(principal, loginRequest.getPassword());
+		System.out.println(authentication.getPrincipal());
+		System.out.println(loginRequest.getPassword());
+		// Authenticate the user
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MyUserPrincipal principal = (MyUserPrincipal) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
+		principal = (MyUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 		return this.userService.createAccessToken(userRepository.getOne(principal.getId()));
 	}

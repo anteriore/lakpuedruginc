@@ -18,7 +18,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.InventoryReposit
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.StockCardRepository;
 
 @Component
-@Transactional
 public class InventoryMovementService {
 	@Autowired
 	private InventoryMovementRepository inventoryMovementRepository;

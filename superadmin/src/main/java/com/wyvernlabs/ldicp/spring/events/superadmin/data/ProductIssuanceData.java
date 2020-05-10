@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,7 @@ public class ProductIssuanceData {
 	@Autowired
 	private ProductRepository productRepository;
 
+	@Transactional
 	public void init() {
 		ProductIssuance pis = new ProductIssuance();
 		Company company = companyRepository.getOne(1L);
