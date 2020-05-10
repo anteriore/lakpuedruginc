@@ -36,7 +36,7 @@ public class MyUserDetailsService implements UserDetailsService {
         return new MyUserPrincipal(users.get(0));
     }
 
-    public User findUserByAccessToken(String accessTokenString) {
+    public MyUserPrincipal findUserByAccessToken(String accessTokenString) {
         AccessToken accessToken = this.accessTokenRepository.findByToken(accessTokenString);
         // logger.info("findUserByAccessToken: {}, result: {}", accessTokenString,
         // (accessToken == null) ? "NOT FOUND" : "FOUND");
@@ -49,7 +49,7 @@ public class MyUserDetailsService implements UserDetailsService {
             return null;
         }
 
-        return accessToken.getUser();
+        return new MyUserPrincipal(accessToken.getUser());
     }
 
     public AccessToken createAccessToken(User user) {

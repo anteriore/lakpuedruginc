@@ -28,7 +28,7 @@ public class UserData {
     private DepotRepository depotRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncorder;
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     public void init() {
@@ -40,7 +40,7 @@ public class UserData {
         u.setLastName("Guzman");
         u.setEmail("katharine@yahoo.com");
         u.setMiddleInitial("M");
-        u.setPassword(passwordEncorder.encode("test"));
+        u.setPassword(passwordEncoder.encode("test"));
         u.setCompany(c1);
         u.setDepartment(d1);
 

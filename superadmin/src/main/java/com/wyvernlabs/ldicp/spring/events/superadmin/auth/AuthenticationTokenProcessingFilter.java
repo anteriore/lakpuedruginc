@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -30,15 +31,16 @@ public class AuthenticationTokenProcessingFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = this.getAsHttpRequest(request);
 
         String accessToken = this.extractAccessTokenFromRequest(httpRequest);
-        if (null != accessToken && !httpRequest.getRequestURI().contains("rest/login")) {
-            User user = this.userService.findUserByAccessToken(accessToken);
+
+        if (null != accessToken && !httpRequest.getRequestURI().contains("api/login")) {
+            MyUserPrincipal user = this.userService.findUserByAccessToken(accessToken);
             // logger.info("## FILTER AuthenticationTokenProcessingFilter: {} ", (user !=
             // null) ? "FOUND " + user.getEmail() : "NOT FOUND");
             if (null != user) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        // new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                        new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
+                        user.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 

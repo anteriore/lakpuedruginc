@@ -21,6 +21,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -90,14 +93,23 @@ public class ApplicationProcessApplication {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.headers().frameOptions().disable();
-			http.csrf().disable().addFilterBefore(authenticationTokenProcessingFilter, BasicAuthenticationFilter.class)
+			http.csrf().disable().cors().and()
+					.addFilterBefore(authenticationTokenProcessingFilter, BasicAuthenticationFilter.class)
 					.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
 					.authorizeRequests().antMatchers("/rest/**").fullyAuthenticated().anyRequest().permitAll();
 		}
 
 		@Override
 		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.userDetailsService(userDetailsService).passwordEncoder(encoder());
+			auth.authenticationProvider(authenticationProvider());
+		}
+
+		@Bean
+		public DaoAuthenticationProvider authenticationProvider() {
+			DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+			authProvider.setUserDetailsService(userDetailsService);
+			authProvider.setPasswordEncoder(encoder());
+			return authProvider;
 		}
 
 		@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
@@ -108,7 +120,19 @@ public class ApplicationProcessApplication {
 
 		@Bean
 		public PasswordEncoder encoder() {
-			return new BCryptPasswordEncoder(11);
+			return new BCryptPasswordEncoder();
+		}
+
+		@Bean
+		public CorsFilter corsFilter() {
+			UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+			CorsConfiguration config = new CorsConfiguration();
+			config.setAllowCredentials(true);
+			config.addAllowedOrigin("*");
+			config.addAllowedHeader("*");
+			config.addAllowedMethod("*");
+			source.registerCorsConfiguration("/**", config);
+			return new CorsFilter(source);
 		}
 
 	}
