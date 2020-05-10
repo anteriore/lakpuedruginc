@@ -9,3 +9,4 @@ npm-debug.log
 templates.js
 src/app/config
 .env.json
+dist
