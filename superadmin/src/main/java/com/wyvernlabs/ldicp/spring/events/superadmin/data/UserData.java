@@ -7,6 +7,8 @@ import javax.transaction.Transactional;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.*;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
@@ -25,6 +27,9 @@ public class UserData {
     @Autowired
     private DepotRepository depotRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncorder;
+
     @Transactional
     public void init() {
         Company c1 = companyRepository.getOne(1L);
@@ -35,7 +40,7 @@ public class UserData {
         u.setLastName("Guzman");
         u.setEmail("katharine@yahoo.com");
         u.setMiddleInitial("M");
-        u.setPassword("test");
+        u.setPassword(passwordEncorder.encode("test"));
         u.setCompany(c1);
         u.setDepartment(d1);
 

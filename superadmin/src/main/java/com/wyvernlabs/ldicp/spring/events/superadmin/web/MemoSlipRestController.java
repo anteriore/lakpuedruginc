@@ -29,22 +29,25 @@ public class MemoSlipRestController {
 	@Autowired
 	private DepotRepository depotRepository;
 
-	@GetMapping("/report/depot/{depotId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getCMDMReport(@PathVariable Long depotId, @PathVariable Date startDate,
-			@PathVariable Date endDate) {
-		Depot depot = depotRepository.getOne(depotId);
-		List<MemoSlip> memoSlips = memoSlipRepository.findByDepot(depot);
-		return memoSlips.stream().map(memoSlip -> {
-			Map map = new LinkedHashMap();
-			map.put("number", memoSlip.getNumber());
-			map.put("type", memoSlip.getType().getName());
-			map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(memoSlip.getDate()));
-			map.put("client", memoSlip.getReference().getSalesOrder().getClient().getName());
-			map.put("osdr", memoSlip.getReference().getType());
-			map.put("amount", memoSlip.getAmount());
-			map.put("remarks", memoSlip.getRemarks());
-			return map;
-		}).collect(Collectors.toList());
-	}
+	// @GetMapping("/report/depot/{depotId}/start/{startDate}/end/{endDate}")
+	// public List<Map<String, Object>> getCMDMReport(@PathVariable Long depotId,
+	// @PathVariable Date startDate,
+	// @PathVariable Date endDate) {
+	// Depot depot = depotRepository.getOne(depotId);
+	// List<MemoSlip> memoSlips = memoSlipRepository.findByDepot(depot);
+	// return memoSlips.stream().map(memoSlip -> {
+	// Map map = new LinkedHashMap();
+	// map.put("number", memoSlip.getNumber());
+	// map.put("type", memoSlip.getType().getName());
+	// map.put("date", new
+	// SimpleDateFormat("yyyy-MM-dd").format(memoSlip.getDate()));
+	// map.put("client",
+	// memoSlip.getReference().getSalesOrder().getClient().getName());
+	// map.put("osdr", memoSlip.getReference().getType());
+	// map.put("amount", memoSlip.getAmount());
+	// map.put("remarks", memoSlip.getRemarks());
+	// return map;
+	// }).collect(Collectors.toList());
+	// }
 
 }

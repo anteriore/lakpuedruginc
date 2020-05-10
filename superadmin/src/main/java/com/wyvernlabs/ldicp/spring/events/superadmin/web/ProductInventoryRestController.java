@@ -108,24 +108,26 @@ public class ProductInventoryRestController {
 		return productInventoryRepository.findSumQuantityByCompanyAndDepotGroupByFinishedGood(company, depot);
 	}
 
-	@GetMapping("/company/{companyId}/depot/{depotId}/report")
-	public List<Map<String, Object>> listByCompanyDepotReport(@PathVariable Long companyId,
-			@PathVariable Long depotId) {
-		Company company = companyRepository.getOne(companyId);
-		Depot depot = depotRepository.getOne(depotId);
-		List<Map<String, Object>> mapList = productInventoryRepository
-				.findSumQuantityByCompanyAndDepotGroupByFinishedGood(company, depot);
+	// @GetMapping("/company/{companyId}/depot/{depotId}/report")
+	// public List<Map<String, Object>> listByCompanyDepotReport(@PathVariable Long
+	// companyId,
+	// @PathVariable Long depotId) {
+	// Company company = companyRepository.getOne(companyId);
+	// Depot depot = depotRepository.getOne(depotId);
+	// List<Map<String, Object>> mapList = productInventoryRepository
+	// .findSumQuantityByCompanyAndDepotGroupByFinishedGood(company, depot);
 
-		return mapList.stream().map(obj -> {
-			Map map = new LinkedHashMap();
-			Product product = (Product) obj.get("product");
-			map.put("code", product.getFinishedGood().getCode());
-			map.put("fg", product.getFinishedGood().getName());
-			map.put("unit", product.getSmallUnit().getCode() + "/" + product.getBigUnit().getCode());
-			map.put("quantity", obj.get("sum"));
-			return map;
-		}).collect(Collectors.toList());
-	}
+	// return mapList.stream().map(obj -> {
+	// Map map = new LinkedHashMap();
+	// Product product = (Product) obj.get("product");
+	// map.put("code", product.getFinishedGood().getCode());
+	// map.put("fg", product.getFinishedGood().getName());
+	// map.put("unit", product.getSmallUnit().getCode() + "/" +
+	// product.getBigUnit().getCode());
+	// map.put("quantity", obj.get("sum"));
+	// return map;
+	// }).collect(Collectors.toList());
+	// }
 
 	@GetMapping("/company/{companyId}")
 	public List<ProductInventory> listByCompany(@PathVariable Long companyId) {
