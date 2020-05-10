@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,24 +16,21 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.TableGenerator;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @TableGenerator(table = "VOUCHER_SEQUENCE", name = "VoucherSequenceGenerator")
 @JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "type")
-@JsonSubTypes({
-	@JsonSubTypes.Type(value = PurchaseVoucher.class, name="PJV"),
-	@JsonSubTypes.Type(value = JournalVoucher.class, name="JV")
-})
+@JsonSubTypes({ @JsonSubTypes.Type(value = PurchaseVoucher.class, name = "PJV"),
+		@JsonSubTypes.Type(value = JournalVoucher.class, name = "JV") })
 public abstract class Voucher {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "VoucherSequenceGenerator")
-    private Long id;
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id;
 	private String number;
 	private Date date;
 	private String siNumber;
@@ -53,32 +51,27 @@ public abstract class Voucher {
 	private User preparedBy;
 	@OneToOne
 	private User approvedBy;
-	
+
 	private Date rrDate;
 
 	private boolean hasAdjustment = false;
-	
+
 	@PrePersist
 	public void init() {
 		this.totalAmount = accountTitles.stream()
 				.filter(accountTitleEntry -> accountTitleEntry.getAccountTitle().getType().equals("Debit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum();
+				.mapToDouble(AccountTitleEntry::getAmount).sum();
 		this.totalDebitAmount = this.totalAmount;
 		this.totalCreditAmount = accountTitles.stream()
 				.filter(accountTitleEntry -> accountTitleEntry.getAccountTitle().getType().equals("Credit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum();
+				.mapToDouble(AccountTitleEntry::getAmount).sum();
 	}
-	
+
 	public boolean hasEqualDebitAndCreditAmount() {
-		return accountTitles.stream()
-				.filter(title-> title.getAccountTitle().equals("Credit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum() == 
-				accountTitles.stream().filter(title-> title.getAccountTitle().equals("Debit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum() ;
+		return accountTitles.stream().filter(title -> title.getAccountTitle().equals("Credit"))
+				.mapToDouble(AccountTitleEntry::getAmount).sum() == accountTitles.stream()
+						.filter(title -> title.getAccountTitle().equals("Debit"))
+						.mapToDouble(AccountTitleEntry::getAmount).sum();
 	}
 
 	public Long getId() {
@@ -224,6 +217,5 @@ public abstract class Voucher {
 	public void setHasAdjustment(boolean hasAdjustment) {
 		this.hasAdjustment = hasAdjustment;
 	}
-	
-	
+
 }

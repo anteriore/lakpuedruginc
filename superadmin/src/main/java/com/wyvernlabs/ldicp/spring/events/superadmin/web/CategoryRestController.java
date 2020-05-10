@@ -19,10 +19,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CategoryReposito
 @RequestMapping("rest/category")
 public class CategoryRestController {
 	private static final Logger logger = LoggerFactory.getLogger(CategoryRestController.class);
-	
+
 	@Autowired
 	private CategoryRepository categoryRepository;
-	
+
 	@GetMapping("/{id}")
 	public Category get(@PathVariable Long id) {
 		return categoryRepository.getOne(id);
@@ -39,7 +39,7 @@ public class CategoryRestController {
 	}
 
 	public boolean delete(@RequestBody Long id) {
-		categoryRepository.delete(id);
+		categoryRepository.deleteById(id);
 		return true;
 	}
 }

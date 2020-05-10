@@ -29,7 +29,9 @@ public class ClientRestController {
 	private ClientRepository clientRepository;
 	private CompanyRepository companyRepository;
 	private SalesRepRepository salesRepRepository;
-	public ClientRestController(ClientRepository clientRepository, CompanyRepository companyRepository, SalesRepRepository salesRepRepository) {
+
+	public ClientRestController(ClientRepository clientRepository, CompanyRepository companyRepository,
+			SalesRepRepository salesRepRepository) {
 		this.clientRepository = clientRepository;
 		this.companyRepository = companyRepository;
 		this.salesRepRepository = salesRepRepository;
@@ -52,28 +54,29 @@ public class ClientRestController {
 
 	@GetMapping("/company/{companyId}")
 	public List<Client> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return clientRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		clientRepository.delete(id);
+		clientRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@GetMapping("/report/company/{companyId}/sales-rep/{salesRepId}")
-	public List<Client> reportBySalesRep(@PathVariable Long companyId, @PathVariable Long salesRepId){
-		Company company = companyRepository.findOne(companyId);
-		SalesRep salesRep = salesRepRepository.findOne(salesRepId);
+	public List<Client> reportBySalesRep(@PathVariable Long companyId, @PathVariable Long salesRepId) {
+		Company company = companyRepository.getOne(companyId);
+		SalesRep salesRep = salesRepRepository.getOne(salesRepId);
 		return clientRepository.findByCompanyAndSalesRep(company, salesRep);
 	}
-	
-	 @GetMapping("/company/{companyId}/paginate/{itemsPerPage}/{offset}")
-	    public Page<Client> paginateByCompany(@PathVariable("companyId") Long companyId, @PathVariable("itemsPerPage") Integer itemsPerPage, @PathVariable("offset") Integer offset) {
-	        Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
-			Company company = companyRepository.findOne(companyId);
-	        return clientRepository.findByCompany(company, pageable);
-	    }
+
+	@GetMapping("/company/{companyId}/paginate/{itemsPerPage}/{offset}")
+	public Page<Client> paginateByCompany(@PathVariable("companyId") Long companyId,
+			@PathVariable("itemsPerPage") Integer itemsPerPage, @PathVariable("offset") Integer offset) {
+		Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
+		Company company = companyRepository.getOne(companyId);
+		return clientRepository.findByCompany(company, pageable);
+	}
 
 }

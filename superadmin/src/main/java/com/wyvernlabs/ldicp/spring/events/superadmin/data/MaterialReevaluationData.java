@@ -2,6 +2,7 @@ package com.wyvernlabs.ldicp.spring.events.superadmin.data;
 
 import java.util.Date;
 import java.util.List;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,8 +25,10 @@ public class MaterialReevaluationData {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private UserRepository userRepository;
+
+	@Transactional
 	public void init() {
-		Company c1 = companyRepository.findOne(1L);
+		Company c1 = companyRepository.getOne(1L);
 		MaterialReevaluation mr = new MaterialReevaluation();
 		List<ApprovedReceipt> approvedItems = approvedItemRepository.findAll();
 		mr.setApprovedReceipt(approvedItems.get(0));

@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesRepReposito
 @RequestMapping("rest/sales-reps")
 public class SalesRepRestController {
 
-	@Autowired
-	private SalesRepRepository salesRepRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private SalesRepRepository salesRepRepository;
+
+    @GetMapping("/{id}")
     public SalesRep get(@PathVariable Long id) {
         return salesRepRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class SalesRepRestController {
     public SalesRep upsert(@RequestBody SalesRep depot) {
         return salesRepRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	salesRepRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        salesRepRepository.deleteById(id);
+        return true;
     }
 }

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,29 +32,31 @@ public class ProductIssuanceData {
 	private UserRepository userRepository;
 	@Autowired
 	private ProductRepository productRepository;
+
+	@Transactional
 	public void init() {
 		ProductIssuance pis = new ProductIssuance();
-		Company company = companyRepository.findOne(1L);
-		Depot fromDepot = depotRepository.findOne(1L);
-		Depot toDepot = depotRepository.findOne(2L);
-		User requestedBy = userRepository.findOne(1L);
-		
+		Company company = companyRepository.getOne(1L);
+		Depot fromDepot = depotRepository.getOne(1L);
+		Depot toDepot = depotRepository.getOne(2L);
+		User requestedBy = userRepository.getOne(1L);
+
 		pis.setCompany(company);
 		pis.setDate(new Date());
 		pis.setFromDepot(fromDepot);
 		pis.setToDepot(toDepot);
-		
+
 		Set<IssuedProductInventory> inventoryList = new HashSet<IssuedProductInventory>();
 		IssuedProductInventory inventory1 = new IssuedProductInventory();
-		inventory1.setProduct(productRepository.findOne(1L));
+		inventory1.setProduct(productRepository.getOne(1L));
 		inventory1.setQuantity(50);
 		inventoryList.add(inventory1);
-		
+
 		pis.setInventoryList(inventoryList);
 		pis.setRemarks("remarks 1");
 		pis.setRequestedBy(requestedBy);
 		pis.setStatus("Pending");
-		
+
 		productIssuanceService.saveProductIssuance(pis);
 	}
 }

@@ -25,22 +25,23 @@ public class ProductReceivingService {
 	private ProductInventoryRepository productInventoryRepository;
 	@Autowired
 	private ProductIssuanceRepository productIssuanceRepository;
-	
+
 	@Transactional
 	public ProductReceiving saveProductReceiving(ProductReceiving productReceiving) {
 		Long id = productReceivingRepository.getMaxId();
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		
+
 		productReceiving.setPrsNo("FGRS-" + ++id);
-		ProductIssuance productIssuance = productIssuanceRepository.findOne(productReceiving.getPis().getId());
+		ProductIssuance productIssuance = productIssuanceRepository.getOne(productReceiving.getPis().getId());
 		productIssuance.setStatus("Received");
-		for(IssuedProductInventory issuedProduct : productIssuance.getInventoryList()) {
-			ProductInventory productInventory = productInventoryRepository.findByProductAndDepot(issuedProduct.getProduct(), productReceiving.getDepot());
-			if(productInventory != null) {
+		for (IssuedProductInventory issuedProduct : productIssuance.getInventoryList()) {
+			ProductInventory productInventory = productInventoryRepository
+					.findByProductAndDepot(issuedProduct.getProduct(), productReceiving.getDepot());
+			if (productInventory != null) {
 				productInventory.setQuantity(productInventory.getQuantity() + issuedProduct.getQuantity());
-			}else {
+			} else {
 				productInventory = new ProductInventory();
 				productInventory.setCompany(productReceiving.getCompany());
 				productInventory.setDateCreated(new Date());
@@ -49,7 +50,9 @@ public class ProductReceivingService {
 				productInventory.setQuantity(issuedProduct.getQuantity());
 			}
 			productInventoryRepository.save(productInventory);
-			productStockCardService.saveProductStockCard("FG - Receiving", productReceiving.getCompany(), productReceiving.getDepot(), productReceiving.getDate(), issuedProduct.getQuantity(), productReceiving.getRemarks(), productReceiving.getReceivedBy(), "IN", issuedProduct.getProduct());
+			productStockCardService.saveProductStockCard("FG - Receiving", productReceiving.getCompany(),
+					productReceiving.getDepot(), productReceiving.getDate(), issuedProduct.getQuantity(),
+					productReceiving.getRemarks(), productReceiving.getReceivedBy(), "IN", issuedProduct.getProduct());
 		}
 		productIssuanceRepository.save(productIssuance);
 		return productReceivingRepository.save(productReceiving);

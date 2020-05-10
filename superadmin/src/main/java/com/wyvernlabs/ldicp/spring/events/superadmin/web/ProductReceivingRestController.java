@@ -28,32 +28,32 @@ public class ProductReceivingRestController {
 	private ProductReceivingRepository productReceivingRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
-	
+
 	@GetMapping("/{id}")
-    public ProductReceiving get(@PathVariable Long id) {
-        return productReceivingRepository.getOne(id);
-    }
+	public ProductReceiving get(@PathVariable Long id) {
+		return productReceivingRepository.getOne(id);
+	}
 
-    @GetMapping()
-    public List<ProductReceiving> list() {
-        return productReceivingRepository.findAll();
-    }
+	@GetMapping()
+	public List<ProductReceiving> list() {
+		return productReceivingRepository.findAll();
+	}
 
-    @PostMapping()
-    public ProductReceiving upsert(@RequestBody ProductReceiving item) {
-    	return productReceivingService.saveProductReceiving(item);
-    }
-    
-    @PostMapping("/delete")
+	@PostMapping()
+	public ProductReceiving upsert(@RequestBody ProductReceiving item) {
+		return productReceivingService.saveProductReceiving(item);
+	}
+
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		productReceivingRepository.delete(id);
+		productReceivingRepository.deleteById(id);
 		return true;
 	}
-    
-    @GetMapping("/company/{companyId}")
+
+	@GetMapping("/company/{companyId}")
 	public List<ProductReceiving> listByCompanyAndDepot(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return productReceivingRepository.findByCompany(company);
 	}
-    
+
 }

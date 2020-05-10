@@ -32,7 +32,7 @@ public class ProductRestController {
     private DepotRepository depotRepository;
     @Autowired
     private ProductService productService;
-    
+
     @GetMapping("/{id}")
     public Product get(@PathVariable Long id) {
         return productRepository.getOne(id);
@@ -47,18 +47,17 @@ public class ProductRestController {
     public Product upsert(@RequestBody Product Product) {
         return productService.saveProduct(Product);
     }
-    
+
     @GetMapping("/company/{id}")
     public List<Product> listByCompany(@PathVariable Long id) {
-    	Company company = companyRepository.findOne(id);
-    	return productRepository.findByCompany(company);
+        Company company = companyRepository.getOne(id);
+        return productRepository.findByCompany(company);
     }
-    
+
     @GetMapping("/depot/{id}")
-    public List<Product> listByDepot(@PathVariable Long id){
-    	Depot depot = depotRepository.findOne(id);
-    	return productRepository.findByDepot(depot);
+    public List<Product> listByDepot(@PathVariable Long id) {
+        Depot depot = depotRepository.getOne(id);
+        return productRepository.findByDepot(depot);
     }
-    
-    																																																																																																																																																								
+
 }

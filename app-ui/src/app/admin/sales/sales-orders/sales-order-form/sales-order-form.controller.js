@@ -21,16 +21,19 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
   
   
   ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.so));
+    console.log('submitForm: POTANGINA ' + JSON.stringify(ctrl.so));
     for(var i = 0; i < ctrl.so.products.length; i++){
     	ctrl.so.products[i].depot = ctrl.so.depot;
     	ctrl.so.products[i].soNumber = ctrl.so.number;
     }
+    console.log('HERE')
+    SalesOrdersService.save(ctrl.so)
     ctrl.onSubmit({
       $event: {
-    	  so: ctrl.so
+        so: ctrl.so
       }
     });
+  
   };
   
   

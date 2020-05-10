@@ -12,7 +12,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MemoSlipReposito
 public class MemoSlipService {
 	@Autowired
 	private MemoSlipRepository memoSlipRepository;
-	
+
 	@Transactional
 	public MemoSlip saveMemoSlip(MemoSlip memoSlip) {
 		memoSlip.setNumber(memoSlip.getType().getCode() + memoSlip.getId());

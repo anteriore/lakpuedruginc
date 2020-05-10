@@ -9,11 +9,12 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.*;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class ApprovedReceipt {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
     private Long id;
     private String number;
     private Date date;
@@ -26,7 +27,7 @@ public class ApprovedReceipt {
     private Date dateCreated;
     private Date modified;
     @OneToOne
-    private ReceivingReceipt receivingReceipt; //RR
+    private ReceivingReceipt receivingReceipt; // RR
 
     private int receivedQuantity;
     private int approvedQuantity;
@@ -44,9 +45,8 @@ public class ApprovedReceipt {
 
     private String remarks;
 
-    
     public String getRrNumber() {
-        return  receivingReceipt.getNumber();
+        return receivingReceipt.getNumber();
     }
 
     private int getContainerSeries() {
@@ -60,7 +60,6 @@ public class ApprovedReceipt {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public String getNumber() {
         return number;
@@ -125,14 +124,14 @@ public class ApprovedReceipt {
     public void setModified(Date modified) {
         this.modified = modified;
     }
-    
-    public ReceivingReceipt getReceivingReceipt() {
-		return receivingReceipt;
-	}
 
-	public void setReceivingReceipt(ReceivingReceipt receivingReceipt) {
-		this.receivingReceipt = receivingReceipt;
-	}
+    public ReceivingReceipt getReceivingReceipt() {
+        return receivingReceipt;
+    }
+
+    public void setReceivingReceipt(ReceivingReceipt receivingReceipt) {
+        this.receivingReceipt = receivingReceipt;
+    }
 
     public int getReceivedQuantity() {
         return receivedQuantity;
@@ -231,40 +230,22 @@ public class ApprovedReceipt {
     }
 
     public String getRemarks() {
-		return remarks;
-	}
+        return remarks;
+    }
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
-
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     @Override
     public String toString() {
-        return "ApprovedReceipt{" +
-                "id=" + id +
-                ", number='" + number + '\'' +
-                ", date=" + date +
-                ", receivedBy=" + receivedBy +
-                ", company=" + company +
-                ", maxContainers=" + maxContainers +
-                ", specifiedGravity=" + specifiedGravity +
-                ", dateCreated=" + dateCreated +
-                ", modified=" + modified +
-                ", receivingReceipt=" + receivingReceipt +
-                ", receivedQuantity=" + receivedQuantity +
-                ", approvedQuantity=" + approvedQuantity +
-                ", rejectedQuantity=" + rejectedQuantity +
-                ", qcSamples=" + qcSamples +
-                ", totalQuantity=" + totalQuantity +
-                ", expiration=" + expiration +
-                ", bestBefore=" + bestBefore +
-                ", reevaluation=" + reevaluation +
-                ", retest=" + retest +
-                ", item=" + item +
-                ", unit='" + unit + '\'' +
-                ", controlNumber='" + controlNumber + '\'' +
-                ", remarks='" + remarks + '\'' +
-                '}';
+        return "ApprovedReceipt{" + "id=" + id + ", number='" + number + '\'' + ", date=" + date + ", receivedBy="
+                + receivedBy + ", company=" + company + ", maxContainers=" + maxContainers + ", specifiedGravity="
+                + specifiedGravity + ", dateCreated=" + dateCreated + ", modified=" + modified + ", receivingReceipt="
+                + receivingReceipt + ", receivedQuantity=" + receivedQuantity + ", approvedQuantity=" + approvedQuantity
+                + ", rejectedQuantity=" + rejectedQuantity + ", qcSamples=" + qcSamples + ", totalQuantity="
+                + totalQuantity + ", expiration=" + expiration + ", bestBefore=" + bestBefore + ", reevaluation="
+                + reevaluation + ", retest=" + retest + ", item=" + item + ", unit='" + unit + '\''
+                + ", controlNumber='" + controlNumber + '\'' + ", remarks='" + remarks + '\'' + '}';
     }
 }

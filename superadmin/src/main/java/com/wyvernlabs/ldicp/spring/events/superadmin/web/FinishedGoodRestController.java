@@ -20,15 +20,15 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.FinishedGoodRepo
 @RestController
 @RequestMapping("rest/finished-goods")
 public class FinishedGoodRestController {
-	private static final Logger logger = LoggerFactory.getLogger(FinishedGoodRestController.class);
-	
-	private FinishedGoodRepository finishedGoodRepository;
-	
-	public FinishedGoodRestController(FinishedGoodRepository finishedGoodRepository) {
-		this.finishedGoodRepository = finishedGoodRepository;
-	}
-	
-	@GetMapping("/{id}")
+    private static final Logger logger = LoggerFactory.getLogger(FinishedGoodRestController.class);
+
+    private FinishedGoodRepository finishedGoodRepository;
+
+    public FinishedGoodRestController(FinishedGoodRepository finishedGoodRepository) {
+        this.finishedGoodRepository = finishedGoodRepository;
+    }
+
+    @GetMapping("/{id}")
     public FinishedGood get(@PathVariable Long id) {
         return finishedGoodRepository.getOne(id);
     }
@@ -39,7 +39,8 @@ public class FinishedGoodRestController {
     }
 
     @GetMapping("/paginate/{itemsPerPage}/{offset}")
-    public Page<FinishedGood> paginate(@PathVariable("itemsPerPage") Integer itemsPerPage, @PathVariable("offset") Integer offset) {
+    public Page<FinishedGood> paginate(@PathVariable("itemsPerPage") Integer itemsPerPage,
+            @PathVariable("offset") Integer offset) {
         Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
         return finishedGoodRepository.findAll(pageable);
     }
@@ -53,11 +54,11 @@ public class FinishedGoodRestController {
     public FinishedGood upsert(@RequestBody FinishedGood finishedGood) {
         return finishedGoodRepository.save(finishedGood);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		finishedGoodRepository.delete(id);
-		return true;
-	}
+    public boolean delete(@RequestBody Long id) {
+        finishedGoodRepository.deleteById(id);
+        return true;
+    }
 
 }

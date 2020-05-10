@@ -1,6 +1,5 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.web;
 
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,26 +30,27 @@ public class CashReceiptVoucherRestController {
 	private CashReceiptVoucherRepository cashReceiptVoucherRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
-	
+
 	@GetMapping("/{id}")
 	public CashReceiptVoucher get(@PathVariable Long id) {
 		return cashReceiptVoucherRepository.getOne(id);
 	}
-	
+
 	@GetMapping("/paginate/{itemsPerPage}/{offset}")
-    public Page<CashReceiptVoucher> paginate(@PathVariable("itemsPerPage") Integer itemsPerPage, @PathVariable("offset") Integer offset) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
-        return cashReceiptVoucherRepository.findAll(pageable);
-    }
+	public Page<CashReceiptVoucher> paginate(@PathVariable("itemsPerPage") Integer itemsPerPage,
+			@PathVariable("offset") Integer offset) {
+		Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
+		return cashReceiptVoucherRepository.findAll(pageable);
+	}
 
 	@GetMapping()
 	public List<CashReceiptVoucher> list() {
 		return cashReceiptVoucherRepository.findAll();
 	}
-	
+
 	@GetMapping("/company/{companyId}")
 	public List<CashReceiptVoucher> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return cashReceiptVoucherRepository.findByCompany(company);
 	}
 
@@ -61,25 +61,27 @@ public class CashReceiptVoucherRestController {
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		cashReceiptVoucherRepository.delete(id);
+		cashReceiptVoucherRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@GetMapping("/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Company company = companyRepository.findOne(companyId);
-		List<CashReceiptVoucher> vpList = cashReceiptVoucherRepository.findByCompanyAndDateBetween(company, startDate, endDate);
+	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Company company = companyRepository.getOne(companyId);
+		List<CashReceiptVoucher> vpList = cashReceiptVoucherRepository.findByCompanyAndDateBetween(company, startDate,
+				endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
-			Map<String, Object>  map = new LinkedHashMap();
+			Map<String, Object> map = new LinkedHashMap();
 			map.put("number", elt.getNumber());
 			map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(elt.getDate()));
 			map.put("bank", elt.getBankAccount().getName());
-			map.put("voucher", elt.getVoucher() == null ? "":elt.getVoucher().getNumber());
+			map.put("voucher", elt.getVoucher() == null ? "" : elt.getVoucher().getNumber());
 			map.put("amount", elt.getAmount());
 			vpMapList.add(map);
 		});
-		
+
 		return vpMapList;
 	}
 }

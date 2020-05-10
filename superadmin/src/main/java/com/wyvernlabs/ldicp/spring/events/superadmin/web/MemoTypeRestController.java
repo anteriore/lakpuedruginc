@@ -19,10 +19,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MemoTypeReposito
 @RequestMapping("rest/memo-types")
 public class MemoTypeRestController {
     private static final Logger logger = LoggerFactory.getLogger(MemoTypeRestController.class);
-    
+
     @Autowired
     private MemoTypeRepository memoTypeRepository;
-    
+
     @GetMapping("/{id}")
     public MemoType get(@PathVariable Long id) {
         return memoTypeRepository.getOne(id);
@@ -37,16 +37,16 @@ public class MemoTypeRestController {
     public MemoType upsert(@RequestBody MemoType memoType) {
         return memoTypeRepository.save(memoType);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		memoTypeRepository.delete(id);
-		return true;
-	}
-    
-    @GetMapping("/type/{type}")
-    public List<MemoType> listByType(@PathVariable String type){
-    	return memoTypeRepository.findByType(type);
+    public boolean delete(@RequestBody Long id) {
+        memoTypeRepository.deleteById(id);
+        return true;
     }
-    
+
+    @GetMapping("/type/{type}")
+    public List<MemoType> listByType(@PathVariable String type) {
+        return memoTypeRepository.findByType(type);
+    }
+
 }

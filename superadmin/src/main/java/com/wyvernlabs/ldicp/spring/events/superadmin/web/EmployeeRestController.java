@@ -18,11 +18,11 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.EmployeeReposito
 @RestController
 @RequestMapping("rest/employees")
 public class EmployeeRestController {
-	private static final Logger logger = LoggerFactory.getLogger(EmployeeRestController.class);
-	@Autowired
-	private EmployeeRepository employeeRepository;
-	
-	@GetMapping("/{id}")
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeRestController.class);
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @GetMapping("/{id}")
     public Employee get(@PathVariable Long id) {
         return employeeRepository.getOne(id);
     }
@@ -36,11 +36,11 @@ public class EmployeeRestController {
     public Employee upsert(@RequestBody Employee depot) {
         return employeeRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	employeeRepository.delete(id);
-		return true;
-	}
+    public boolean delete(@RequestBody Long id) {
+        employeeRepository.deleteById(id);
+        return true;
+    }
 
 }

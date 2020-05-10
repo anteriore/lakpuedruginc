@@ -2,9 +2,8 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<h4 class="modal-title">
-				Find Procedure Area <a
-					class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProcedureArea(true)"
-					>+ Add Procedure Area</a>
+				Find Procedure Area <a class="button-link btn btn-create btn-sm float-lg-right"
+					ng-click="$ctrl.showAddProcedureArea(true)">+ Add Procedure Area</a>
 			</h4>
 			<button class="close" data-dismiss="modal" type="button">
 				<span class="ion-android-close close-modal" ng-click="$ctrl.showAddProcedureArea(false)"></span>
@@ -12,17 +11,19 @@
 		</div>
 		<div class="modal-body">
 			<div class="searchbox-modal">
-					<div class=" search-modal horizontal-align -between">
-						<div class="input-group-addon" style="border: 0	 !important;">
-							<i class="fa fa-search"></i>
-						</div>
-						<input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode" />
-						<input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName" />
+				<div class=" search-modal horizontal-align -between">
+					<div class="input-group-addon" style="border: 0	 !important;">
+						<i class="fa fa-search"></i>
 					</div>
+					<input class="form-control -borderless search" placeholder="code" type="text" name="search"
+						ng-model="$ctrl.searchCode" />
+					<input class="form-control -borderless search" placeholder="name" type="text" name="search"
+						ng-model="$ctrl.searchName" />
+				</div>
 			</div>
 			<procedure-area-form ng-show="$ctrl.addProcedureArea" procedurearea="$ctrl.procedurearea"
-				message="{{ $ctrl.error }}" button="Save"
-				on-submit="$ctrl.saveProcedureArea($event);"> </procedure-area-form>
+				message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveProcedureArea($event);">
+			</procedure-area-form>
 			<div class="wrapper scroll-section">
 				<table class="table find-vendor">
 					<thead>
@@ -38,7 +39,8 @@
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
+								<a href="#"
+									ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
 									<span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -48,7 +50,8 @@
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
+								<a href="#"
+									ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
 									<span ng-show="$ctrl.sortType == 'name' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -62,7 +65,8 @@
 					</thead>
 					<tbody>
 
-						<tr ng-repeat="procedureArea in $ctrl.procedureAreas | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse">
+						<tr
+							ng-repeat="procedureArea in $ctrl.procedureAreas | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse">
 							<td>{{procedureArea.id}}</td>
 							<td>{{procedureArea.code}}</td>
 							<td>{{procedureArea.name}}</td>
@@ -72,7 +76,8 @@
 										class="btn btn-compose">
 										<i class="ion-ios-compose-outline"></i>
 									</button>
-									<button ng-click="$ctrl.deleteProcedureArea(procedureArea.id)" class="btn btn-archive">
+									<button ng-click="$ctrl.deleteProcedureArea(procedureArea.id)"
+										class="btn btn-archive">
 										<i class="ion-android-close"></i>
 									</button>
 								</div>

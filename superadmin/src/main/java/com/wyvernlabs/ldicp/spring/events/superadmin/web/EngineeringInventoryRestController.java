@@ -21,15 +21,15 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ItemRepository;
 @RestController
 @RequestMapping("rest/engineering-inventory")
 public class EngineeringInventoryRestController {
-	private static final Logger logger = LoggerFactory.getLogger(EngineeringInventoryRestController.class);
-    
+    private static final Logger logger = LoggerFactory.getLogger(EngineeringInventoryRestController.class);
+
     @Autowired
     private EngineeringInventoryRepository engineeringInventoryRepository;
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired
     private ItemRepository itemRepository;
-    
+
     @GetMapping("/{id}")
     public EngineeringInventory get(@PathVariable Long id) {
         return engineeringInventoryRepository.getOne(id);
@@ -44,16 +44,16 @@ public class EngineeringInventoryRestController {
     public EngineeringInventory upsert(@RequestBody EngineeringInventory item) {
         return engineeringInventoryRepository.save(item);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		engineeringInventoryRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        engineeringInventoryRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/company/{companyId}")
-	public List<EngineeringInventory> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
-		return engineeringInventoryRepository.findByCompanyOrderByItem(company);
-	}
+    public List<EngineeringInventory> listByCompany(@PathVariable Long companyId) {
+        Company company = companyRepository.getOne(companyId);
+        return engineeringInventoryRepository.findByCompanyOrderByItem(company);
+    }
 }

@@ -34,39 +34,41 @@ public class SalesSlipService {
 	private PromoSlipRepository promoSlipRepository;
 	@Autowired
 	private SalesSlipRepository salesSlipRepository;
+
 	@Transactional
 	public SalesSlip saveSalesSlip(SalesSlip salesSlip) {
 		Double totalAmount = 0D;
-		for(OrderedProduct orderedProduct: salesSlip.getOrderedProducts()) {
+		for (OrderedProduct orderedProduct : salesSlip.getOrderedProducts()) {
 			orderedProduct.setOrderSlipNo(salesSlip.getNumber());
 			orderedProduct.setDepot(salesSlip.getDepot());
-			
-			SalesOrderProduct salesOrderProduct = salesOrderProductRepository.findOne(orderedProduct.getSalesOrderProductId());
+
+			SalesOrderProduct salesOrderProduct = salesOrderProductRepository
+					.getOne(orderedProduct.getSalesOrderProductId());
 			orderedProduct.setUnitPrice(salesOrderProduct.getUnitPrice());
 			salesOrderProduct.deductOrderedQuantity(orderedProduct.getQuantity());
 			salesOrderProductRepository.save(salesOrderProduct);
-			
+
 			totalAmount += orderedProduct.getQuantity() * salesOrderProduct.getUnitPrice();
-			
-			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(orderedProduct.getProduct(), salesSlip.getDepot());
+
+			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(orderedProduct.getProduct(),
+					salesSlip.getDepot());
 			inventory.deduct(orderedProduct.getQuantity());
 			productInventoryRepository.save(inventory);
 		}
-		
-		
-		SalesOrder so = salesOrderRepository.findOne(salesSlip.getSalesOrder().getId());
-		if(so.allProductsInTransit()) {
+
+		SalesOrder so = salesOrderRepository.getOne(salesSlip.getSalesOrder().getId());
+		if (so.allProductsInTransit()) {
 			so.setStatus("In Transit");
 			salesOrderRepository.save(so);
-		}else {
-			if(!salesSlip.getOrderedProducts().isEmpty()) {
+		} else {
+			if (!salesSlip.getOrderedProducts().isEmpty()) {
 				so.setStatus("Incomplete");
 				salesOrderRepository.save(so);
 			}
 		}
-		
+
 		salesSlip.setTotalAmount(totalAmount);
-		
+
 		return salesSlipRepository.save(salesSlip);
 	}
 }

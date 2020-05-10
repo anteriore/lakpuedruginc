@@ -29,22 +29,23 @@ public class MaterialIssuanceData {
 	private InventoryRepository inventoryRepository;
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired 
+	@Autowired
 	private MaterialIssuanceService materialIssuanceService;
+
 	@Transactional
 	public void init() {
 		MaterialIssuance mis = new MaterialIssuance();
-		Company company = companyRepository.findOne(1L);
-		User user = userRepository.findOne(1L);
+		Company company = companyRepository.getOne(1L);
+		User user = userRepository.getOne(1L);
 		mis.setCompany(company);
 		mis.setDate(new Date());
 		Set<IssuedInventory> inventoryList = new HashSet<IssuedInventory>();
-		Inventory inventory = inventoryRepository.findOne(1L);
+		Inventory inventory = inventoryRepository.getOne(1L);
 		IssuedInventory issuedInventory = new IssuedInventory();
 		issuedInventory.setControlNumber(inventory.getControlNumber());
 		issuedInventory.setItem(inventory.getItem());
 		issuedInventory.setQuantity(50);
-		
+
 		inventoryList.add(issuedInventory);
 
 		mis.setInventoryList(inventoryList);

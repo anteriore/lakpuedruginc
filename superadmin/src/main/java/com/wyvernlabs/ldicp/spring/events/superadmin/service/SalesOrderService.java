@@ -13,13 +13,15 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderReposi
 public class SalesOrderService {
 	@Autowired
 	private SalesOrderRepository salesOrderRepository;
-	
+
 	@Transactional
 	public SalesOrder saveSalesOrder(SalesOrder salesOrder) {
-		for(SalesOrderProduct soProduct : salesOrder.getProducts()) {
+		for (SalesOrderProduct soProduct : salesOrder.getProducts()) {
 			soProduct.setSoNumber(salesOrder.getNumber());
 			soProduct.setCompany(salesOrder.getCompany());
 			soProduct.setQuantityRemaining(soProduct.getQuantity());
+
+			System.out.println(salesOrder.getNumber());
 		}
 		return salesOrderRepository.save(salesOrder);
 	}

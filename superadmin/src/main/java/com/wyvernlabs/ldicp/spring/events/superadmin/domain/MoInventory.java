@@ -11,12 +11,13 @@ import java.util.Map;
 /**
  * Manufacturing Order Inventory
  */
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class MoInventory {
 	@Id
-	@GeneratedValue
-	private Long id; //mo-number
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id; // mo-number
 	private Integer moNumber;
 	private Integer lotNumber;
 	@OneToOne
@@ -30,14 +31,14 @@ public class MoInventory {
 
 	@Transient
 	private String moName;
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Inventory> inventoryList;
 	private int batchSize;
 	private int remainingBatchSize;
 	@OneToOne
 	private Company company;
 	private Date dateCreated;
-    
+
 	@PrePersist
 	protected void onCreate() {
 		dateCreated = new Date();

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,27 +39,29 @@ public class PurchaseVoucherData {
 	private AreaRepository areaRepository;
 	@Autowired
 	private GroupRepository groupRepository;
+
+	@Transactional
 	public void init() {
 		PurchaseVoucher pv = new PurchaseVoucher();
-		ReceivingReceipt rr = receivingReceiptRepository.findOne(1L);
+		ReceivingReceipt rr = receivingReceiptRepository.getOne(1L);
 		Set<AccountTitleEntry> accountTitles = new HashSet<AccountTitleEntry>();
 		AccountTitleEntry accountTitleEntry = new AccountTitleEntry();
 		accountTitleEntry.setAccountTitle(accountTitleRepository.findByTitle("Assets"));
 		accountTitleEntry.setAmount(50D);
-		accountTitleEntry.setDepartment(departmentRepository.findOne(1L));
-		accountTitleEntry.setArea(areaRepository.findOne(1L));
-		accountTitleEntry.setGroup(groupRepository.findOne(1L));
+		accountTitleEntry.setDepartment(departmentRepository.getOne(1L));
+		accountTitleEntry.setArea(areaRepository.getOne(1L));
+		accountTitleEntry.setGroup(groupRepository.getOne(1L));
 		accountTitles.add(accountTitleEntry);
-		
+
 		accountTitleEntry = new AccountTitleEntry();
 		accountTitleEntry.setAccountTitle(accountTitleRepository.findByTitle("Liabilities"));
 		accountTitleEntry.setAmount(50D);
-		accountTitleEntry.setDepartment(departmentRepository.findOne(2L));
-		accountTitleEntry.setArea(areaRepository.findOne(2L));
-		accountTitleEntry.setGroup(groupRepository.findOne(2L));
+		accountTitleEntry.setDepartment(departmentRepository.getOne(2L));
+		accountTitleEntry.setArea(areaRepository.getOne(2L));
+		accountTitleEntry.setGroup(groupRepository.getOne(2L));
 		accountTitles.add(accountTitleEntry);
-		
-		pv.setCompany(companyRepository.findOne(1L));
+
+		pv.setCompany(companyRepository.getOne(1L));
 		pv.setDate(new Date());
 		pv.setRrNumber(rr.getNumber());
 		pv.setDrNumber(rr.getDrNumber());
@@ -65,10 +69,10 @@ public class PurchaseVoucherData {
 		pv.setRemarks("remarks");
 		pv.setRrDate(rr.getDate());
 		pv.setSiNumber(rr.getSiNumber());
-		pv.setVendor(vendorRepository.findOne(1L));
+		pv.setVendor(vendorRepository.getOne(1L));
 		pv.setAccountTitles(accountTitles);
 		pv.setManual(false);
-		
+
 		purchaseVoucherService.savePurchaseVoucher(pv);
 		purchaseVoucherService.approvePurchaseVoucher(pv.getId(), 0L);
 	}

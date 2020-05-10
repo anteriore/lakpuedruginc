@@ -18,7 +18,7 @@ public class ProductService {
 	private ProductRepository productRepository;
 	@Autowired
 	private ProductInventoryRepository productInventoryRepository;
-	
+
 	@Transactional
 	public Product saveProduct(Product product) {
 		ProductInventory inventory = new ProductInventory();

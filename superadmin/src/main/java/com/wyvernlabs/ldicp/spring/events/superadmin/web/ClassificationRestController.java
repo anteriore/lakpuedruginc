@@ -23,7 +23,7 @@ public class ClassificationRestController {
 
 	@Autowired
 	private ClassificationRepository classificationRepository;
-	
+
 	@GetMapping("/{id}")
 	public Classification get(@PathVariable Long id) {
 		return classificationRepository.getOne(id);
@@ -41,12 +41,12 @@ public class ClassificationRestController {
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		classificationRepository.delete(id);
+		classificationRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@GetMapping("/types")
-	public ClassificationType[] listTypes(){
+	public ClassificationType[] listTypes() {
 		return ClassificationType.values();
 	}
 

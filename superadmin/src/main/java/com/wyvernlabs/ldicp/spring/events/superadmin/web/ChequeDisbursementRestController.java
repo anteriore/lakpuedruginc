@@ -21,10 +21,10 @@ public class ChequeDisbursementRestController {
 
 	@Autowired
 	private ChequeDisbursementRepository chequeDisbursementRepository;
-	
+
 	@Autowired
 	private CompanyRepository companyRepository;
-	
+
 	@GetMapping("/{id}")
 	public ChequeDisbursement get(@PathVariable Long id) {
 		return chequeDisbursementRepository.getOne(id);
@@ -34,19 +34,20 @@ public class ChequeDisbursementRestController {
 	public List<ChequeDisbursement> list() {
 		return chequeDisbursementRepository.findAll();
 	}
-	
+
 	@GetMapping("/company/{companyId}")
 	public List<ChequeDisbursement> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return chequeDisbursementRepository.findByCompany(company);
 	}
+
 	@PostMapping()
 	public ChequeDisbursement upsert(@RequestBody ChequeDisbursement chequeDisbursement) {
 		return chequeDisbursementRepository.save(chequeDisbursement);
 	}
 
 	public boolean delete(@RequestBody Long id) {
-		chequeDisbursementRepository.delete(id);
+		chequeDisbursementRepository.deleteById(id);
 		return true;
 	}
 }

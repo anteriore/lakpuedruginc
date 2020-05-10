@@ -22,32 +22,32 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.JobOrderCostShee
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.JobOrderCostSheetProcedureAreaRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.JobOrderCostSheetRepository;
 
-
 @RestController
 @RequestMapping("rest/joCosts")
 public class JobOrderCostSheetRestController {
     private static final Logger logger = LoggerFactory.getLogger(JobOrderCostSheetRestController.class);
 
-   @Autowired
-   private JobOrderCostSheetRepository jobOrderCostSheetRepository;
-   @Autowired
-   private JobOrderCostSheetIngredientRepository jobOrderCostSheetIngredientRepository;
-   @Autowired
-   private JobOrderCostSheetProcedureAreaRepository jobOrderCostSheetProcedureAreaRepository;
-   @Autowired
-   private CompanyRepository companyRepository;
+    @Autowired
+    private JobOrderCostSheetRepository jobOrderCostSheetRepository;
+    @Autowired
+    private JobOrderCostSheetIngredientRepository jobOrderCostSheetIngredientRepository;
+    @Autowired
+    private JobOrderCostSheetProcedureAreaRepository jobOrderCostSheetProcedureAreaRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @PostMapping
     public JobOrderCostSheet upsert(@RequestBody JobOrderCostSheet jobOrderCostSheet) {
 
-        Set<JobOrderCostSheetIngredient> jobOrderCostSheetIngredients = jobOrderCostSheet.getJobOrderCostSheetIngredients();
+        Set<JobOrderCostSheetIngredient> jobOrderCostSheetIngredients = jobOrderCostSheet
+                .getJobOrderCostSheetIngredients();
 
         for (JobOrderCostSheetIngredient jobOrderCostSheetIngredient : jobOrderCostSheetIngredients) {
             jobOrderCostSheetIngredientRepository.save(jobOrderCostSheetIngredient);
         }
 
-
-        Set<JobOrderCostSheetProcedureArea> jobOrderCostSheetProcedureAreas = jobOrderCostSheet.getJobOrderCostSheetProcedureAreas();
+        Set<JobOrderCostSheetProcedureArea> jobOrderCostSheetProcedureAreas = jobOrderCostSheet
+                .getJobOrderCostSheetProcedureAreas();
 
         for (JobOrderCostSheetProcedureArea jobOrderCostSheetProcedureArea : jobOrderCostSheetProcedureAreas) {
             jobOrderCostSheetProcedureAreaRepository.save(jobOrderCostSheetProcedureArea);
@@ -63,9 +63,10 @@ public class JobOrderCostSheetRestController {
 
     @GetMapping("/company/{companyId}")
     public List<JobOrderCostSheet> listByCompany(@PathVariable Long companyId) {
-        Company company = companyRepository.findOne(companyId);
+        Company company = companyRepository.getOne(companyId);
         return jobOrderCostSheetRepository.findByCompany(company);
     }
+
     @GetMapping()
     public List<JobOrderCostSheet> list() {
         return jobOrderCostSheetRepository.findAll();

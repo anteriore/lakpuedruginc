@@ -19,32 +19,33 @@ public class ChequePrintingService {
 	private VouchersPayableRepository vouchersPayableRepository;
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Transactional
 	public ChequePrinting saveChequePrinting(ChequePrinting chequePrinting) {
 		Long id = chequePrintingRepository.getMaxIdByStatus("Pending");
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
 
-		chequePrinting.setNumber("CPFA"+id);
+		chequePrinting.setNumber("CPFA" + id);
 		chequePrinting.getPayables().forEach(vp -> {
-			VouchersPayable payable = vouchersPayableRepository.findOne(vp.getId());
+			VouchersPayable payable = vouchersPayableRepository.getOne(vp.getId());
 			payable.setStatus("Cheque Created");
 			vouchersPayableRepository.save(payable);
 		});
 		return chequePrintingRepository.save(chequePrinting);
 	}
+
 	@Transactional
 	public ChequePrinting approve(Long cpId, Long userId) {
 		// TODO Auto-generated method stub
 		Long id = chequePrintingRepository.getMaxIdByStatus("Approved");
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		ChequePrinting chequePrinting = chequePrintingRepository.findOne(cpId);
-		chequePrinting.setNumber("CP"+ id);
-		chequePrinting.setApprovedBy(userRepository.findOne(userId));
+		ChequePrinting chequePrinting = chequePrintingRepository.getOne(cpId);
+		chequePrinting.setNumber("CP" + id);
+		chequePrinting.setApprovedBy(userRepository.getOne(userId));
 		chequePrinting.setStatus("Approved");
 
 		return chequePrintingRepository.save(chequePrinting);

@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ClusterCodeRepos
 @RequestMapping("rest/cluster-codes")
 public class ClusterCodeRestController {
 
-	@Autowired
-	private ClusterCodeRepository clusterCodeRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private ClusterCodeRepository clusterCodeRepository;
+
+    @GetMapping("/{id}")
     public ClusterCode get(@PathVariable Long id) {
         return clusterCodeRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class ClusterCodeRestController {
     public ClusterCode upsert(@RequestBody ClusterCode depot) {
         return clusterCodeRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	clusterCodeRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        clusterCodeRepository.deleteById(id);
+        return true;
     }
 }

@@ -34,7 +34,7 @@ public class VouchersPayableRestController {
 	private VouchersPayableService vouchersPayableService;
 	@Autowired
 	private VendorRepository vendorRepository;
-	
+
 	@GetMapping("/{id}")
 	public VouchersPayable get(@PathVariable Long id) {
 		return vouchersPayableRepository.getOne(id);
@@ -52,35 +52,38 @@ public class VouchersPayableRestController {
 
 	@GetMapping("/company/{companyId}")
 	public List<VouchersPayable> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return vouchersPayableRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		vouchersPayableRepository.delete(id);
+		vouchersPayableRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@PostMapping("/approve/{vpId}/user/{userId}")
 	public VouchersPayable approve(@PathVariable Long vpId, @PathVariable Long userId) {
 		return vouchersPayableService.approveVouchersPayable(vpId, userId);
 	}
-	
+
 	@GetMapping("/company/{companyId}/vendor/{vendorId}/status/{status}")
-	public List<VouchersPayable> listByCompanyAndVendor(@PathVariable Long companyId, @PathVariable Long vendorId, @PathVariable String status){
-		Vendor vendor = vendorRepository.findOne(vendorId);
-		Company company = companyRepository.findOne(companyId);
+	public List<VouchersPayable> listByCompanyAndVendor(@PathVariable Long companyId, @PathVariable Long vendorId,
+			@PathVariable String status) {
+		Vendor vendor = vendorRepository.getOne(vendorId);
+		Company company = companyRepository.getOne(companyId);
 		return vouchersPayableRepository.findByCompanyAndVendorAndStatus(company, vendor, status);
 	}
-	
+
 	@GetMapping("/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Company company = companyRepository.findOne(companyId);
-		List<VouchersPayable> vpList = vouchersPayableRepository.findByCompanyAndDateBetween(company, startDate, endDate);
+	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Company company = companyRepository.getOne(companyId);
+		List<VouchersPayable> vpList = vouchersPayableRepository.findByCompanyAndDateBetween(company, startDate,
+				endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
-			Map<String, Object>  map = new LinkedHashMap();
+			Map<String, Object> map = new LinkedHashMap();
 			map.put("number", elt.getNumber());
 			map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(elt.getDate()));
 			map.put("payee", elt.getVendor().getName());
@@ -88,7 +91,7 @@ public class VouchersPayableRestController {
 			map.put("status", elt.getStatus());
 			vpMapList.add(map);
 		});
-		
+
 		return vpMapList;
 	}
 }

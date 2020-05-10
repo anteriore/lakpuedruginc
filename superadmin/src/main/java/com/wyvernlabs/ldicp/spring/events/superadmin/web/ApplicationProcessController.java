@@ -9,8 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.AccessToken;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UserRepository;
 
 @RestController
+@DependsOn({ BeanIds.AUTHENTICATION_MANAGER })
 public class ApplicationProcessController {
 	private final Logger LOGGER = LoggerFactory.getLogger(ApplicationProcessController.class);
 
@@ -38,14 +41,13 @@ public class ApplicationProcessController {
 	@Autowired
 	private MyUserDetailsService userService;
 
+	@Autowired
+	private AuthenticationManager authManager;
+
 	@PostConstruct
 	private void init() {
 		LOGGER.info("##### APP VERSION : " + appVersion);
 	}
-
-	@Autowired
-	@Qualifier("authenticationManager")
-	private AuthenticationManager authManager;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -62,15 +64,16 @@ public class ApplicationProcessController {
 	 * @return The generated access token.
 	 */
 	@PostMapping("/api/login")
-	public AccessToken authenticate(@RequestBody LoginRequest loginRequest)
-	{
-		LOGGER.info("authenticate:  " + loginRequest.getUsername());
-		UsernamePasswordAuthenticationToken authenticationToken =
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-		Authentication authentication = this.authManager.authenticate(authenticationToken);
+	public AccessToken authenticate(@RequestBody LoginRequest loginRequest) {
+		System.out.println("authenticate:  " + loginRequest.getUsername());
+		Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+				loginRequest.getPassword());
+		authentication = authManager.authenticate(authentication);
+		// Authenticate the user
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MyUserPrincipal principal = (MyUserPrincipal) authentication.getPrincipal();
+		MyUserPrincipal principal = (MyUserPrincipal) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 
 		return this.userService.createAccessToken(userRepository.getOne(principal.getId()));
 	}

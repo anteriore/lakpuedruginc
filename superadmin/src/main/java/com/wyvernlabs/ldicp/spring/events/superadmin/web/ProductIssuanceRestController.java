@@ -32,36 +32,37 @@ public class ProductIssuanceRestController {
 	private DepotRepository depotRepository;
 	@Autowired
 	private ProductIssuanceService productIssuanceService;
+
 	@GetMapping("/{id}")
-    public ProductIssuance get(@PathVariable Long id) {
-        return productIssuanceRepository.getOne(id);
-    }
+	public ProductIssuance get(@PathVariable Long id) {
+		return productIssuanceRepository.getOne(id);
+	}
 
-    @GetMapping()
-    public List<ProductIssuance> list() {
-        return productIssuanceRepository.findAll();
-    }
+	@GetMapping()
+	public List<ProductIssuance> list() {
+		return productIssuanceRepository.findAll();
+	}
 
-    @PostMapping()
-    public ProductIssuance upsert(@RequestBody ProductIssuance item) {
-    	return productIssuanceService.saveProductIssuance(item);
-    }
-    
-    @PostMapping("/delete")
+	@PostMapping()
+	public ProductIssuance upsert(@RequestBody ProductIssuance item) {
+		return productIssuanceService.saveProductIssuance(item);
+	}
+
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		productIssuanceRepository.delete(id);
+		productIssuanceRepository.deleteById(id);
 		return true;
 	}
-    
-    @GetMapping("/company/{companyId}")
+
+	@GetMapping("/company/{companyId}")
 	public List<ProductIssuance> listByCompanyAndDepot(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return productIssuanceRepository.findByCompany(company);
 	}
-    
-    @GetMapping("/status/{status}/depot/{depotId}")
-    public List<ProductIssuance> listByStatus(@PathVariable String status, @PathVariable Long depotId){
-    	Depot depot = depotRepository.findOne(depotId);
-    	return productIssuanceRepository.findByStatusAndToDepot(status, depot);
-    }
+
+	@GetMapping("/status/{status}/depot/{depotId}")
+	public List<ProductIssuance> listByStatus(@PathVariable String status, @PathVariable Long depotId) {
+		Depot depot = depotRepository.getOne(depotId);
+		return productIssuanceRepository.findByStatusAndToDepot(status, depot);
+	}
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,10 +36,12 @@ public class DeliveryReceiptData {
 	private ProductRepository productRepository;
 	@Autowired
 	private SalesOrderProductRepository salesOrderProductRepository;
+
+	@Transactional
 	public void init() {
-		SalesOrder salesOrder = salesOrderRepository.findOne(1L);
-		Company company = companyRepository.findOne(1L);
-		User user = userRepository.findOne(1L);
+		SalesOrder salesOrder = salesOrderRepository.getOne(1L);
+		Company company = companyRepository.getOne(1L);
+		User user = userRepository.getOne(1L);
 
 		DeliveryReceipt deliveryReceipt = new DeliveryReceipt();
 		deliveryReceipt.setApprovedBy(user);
@@ -46,22 +50,23 @@ public class DeliveryReceiptData {
 		deliveryReceipt.setDate(new Date());
 		deliveryReceipt.setNumber("OS1");
 		List<DeliveredProduct> deliveredProducts = new ArrayList<DeliveredProduct>();
-		
-		/*for(SalesOrderProduct soProduct : salesOrder.getProducts()) {
-			soProduct = salesOrderProductRepository.findOne(soProduct.getId());
-			DeliveredProduct deliveredProduct = new DeliveredProduct();
-			deliveredProduct.setDeliveryReceiptNo(deliveryReceipt.getNumber());
-			deliveredProduct.setProduct(productRepository.findOne(soProduct.getProduct().getId()));
-			deliveredProduct.setQuantity(50);
-			deliveredProduct.setSalesOrderProductId(soProduct.getId());
-			deliveredProducts.add(deliveredProduct);
-		}
-		deliveryReceipt.setDeliveredProducts(deliveredProducts);*/
+
+		// for (SalesOrderProduct soProduct : salesOrder.getProducts()) {
+		// soProduct = salesOrderProductRepository.getOne(soProduct.getId());
+		// DeliveredProduct deliveredProduct = new DeliveredProduct();
+		// deliveredProduct.setDeliveryReceiptNo(deliveryReceipt.getNumber());
+		// deliveredProduct.setProduct(productRepository.getOne(soProduct.getProduct().getId()));
+		// deliveredProduct.setQuantity(50);
+		// deliveredProduct.setSalesOrderProductId(soProduct.getId());
+		// deliveredProducts.add(deliveredProduct);
+		// }
+		// deliveryReceipt.setDeliveredProducts(deliveredProducts);
+
 		deliveryReceipt.setPreparedBy(user);
 		deliveryReceipt.setReleasedBy(user);
 		deliveryReceipt.setRemarks("MOCK DATA ORDER SLIP");
 		deliveryReceipt.setSalesOrder(salesOrder);
-		
-		//deliveryReceiptService.saveDeliveryReceipt(deliveryReceipt);
+
+		// deliveryReceiptService.saveDeliveryReceipt(deliveryReceipt);
 	}
 }

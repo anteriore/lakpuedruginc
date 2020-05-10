@@ -35,15 +35,16 @@ public class ProductData {
 	private ClassificationRepository classificationRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+
 	public void init() {
-		FinishedGood fg = finishedGoodRepository.findOne(1L);
+		FinishedGood fg = finishedGoodRepository.getOne(1L);
 		Product product = new Product();
-		Company company = companyRepository.findOne(1L);
-		Classification classification = classificationRepository.findOne(1L);
+		Company company = companyRepository.getOne(1L);
+		Classification classification = classificationRepository.getOne(1L);
 		product.setBigUnit(unitRepository.findByCode("g"));
 		product.setClassification(classification);
-		product.setDivision(divisionRepository.findOne(1L));
-		product.setCategory(categoryRepository.findOne(1L));
+		product.setDivision(divisionRepository.getOne(1L));
+		product.setCategory(categoryRepository.getOne(1L));
 		product.setCompany(company);
 		product.setExpiration(new Date());
 		product.setLotNumber("LOT#12345");

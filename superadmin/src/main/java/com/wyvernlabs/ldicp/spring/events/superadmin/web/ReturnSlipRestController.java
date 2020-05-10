@@ -30,42 +30,43 @@ public class ReturnSlipRestController {
 	private ReturnSlipRepository returnSlipRepository;
 	@Autowired
 	private DepotRepository depotRepository;
-	
+
 	@GetMapping("/{id}")
-    public ReturnSlip get(@PathVariable Long id) {
-        return returnSlipRepository.getOne(id);
-    }
+	public ReturnSlip get(@PathVariable Long id) {
+		return returnSlipRepository.getOne(id);
+	}
 
-    @GetMapping()
-    public List<ReturnSlip> list() {
-        return returnSlipRepository.findAll();
-    }
+	@GetMapping()
+	public List<ReturnSlip> list() {
+		return returnSlipRepository.findAll();
+	}
 
-    @PostMapping()
-    public ReturnSlip upsert(@RequestBody ReturnSlip returnSlip) {
-        return returnSlipService.saveReturnSlip(returnSlip);
-    }
-    
-    @PostMapping("/delete")
+	@PostMapping()
+	public ReturnSlip upsert(@RequestBody ReturnSlip returnSlip) {
+		return returnSlipService.saveReturnSlip(returnSlip);
+	}
+
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		returnSlipRepository.delete(id);
+		returnSlipRepository.deleteById(id);
 		return true;
 	}
-    
-    @GetMapping("/depot/{depotId}")
+
+	@GetMapping("/depot/{depotId}")
 	public List<ReturnSlip> listByDepot(@PathVariable Long depotId) {
-		Depot depot = depotRepository.findOne(depotId);
+		Depot depot = depotRepository.getOne(depotId);
 		return returnSlipRepository.findByDepot(depot);
 	}
-    
-    @GetMapping("/depot/{depotId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getByDepotAndDates(@PathVariable Long depotId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Depot depot = depotRepository.findOne(depotId);
+
+	@GetMapping("/depot/{depotId}/start/{startDate}/end/{endDate}")
+	public List<Map<String, Object>> getByDepotAndDates(@PathVariable Long depotId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Depot depot = depotRepository.getOne(depotId);
 		List<ReturnSlip> vpList = returnSlipRepository.findByDepotAndDateBetween(depot, startDate, endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
 			elt.getReturnSlipProducts().forEach(elt2 -> {
-				Map<String, Object>  map = new LinkedHashMap();
+				Map<String, Object> map = new LinkedHashMap();
 				map.put("number", elt.getNumber());
 				map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(elt.getDate()));
 				map.put("dr", elt.getSalesNumber());
@@ -77,7 +78,7 @@ public class ReturnSlipRestController {
 				vpMapList.add(map);
 			});
 		});
-		
+
 		return vpMapList;
 	}
 

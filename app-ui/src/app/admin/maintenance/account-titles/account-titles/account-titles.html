@@ -2,9 +2,8 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<h4 class="modal-title">
-				Find Account Title <a
-					class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddAccountTitle(true)"
-					>+ Add AccountTitle</a>
+				Find Account Title <a class="button-link btn btn-create btn-sm float-lg-right"
+					ng-click="$ctrl.showAddAccountTitle(true)">+ Add AccountTitle</a>
 			</h4>
 			<button class="close" data-dismiss="modal" type="button">
 				<span ng-click="$ctrl.showAddAccountTitle(false)" class="ion-android-close close-modal"></span>
@@ -12,39 +11,45 @@
 		</div>
 		<div class="modal-body">
 			<div class="searchbox-modal">
-					<form>
+				<form>
 
-				<div class="searchbox-content">
-					<div class=" search-modal horizontal-align -between">
-						<div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
-						<input class="form-control -borderless search" placeholder="title" type="text" name="search" ng-model="$ctrl.searchTitle"/>
+					<div class="searchbox-content">
+						<div class=" search-modal horizontal-align -between">
+							<div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i>
+							</div>
+							<input class="form-control -borderless search" placeholder="title" type="text" name="search"
+								ng-model="$ctrl.searchTitle" />
+						</div>
 					</div>
-				</div>
 				</form>
 			</div>
 			<account-title-form ng-show="$ctrl.addAccountTitle" accounttitle="$ctrl.accountTitle"
-				message="{{ $ctrl.error }}" button="Save"
-				on-submit="$ctrl.saveAccountTitle($event);"></account-title-form>
+				message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveAccountTitle($event);">
+			</account-title-form>
 			<div>
 				<h4>Level {{$ctrl.level}}</h4>
 				<ul class="breadcrumb">
-				  <li ng-repeat="history in $ctrl.accountTitleHistory">
-				  	<a ng-click="$ctrl.digAccountTitle(history.id, history.title, history.level, -1)">{{history.title}}</a>
-				  </li>
+					<li ng-repeat="history in $ctrl.accountTitleHistory">
+						<a
+							ng-click="$ctrl.digAccountTitle(history.id, history.title, history.level, -1)">{{history.title}}</a>
+					</li>
 				</ul>
-			</div>	
+			</div>
 			<div class="wrapper scroll-section">
 				<table class="table find-vendor">
 					<thead>
 						<tr>
 							<th>
 								<a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">ID
-									<span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span>
-									<span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span>
+									<span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse"><i
+											class="fa fa-caret-down"></i></span>
+									<span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse"><i
+											class="fa fa-caret-up"></i></span>
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'title';$ctrl.sortReverse = !$ctrl.sortReverse;">Title
+								<a href="#"
+									ng-click="$ctrl.sortType = 'title';$ctrl.sortReverse = !$ctrl.sortReverse;">Title
 									<span ng-show="$ctrl.sortType == 'title' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -54,7 +59,8 @@
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'type';$ctrl.sortReverse = !$ctrl.sortReverse;">Type
+								<a href="#"
+									ng-click="$ctrl.sortType = 'type';$ctrl.sortReverse = !$ctrl.sortReverse;">Type
 									<span ng-show="$ctrl.sortType == 'type' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -67,21 +73,23 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="accountTitle in $ctrl.accountTitles | filter: {title: $ctrl.searchTitle } | orderBy:$ctrl.sortType:$ctrl.sortReverse">
+						<tr
+							ng-repeat="accountTitle in $ctrl.accountTitles | filter: {title: $ctrl.searchTitle } | orderBy:$ctrl.sortType:$ctrl.sortReverse">
 							<td>{{accountTitle.id}}</td>
 							<td>{{accountTitle.title}}</td>
 							<td>{{accountTitle.type}}</td>
 							<td class="tablebutton-form">
 								<div class="holder">
-									<button ng-click="$ctrl.digAccountTitle(accountTitle.id, accountTitle.title, accountTitle.level + 1, accountTitle.parent != null ? accountTitle.parent.id : -1)"
+									<button
+										ng-click="$ctrl.digAccountTitle(accountTitle.id, accountTitle.title, accountTitle.level + 1, accountTitle.parent != null ? accountTitle.parent.id : -1)"
 										class="btn btn-compose">
 										<i class="ion-ios-download"></i>
 									</button>
-									<button ng-click="$ctrl.editAccountTitle(accountTitle.id)"
-										class="btn btn-compose">
+									<button ng-click="$ctrl.editAccountTitle(accountTitle.id)" class="btn btn-compose">
 										<i class="ion-ios-compose-outline"></i>
 									</button>
-									<button ng-click="$ctrl.deleteAccountTitle(accountTitle.id)" class="btn btn-archive">
+									<button ng-click="$ctrl.deleteAccountTitle(accountTitle.id)"
+										class="btn btn-archive">
 										<i class="ion-android-close"></i>
 									</button>
 								</div>
@@ -93,4 +101,3 @@
 		</div>
 	</div>
 </div>
-

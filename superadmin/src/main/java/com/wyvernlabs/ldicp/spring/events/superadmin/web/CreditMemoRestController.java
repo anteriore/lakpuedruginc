@@ -22,8 +22,8 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.MemoSlipService;
 @RestController
 @RequestMapping("rest/credit-memos")
 public class CreditMemoRestController {
-private static final Logger logger = LoggerFactory.getLogger(CreditMemoRestController.class);
-    
+    private static final Logger logger = LoggerFactory.getLogger(CreditMemoRestController.class);
+
     @Autowired
     private CreditMemoRepository creditMemoRepository;
     @Autowired
@@ -32,6 +32,7 @@ private static final Logger logger = LoggerFactory.getLogger(CreditMemoRestContr
     private DepotRepository depotRepository;
     @Autowired
     private MemoSlipRepository memoSlipRepository;
+
     @GetMapping("/{id}")
     public CreditMemo get(@PathVariable Long id) {
         return creditMemoRepository.getOne(id);
@@ -46,17 +47,17 @@ private static final Logger logger = LoggerFactory.getLogger(CreditMemoRestContr
     public CreditMemo upsert(@RequestBody CreditMemo creditMemo) {
         return (CreditMemo) memoSlipService.saveMemoSlip(creditMemo);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		creditMemoRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        creditMemoRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/depot/{depotId}")
     public List<CreditMemo> listByDepot(@PathVariable Long depotId) {
-    	Depot depot = depotRepository.findOne(depotId);
+        Depot depot = depotRepository.getOne(depotId);
         return creditMemoRepository.findByDepot(depot);
     }
-    
+
 }

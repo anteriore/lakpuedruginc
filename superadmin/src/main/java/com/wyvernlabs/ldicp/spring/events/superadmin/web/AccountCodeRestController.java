@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.AccountCodeRepos
 @RequestMapping("rest/account-codes")
 public class AccountCodeRestController {
 
-	@Autowired
-	private AccountCodeRepository accountCodeRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private AccountCodeRepository accountCodeRepository;
+
+    @GetMapping("/{id}")
     public AccountCode get(@PathVariable Long id) {
         return accountCodeRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class AccountCodeRestController {
     public AccountCode upsert(@RequestBody AccountCode depot) {
         return accountCodeRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	accountCodeRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        accountCodeRepository.deleteById(id);
+        return true;
     }
 }

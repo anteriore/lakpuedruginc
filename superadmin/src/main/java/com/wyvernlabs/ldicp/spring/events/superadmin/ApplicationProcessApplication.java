@@ -7,31 +7,36 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 
-
 @SpringBootApplication
-public class ApplicationProcessApplication  {
-	
+public class ApplicationProcessApplication {
+
 	public static void main(String[] args) {
-		
+
 		SpringApplication.run(ApplicationProcessApplication.class, args);
 	}
 
@@ -42,14 +47,13 @@ public class ApplicationProcessApplication  {
 
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurerAdapter() {
+		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**");
 			}
 		};
 	}
-
 
 	/**
 	 * Start internal H2 server so we can query the DB from IDE
@@ -62,23 +66,19 @@ public class ApplicationProcessApplication  {
 		return org.h2.tools.Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 	}
 
-	@Component( "restAuthenticationEntryPoint" )
-	public class RestAuthenticationEntryPoint
-			implements AuthenticationEntryPoint {
+	@Component("restAuthenticationEntryPoint")
+	public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 		@Override
-		public void commence(
-				HttpServletRequest request,
-				HttpServletResponse response,
+		public void commence(HttpServletRequest request, HttpServletResponse response,
 				AuthenticationException authException) throws IOException {
 
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 		}
 	}
 
-
-	@EnableWebSecurity
 	@Configuration
+	@EnableWebSecurity
 	class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		@Autowired
@@ -93,37 +93,47 @@ public class ApplicationProcessApplication  {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.headers().frameOptions().disable();
-			http.csrf().disable()
+			http.csrf().disable().cors().and()
 					.addFilterBefore(authenticationTokenProcessingFilter, BasicAuthenticationFilter.class)
-					.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
-					.and()
-					.authorizeRequests()
-						.antMatchers("/rest/**")
-							.fullyAuthenticated()
-						.anyRequest().permitAll();
+					.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
+					.authorizeRequests().antMatchers("/rest/**").fullyAuthenticated().anyRequest().permitAll();
 		}
 
-
-
 		@Override
-		protected void configure(AuthenticationManagerBuilder auth)
-				throws Exception {
+		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 			auth.authenticationProvider(authenticationProvider());
 		}
 
 		@Bean
 		public DaoAuthenticationProvider authenticationProvider() {
-			DaoAuthenticationProvider authProvider
-					= new DaoAuthenticationProvider();
+			DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 			authProvider.setUserDetailsService(userDetailsService);
-//			authProvider.setPasswordEncoder(encoder());
+			authProvider.setPasswordEncoder(encoder());
 			return authProvider;
 		}
 
-//		@Bean
-//		public PasswordEncoder encoder() {
-//			return new BCryptPasswordEncoder(11);
-//		}
+		@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+		@Override
+		public AuthenticationManager authenticationManagerBean() throws Exception {
+			return super.authenticationManagerBean();
+		}
+
+		@Bean
+		public PasswordEncoder encoder() {
+			return new BCryptPasswordEncoder();
+		}
+
+		@Bean
+		public CorsFilter corsFilter() {
+			UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+			CorsConfiguration config = new CorsConfiguration();
+			config.setAllowCredentials(true);
+			config.addAllowedOrigin("*");
+			config.addAllowedHeader("*");
+			config.addAllowedMethod("*");
+			source.registerCorsConfiguration("/**", config);
+			return new CorsFilter(source);
+		}
 
 	}
 }

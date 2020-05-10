@@ -2,15 +2,18 @@ package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class PermissionSub {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
     private String name;
     private String code;
@@ -60,11 +63,7 @@ public class PermissionSub {
 
     @Override
     public String toString() {
-        return "PermissionSub{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", sortOrder=" + sortOrder +
-                '}';
+        return "PermissionSub{" + "id=" + id + ", name='" + name + '\'' + ", code='" + code + '\'' + ", sortOrder="
+                + sortOrder + '}';
     }
 }

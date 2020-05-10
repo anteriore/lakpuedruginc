@@ -18,6 +18,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepositor
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesInvoiceRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.service.SalesSlipService;
+
 @RestController
 @RequestMapping("rest/sales-invoices")
 public class SalesInvoiceRestController {
@@ -25,12 +26,12 @@ public class SalesInvoiceRestController {
     private SalesInvoiceRepository salesInvoiceRepository;
     @Autowired
     private SalesSlipService salesSlipService;
-	@Autowired
-	private CompanyRepository companyRepository;
-	@Autowired
-	private DepotRepository depotRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private DepotRepository depotRepository;
+
+    @GetMapping("/{id}")
     public SalesInvoice get(@PathVariable Long id) {
         return salesInvoiceRepository.getOne(id);
     }
@@ -44,31 +45,31 @@ public class SalesInvoiceRestController {
     public SalesInvoice upsert(@RequestBody SalesInvoice finishedGood) {
         return (SalesInvoice) salesSlipService.saveSalesSlip(finishedGood);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		salesInvoiceRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        salesInvoiceRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/company/{id}")
     public List<SalesInvoice> getByCompany(@PathVariable Long id) {
-    	Company company = companyRepository.findOne(id);
+        Company company = companyRepository.getOne(id);
         return salesInvoiceRepository.findByCompany(company);
     }
-    
+
     @GetMapping("/depot/{id}")
     public List<SalesInvoice> listByDepot(@PathVariable Long id) {
-    	Depot depot = depotRepository.findOne(id);
+        Depot depot = depotRepository.getOne(id);
         return salesInvoiceRepository.findByDepot(depot);
     }
 
     @GetMapping("/depot/{id}/dateFrom/{dateFrom}/dateTo/{dateTo}")
-    public List<SalesInvoice> listByDepot(@PathVariable Long id, @PathVariable Date dateFrom, @PathVariable Date dateTo) {
-        Depot depot = depotRepository.findOne(id);
-        
+    public List<SalesInvoice> listByDepot(@PathVariable Long id, @PathVariable Date dateFrom,
+            @PathVariable Date dateTo) {
+        Depot depot = depotRepository.getOne(id);
+
         return salesInvoiceRepository.findByDepotBetweenDates(depot, dateFrom, dateTo);
     }
-    
-    
+
 }

@@ -7,6 +7,8 @@ import javax.transaction.Transactional;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.*;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
@@ -24,7 +26,10 @@ public class UserData {
     private DepartmentRepository departmentRepository;
     @Autowired
     private DepotRepository depotRepository;
-    
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional
     public void init() {
         Company c1 = companyRepository.getOne(1L);
@@ -35,7 +40,7 @@ public class UserData {
         u.setLastName("Guzman");
         u.setEmail("katharine@yahoo.com");
         u.setMiddleInitial("M");
-        u.setPassword("test");
+        u.setPassword(passwordEncoder.encode("test"));
         u.setCompany(c1);
         u.setDepartment(d1);
 
@@ -43,7 +48,7 @@ public class UserData {
         depots.add(depot);
         u.setDepots(depots);
 
-        u.setRoles(new String[]{"ACTUATOR", "USER"});
+        u.setRoles(new String[] { "ACTUATOR", "USER" });
 
         Map<String, UserPermission> permissions = new HashMap<>();
         UserPermission p0 = new UserPermission();
@@ -60,9 +65,9 @@ public class UserData {
         p2.setCode("superadmin");
         p2.setActions("crud");
         permissions.put(p2.getCode(), p2);
-        
+
         u.setPermissions(permissions);
         userRepository.save(u);
-        
+
     }
 }

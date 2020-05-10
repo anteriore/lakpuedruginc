@@ -28,13 +28,13 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PostDatedChequeD
 @RequestMapping("rest/pdc-disbursements")
 public class PostDatedChequeDisbursementRestController {
 	private static final Logger logger = LoggerFactory.getLogger(PostDatedChequeDisbursementRestController.class);
-	
+
 	@Autowired
 	private PostDatedChequeDisbursementRepository pdcDisbursementRepository;
-	
+
 	@Autowired
 	private CompanyRepository companyRepository;
-	
+
 	@GetMapping("/{id}")
 	public PostDatedChequeDisbursement get(@PathVariable Long id) {
 		return pdcDisbursementRepository.getOne(id);
@@ -49,30 +49,31 @@ public class PostDatedChequeDisbursementRestController {
 	@PostMapping()
 	public PostDatedChequeDisbursement upsert(@RequestBody PostDatedChequeDisbursement pdcDisbursement) {
 		PostDatedChequeDisbursement pdc = pdcDisbursementRepository.save(pdcDisbursement);
-		pdc.setNumber("PDC"+pdc.getId());
+		pdc.setNumber("PDC" + pdc.getId());
 		return pdcDisbursementRepository.save(pdc);
 	}
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		pdcDisbursementRepository.delete(id);
+		pdcDisbursementRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@GetMapping("/status/{status}")
 	public List<PostDatedChequeDisbursement> list(@PathVariable String status) {
 		return pdcDisbursementRepository.findByStatus(status);
 	}
 
-
 	@GetMapping("/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Company company = companyRepository.findOne(companyId);
-		List<PostDatedChequeDisbursement> vpList = pdcDisbursementRepository.findByCompanyAndDateBetween(company, startDate, endDate);
+	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Company company = companyRepository.getOne(companyId);
+		List<PostDatedChequeDisbursement> vpList = pdcDisbursementRepository.findByCompanyAndDateBetween(company,
+				startDate, endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
 			elt.getCheques().forEach(elt2 -> {
-				Map<String, Object>  map = new LinkedHashMap();
+				Map<String, Object> map = new LinkedHashMap();
 				map.put("payee", elt.getPayee().getName());
 				map.put("chequeDetails", elt2.getNumber());
 				map.put("chequeDate", new SimpleDateFormat("yyyy-MM-dd").format(elt2.getDate()));
@@ -81,7 +82,7 @@ public class PostDatedChequeDisbursementRestController {
 				vpMapList.add(map);
 			});
 		});
-		
+
 		return vpMapList;
 	}
 }

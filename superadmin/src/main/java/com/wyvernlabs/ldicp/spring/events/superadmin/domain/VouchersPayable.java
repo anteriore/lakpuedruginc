@@ -4,9 +4,11 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -14,12 +16,13 @@ import javax.persistence.PrePersist;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class VouchersPayable {
 	@Id
-    @GeneratedValue
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id;
 	private String number;
 	private Date date;
 	@OneToMany(fetch = FetchType.LAZY)
@@ -39,87 +42,98 @@ public class VouchersPayable {
 	private double totalCreditAmount;
 	private double totalDebitAmount;
 	private String variation;
-	
+
 	@OneToOne
 	private User preparedBy;
 	@OneToOne
 	private User approvedBy;
-	
+
 	@PrePersist
 	public void init() {
 		this.totalAmount = accountTitles.stream()
 				.filter(accountTitleEntry -> accountTitleEntry.getAccountTitle().getType().equals("Debit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum();
+				.mapToDouble(AccountTitleEntry::getAmount).sum();
 		this.totalDebitAmount = this.totalAmount;
 		this.totalCreditAmount = accountTitles.stream()
 				.filter(accountTitleEntry -> accountTitleEntry.getAccountTitle().getType().equals("Credit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum();
+				.mapToDouble(AccountTitleEntry::getAmount).sum();
 	}
-	
+
 	public boolean hasEqualDebitAndCreditAmount() {
-		return  accountTitles.stream()
-				.filter(title-> title.getAccountTitle().equals("Credit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum()
-				+
-				accountTitles.stream().filter(title-> title.getAccountTitle().equals("Debit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum() == 0 ;
+		return accountTitles.stream().filter(title -> title.getAccountTitle().equals("Credit"))
+				.mapToDouble(AccountTitleEntry::getAmount).sum()
+				+ accountTitles.stream().filter(title -> title.getAccountTitle().equals("Debit"))
+						.mapToDouble(AccountTitleEntry::getAmount).sum() == 0;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getNumber() {
 		return number;
 	}
+
 	public void setNumber(String number) {
 		this.number = number;
 	}
+
 	public Date getDate() {
 		return date;
 	}
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
 	public Date getDueDate() {
 		return dueDate;
 	}
+
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
+
 	public String getRemarks() {
 		return remarks;
 	}
+
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public Vendor getVendor() {
 		return vendor;
 	}
+
 	public void setVendor(Vendor vendor) {
 		this.vendor = vendor;
 	}
+
 	public Set<AccountTitleEntry> getAccountTitles() {
 		return accountTitles;
 	}
+
 	public void setAccountTitles(Set<AccountTitleEntry> accountTitles) {
 		this.accountTitles = accountTitles;
 	}
+
 	public Company getCompany() {
 		return company;
 	}
+
 	public void setCompany(Company company) {
 		this.company = company;
 	}
@@ -156,8 +170,6 @@ public class VouchersPayable {
 		this.voucher = voucher;
 	}
 
-	
-
 	public String getVariation() {
 		return variation;
 	}
@@ -189,7 +201,5 @@ public class VouchersPayable {
 	public void setApprovedBy(User approvedBy) {
 		this.approvedBy = approvedBy;
 	}
-		
-	
-	
+
 }

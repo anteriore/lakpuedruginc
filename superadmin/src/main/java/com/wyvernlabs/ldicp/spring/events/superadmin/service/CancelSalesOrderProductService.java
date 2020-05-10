@@ -20,14 +20,15 @@ public class CancelSalesOrderProductService {
 	private SalesOrderProductRepository salesOrderProductRepository;
 	@Autowired
 	private SalesOrderRepository salesOrderRepository;
-	
+
 	@Transactional
 	public CancelSalesOrderProduct cancelSalesOrderProduct(CancelSalesOrderProduct cancelSalesOrderProduct) {
-		SalesOrderProduct soProduct = salesOrderProductRepository.findOne(cancelSalesOrderProduct.getSalesOrderProduct().getId());
+		SalesOrderProduct soProduct = salesOrderProductRepository
+				.getOne(cancelSalesOrderProduct.getSalesOrderProduct().getId());
 		soProduct.setStatus("Cancelled");
 		System.out.println("ASD" + cancelSalesOrderProduct.getSalesOrderProduct().getSoNumber());
 		SalesOrder so = salesOrderRepository.findByNumber(cancelSalesOrderProduct.getSalesOrderProduct().getSoNumber());
-		if(so.allProductsCancelled()) {
+		if (so.allProductsCancelled()) {
 			so.setStatus("Cancelled");
 		}
 		salesOrderRepository.save(so);

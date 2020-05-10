@@ -43,7 +43,7 @@ public class ApprovedReceiptRestController {
 	private ItemRepository itemRepository;
 	@Autowired
 	private UnitRepository unitRepository;
-	
+
 	@GetMapping("/{id}")
 	public ApprovedReceipt get(@PathVariable Long id) {
 		return approvedReceiptRepository.getOne(id);
@@ -61,20 +61,19 @@ public class ApprovedReceiptRestController {
 
 		return approvedReceiptService.save(ar);
 	}
-	
 
 	@GetMapping("/company/{companyId}")
 	public List<ApprovedReceipt> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return approvedReceiptRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		approvedReceiptRepository.delete(id);
+		approvedReceiptRepository.deleteById(id);
 		return true;
 	}
-	
+
 	@GetMapping("/number/{arNumber}")
 	public ApprovedReceipt findByArNumber(@PathVariable String arNumber) {
 		ApprovedReceipt ar = approvedReceiptRepository.findByNumber(arNumber);
@@ -85,6 +84,5 @@ public class ApprovedReceiptRestController {
 	public ApprovedReceipt findByControlNumber(@PathVariable String controlNumber) {
 		return approvedReceiptRepository.findByControlNumber(controlNumber);
 	}
-	
 
 }
