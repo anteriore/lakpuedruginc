@@ -5,14 +5,10 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
   ctrl.stockOnHandList = [];
   ctrl.reserved = [];
   ctrl.$onInit = function () {
-<<<<<<< Updated upstream
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.so.number = 0001;
-=======
+
     ctrl.so.number = "0001";
     ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
 
->>>>>>> Stashed changes
     UsersService.get(ctrl.user.id).then(function (response) {
       ctrl.depots = response.data.depots;
     });
@@ -42,7 +38,17 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
 
   };
 
+  ctrl.enterdown = function ($event) {
 
+
+    if ($event.keyCode === 13) {
+
+      var form = $event.target.form;
+      var index = Array.prototype.indexOf.call(form, $event.target);
+      form.elements[index + 1].focus();
+      $event.preventDefault();
+    }
+  };
 
   ctrl.computeTotalAmount = function (value, index) {
     ctrl.so.products[index].amount = value;
