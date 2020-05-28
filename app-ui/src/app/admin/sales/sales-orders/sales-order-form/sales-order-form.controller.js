@@ -5,8 +5,14 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
   ctrl.stockOnHandList = [];
   ctrl.reserved = [];
   ctrl.$onInit = function () {
+<<<<<<< Updated upstream
     ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
     ctrl.so.number = 0001;
+=======
+    ctrl.so.number = "0001";
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+
+>>>>>>> Stashed changes
     UsersService.get(ctrl.user.id).then(function (response) {
       ctrl.depots = response.data.depots;
     });
