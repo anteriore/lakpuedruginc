@@ -46,6 +46,7 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
       var form = $event.target.form;
       var index = Array.prototype.indexOf.call(form, $event.target);
       form.elements[index + 1].focus();
+      console.log(index);
       $event.preventDefault();
     }
   };
