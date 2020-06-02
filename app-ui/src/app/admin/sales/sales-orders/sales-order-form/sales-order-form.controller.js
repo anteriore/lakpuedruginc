@@ -62,8 +62,11 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
   ctrl.findProduct = function () {
     ctrl.company = $rootScope.selectedCompany;
     ProductInventoryService.listFinishedGoodView(ctrl.company.id).then(function (response) {
+
       ctrl.fglistview = response.data;
-      console.log("FGLISTVIEW" + ctrl.fglistview);
+      console.log(ctrl.fglistview);
+      console.log("so products");
+      console.log(ctrl.so.products);
       $("#findFgInventoryModal").modal('show');
     });
 
