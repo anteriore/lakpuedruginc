@@ -5,7 +5,14 @@ function FindFgInventoryModalController($state, FinishedGoodsService, ProductInv
 	ctrl.sortType = 'mis';
 	ctrl.sortReverse = false;
 
+	ctrl.checkSelected = function (fg) {
 
+		if (ctrl.fglist.findIndex(i => i.finishedGood.code === fg.finishedGood.code) !== -1) {
+			return true;
+		} else {
+			return false;
+		}
+	};
 
 	ctrl.selectFG = function (fg) {
 		console.log("BURAT :" + ctrl.fglist.indexOf(fg));

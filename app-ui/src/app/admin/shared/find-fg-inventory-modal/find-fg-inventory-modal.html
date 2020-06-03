@@ -42,7 +42,8 @@
 						</thead>
 						<tbody>
 							<tr ng-repeat="fg in $ctrl.fglistview | orderBy:$ctrl.sortType:$ctrl.sortReverse"
-								ng-click="$ctrl.selectFG(fg)" ng-class="{highlight: $ctrl.fglist.indexOf(fg) !== -1}">
+								ng-click="$ctrl.selectFG(fg)" ng-class="{highlight:
+									 $ctrl.checkSelected(fg)}">
 								<td>{{fg.finishedGood.code}}</td>
 								<td>{{fg.finishedGood.name}}</td>
 								<td>{{ctrl.reserved[$index]}}</td>
