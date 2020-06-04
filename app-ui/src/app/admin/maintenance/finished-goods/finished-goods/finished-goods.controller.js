@@ -6,6 +6,7 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
   ctrl.searchName = '';
   ctrl.sortType = 'id';
   ctrl.sortReverse = false;
+  ctrl.isSelected = false;
 
   ctrl.$onInit = function () {
     ctrl.addFinishedGood = false;
@@ -36,11 +37,15 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
     });
   };
 
+  ctrl.selectedId = 0;
+
   ctrl.showAddFinishedGood = function (show) {
     ctrl.addFinishedGood = show;
   };
 
   ctrl.editFinishedGood = function (id) {
+    ctrl.selectedId = id;
+    console.log(ctrl.selectedId);
     FinishedGoodsService.get(id).then(function (response) {
       ctrl.finishedgood = response.data;
     });
@@ -56,7 +61,7 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
   };
 
   ctrl.deleteFinishedGood = function (id) {
-    $('#findFgInventoryModal').modal('show');
+    $('#confirmAction').modal('show');
     FinishedGoodsService.delete(id).then(function (response) {
       ctrl.getData(ctrl.currentPage);
     });

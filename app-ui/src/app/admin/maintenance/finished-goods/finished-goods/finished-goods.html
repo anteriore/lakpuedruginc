@@ -62,7 +62,7 @@
 					</thead>
 					<tbody>
 
-						<tr dir-paginate="finishedGood in $ctrl.finishedGoods | itemsPerPage: $ctrl.itemsPerPage" total-items="$ctrl.totalCount">
+						<tr ng-class="{selected: $ctrl.selectedId === finishedGood.id}" dir-paginate="finishedGood in $ctrl.finishedGoods | itemsPerPage: $ctrl.itemsPerPage" total-items="$ctrl.totalCount">
 							<td>{{finishedGood.id}}</td>
 							<td>{{finishedGood.code}}</td>
 							<td>{{finishedGood.name}}</td>
@@ -72,7 +72,7 @@
 										class="btn btn-compose">
 										<i class="ion-ios-compose-outline"></i>
 									</button>
-									<button ng-click="$ctrl.deleteFinishedGood(finishedGood.id)" class="btn btn-archive">
+									<button ng-click="$ctrl.deleteFinishedGood(finishedGood.id);"class="btn btn-archive">
 										<i class="ion-android-close"></i>
 									</button>
 								</div>
@@ -93,10 +93,28 @@
 	</div>
 </div>
 
-<find-fg-inventory-modal
-	fglist="$ctrl.so.products"
-	fglistview="$ctrl.fglistview"
-	message="{{ $ctrl.error }}"
-></find-fg-inventory-modal>
+<div class='modal fade' id='confirmAction'>
+    <div class="modal-dialog -bg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h4 class="modal-title">
+                  Confirm Action
+              </h4>
+              <button class="close" data-dismiss="modal" type="button">
+              </button>
+          </div>
+          <div class="modal-body">
+			<p>Are you sure you want to delete Finished Goods Item?</p>
+			<button class="button-link btn btn-create btn-sm">Confirm</button>
+			<button class="button-link btn btn-create btn-sm">Cancel</button>
+        </div>
+    
+          </div>
+      </div>
+  </div>
+  </div>
+  
+  </div>
+  
 
 </div>

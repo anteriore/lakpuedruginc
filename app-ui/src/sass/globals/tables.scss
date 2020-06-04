@@ -138,6 +138,10 @@ tbody {
       transition: all 350ms ease;
       background-color: darken($white-two, 10%);
     }
+
+    &.selected {
+      background-color: $apple-green;
+    }
   }
 
   > tr > td {
@@ -168,7 +172,7 @@ tbody {
     }
 
     &.-broad {
-      width: 60%
+      width: 60%;
     }
 
     &.-narrow {
@@ -182,6 +186,10 @@ tbody {
     margin-right: 5px;
     line-height: 1px;
     cursor: pointer;
+  }
+
+  > tr .selected {
+    background-color: $apple-green;
   }
 }
 
@@ -207,14 +215,14 @@ tbody {
 
 .tablebody-form {
   > tbody > tr:first-child {
-    box-shadow: inset 0 3px 0 #FFF;
+    box-shadow: inset 0 3px 0 #fff;
     > td {
       padding: 14px 5px 12px 10px;
     }
   }
 
   > tbody > tr {
-    box-shadow: inset 0 2px 0 #FFF;
+    box-shadow: inset 0 2px 0 #fff;
     > td {
       padding: 12px 5px 12px 10px;
       border: none;
@@ -260,7 +268,7 @@ tbody {
 .tablecheckbox-form > .checkbox {
   margin: 0;
   vertical-align: middle;
-  > input[type="checkbox"] {
+  > input[type='checkbox'] {
     display: none;
   }
   > .caption {

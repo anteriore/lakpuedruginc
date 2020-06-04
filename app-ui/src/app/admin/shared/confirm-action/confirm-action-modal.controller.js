@@ -23,4 +23,4 @@ function ConfirmActionModalController($state, ClientsService, $rootScope) {
 
 angular
   .module('admin.shared')
-  .controller('FindClientModalController', FindClientModalController);
+  .controller('ConfirmActionModalController', ConfirmActionModalController);

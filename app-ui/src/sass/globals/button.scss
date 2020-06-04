@@ -30,7 +30,8 @@ button {
     cursor: pointer;
   }
 
-  > .icon, > .caption {
+  > .icon,
+  > .caption {
     color: white;
     font-weight: 500;
   }
@@ -46,7 +47,8 @@ input[type='submit'] {
     cursor: pointer !important;
   }
 
-  > .icon, > .caption {
+  > .icon,
+  > .caption {
     color: white;
     font-weight: 500;
   }
@@ -63,7 +65,8 @@ form {
     cursor: pointer;
   }
 
-  > .icon, > .caption {
+  > .icon,
+  > .caption {
     color: white;
     font-weight: 500;
   }
@@ -124,13 +127,13 @@ form {
       position: absolute;
       top: 50%;
       left: 15px;
-      color: #FFF;
+      color: #fff;
       font-size: 22px;
       height: 22px;
       transform: translate(0, -50%);
     }
     > span {
-      color: #FFF;
+      color: #fff;
     }
   }
 
@@ -166,19 +169,19 @@ form {
 }
 
 .btn-bordered {
-  background: #FFF;
+  background: #fff;
   color: $dusk !important;
   border: 2px solid $white-two;
 
   &:hover {
-    background-color: darken(#FFF, 5%);
+    background-color: darken(#fff, 5%);
     transition: all 350ms ease;
   }
 }
 
 .btn-warning {
   background-color: $squash;
-  color: #FFF !important;
+  color: #fff !important;
   transition: all ease 350ms;
 
   &:hover {
@@ -210,10 +213,10 @@ form {
   @extend .icon-button;
   &:hover {
     background-color: $bloody-red;
-    color: #FFF;
+    color: #fff;
     transition: all 350ms ease;
     > i {
-      color: #FFF;
+      color: #fff;
     }
   }
 }
@@ -222,10 +225,10 @@ form {
   @extend .icon-button;
   &:hover {
     background-color: $apple-green;
-    color: #FFF;
+    color: #fff;
     transition: all 350ms ease;
     > i {
-      color: #FFF;
+      color: #fff;
     }
   }
 }
@@ -234,10 +237,10 @@ form {
   @extend .icon-button;
   &:hover {
     background-color: $dark-sky-blue;
-    color: #FFF;
+    color: #fff;
     transition: all 350ms ease;
     > i {
-      color: #FFF;
+      color: #fff;
     }
   }
 }
