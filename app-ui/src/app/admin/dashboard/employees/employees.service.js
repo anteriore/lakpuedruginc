@@ -1,7 +1,17 @@
 function EmployeesService($http, globalConfig) {
-
   this.list = function () {
     return $http.get(globalConfig.baseUrl + '/rest/employees');
+  };
+
+  this.paginate = function (itemsPerPage, offset) {
+    console.log(itemsPerPage, offset);
+    return $http.get(
+      globalConfig.baseUrl +
+        '/rest/employees/paginate/' +
+        itemsPerPage +
+        '/' +
+        offset
+    );
   };
 
   this.save = function (employee) {
@@ -13,16 +23,18 @@ function EmployeesService($http, globalConfig) {
   };
 
   this.get = function (id) {
+    console.log(id);
     return $http.get(globalConfig.baseUrl + '/rest/employees/' + id);
   };
 
-  this.listByCompany = function(id) {
-	return $http.get(globalConfig.baseUrl + '/rest/employees/company/' + id);  
+  this.listByCompany = function (id) {
+    console.log(id);
+    return $http.get(globalConfig.baseUrl + '/rest/employees/company/' + id);
   };
 
-  this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/employees/delete/',id);
-	};
+  this.delete = function (id) {
+    return $http.post(globalConfig.baseUrl + '/rest/employees/delete/', id);
+  };
 }
 
 /**
@@ -31,6 +43,4 @@ function EmployeesService($http, globalConfig) {
  * @module components.auth
  *
  */
-angular
-  .module('admin.dashboard')
-  .service('EmployeesService', EmployeesService);
+angular.module('admin.dashboard').service('EmployeesService', EmployeesService);
