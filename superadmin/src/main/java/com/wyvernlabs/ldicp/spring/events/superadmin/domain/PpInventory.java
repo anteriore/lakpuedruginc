@@ -9,12 +9,13 @@ import java.util.List;
 /**
  * Manufacturing Order Inventory
  */
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class PpInventory {
 	@Id
-	@GeneratedValue
-	private Long id; //pp-number
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id; // pp-number
 	@OneToOne
 	private MoInventory moInventory;
 	private String type;
@@ -22,7 +23,7 @@ public class PpInventory {
 	@OneToOne
 	private Company company;
 	private Date dateCreated;
-    
+
 	@PrePersist
 	protected void onCreate() {
 		dateCreated = new Date();

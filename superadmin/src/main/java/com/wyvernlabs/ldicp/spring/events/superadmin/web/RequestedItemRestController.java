@@ -35,19 +35,21 @@ public class RequestedItemRestController {
 	private CancelRequestedItemService cancelRequestedItemService;
 	@Autowired
 	private ItemTypeRepository itemTypeRepository;
+
 	@GetMapping("/company/{companyId}")
 	public List<RequestedItem> listByCompany(@PathVariable Long companyId) {
-		return purchaseRequestService.getNotCompletedRequestedItemsByCompany(companyRepository.findOne(companyId));
+		return purchaseRequestService.getNotCompletedRequestedItemsByCompany(companyRepository.getOne(companyId));
 	}
-	
+
 	@GetMapping("/company/{companyId}/type/{type}")
 	public List<RequestedItem> listByCompany(@PathVariable Long companyId, @PathVariable String type) {
 		List<ItemType> itemTypes = itemTypeRepository.findByCode(type);
-		return purchaseRequestService.getNotCompletedRequestedItemsByCompanyAndType(companyRepository.findOne(companyId), itemTypes.get(0));
+		return purchaseRequestService.getNotCompletedRequestedItemsByCompanyAndType(companyRepository.getOne(companyId),
+				itemTypes.get(0));
 	}
-	
+
 	@PostMapping("/cancel")
-	public CancelRequestedItem cancelRequestedItem(@RequestBody CancelRequestedItem cancelRequestedItem){
+	public CancelRequestedItem cancelRequestedItem(@RequestBody CancelRequestedItem cancelRequestedItem) {
 		return cancelRequestedItemService.cancelRequestedItem(cancelRequestedItem);
 	}
 }

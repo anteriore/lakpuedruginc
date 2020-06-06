@@ -8,4 +8,5 @@ node_modules
 npm-debug.log
 templates.js
 src/app/config
-s
+.env.json
+dist

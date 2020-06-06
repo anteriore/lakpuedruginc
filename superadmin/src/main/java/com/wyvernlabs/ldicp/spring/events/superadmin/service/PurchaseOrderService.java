@@ -19,19 +19,19 @@ public class PurchaseOrderService {
 	private PurchaseOrderRepository purchaseOrderRepository;
 	@Autowired
 	private RequestedItemRepository requestedItemRepository;
-	
+
 	@Transactional
 	public PurchaseOrder savePurchaseOrder(PurchaseOrder purchaseOrder) {
 		Set<OrderedItem> orderedItems = purchaseOrder.getOrderedItems();
 		Long id = purchaseOrderRepository.getMaxId();
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		
+
 		purchaseOrder.setNumber("PO-" + ++id);
-		for(OrderedItem orderedItem : orderedItems) {
+		for (OrderedItem orderedItem : orderedItems) {
 			orderedItem.setPoNumber(purchaseOrder.getNumber());
-			RequestedItem requestedItem = requestedItemRepository.findOne(orderedItem.getRequestedItemId());
+			RequestedItem requestedItem = requestedItemRepository.getOne(orderedItem.getRequestedItemId());
 			requestedItem.deductQuantityRequestedFromQuantity(orderedItem);
 		}
 		PurchaseOrder po = purchaseOrderRepository.save(purchaseOrder);

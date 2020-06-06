@@ -6,6 +6,10 @@
     "postinstall": "cd app-ui && npm install && ./node_modules/gulp/bin/gulp.js build"
   },
   "dependencies": {
-    "express": "^4.16.2"
+    "angular-cookies": "^1.6.1",
+    "express": "^4.16.2",
+    "folder": "0.0.4",
+    "inside": "^1.0.0",
+    "ldi-app-ui": "file:app-ui"
   }
 }

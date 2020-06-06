@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.RegionCodeReposi
 @RequestMapping("rest/region-codes")
 public class RegionCodeRestController {
 
-	@Autowired
-	private RegionCodeRepository regionCodeRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private RegionCodeRepository regionCodeRepository;
+
+    @GetMapping("/{id}")
     public RegionCode get(@PathVariable Long id) {
         return regionCodeRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class RegionCodeRestController {
     public RegionCode upsert(@RequestBody RegionCode depot) {
         return regionCodeRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	regionCodeRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        regionCodeRepository.deleteById(id);
+        return true;
     }
 }

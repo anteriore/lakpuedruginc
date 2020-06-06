@@ -13,6 +13,5 @@ public interface AcknowledgementReceiptRepository extends JpaRepository<Acknowle
 	List<AcknowledgementReceipt> findByCompany(Company company);
 
 	List<AcknowledgementReceipt> findByDepot(Depot depot);
-	
 
 }

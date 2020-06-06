@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.List;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Permission {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
     private String category;
     private Integer sortOrder;
@@ -51,11 +52,7 @@ public class Permission {
 
     @Override
     public String toString() {
-        return "Permission{" +
-                "id=" + id +
-                ", category='" + category + '\'' +
-                ", sortOrder=" + sortOrder +
-                ", permissionSubs=" + permissionSubs +
-                '}';
+        return "Permission{" + "id=" + id + ", category='" + category + '\'' + ", sortOrder=" + sortOrder
+                + ", permissionSubs=" + permissionSubs + '}';
     }
 }

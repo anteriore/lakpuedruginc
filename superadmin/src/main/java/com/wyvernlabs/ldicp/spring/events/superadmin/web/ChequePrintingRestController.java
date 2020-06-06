@@ -28,6 +28,7 @@ public class ChequePrintingRestController {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private ChequePrintingService chequePrintingService;
+
 	@GetMapping("/{id}")
 	public ChequePrinting get(@PathVariable Long id) {
 		return chequePrintingRepository.getOne(id);
@@ -37,16 +38,16 @@ public class ChequePrintingRestController {
 	public List<ChequePrinting> list() {
 		return chequePrintingRepository.findAll();
 	}
-	
+
 	@GetMapping("/company/{companyId}")
 	public List<ChequePrinting> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return chequePrintingRepository.findByCompany(company);
 	}
-	
+
 	@GetMapping("/company/{companyId}/status/{status}")
 	public List<ChequePrinting> listByCompanyAndStatus(@PathVariable Long companyId, @PathVariable String status) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return chequePrintingRepository.findByCompanyAndStatus(company, status);
 	}
 
@@ -54,15 +55,15 @@ public class ChequePrintingRestController {
 	public ChequePrinting upsert(@RequestBody ChequePrinting chequePrinting) {
 		return chequePrintingService.saveChequePrinting(chequePrinting);
 	}
-	
+
 	@PostMapping("/approve/{cpId}/user/{userId}")
 	public ChequePrinting aprove(@PathVariable Long cpId, @PathVariable Long userId) {
 		return chequePrintingService.approve(cpId, userId);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		chequePrintingRepository.delete(id);
+		chequePrintingRepository.deleteById(id);
 		return true;
 	}
 }

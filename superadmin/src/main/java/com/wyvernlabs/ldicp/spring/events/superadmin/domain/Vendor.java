@@ -1,18 +1,21 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Vendor {
 	@Id
-    @GeneratedValue
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id;
 	private String code;
 	private String fullName;
 	private String address;
@@ -44,39 +47,48 @@ public class Vendor {
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getTin() {
 		return tin;
 	}
+
 	public void setTin(String tin) {
 		this.tin = tin;
 	}
+
 	public Company getCompany() {
 		return company;
 	}
+
 	public void setCompany(Company company) {
 		this.company = company;
 	}
+
 	@Override
 	public String toString() {
 		return "Client [id=" + id + ", code=" + code + ", name=" + name + ", tin=" + tin + ", company=" + company + "]";
 	}
-	
-	
+
 	public String getFullName() {
 		return fullName;
 	}

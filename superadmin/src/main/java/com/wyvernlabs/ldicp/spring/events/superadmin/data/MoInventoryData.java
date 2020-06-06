@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 @Component
 public class MoInventoryData {
 	private static final Logger logger = LoggerFactory.getLogger(MoInventoryData.class);
@@ -30,12 +32,13 @@ public class MoInventoryData {
 	public MoInventoryData() {
 	}
 
+	@Transactional
 	public void init() {
-		Company c1 = companyRepository.findOne(1L);
-		User u1 = userRepository.findOne(1L);
-		FinishedGood f1 = finishedGoodRepository.findOne(1L);
-		Inventory i1 = inventoryRepository.findOne(1L);
-		Recipe r1 = recipeRepository.findOne(1L);
+		Company c1 = companyRepository.getOne(1L);
+		User u1 = userRepository.getOne(1L);
+		FinishedGood f1 = finishedGoodRepository.getOne(1L);
+		Inventory i1 = inventoryRepository.getOne(1L);
+		Recipe r1 = recipeRepository.getOne(1L);
 
 		MoInventory m = new MoInventory();
 		m.setMoNumber(1);
@@ -53,6 +56,5 @@ public class MoInventoryData {
 		moInventoryRepository.save(m);
 
 	}
-	
-	
+
 }

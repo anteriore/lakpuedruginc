@@ -22,13 +22,14 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.OrderReceiptRepo
 @RestController
 @RequestMapping("/rest/order-receipts")
 public class OrderReceiptRestController {
-	@Autowired
-	private OrderReceiptRepository orderReceiptRepository;
-	@Autowired
-	private DepotRepository depotRepository;
-	@Autowired
-	private AcknowledgementReceiptRepository arRepository;
-	@GetMapping("/{id}")
+    @Autowired
+    private OrderReceiptRepository orderReceiptRepository;
+    @Autowired
+    private DepotRepository depotRepository;
+    @Autowired
+    private AcknowledgementReceiptRepository arRepository;
+
+    @GetMapping("/{id}")
     public OrderReceipt get(@PathVariable Long id) {
         return orderReceiptRepository.getOne(id);
     }
@@ -41,21 +42,21 @@ public class OrderReceiptRestController {
     @PostMapping()
     @Transactional
     public OrderReceipt upsert(@RequestBody OrderReceipt or) {
-    	AcknowledgementReceipt ar = arRepository.findOne(or.getAcknowledgementReceipt().getId());
-    	ar.setStatus("OR Created");
-    	arRepository.save(ar);
-    	return orderReceiptRepository.save(or);
+        AcknowledgementReceipt ar = arRepository.getOne(or.getAcknowledgementReceipt().getId());
+        ar.setStatus("OR Created");
+        arRepository.save(ar);
+        return orderReceiptRepository.save(or);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		orderReceiptRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        orderReceiptRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/depot/{depotId}")
     public List<OrderReceipt> listByDepot(@PathVariable Long depotId) {
-    	Depot depot = depotRepository.findOne(depotId);
+        Depot depot = depotRepository.getOne(depotId);
         return orderReceiptRepository.findByDepot(depot);
     }
 }

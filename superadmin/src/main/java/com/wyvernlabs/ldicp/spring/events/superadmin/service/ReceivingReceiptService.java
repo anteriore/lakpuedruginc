@@ -23,41 +23,43 @@ public class ReceivingReceiptService {
 	private EngineeringInventoryService engineeringInventoryService;
 	@Autowired
 	private StockCardService stockCardService;
-	
+
 	@Transactional
 	public ReceivingReceipt saveReceivingReceipt(ReceivingReceipt receivingReceipt) {
 		Long id = receivingReceiptRepository.getMaxId();
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		
+
 		receivingReceipt.setNumber("RR-" + ++id);
 		if (!receivingReceipt.getTolling()) {
-				PurchaseOrder po = purchaseOrderRepository.findOne(receivingReceipt.getPurchaseOrder().getId());
-				Set<ReceivingReceipt> receivingReceipts = po.getReceivingReceipts();
-				
+			PurchaseOrder po = purchaseOrderRepository.getOne(receivingReceipt.getPurchaseOrder().getId());
+			Set<ReceivingReceipt> receivingReceipts = po.getReceivingReceipts();
 
-				for(ReceivedItem item : receivingReceipt.getReceivedItems()) {
-					if(item.isReceivedItemNotRmAndPm()) {
-						item.setStatus("Approved");
-						engineeringInventoryService.addEngineeringInventory(item.getItem(), item.getQuantity(), receivingReceipt.getCompany());
-						stockCardService.saveStockCard("RR", receivingReceipt.getCompany(), item.getItem().getCode(), receivingReceipt.getDate(), item.getQuantity(), receivingReceipt.getRemarks(), "IN", receivingReceipt.getReceivedBy());
-					}
+			for (ReceivedItem item : receivingReceipt.getReceivedItems()) {
+				if (item.isReceivedItemNotRmAndPm()) {
+					item.setStatus("Approved");
+					engineeringInventoryService.addEngineeringInventory(item.getItem(), item.getQuantity(),
+							receivingReceipt.getCompany());
+					stockCardService.saveStockCard("RR", receivingReceipt.getCompany(), item.getItem().getCode(),
+							receivingReceipt.getDate(), item.getQuantity(), receivingReceipt.getRemarks(), "IN",
+							receivingReceipt.getReceivedBy());
 				}
-				
-				if(receivingReceipt.isReceivedItemCompletelyApproved()) {
-					receivingReceipt.setStatus("Completed");
-				}
-				
-				receivingReceipt.setPoNumber(po.getNumber());
-				receivingReceipts.add(receivingReceipt);
-				po.setReceivingReceipts(receivingReceipts);
-				po.updateStatusOfOrderedItems();
-				purchaseOrderRepository.save(po);
-		}else {
+			}
+
+			if (receivingReceipt.isReceivedItemCompletelyApproved()) {
+				receivingReceipt.setStatus("Completed");
+			}
+
+			receivingReceipt.setPoNumber(po.getNumber());
+			receivingReceipts.add(receivingReceipt);
+			po.setReceivingReceipts(receivingReceipts);
+			po.updateStatusOfOrderedItems();
+			purchaseOrderRepository.save(po);
+		} else {
 			receivingReceipt = receivingReceiptRepository.save(receivingReceipt);
 		}
 		return receivingReceipt;
-		
+
 	}
 }

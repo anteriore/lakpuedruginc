@@ -3,21 +3,24 @@ package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Client {
 	@Id
-    @GeneratedValue
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id;
 	private String code;
 	private String name;
 	private String tin;
@@ -91,40 +94,52 @@ public class Client {
 
 	@OneToOne
 	private Company company;
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getTin() {
 		return tin;
 	}
+
 	public void setTin(String tin) {
 		this.tin = tin;
 	}
+
 	public Company getCompany() {
 		return company;
 	}
+
 	public void setCompany(Company company) {
 		this.company = company;
 	}
+
 	@Override
 	public String toString() {
 		return "Client [id=" + id + ", code=" + code + ", name=" + name + ", tin=" + tin + ", company=" + company + "]";
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -136,7 +151,6 @@ public class Client {
 		result = prime * result + ((tin == null) ? 0 : tin.hashCode());
 		return result;
 	}
-
 
 	public void setDeliveryAddress(String deliveryAddress) {
 		this.deliveryAddress = deliveryAddress;
@@ -202,5 +216,4 @@ public class Client {
 		this.discount = discount;
 	}
 
-	
 }

@@ -17,10 +17,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductCategoryR
 @RestController
 @RequestMapping("rest/product-categories")
 public class ProductCategoryRestController {
-	@Autowired
-	private ProductCategoryRepository productCategoryRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private ProductCategoryRepository productCategoryRepository;
+
+    @GetMapping("/{id}")
     public ProductCategory get(@PathVariable Long id) {
         return productCategoryRepository.getOne(id);
     }
@@ -34,10 +34,10 @@ public class ProductCategoryRestController {
     public ProductCategory upsert(@RequestBody ProductCategory depot) {
         return productCategoryRepository.save(depot);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-    	productCategoryRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        productCategoryRepository.deleteById(id);
+        return true;
     }
 }

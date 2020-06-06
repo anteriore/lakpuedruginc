@@ -30,10 +30,10 @@ public class VoucherRestController {
 	private PurchaseVoucherRepository purchaseVoucherRepository;
 	@Autowired
 	private JournalVoucherRepository journalVoucherRepository;
-	
+
 	@GetMapping("/company/{companyId}/new-vouchers")
-	public List<Voucher> getNewVouchersByCompanyAndStatus(@PathVariable Long companyId){
-		Company company = companyRepository.findOne(companyId);
+	public List<Voucher> getNewVouchersByCompanyAndStatus(@PathVariable Long companyId) {
+		Company company = companyRepository.getOne(companyId);
 		List<Voucher> vouchers = new ArrayList<Voucher>();
 		List<JournalVoucher> jvList = journalVoucherRepository.findByCompanyAndVoucher(company, null);
 		List<PurchaseVoucher> pjvList = purchaseVoucherRepository.findByCompany(company);
@@ -41,11 +41,10 @@ public class VoucherRestController {
 		vouchers.addAll(jvList);
 		return vouchers;
 	}
-	
-	
+
 	@GetMapping("/company/{companyId}/status/{status}/new-vouchers")
-	public List<Voucher> getNewVouchersByCompanyAndStatus(@PathVariable Long companyId, @PathVariable String status){
-		Company company = companyRepository.findOne(companyId);
+	public List<Voucher> getNewVouchersByCompanyAndStatus(@PathVariable Long companyId, @PathVariable String status) {
+		Company company = companyRepository.getOne(companyId);
 		List<Voucher> vouchers = new ArrayList<Voucher>();
 		List<JournalVoucher> jvList = journalVoucherRepository.findByCompanyAndVoucherAndStatus(company, null, status);
 		List<PurchaseVoucher> pjvList = purchaseVoucherRepository.findByCompanyAndStatus(company, status);
@@ -53,9 +52,5 @@ public class VoucherRestController {
 		vouchers.addAll(jvList);
 		return vouchers;
 	}
-	
-	
-	
-	
-	
+
 }

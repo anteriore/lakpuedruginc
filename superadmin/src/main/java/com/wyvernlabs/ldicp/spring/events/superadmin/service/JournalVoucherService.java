@@ -20,45 +20,44 @@ public class JournalVoucherService {
 	private VoucherRepository voucherRepository;
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Transactional
 	public JournalVoucher saveJournalVoucher(JournalVoucher jv) {
 		Long id = journalVoucherRepository.getMaxIdByStatus("Pending");
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		
-		if(!jv.hasEqualDebitAndCreditAmount())
+
+		if (!jv.hasEqualDebitAndCreditAmount())
 			throw new RuntimeException("Debit and Credit not the same");
-		
-		
+
 		jv.setNumber("JFA-" + ++id);
-		
-		if(jv.getVoucher() != null) {
-			Voucher voucher = voucherRepository.findOne(jv.getVoucher().getId());
+
+		if (jv.getVoucher() != null) {
+			Voucher voucher = voucherRepository.getOne(jv.getVoucher().getId());
 			voucher.setHasAdjustment(true);
 			voucherRepository.save(voucher);
 		}
 		return journalVoucherRepository.save(jv);
-		
+
 	}
-	
+
 	@Transactional
 	public JournalVoucher approve(Long id, Long userId) {
-		JournalVoucher jv = journalVoucherRepository.findOne(id);
-		User approvedBy = userRepository.findOne(userId);
-		
-		Long maxId = journalVoucherRepository.getMaxIdInStatus(new String[] {"Approved", "Completed"});
-		
-		if(maxId == null) {
+		JournalVoucher jv = journalVoucherRepository.getOne(id);
+		User approvedBy = userRepository.getOne(userId);
+
+		Long maxId = journalVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+
+		if (maxId == null) {
 			maxId = 0L;
 		}
-		
+
 		jv.setNumber("J-" + ++maxId);
-		
+
 		jv.setStatus("Approved");
 		jv.setApprovedBy(approvedBy);
 		return journalVoucherRepository.save(jv);
 	}
-	
+
 }

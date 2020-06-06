@@ -20,7 +20,6 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.FinishedGoodRepo
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.InventoryRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MoInventoryRepository;
 
-
 @RestController
 @RequestMapping("rest/moInventory")
 public class MoInventoryRestController {
@@ -35,15 +34,15 @@ public class MoInventoryRestController {
     @Autowired
     private FinishedGoodRepository finishedGoodRepository;
 
-
     @PostMapping
     public MoInventory upsert(@RequestBody MoInventory moInventory) {
-        inventoryRepository.save(moInventory.getInventoryList());
+        inventoryRepository.saveAll(moInventory.getInventoryList());
         return moInventoryRepository.save(moInventory);
     }
 
     /**
      * This actually also increments moNumber
+     * 
      * @param moInventory
      * @return
      */
@@ -59,7 +58,7 @@ public class MoInventoryRestController {
 
         moInventory.setLotNumber(++lotNumber);
         moInventory.setMoNumber(++moNumber);
-        inventoryRepository.save(moInventory.getInventoryList());
+        inventoryRepository.saveAll(moInventory.getInventoryList());
         return moInventoryRepository.save(moInventory);
     }
 
@@ -70,24 +69,25 @@ public class MoInventoryRestController {
 
     @GetMapping("/company/{companyId}")
     public List<MoInventory> listByCompany(@PathVariable Long companyId) {
-        Company company = companyRepository.findOne(companyId);
+        Company company = companyRepository.getOne(companyId);
         return moInventoryRepository.findByCompany(company);
     }
+
     @GetMapping("/nonlotnumber/company/{companyId}")
     public List<MoInventory> listByCompanyAndNonLotNumber(@PathVariable Long companyId) {
-        Company company = companyRepository.findOne(companyId);
+        Company company = companyRepository.getOne(companyId);
         return moInventoryRepository.findByNonLotNumber(company);
     }
 
     @GetMapping("/remainingBatchSize/company/{companyId}")
     public List<MoInventory> listByCompanyAndremainingBatchSize(@PathVariable Long companyId) {
-        Company company = companyRepository.findOne(companyId);
+        Company company = companyRepository.getOne(companyId);
         return moInventoryRepository.findByNonZeroRemainingBatchSize(company);
     }
 
     @GetMapping("/finishedGood/{finishGoodId}")
     public List<MoInventory> listByFinishedGood(@PathVariable Long finishedGoodId) {
-        FinishedGood finishedGood = finishedGoodRepository.findOne(finishedGoodId);
+        FinishedGood finishedGood = finishedGoodRepository.getOne(finishedGoodId);
         return moInventoryRepository.findByFinishedGood(finishedGood);
     }
 

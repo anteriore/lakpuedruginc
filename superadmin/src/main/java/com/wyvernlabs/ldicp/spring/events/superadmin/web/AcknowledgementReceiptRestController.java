@@ -22,16 +22,16 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.AcknowledgementRece
 @RestController
 @RequestMapping("rest/acknowledgement-receipts")
 public class AcknowledgementReceiptRestController {
-	@Autowired
-	private AcknowledgementReceiptRepository acknowledgementReceiptRepository;
-	@Autowired
-	private AcknowledgementReceiptService acknowledgementReceiptService;
-	@Autowired
-	private DepotRepository depotRepository;
-	@Autowired
-	private CompanyRepository companyRepository;
-	
-	@GetMapping("/{id}")
+    @Autowired
+    private AcknowledgementReceiptRepository acknowledgementReceiptRepository;
+    @Autowired
+    private AcknowledgementReceiptService acknowledgementReceiptService;
+    @Autowired
+    private DepotRepository depotRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    @GetMapping("/{id}")
     public AcknowledgementReceipt get(@PathVariable Long id) {
         return acknowledgementReceiptRepository.getOne(id);
     }
@@ -45,23 +45,24 @@ public class AcknowledgementReceiptRestController {
     public AcknowledgementReceipt upsert(@RequestBody AcknowledgementReceipt AcknowledgementReceipt) {
         return acknowledgementReceiptService.saveAcknowledgementReceipt(AcknowledgementReceipt);
     }
-    
+
     @GetMapping("/company/{id}")
     public List<AcknowledgementReceipt> listByCompany(@PathVariable Long id) {
-    	Company company = companyRepository.findOne(id);
-    	return acknowledgementReceiptRepository.findByCompany(company);
+        Company company = companyRepository.getOne(id);
+        return acknowledgementReceiptRepository.findByCompany(company);
     }
-    
+
     @GetMapping("/depot/{id}")
-    public List<AcknowledgementReceipt> listByDepot(@PathVariable Long id){
-    	Depot depot = depotRepository.findOne(id);
-    	return acknowledgementReceiptRepository.findByDepot(depot);
+    public List<AcknowledgementReceipt> listByDepot(@PathVariable Long id) {
+        Depot depot = depotRepository.getOne(id);
+        return acknowledgementReceiptRepository.findByDepot(depot);
     }
-    
+
     @GetMapping("/depot/{id}/with-si")
-    public List<AcknowledgementReceipt> listByDepotWithSI(@PathVariable Long id){
-    	Depot depot = depotRepository.findOne(id);
-    	return acknowledgementReceiptRepository.findByDepot(depot).stream().filter(ar -> ar.getSiAmount() > 0 && ar.getStatus().equals("Pending")).collect(Collectors.toList());
+    public List<AcknowledgementReceipt> listByDepotWithSI(@PathVariable Long id) {
+        Depot depot = depotRepository.getOne(id);
+        return acknowledgementReceiptRepository.findByDepot(depot).stream()
+                .filter(ar -> ar.getSiAmount() > 0 && ar.getStatus().equals("Pending")).collect(Collectors.toList());
     }
-    
+
 }

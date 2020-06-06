@@ -35,6 +35,6 @@ public class AccountTitleData {
 		accountTitles.add(currentLiabilities);
 		accountTitles.add(cashInBank);
 		
-		accountTitleRepository.save(accountTitles);
+		accountTitleRepository.saveAll(accountTitles);
 	}
 }

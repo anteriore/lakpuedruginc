@@ -22,15 +22,16 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.SalesSlipService;
 @RestController
 @RequestMapping("rest/order-slips")
 public class OrderSlipRestController {
-	@Autowired
-	private OrderSlipRepository orderSlipRepository;
-	@Autowired
-	private SalesSlipService salesSlipService;
-	@Autowired
-	private CompanyRepository companyRepository;
-	@Autowired
-	private DepotRepository depotRepository;
-	@GetMapping("/{id}")
+    @Autowired
+    private OrderSlipRepository orderSlipRepository;
+    @Autowired
+    private SalesSlipService salesSlipService;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private DepotRepository depotRepository;
+
+    @GetMapping("/{id}")
     public OrderSlip get(@PathVariable Long id) {
         return orderSlipRepository.getOne(id);
     }
@@ -44,29 +45,29 @@ public class OrderSlipRestController {
     public OrderSlip upsert(@RequestBody OrderSlip finishedGood) {
         return (OrderSlip) salesSlipService.saveSalesSlip(finishedGood);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		orderSlipRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        orderSlipRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/company/{id}")
     public List<OrderSlip> getByCompany(@PathVariable Long id) {
-    	Company company = companyRepository.findOne(id);
+        Company company = companyRepository.getOne(id);
         return orderSlipRepository.findByCompany(company);
     }
-    
+
     @GetMapping("/depot/{id}")
     public List<OrderSlip> listByDepot(@PathVariable Long id) {
-    	Depot depot = depotRepository.findOne(id);
+        Depot depot = depotRepository.getOne(id);
         return orderSlipRepository.findByDepot(depot);
     }
 
     @GetMapping("/depot/{id}/dateFrom/{dateFrom}/dateTo/{dateTo}")
     public List<OrderSlip> listByDepot(@PathVariable Long id, @PathVariable Date dateFrom, @PathVariable Date dateTo) {
-        Depot depot = depotRepository.findOne(id);
-        
+        Depot depot = depotRepository.getOne(id);
+
         return orderSlipRepository.findByDepotBetweenDates(depot, dateFrom, dateTo);
     }
 }

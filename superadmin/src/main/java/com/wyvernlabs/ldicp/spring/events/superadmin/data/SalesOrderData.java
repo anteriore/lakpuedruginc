@@ -36,12 +36,13 @@ public class SalesOrderData {
 	private FinishedGoodRepository fgRepository;
 	@Autowired
 	private DepotRepository depotRepository;
+
 	public void init() {
-		Company company = companyRepository.findOne(1L);
-		User user = userRepository.findOne(1L);
-		Client client = clientRepository.findOne(1L);
-		FinishedGood fg = fgRepository.findOne(1L);
-		Depot depot = depotRepository.findOne(1L);
+		Company company = companyRepository.getOne(1L);
+		User user = userRepository.getOne(1L);
+		Client client = clientRepository.getOne(1L);
+		FinishedGood fg = fgRepository.getOne(1L);
+		Depot depot = depotRepository.getOne(1L);
 		SalesOrder salesOrder = new SalesOrder();
 		salesOrder.setApprovedBy(user);
 		salesOrder.setCheckedBy(user);

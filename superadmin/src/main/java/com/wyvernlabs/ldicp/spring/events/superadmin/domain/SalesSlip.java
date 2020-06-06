@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,17 +22,16 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.wyvernlabs.ldicp.spring.events.superadmin.enums.OrderSlipType;
 
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @TableGenerator(table = "SALES_SLIP_SEQUENCE", name = "SalesSlipSequenceGenerator")
 @JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "type")
-@JsonSubTypes({
-	@JsonSubTypes.Type(value = OrderSlip.class, name="OS"),
-	@JsonSubTypes.Type(value = SalesInvoice.class, name="DR_SI")
-})
+@JsonSubTypes({ @JsonSubTypes.Type(value = OrderSlip.class, name = "OS"),
+		@JsonSubTypes.Type(value = SalesInvoice.class, name = "DR_SI") })
 public abstract class SalesSlip {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "SalesSlipSequenceGenerator")
-    private Long id;
+	@Column(name = "id", nullable = false, unique = true)
+	private Long id;
 	private String number;
 	private Date date;
 	@OneToOne
@@ -51,125 +51,154 @@ public abstract class SalesSlip {
 	private Double totalAmount;
 	@OneToOne
 	private Depot depot;
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<OrderedProduct> orderedProducts;
 	private Double remainingBalance;
-	
+
 	@PrePersist
 	public void init() {
 		this.remainingBalance = totalAmount;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getNumber() {
 		return number;
 	}
+
 	public void setNumber(String number) {
 		this.number = number;
 	}
+
 	public Date getDate() {
 		return date;
 	}
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
 	public SalesOrder getSalesOrder() {
 		return salesOrder;
 	}
+
 	public void setSalesOrder(SalesOrder salesOrder) {
 		this.salesOrder = salesOrder;
 	}
+
 	public Company getCompany() {
 		return company;
 	}
+
 	public void setCompany(Company company) {
 		this.company = company;
 	}
+
 	public User getPreparedBy() {
 		return preparedBy;
 	}
+
 	public void setPreparedBy(User preparedBy) {
 		this.preparedBy = preparedBy;
 	}
+
 	public User getCheckedBy() {
 		return checkedBy;
 	}
+
 	public void setCheckedBy(User checkedBy) {
 		this.checkedBy = checkedBy;
 	}
+
 	public User getApprovedBy() {
 		return approvedBy;
 	}
+
 	public void setApprovedBy(User approvedBy) {
 		this.approvedBy = approvedBy;
 	}
+
 	public User getReleasedBy() {
 		return releasedBy;
 	}
+
 	public void setReleasedBy(User releasedBy) {
 		this.releasedBy = releasedBy;
 	}
+
 	public String getRemarks() {
 		return remarks;
 	}
+
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public Double getTotalAmount() {
 		return totalAmount;
 	}
+
 	public void setTotalAmount(Double totalAmount) {
 		this.totalAmount = totalAmount;
 	}
+
 	public Depot getDepot() {
 		return depot;
 	}
+
 	public void setDepot(Depot depot) {
 		this.depot = depot;
 	}
+
 	public List<OrderedProduct> getOrderedProducts() {
 		return orderedProducts;
 	}
+
 	public void setOrderedProducts(List<OrderedProduct> orderedProducts) {
 		this.orderedProducts = orderedProducts;
 	}
+
 	public boolean allProductsInTransit() {
-		for(OrderedProduct orderedProduct : orderedProducts) {
-			if(!orderedProduct.getStatus().equals("In Transit"))
+		for (OrderedProduct orderedProduct : orderedProducts) {
+			if (!orderedProduct.getStatus().equals("In Transit"))
 				return false;
-		}	
-		
+		}
+
 		return true;
 	}
+
 	public Double getRemainingBalance() {
 		return remainingBalance;
 	}
+
 	public void setRemainingBalance(Double remainingBalance) {
 		this.remainingBalance = remainingBalance;
 	}
-	
+
 	public void deductFromRemainingBalance(Double amount) {
 		this.remainingBalance -= amount;
 	}
-	
+
 	public void addToRemainingBalance(Double amount) {
 		this.remainingBalance += amount;
 	}
-	
-	
+
 	public OrderSlipType getType() {
 		return this.salesOrder.getType();
 	}
-	
+
 }

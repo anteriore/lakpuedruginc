@@ -46,13 +46,13 @@ public class GroupRestController {
 
 	@GetMapping("/company/{companyId}")
 	public List<Group> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return groupRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		groupRepository.delete(id);
+		groupRepository.deleteById(id);
 		return true;
 	}
 }

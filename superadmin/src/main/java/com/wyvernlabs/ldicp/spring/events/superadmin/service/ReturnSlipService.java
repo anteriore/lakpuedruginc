@@ -16,11 +16,12 @@ public class ReturnSlipService {
 	private ReturnSlipRepository returnSlipRepository;
 	@Autowired
 	private ProductInventoryRepository productInventoryRepository;
-	
+
 	@Transactional
 	public ReturnSlip saveReturnSlip(ReturnSlip returnSlip) {
 		returnSlip.getReturnSlipProducts().forEach(product -> {
-			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(product.getProduct(), returnSlip.getDepot());
+			ProductInventory inventory = productInventoryRepository.findByProductAndDepot(product.getProduct(),
+					returnSlip.getDepot());
 			inventory.add(product.getGoodQuantity());
 			productInventoryRepository.save(inventory);
 		});

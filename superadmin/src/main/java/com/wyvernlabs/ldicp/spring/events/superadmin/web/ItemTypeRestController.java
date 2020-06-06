@@ -19,10 +19,10 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ItemTypeReposito
 @RequestMapping("rest/item-types")
 public class ItemTypeRestController {
     private static final Logger logger = LoggerFactory.getLogger(ItemTypeRestController.class);
-    
+
     @Autowired
     private ItemTypeRepository itemTypeRepository;
-    
+
     @GetMapping("/{id}")
     public ItemType get(@PathVariable Long id) {
         return itemTypeRepository.getOne(id);
@@ -37,11 +37,11 @@ public class ItemTypeRestController {
     public ItemType upsert(@RequestBody ItemType itemType) {
         return itemTypeRepository.save(itemType);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		itemTypeRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        itemTypeRepository.deleteById(id);
+        return true;
+    }
+
 }

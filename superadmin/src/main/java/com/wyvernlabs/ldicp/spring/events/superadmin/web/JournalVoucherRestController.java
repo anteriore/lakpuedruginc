@@ -39,7 +39,7 @@ public class JournalVoucherRestController {
 	private VoucherRepository voucherRepository;
 	@Autowired
 	private VendorRepository vendorRepository;
-	
+
 	@GetMapping("/{id}")
 	public JournalVoucher get(@PathVariable Long id) {
 		return journalVoucherRepository.getOne(id);
@@ -52,49 +52,51 @@ public class JournalVoucherRestController {
 
 	@PostMapping()
 	public JournalVoucher upsert(@RequestBody JournalVoucher vendor) {
-		
+
 		return journalVoucherService.saveJournalVoucher(vendor);
 	}
 
 	@GetMapping("/company/{companyId}")
 	public List<JournalVoucher> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return journalVoucherRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		journalVoucherRepository.delete(id);
+		journalVoucherRepository.deleteById(id);
 		return true;
 	}
-	
-	
+
 	@PostMapping("/approve/{jvId}/user/{userId}")
 	public JournalVoucher approve(@PathVariable Long jvId, @PathVariable Long userId) {
 		return journalVoucherService.approve(jvId, userId);
 	}
-	
+
 	@GetMapping("/company/{companyId}/voucher/{voucherId}/adjustments")
-	public List<JournalVoucher> getAdjustmentsOfVoucherByCompany(@PathVariable Long companyId, @PathVariable Long voucherId){
-		Company company = companyRepository.findOne(companyId);
-		
-		return journalVoucherRepository.findByCompanyAndVoucher(company, voucherRepository.findOne(voucherId));
+	public List<JournalVoucher> getAdjustmentsOfVoucherByCompany(@PathVariable Long companyId,
+			@PathVariable Long voucherId) {
+		Company company = companyRepository.getOne(companyId);
+
+		return journalVoucherRepository.findByCompanyAndVoucher(company, voucherRepository.getOne(voucherId));
 	}
-	
+
 	@GetMapping("/company/{companyId}/vendor/{vendorId}/status/{status}/journal-vouchers-no-adjustment")
-	public List<JournalVoucher> listJvWithNoAdjustmentByCompanyAndVendorAndStatus(@PathVariable Long companyId, @PathVariable Long vendorId, @PathVariable String status){
-		Company company = companyRepository.findOne(companyId);
-		Vendor vendor = vendorRepository.findOne(vendorId);
+	public List<JournalVoucher> listJvWithNoAdjustmentByCompanyAndVendorAndStatus(@PathVariable Long companyId,
+			@PathVariable Long vendorId, @PathVariable String status) {
+		Company company = companyRepository.getOne(companyId);
+		Vendor vendor = vendorRepository.getOne(vendorId);
 		return journalVoucherRepository.findByCompanyAndVendorAndStatusAndHasAdjustment(company, vendor, status, false);
 	}
-	
+
 	@GetMapping("/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Company company = companyRepository.findOne(companyId);
+	public List<Map<String, Object>> getByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate,
+			@PathVariable Date endDate) {
+		Company company = companyRepository.getOne(companyId);
 		List<JournalVoucher> vpList = journalVoucherRepository.findByCompanyAndDateBetween(company, startDate, endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
-			Map<String, Object>  map = new LinkedHashMap();
+			Map<String, Object> map = new LinkedHashMap();
 			map.put("number", elt.getNumber());
 			map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(elt.getDate()));
 			map.put("payee", elt.getVendor().getName());
@@ -102,24 +104,24 @@ public class JournalVoucherRestController {
 			map.put("status", elt.getStatus());
 			vpMapList.add(map);
 		});
-		
+
 		return vpMapList;
 	}
-	
+
 	@GetMapping("/journal-report/company/{companyId}/start/{startDate}/end/{endDate}")
-	public List<Map<String, Object>> getJournalReportByCompanyAndDates(@PathVariable Long companyId, @PathVariable Date startDate, @PathVariable Date endDate){
-		Company company = companyRepository.findOne(companyId);
+	public List<Map<String, Object>> getJournalReportByCompanyAndDates(@PathVariable Long companyId,
+			@PathVariable Date startDate, @PathVariable Date endDate) {
+		Company company = companyRepository.getOne(companyId);
 		List<JournalVoucher> vpList = journalVoucherRepository.findByCompanyAndDateBetween(company, startDate, endDate);
 		List<Map<String, Object>> vpMapList = new ArrayList();
 		vpList.forEach(elt -> {
-			Map<String, Object>  map = new LinkedHashMap();
+			Map<String, Object> map = new LinkedHashMap();
 			map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(elt.getDate()));
 			map.put("drsi", elt.getDrNumber());
 			map.put("po", elt.getPoNumber());
 			map.put("rr", elt.getRrNumber());
 			map.put("number", elt.getNumber());
-			map.put("accountTitles", elt.getAccountTitles().stream().map(elt2 -> 
-			{
+			map.put("accountTitles", elt.getAccountTitles().stream().map(elt2 -> {
 				Map accountTitleMap = new HashMap();
 				accountTitleMap.put("title", elt2.getAccountTitle().getTitle());
 				accountTitleMap.put("credit", elt2.getAccountTitle().getType() == "Credit" ? elt2.getAmount() : "");
@@ -129,7 +131,7 @@ public class JournalVoucherRestController {
 			map.put("amount", elt.getTotalAmount());
 			vpMapList.add(map);
 		});
-		
+
 		return vpMapList;
 	}
 }

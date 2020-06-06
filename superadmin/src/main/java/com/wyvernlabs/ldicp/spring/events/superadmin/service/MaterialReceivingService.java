@@ -29,26 +29,29 @@ public class MaterialReceivingService {
 	private StockCardService stockCardService;
 	@Autowired
 	private CompanyRepository companyRepository;
+
 	@Transactional
 	public MaterialReceiving saveMaterialReceiving(MaterialReceiving materialReceiving) {
 		Long id = materialReceivingRepository.getMaxId();
-		if(id == null) {
+		if (id == null) {
 			id = 0L;
 		}
-		
+
 		materialReceiving.setMrsNo("MRS-" + ++id);
 		MaterialIssuance mis = materialReceiving.getMis();
-		mis = materialIssuanceRepository.findOne(mis.getId());
+		mis = materialIssuanceRepository.getOne(mis.getId());
 		mis.setStatus("Received");
 		materialIssuanceRepository.save(mis);
 		materialReceiving.setMis(mis);
-		for(IssuedInventory mrsInventory : materialReceiving.getMis().getInventoryList()) {
-			Inventory is = inventoryRepository.findByControlNumberAndCompany(mrsInventory.getControlNumber(), materialReceiving.getCompany());
-			if(is != null) {
+		for (IssuedInventory mrsInventory : materialReceiving.getMis().getInventoryList()) {
+			Inventory is = inventoryRepository.findByControlNumberAndCompany(mrsInventory.getControlNumber(),
+					materialReceiving.getCompany());
+			if (is != null) {
 				is.setQuantity(is.getQuantity() + mrsInventory.getQuantity());
 				inventoryRepository.save(is);
-			}else {
-				Inventory misInventory = inventoryRepository.findByControlNumberAndCompany(mrsInventory.getControlNumber(), mis.getCompany());
+			} else {
+				Inventory misInventory = inventoryRepository
+						.findByControlNumberAndCompany(mrsInventory.getControlNumber(), mis.getCompany());
 				Inventory inventory = new Inventory();
 				inventory.setBestBefore(misInventory.getBestBefore());
 				inventory.setCompany(materialReceiving.getCompany());
@@ -60,14 +63,14 @@ public class MaterialReceivingService {
 				inventory.setReevaluation(misInventory.getReevaluation());
 				inventory.setRetest(misInventory.getRetest());
 				inventoryRepository.save(inventory);
-				
+
 			}
-			
-			stockCardService.saveStockCard("MRS", companyRepository.findOne(materialReceiving.getCompany().getId()), mrsInventory.getControlNumber(), new Date(), mrsInventory.getQuantity(), materialReceiving.getRemarks(), "IN", materialReceiving.getReceivedBy());
+
+			stockCardService.saveStockCard("MRS", companyRepository.getOne(materialReceiving.getCompany().getId()),
+					mrsInventory.getControlNumber(), new Date(), mrsInventory.getQuantity(),
+					materialReceiving.getRemarks(), "IN", materialReceiving.getReceivedBy());
 		}
-			
-		
-		
+
 		return materialReceivingRepository.save(materialReceiving);
 	}
 }

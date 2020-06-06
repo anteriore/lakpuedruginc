@@ -20,12 +20,13 @@ public class CancelRequestedItemService {
 	private RequestedItemRepository requestedItemRepository;
 	@Autowired
 	private PurchaseRequestRepository purchaseRequestRepository;
-	
+
 	@Transactional
 	public CancelRequestedItem cancelRequestedItem(CancelRequestedItem cancelRequestedItem) {
-		RequestedItem reqItem = requestedItemRepository.findOne(cancelRequestedItem.getRequestedItem().getId());
+		RequestedItem reqItem = requestedItemRepository.getOne(cancelRequestedItem.getRequestedItem().getId());
 		reqItem.setStatus("Cancelled");
-		PurchaseRequest prf = purchaseRequestRepository.findByNumber(cancelRequestedItem.getRequestedItem().getPrfNumber());
+		PurchaseRequest prf = purchaseRequestRepository
+				.findByNumber(cancelRequestedItem.getRequestedItem().getPrfNumber());
 		prf.setStatus("Cancelled");
 		purchaseRequestRepository.save(prf);
 		requestedItemRepository.save(reqItem);

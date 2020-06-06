@@ -38,18 +38,18 @@ public class RecipeRestController {
     public List<Recipe> list() {
         return recipeRepository.findAll();
     }
-    
+
     @GetMapping("/status/{status}")
-    public List<Recipe> listByStatus(@PathVariable String status){
-    		return recipeRepository.findByStatus(status);
+    public List<Recipe> listByStatus(@PathVariable String status) {
+        return recipeRepository.findByStatus(status);
     }
-    
+
     @GetMapping("/finished-good/{id}")
-    public List<Recipe> listByFinishedGood(@PathVariable Long id){
-    		FinishedGood finishedGood = finishedGoodRepository.findOne(id);
-    		return recipeRepository.findByFinishedGood(finishedGood);
+    public List<Recipe> listByFinishedGood(@PathVariable Long id) {
+        FinishedGood finishedGood = finishedGoodRepository.getOne(id);
+        return recipeRepository.findByFinishedGood(finishedGood);
     }
-    
+
     @PostMapping()
     public Recipe upsert(@RequestBody Recipe recipe) {
         return recipeService.save(recipe);

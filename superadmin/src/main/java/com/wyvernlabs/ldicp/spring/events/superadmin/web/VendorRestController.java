@@ -23,7 +23,7 @@ public class VendorRestController {
 
 	private VendorRepository vendorRepository;
 	private CompanyRepository companyRepository;
-	
+
 	public VendorRestController(VendorRepository vendorRepository, CompanyRepository companyRepository) {
 		this.vendorRepository = vendorRepository;
 		this.companyRepository = companyRepository;
@@ -46,13 +46,13 @@ public class VendorRestController {
 
 	@GetMapping("/company/{companyId}")
 	public List<Vendor> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return vendorRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		vendorRepository.delete(id);
+		vendorRepository.deleteById(id);
 		return true;
 	}
 }

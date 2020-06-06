@@ -35,6 +35,7 @@ public class MaterialReevaluationRestController {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private MaterialReevaluationService materialReevaluationService;
+
 	@GetMapping("/{id}")
 	public MaterialReevaluation get(@PathVariable Long id) {
 		return materialReevaluationRepository.getOne(id);
@@ -47,18 +48,18 @@ public class MaterialReevaluationRestController {
 
 	@PostMapping()
 	public MaterialReevaluation upsert(@RequestBody MaterialReevaluation materialEvaluation) {
-        return materialReevaluationService.save(materialEvaluation);
+		return materialReevaluationService.save(materialEvaluation);
 	}
 
 	@GetMapping("/company/{companyId}")
 	public List<MaterialReevaluation> listByCompany(@PathVariable Long companyId) {
-		Company company = companyRepository.findOne(companyId);
+		Company company = companyRepository.getOne(companyId);
 		return materialReevaluationRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		materialReevaluationRepository.delete(id);
+		materialReevaluationRepository.deleteById(id);
 		return true;
 	}
 }

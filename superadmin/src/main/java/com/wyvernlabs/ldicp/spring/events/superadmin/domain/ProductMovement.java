@@ -4,11 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -17,15 +19,16 @@ import javax.persistence.PrePersist;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wyvernlabs.ldicp.spring.events.superadmin.enums.ProductMovementType;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class ProductMovement {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
 	private String number;
 	private Date date;
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<ProductMovementItem> products;
 	private String remarks;
 	private Date dateCreated;
@@ -37,31 +40,36 @@ public class ProductMovement {
 	private User requestedBy;
 	@OneToOne
 	private Company company;
-	
+
 	@PrePersist
 	public void onCreate() {
 		dateCreated = new Date();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getNumber() {
 		return number;
 	}
+
 	public void setNumber(String number) {
 		this.number = number;
 	}
+
 	public Date getDate() {
 		return date;
 	}
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
+
 	public List<ProductMovementItem> getProducts() {
 		return products;
 	}
@@ -73,6 +81,7 @@ public class ProductMovement {
 	public String getRemarks() {
 		return remarks;
 	}
+
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
@@ -116,6 +125,5 @@ public class ProductMovement {
 	public void setCompany(Company company) {
 		this.company = company;
 	}
-	
-	
+
 }

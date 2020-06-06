@@ -31,34 +31,32 @@ public class ApprovedReceiptService {
 	private StockCardService stockCardService;
 	@Autowired
 	private CompanyRepository companyRepository;
+
 	@Transactional
 	public ApprovedReceipt save(ApprovedReceipt ar) {
-			Long id = approvedReceiptRepository.getMaxId();
-			if(id == null) {
-				id = 0L;
+		Long id = approvedReceiptRepository.getMaxId();
+		if (id == null) {
+			id = 0L;
+		}
+
+		ar.setNumber("AR-" + ++id);
+		ReceivingReceipt rr = receivingReceiptRepository.getOne(ar.getReceivingReceipt().getId());
+		for (ReceivedItem receivedItem : rr.getReceivedItems()) {
+			ReceivedItem ri = receivedItemRepository.getOne(receivedItem.getId());
+			if (ri.getItem().getId() == ar.getItem().getId()) {
+				ri.setStatus("Approved");
+				receivedItemRepository.save(ri);
 			}
-			
-			ar.setNumber("AR-" + ++id);
-			ReceivingReceipt rr = receivingReceiptRepository.findOne(ar.getReceivingReceipt().getId());
-			for(ReceivedItem receivedItem : rr.getReceivedItems()) {
-				ReceivedItem ri = receivedItemRepository.findOne(receivedItem.getId());
-				if(ri.getItem().getId() == ar.getItem().getId()) {
-					ri.setStatus("Approved");
-					receivedItemRepository.save(ri);
-				}
-			}
+		}
 
-			if(rr.isReceivedItemCompletelyApproved()) {
-				rr.setStatus("Completed");
-			}else {
-				rr.setStatus("Incomplete");
-			}
+		if (rr.isReceivedItemCompletelyApproved()) {
+			rr.setStatus("Completed");
+		} else {
+			rr.setStatus("Incomplete");
+		}
 
-			receivingReceiptRepository.save(rr);
-			ar.setReceivingReceipt(rr);
-
-
-
+		receivingReceiptRepository.save(rr);
+		ar.setReceivingReceipt(rr);
 
 		Inventory inventory = new Inventory();
 		inventory.setCompany(ar.getCompany());
@@ -70,9 +68,10 @@ public class ApprovedReceiptService {
 		inventory.setExpiration(ar.getExpiration());
 		inventory.setRetest(ar.getRetest());
 		inventoryRepository.save(inventory);
-		
-		stockCardService.saveStockCard("AR", companyRepository.findOne(ar.getCompany().getId()), ar.getControlNumber(), new Date(), ar.getApprovedQuantity(), ar.getRemarks(), "IN", ar.getReceivedBy());
-		
+
+		stockCardService.saveStockCard("AR", companyRepository.getOne(ar.getCompany().getId()), ar.getControlNumber(),
+				new Date(), ar.getApprovedQuantity(), ar.getRemarks(), "IN", ar.getReceivedBy());
+
 		return approvedReceiptRepository.save(ar);
 	}
 }

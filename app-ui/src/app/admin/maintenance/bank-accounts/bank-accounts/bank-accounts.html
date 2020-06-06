@@ -2,9 +2,8 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<h4 class="modal-title">
-				Find Bank Account <a
-					class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddBankAccount(true)"
-					>+ Add Bank Account</a>
+				Find Bank Account <a class="button-link btn btn-create btn-sm float-lg-right"
+					ng-click="$ctrl.showAddBankAccount(true)">+ Add Bank Account</a>
 			</h4>
 			<button class="close" data-dismiss="modal" type="button">
 				<span class="ion-android-close close-modal" ng-click="$ctrl.showAddBankAccount(false)"></span>
@@ -12,17 +11,19 @@
 		</div>
 		<div class="modal-body">
 			<div class="searchbox-modal">
-					<div class=" search-modal horizontal-align -between">
-						<div class="input-group-addon" style="border: 0	 !important;">
-							<i class="fa fa-search"></i>
-						</div>
-						<input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode" />
-						<input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName" />
+				<div class=" search-modal horizontal-align -between">
+					<div class="input-group-addon" style="border: 0	 !important;">
+						<i class="fa fa-search"></i>
 					</div>
+					<input class="form-control -borderless search" placeholder="code" type="text" name="search"
+						ng-model="$ctrl.searchCode" />
+					<input class="form-control -borderless search" placeholder="name" type="text" name="search"
+						ng-model="$ctrl.searchName" />
+				</div>
 			</div>
 			<bank-account-form ng-show="$ctrl.addBankAccount" bankaccount="$ctrl.bankaccount"
-				message="{{ $ctrl.error }}" button="Save"
-				on-submit="$ctrl.saveBankAccount($event);"> </bank-account-form>
+				message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveBankAccount($event);">
+			</bank-account-form>
 			<div class="wrapper scroll-section">
 				<table class="table find-vendor">
 					<thead>
@@ -38,7 +39,8 @@
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
+								<a href="#"
+									ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
 									<span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -48,7 +50,8 @@
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
+								<a href="#"
+									ng-click="$ctrl.sortType = 'name';$ctrl.sortReverse = !$ctrl.sortReverse;">Name
 									<span ng-show="$ctrl.sortType == 'name' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -63,15 +66,15 @@
 					</thead>
 					<tbody>
 
-						<tr dir-paginate="bankAccount in $ctrl.bankAccounts | itemsPerPage: $ctrl.itemsPerPage" total-items="$ctrl.totalCount">
+						<tr dir-paginate="bankAccount in $ctrl.bankAccounts | itemsPerPage: $ctrl.itemsPerPage"
+							total-items="$ctrl.totalCount">
 							<td>{{bankAccount.id}}</td>
 							<td>{{bankAccount.code}}</td>
 							<td>{{bankAccount.name}}</td>
 							<td>{{bankAccount.address}}</td>
 							<td class="tablebutton-form">
 								<div class="holder">
-									<button ng-click="$ctrl.editBankAccount(bankAccount.id)"
-										class="btn btn-compose">
+									<button ng-click="$ctrl.editBankAccount(bankAccount.id)" class="btn btn-compose">
 										<i class="ion-ios-compose-outline"></i>
 									</button>
 									<button ng-click="$ctrl.deleteBankAccount(bankAccount.id)" class="btn btn-archive">
@@ -82,13 +85,8 @@
 						</tr>
 					</tbody>
 				</table>
-				<dir-pagination-controls
-					max-size="$ctrl.totalCount"
-					direction-links="false"
-					boundary-links="false" 
-					on-page-change="$ctrl.getData(newPageNumber)"
-					style="float:right; padding-right:10px;"
-					>
+				<dir-pagination-controls max-size="$ctrl.totalCount" direction-links="false" boundary-links="false"
+					on-page-change="$ctrl.getData(newPageNumber)" style="float:right; padding-right:10px;">
 				</dir-pagination-controls>
 			</div>
 		</div>

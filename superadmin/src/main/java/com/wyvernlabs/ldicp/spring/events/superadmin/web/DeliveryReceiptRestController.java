@@ -19,13 +19,14 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.service.DeliveryReceiptServ
 @RestController
 @RequestMapping("rest/delivery-receipts")
 public class DeliveryReceiptRestController {
-	@Autowired
-	private DeliveryReceiptRepository deliveryReceiptRepository;
-	@Autowired
-	private DeliveryReceiptService deliveryReceiptService;
-	@Autowired
-	private CompanyRepository companyRepository;
-	@GetMapping("/{id}")
+    @Autowired
+    private DeliveryReceiptRepository deliveryReceiptRepository;
+    @Autowired
+    private DeliveryReceiptService deliveryReceiptService;
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    @GetMapping("/{id}")
     public DeliveryReceipt get(@PathVariable Long id) {
         return deliveryReceiptRepository.getOne(id);
     }
@@ -39,16 +40,16 @@ public class DeliveryReceiptRestController {
     public DeliveryReceipt upsert(@RequestBody DeliveryReceipt finishedGood) {
         return deliveryReceiptService.saveDeliveryReceipt(finishedGood);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		deliveryReceiptRepository.delete(id);
-		return true;
-	}
-    
+    public boolean delete(@RequestBody Long id) {
+        deliveryReceiptRepository.deleteById(id);
+        return true;
+    }
+
     @GetMapping("/company/{id}")
     public List<DeliveryReceipt> getByCompany(@PathVariable Long id) {
-    	Company company = companyRepository.findOne(id);
+        Company company = companyRepository.getOne(id);
         return deliveryReceiptRepository.findByCompany(company);
     }
 }

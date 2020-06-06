@@ -24,17 +24,18 @@ public class BankAccountRestController {
 	private static final Logger logger = LoggerFactory.getLogger(BankAccountRestController.class);
 	@Autowired
 	private BankAccountRepository bankAccountRepository;
-	
+
 	@GetMapping("/{id}")
 	public BankAccount get(@PathVariable Long id) {
 		return bankAccountRepository.getOne(id);
 	}
-	
+
 	@GetMapping("/paginate/{itemsPerPage}/{offset}")
-    public Page<BankAccount> paginate(@PathVariable("itemsPerPage") Integer itemsPerPage, @PathVariable("offset") Integer offset) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
-        return bankAccountRepository.findAll(pageable);
-    }
+	public Page<BankAccount> paginate(@PathVariable("itemsPerPage") Integer itemsPerPage,
+			@PathVariable("offset") Integer offset) {
+		Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
+		return bankAccountRepository.findAll(pageable);
+	}
 
 	@GetMapping()
 	public List<BankAccount> list() {
@@ -48,7 +49,7 @@ public class BankAccountRestController {
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		bankAccountRepository.delete(id);
+		bankAccountRepository.deleteById(id);
 		return true;
 	}
 }

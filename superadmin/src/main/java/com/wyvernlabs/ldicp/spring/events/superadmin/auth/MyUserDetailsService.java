@@ -25,21 +25,21 @@ public class MyUserDetailsService implements UserDetailsService {
     private AccessTokenRepository accessTokenRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
+    public MyUserPrincipal loadUserByUsername(String username) {
         List<User> users = userRepository.findByEmail(username);
-//        logger.info("loadUserByUsername: users.size(): {} username: {}", users.size(), username);
+        // logger.info("loadUserByUsername: users.size(): {} username: {}",
+        // users.size(), username);
         if (users.size() == 0) {
             throw new UsernameNotFoundException(username);
         }
-//        logger.info("loadUserByUsername: " + users.get(0));
+        // logger.info("loadUserByUsername: " + users.get(0));
         return new MyUserPrincipal(users.get(0));
     }
 
-
-    public User findUserByAccessToken(String accessTokenString)
-    {
+    public MyUserPrincipal findUserByAccessToken(String accessTokenString) {
         AccessToken accessToken = this.accessTokenRepository.findByToken(accessTokenString);
-//        logger.info("findUserByAccessToken: {}, result: {}", accessTokenString, (accessToken == null) ? "NOT FOUND" : "FOUND");
+        // logger.info("findUserByAccessToken: {}, result: {}", accessTokenString,
+        // (accessToken == null) ? "NOT FOUND" : "FOUND");
         if (null == accessToken) {
             return null;
         }
@@ -49,15 +49,14 @@ public class MyUserDetailsService implements UserDetailsService {
             return null;
         }
 
-        return accessToken.getUser();
+        return new MyUserPrincipal(accessToken.getUser());
     }
 
-    public AccessToken createAccessToken(User user)
-    {
+    public AccessToken createAccessToken(User user) {
         AccessToken accessToken = new AccessToken(user, UUID.randomUUID().toString());
-//        logger.info("createAccessToken: {}, result: {}", user.getEmail(), accessToken.getToken());
+        // logger.info("createAccessToken: {}, result: {}", user.getEmail(),
+        // accessToken.getToken());
         return this.accessTokenRepository.save(accessToken);
     }
 
 }
-

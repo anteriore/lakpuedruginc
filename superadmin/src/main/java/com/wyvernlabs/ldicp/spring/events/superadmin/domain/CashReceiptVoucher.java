@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -14,11 +16,12 @@ import javax.persistence.PrePersist;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class CashReceiptVoucher {
-	@Id
-    @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
     private String number;
     private Date date;
@@ -37,14 +40,14 @@ public class CashReceiptVoucher {
     @OneToOne
     private Company company;
     private Double amount;
-    
+
     @PrePersist
-	public void init() {
-		this.amount = accountTitles.stream()
-				.filter(accountTitleEntry -> accountTitleEntry.getAccountTitle().getType().equals("Debit"))
-				.mapToDouble(AccountTitleEntry::getAmount)
-				.sum();
-	}
+    public void init() {
+        this.amount = accountTitles.stream()
+                .filter(accountTitleEntry -> accountTitleEntry.getAccountTitle().getType().equals("Debit"))
+                .mapToDouble(AccountTitleEntry::getAmount).sum();
+    }
+
     /**
      * @return the id
      */
@@ -115,16 +118,15 @@ public class CashReceiptVoucher {
         this.arNumber = arNumber;
     }
 
-    
     public Voucher getVoucher() {
-		return voucher;
-	}
+        return voucher;
+    }
 
-	public void setVoucher(Voucher voucher) {
-		this.voucher = voucher;
-	}
+    public void setVoucher(Voucher voucher) {
+        this.voucher = voucher;
+    }
 
-	/**
+    /**
      * @return the accountTitles
      */
     public Set<AccountTitleEntry> getAccountTitles() {
@@ -166,37 +168,36 @@ public class CashReceiptVoucher {
         this.preparedBy = preparedBy;
     }
 
-	public Company getCompany() {
-		return company;
-	}
+    public Company getCompany() {
+        return company;
+    }
 
-	public void setCompany(Company company) {
-		this.company = company;
-	}
+    public void setCompany(Company company) {
+        this.company = company;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public Date getDate() {
+        return date;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
-	public String getVariation() {
-		return variation;
-	}
+    public String getVariation() {
+        return variation;
+    }
 
-	public void setVariation(String variation) {
-		this.variation = variation;
-	}
-	public Double getAmount() {
-		return amount;
-	}
-	public void setAmount(Double amount) {
-		this.amount = amount;
-	}
-    
-	
+    public void setVariation(String variation) {
+        this.variation = variation;
+    }
 
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
 
 }

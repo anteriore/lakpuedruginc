@@ -21,12 +21,12 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MoInventoryRepos
 @RequestMapping("rest/job-orders")
 public class JobOrderRestController {
     private static final Logger logger = LoggerFactory.getLogger(JobOrderRestController.class);
-    
+
     @Autowired
     private JobOrderRepository jobOrderRepository;
     @Autowired
     private MoInventoryRepository moInventoryRepository;
-    
+
     @GetMapping("/{id}")
     public JobOrder get(@PathVariable Long id) {
         return jobOrderRepository.getOne(id);
@@ -34,7 +34,7 @@ public class JobOrderRestController {
 
     @GetMapping("/moInventory/{moInventoryId}")
     public List<JobOrder> listByMoInventory(@PathVariable Long moInventoryId) {
-        MoInventory moInventory = moInventoryRepository.findOne(moInventoryId);
+        MoInventory moInventory = moInventoryRepository.getOne(moInventoryId);
         return jobOrderRepository.findByMoInventory(moInventory);
     }
 
@@ -45,12 +45,12 @@ public class JobOrderRestController {
 
     @PostMapping()
     public List<JobOrder> upsert(@RequestBody List<JobOrder> jobOrders) {
-        return jobOrderRepository.save(jobOrders);
+        return jobOrderRepository.saveAll(jobOrders);
     }
-    
+
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		jobOrderRepository.delete(id);
-		return true;
+    public boolean delete(@RequestBody Long id) {
+        jobOrderRepository.deleteById(id);
+        return true;
     }
 }

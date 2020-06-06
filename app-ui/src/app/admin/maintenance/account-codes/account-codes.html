@@ -2,9 +2,8 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<h4 class="modal-title">
-				Find Account Codes <a
-					class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddAccountCode(true)"
-					>+ Add Account Codes</a>
+				Find Account Codes <a class="button-link btn btn-create btn-sm float-lg-right"
+					ng-click="$ctrl.showAddAccountCode(true)">+ Add Account Codes</a>
 			</h4>
 			<button class="close" data-dismiss="modal" type="button">
 				<span ng-click="$ctrl.showAddAccountCode(false)" class="ion-android-close close-modal"></span>
@@ -12,45 +11,53 @@
 		</div>
 		<div class="modal-body">
 			<div class="searchbox-modal">
-					<form>
+				<form>
 
-				<div class="searchbox-content">
-					<div class=" search-modal horizontal-align -between">
-						<div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i></div>
-						<input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"/>
-						<input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"/>
+					<div class="searchbox-content">
+						<div class=" search-modal horizontal-align -between">
+							<div class="input-group-addon" style="border: 0	 !important;"><i class="fa fa-search"></i>
+							</div>
+							<input class="form-control -borderless search" placeholder="code" type="text" name="search"
+								ng-model="$ctrl.searchCode" />
+							<input class="form-control -borderless search" placeholder="name" type="text" name="search"
+								ng-model="$ctrl.searchName" />
+						</div>
 					</div>
-				</div>
 				</form>
 			</div>
 			<form novalidate ng-submit="$ctrl.saveAccountCode()" ng-if="$ctrl.addAccountCode" method="post">
 				<div class="horizontal-align -between" id="add-group">
-					<input type="hidden" ng-model="$ctrl.account.id"/>
+					<input type="hidden" ng-model="$ctrl.account.id" />
 					<div class="form-group col-md-4">
-						<label for="code">Code</label> <input ng-model="$ctrl.accountCode.code" class="form-control -border"
-							autofocus="autofocus" placeholder="Code" type="text" name="code">
+						<label for="code">Code</label> <input ng-model="$ctrl.accountCode.code"
+							class="form-control -border" autofocus="autofocus" placeholder="Code" type="text"
+							name="code">
 					</div>
 					<div class="form-group col-md-4">
-						<label for="name">Description</label> <input ng-model="$ctrl.accountCode.description" class="form-control -border"
-							placeholder="Description" type="text" name="title">
+						<label for="name">Description</label> <input ng-model="$ctrl.accountCode.description"
+							class="form-control -border" placeholder="Description" type="text" name="title">
 					</div>
 				</div>
 				<div class="action-button horizontal-align -end">
-				        <input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save">
-				    </div>
-				</form>
+					<input type="submit" name="commit" value="Save" class="btn btn-create btn-md"
+						data-disable-with="Save">
+				</div>
+			</form>
 			<div class="wrapper scroll-section">
 				<table class="table find-vendor">
 					<thead>
 						<tr>
 							<th>
 								<a href="#" ng-click="$ctrl.sortType = 'id';$ctrl.sortReverse = !$ctrl.sortReverse;">ID
-									<span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span>
-									<span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span>
+									<span ng-show="$ctrl.sortType == 'id' && !$ctrl.sortReverse"><i
+											class="fa fa-caret-down"></i></span>
+									<span ng-show="$ctrl.sortType == 'id' && $ctrl.sortReverse"><i
+											class="fa fa-caret-up"></i></span>
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
+								<a href="#"
+									ng-click="$ctrl.sortType = 'code';$ctrl.sortReverse = !$ctrl.sortReverse;">Code
 									<span ng-show="$ctrl.sortType == 'code' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -60,7 +67,8 @@
 								</a>
 							</th>
 							<th>
-								<a href="#" ng-click="$ctrl.sortType = 'description';$ctrl.sortReverse = !$ctrl.sortReverse;">Description
+								<a href="#"
+									ng-click="$ctrl.sortType = 'description';$ctrl.sortReverse = !$ctrl.sortReverse;">Description
 									<span ng-show="$ctrl.sortType == 'description' && !$ctrl.sortReverse">
 										<i class="fa fa-caret-down"></i>
 									</span>
@@ -73,14 +81,14 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="accountCode in $ctrl.accountCodes | filter: {code: $ctrl.searchCode} | orderBy:$ctrl.sortType:$ctrl.sortReverse">
+						<tr
+							ng-repeat="accountCode in $ctrl.accountCodes | filter: {code: $ctrl.searchCode} | orderBy:$ctrl.sortType:$ctrl.sortReverse">
 							<td>{{accountCode.id}}</td>
 							<td>{{accountCode.code}}</td>
 							<td>{{accountCode.description}}</td>
 							<td class="tablebutton-form">
 								<div class="holder">
-									<button ng-click="$ctrl.editAccountCode(accountCode.id)"
-										class="btn btn-compose">
+									<button ng-click="$ctrl.editAccountCode(accountCode.id)" class="btn btn-compose">
 										<i class="ion-ios-compose-outline"></i>
 									</button>
 									<button ng-click="$ctrl.deleteAccountCode(accountCode.id)" class="btn btn-archive">

@@ -52,27 +52,27 @@ public class MyUserPrincipal implements UserDetails {
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public String getFirstName() {
-        return firstName;
+        return this.firstName;
     }
 
     public String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
     public Company getCompany() {
-        return company;
+        return this.company;
     }
 
     public String getEmployeeType() {
-        return employeeType;
+        return this.employeeType;
     }
 
     public Department getDepartment() {
-        return department;
+        return this.department;
     }
 
     public Map<String, UserPermission> getPermissions() {

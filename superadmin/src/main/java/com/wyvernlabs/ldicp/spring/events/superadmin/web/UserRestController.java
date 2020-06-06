@@ -23,12 +23,12 @@ public class UserRestController {
 
     private UserRepository userRepository;
     private CompanyRepository companyRepository;
-    
+
     public UserRestController(UserRepository userRepository, CompanyRepository companyRepository) {
-    		this.userRepository = userRepository;
+        this.userRepository = userRepository;
         this.companyRepository = companyRepository;
     }
-    
+
     @GetMapping("/{id}")
     public User get(@PathVariable Long id) {
         return userRepository.getOne(id);
@@ -43,12 +43,11 @@ public class UserRestController {
     public User upsert(@RequestBody User user) {
         return userRepository.save(user);
     }
-    
+
     @GetMapping("/company/{id}")
     public List<User> listByCompany(@PathVariable Long id) {
-    		Company company = companyRepository.findOne(id);
-    		return userRepository.findByCompany(company);
+        Company company = companyRepository.getOne(id);
+        return userRepository.findByCompany(company);
     }
-    
-    
+
 }

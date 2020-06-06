@@ -3,19 +3,22 @@ package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Inventory {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
 	@OneToOne
 	private Item item;
@@ -25,45 +28,54 @@ public class Inventory {
 	private Company company;
 	private Date dateCreated;
 	private Date expiration;
-    private Date bestBefore;
-    private Date reevaluation;
-    private Date retest;
+	private Date bestBefore;
+	private Date reevaluation;
+	private Date retest;
 	private int moqReserved;
-    private int moQuantity;
+	private int moQuantity;
 	private int ppQuantity;
-    
+
 	@PrePersist
 	protected void onCreate() {
 		dateCreated = new Date();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public Item getItem() {
 		return item;
 	}
+
 	public void setItem(Item item) {
 		this.item = item;
 	}
+
 	public String getControlNumber() {
 		return controlNumber;
 	}
+
 	public void setControlNumber(String controlNumber) {
 		this.controlNumber = controlNumber;
 	}
+
 	public int getQuantity() {
 		return quantity;
 	}
+
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
+
 	public Company getCompany() {
 		return company;
 	}
+
 	public void setCompany(Company company) {
 		this.company = company;
 	}

@@ -22,12 +22,13 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PostDatedChequeV
 @RestController
 @RequestMapping("rest/pdc-vouchers")
 public class PostDatedChequeVoucherRestController {
-private static final Logger logger = LoggerFactory.getLogger(PostDatedChequeVoucherRestController.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(PostDatedChequeVoucherRestController.class);
+
 	@Autowired
 	private PostDatedChequeVoucherRepository pdcVoucherRepository;
 	@Autowired
 	private PostDatedChequeDisbursementRepository pdcDisbursementRepository;
+
 	@GetMapping("/{id}")
 	public PostDatedChequeVoucher get(@PathVariable Long id) {
 		return pdcVoucherRepository.getOne(id);
@@ -43,16 +44,16 @@ private static final Logger logger = LoggerFactory.getLogger(PostDatedChequeVouc
 	public PostDatedChequeVoucher upsert(@RequestBody PostDatedChequeVoucher pdcVoucher) {
 		PostDatedChequeVoucher v = pdcVoucherRepository.save(pdcVoucher);
 		v.setNumber("PDCV" + pdcVoucher.getId());
-		PostDatedChequeDisbursement pdc = pdcDisbursementRepository.findOne(v.getDisbursement().getId());
+		PostDatedChequeDisbursement pdc = pdcDisbursementRepository.getOne(v.getDisbursement().getId());
 		pdc.setStatus("Cleared");
 		pdcDisbursementRepository.save(pdc);
 		return pdcVoucherRepository.save(v);
-	
+
 	}
 
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
-		pdcVoucherRepository.delete(id);
+		pdcVoucherRepository.deleteById(id);
 		return true;
 	}
 
