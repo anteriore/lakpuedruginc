@@ -52,10 +52,19 @@ public class FinishedGoodRestController {
 
     @PostMapping()
     public FinishedGood upsert(@RequestBody FinishedGood finishedGood) {
-        if (finishedGoodRepository.findByCodeOrName(finishedGood.getCode(), finishedGood.getName()) == null)
-            return finishedGoodRepository.save(finishedGood);
-        else
-            return null;
+
+        if (finishedGood.getId() == null) {
+            if (finishedGoodRepository.findByCodeOrName(finishedGood.getCode(), finishedGood.getName()) == null)
+                return finishedGoodRepository.save(finishedGood);
+            else
+                return null;
+        } else {
+            FinishedGood fg = finishedGoodRepository.getOne(finishedGood.getId());
+            fg.setCode(finishedGood.getCode());
+            fg.setName(finishedGood.getName());
+            return finishedGoodRepository.save(fg);
+        }
+
     }
 
     @PostMapping("/delete")

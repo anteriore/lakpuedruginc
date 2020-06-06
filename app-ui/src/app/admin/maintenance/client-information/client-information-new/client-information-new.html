@@ -16,8 +16,37 @@
   </h3>
 </header>
 <client-information-form
-            client="$ctrl.client"
-            message="{{ $ctrl.error }}"
-            button="Create Client"
-            on-submit="$ctrl.createClient($event);">
+  client="$ctrl.client"
+  message="{{ $ctrl.error }}"
+  button="Create Client"
+  on-submit="$ctrl.createClient($event);"
+>
 </client-information-form>
+
+<div class="modal fade" id="confirmAction">
+  <div class="modal-dialog -bg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Confirm Action
+        </h4>
+        <button class="close" data-dismiss="modal" type="button"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to add this client?</p>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.addClient($ctrl.newClient);"
+        >
+          Confirm
+        </button>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.cancel();"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

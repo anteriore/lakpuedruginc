@@ -18,7 +18,10 @@ function FinishedGoodsService($http, globalConfig) {
   };
 
   this.update = function (client) {
-    return $http.post(globalConfig.baseUrl + '/rest/finished-goods/', client);
+    return $http.post(
+      globalConfig.baseUrl + '/rest/finished-goods/update',
+      client
+    );
   };
 
   this.get = function (id) {

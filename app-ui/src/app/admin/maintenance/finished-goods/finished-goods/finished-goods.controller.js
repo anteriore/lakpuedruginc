@@ -44,13 +44,23 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
   };
 
   ctrl.confirmDelete = function (id, name) {
-    $('#confirmAction').modal('show');
-    ctrl.itemName = name;
+    $('#confirmDeleteAction').modal('show');
+    ctrl.itemName = 'Are you sure you want to delete' + name + '?';
     ctrl.id = id;
   };
 
+  ctrl.confirmEdit = function (event) {
+    $('#confirmEditAction').modal('show');
+    ctrl.itemName = 'Are you sure you want to save changes ?';
+    ctrl.event = event;
+  };
+
   ctrl.cancelDelete = function () {
-    $('#confirmAction').modal('hide');
+    $('#confirmDeleteAction').modal('hide');
+  };
+
+  ctrl.cancelEdit = function () {
+    $('#confirmEditAction').modal('hide');
   };
 
   ctrl.confirm = function () {
@@ -67,7 +77,7 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
   };
 
   ctrl.saveFinishedGood = function (event) {
-    console.log(event.finishedgood);
+    $('#confirmEditAction').modal('hide');
     FinishedGoodsService.save(event.finishedgood).then(function (response) {
       console.log(response);
       if (response.data === '') {
@@ -85,8 +95,7 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
   };
 
   ctrl.deleteFinishedGood = function (id) {
-    console.log(id);
-    id = 9;
+    $('#confirmDeleteAction').modal('hide');
     FinishedGoodsService.delete(id)
       .then(function (response) {
         ctrl.getData(ctrl.currentPage);
