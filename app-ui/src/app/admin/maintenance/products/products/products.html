@@ -1,48 +1,76 @@
 <div class="main-header">
-	<div class="horizontal-align -between content">
-		<h3 class="title">Products</h3>
-	</div>
-	<a href="#" ng-click="$ctrl.createNewProduct($event);" class="btn btn-create btn-md button-link">Create New Request</a>
+  <div class="horizontal-align -between content">
+    <h3 class="title">Products</h3>
+  </div>
+  <a
+    href="#"
+    ng-click="$ctrl.createNewProduct($event);"
+    class="btn btn-create btn-md button-link"
+    >Create New Request</a
+  >
 </div>
-<div class='client-pris'>
+<div class="client-pris">
   <div class="search-box horizontal-align -between">
-      <div class="input-group-addon" style="border: 0	 !important;">
-          <i class="fa fa-search"></i>
-        </div>
-        <input class="form-control -borderless search" placeholder="Lot No" type="text" name="search" ng-model="$ctrl.searchNumber"
-        />
-        <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate" />
+    <div class="input-group-addon" style="border: 0 !important;">
+      <i class="fa fa-search"></i>
+    </div>
+    <input
+      class="form-control -borderless search"
+      placeholder="Lot No"
+      type="text"
+      name="search"
+      ng-model="$ctrl.searchNumber"
+    />
+    <input
+      class="form-control -borderless search"
+      placeholder="Date"
+      type="text"
+      name="search"
+      ng-model="$ctrl.searchDate"
+    />
   </div>
 </div>
-	<table ng-if="$ctrl.products" class='table table-list'>
-		<thead>
-		<tr>
-			<th>Lot #</th>
-			<th>FG CODE</th>
-			<th>FG NAME</th>
-			<th>Expiry</th>
-			<th></th>
-		</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="product in $ctrl.products | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
-				<td>{{product.lotNumber}}</td>
-				<td>{{product.finishedGood.code}}</td>
-				<td>{{product.finishedGood.name}}</td>
-				<td>{{product.expiration | date}}</td>
-				<td class='tablebutton-form'>
-					<div class='holder'>
-						<button data-toggle="modal" ng-click="$ctrl.openModal(product)" class='btn btn-show'>
-		                  <i class='ion-ios-eye-outline'></i>
-		                </button>
-						<button class='btn btn-archive' ng-click="$ctrl.deleteProduct(product.id)">
-							<i class='ion-ios-box-outline'></i>
-						</button>
-					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-<view-product-modal
-	product="$ctrl.product"
-></view-product-modal>
+<table ng-if="$ctrl.products" class="table table-list">
+  <thead>
+    <tr>
+      <th>FG CODE</th>
+      <th>FG NAME</th>
+      <th>Lot #</th>
+      <th>Unit Price</th>
+      <th>Status</th>
+      <th>Expiry</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      ng-repeat="product in $ctrl.products | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"
+    >
+      <td>{{product.finishedGood.code}}</td>
+      <td>{{product.finishedGood.name}}</td>
+      <td>{{product.lotNumber}}</td>
+      <td>{{product.unitPrice}}</td>
+      <td ng-if="!product.status" else hasStatus>Not Active</td>
+      <ng-template #hasStatus><td>{{product.status}}</td> </ng-template>
+      <td>{{product.expiration | date}}</td>
+      <td class="tablebutton-form">
+        <div class="holder">
+          <button
+            data-toggle="modal"
+            ng-click="$ctrl.openModal(product)"
+            class="btn btn-show"
+          >
+            <i class="ion-ios-eye-outline"></i>
+          </button>
+          <button
+            class="btn btn-archive"
+            ng-click="$ctrl.deleteProduct(product.id)"
+          >
+            <i class="ion-ios-box-outline"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<view-product-modal product="$ctrl.product"></view-product-modal>

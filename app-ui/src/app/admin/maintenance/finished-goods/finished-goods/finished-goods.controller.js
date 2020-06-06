@@ -43,6 +43,20 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
     ctrl.addFinishedGood = show;
   };
 
+  ctrl.confirmDelete = function (id, name) {
+    $('#confirmAction').modal('show');
+    ctrl.itemName = name;
+    ctrl.id = id;
+  };
+
+  ctrl.cancelDelete = function () {
+    $('#confirmAction').modal('hide');
+  };
+
+  ctrl.confirm = function () {
+    $('#actionDialog').modal('hide');
+  };
+
   ctrl.editFinishedGood = function (id) {
     ctrl.selectedId = id;
     console.log(ctrl.selectedId);
@@ -53,18 +67,39 @@ function FinishedGoodController($state, FinishedGoodsService, _) {
   };
 
   ctrl.saveFinishedGood = function (event) {
-    FinishedGoodsService.save(event.finishedgood).then(function () {
-      ctrl.getData(ctrl.currentPage);
-      ctrl.showAddFinishedGood(false);
-      ctrl.finishedgood = null;
+    console.log(event.finishedgood);
+    FinishedGoodsService.save(event.finishedgood).then(function (response) {
+      console.log(response);
+      if (response.data === '') {
+        ctrl.actionTitle = 'Error';
+        ctrl.actionMessage = 'The item code/name exists';
+      } else {
+        ctrl.actionTitle = 'Confirmation';
+        ctrl.actionMessage = 'You have successfully updated the list';
+        ctrl.getData(ctrl.currentPage);
+        ctrl.showAddFinishedGood(false);
+        ctrl.finishedgood = null;
+      }
+      $('#actionDialog').modal('show');
     });
   };
 
   ctrl.deleteFinishedGood = function (id) {
-    $('#confirmAction').modal('show');
-    FinishedGoodsService.delete(id).then(function (response) {
-      ctrl.getData(ctrl.currentPage);
-    });
+    console.log(id);
+    id = 9;
+    FinishedGoodsService.delete(id)
+      .then(function (response) {
+        ctrl.getData(ctrl.currentPage);
+        ctrl.actionTitle = 'Confirmation';
+        ctrl.actionMessage = 'You have successfully deleted the item';
+      })
+      .catch(function (error) {
+        ctrl.actionTitle = 'Error';
+        ctrl.actionMessage = 'The item was not deleted';
+      });
+
+    $('#confirmAction').modal('hide');
+    $('#actionDialog').modal('show');
   };
 }
 
