@@ -12,12 +12,12 @@ import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Client {
 	@Id
-    @GeneratedValue
-    private Long id;
+	@GeneratedValue
+	private Long id;
 	private String code;
 	private String name;
 	private String tin;
@@ -31,14 +31,35 @@ public class Client {
 	private ClusterCode clusterCode;
 	@OneToOne
 	private InstitutionalCode institutionalCode;
+	@OneToOne
+	private Depot depot;
+
 	private int terms;
 	private String status = "Active";
 	private Double maxCreditLimit;
 	private Double discount;
 	private int yearsInBusiness;
+	private String zipCode;
+	private String contactPeron;
 
 	public String getProprietor() {
 		return proprietor;
+	}
+
+	public String getContactPeron() {
+		return contactPeron;
+	}
+
+	public void setContactPeron(String contactPeron) {
+		this.contactPeron = contactPeron;
+	}
+
+	public String getZipCode() {
+		return this.zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
 	}
 
 	public void setProprietor(String proprietor) {
@@ -91,40 +112,52 @@ public class Client {
 
 	@OneToOne
 	private Company company;
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getTin() {
 		return tin;
 	}
+
 	public void setTin(String tin) {
 		this.tin = tin;
 	}
+
 	public Company getCompany() {
 		return company;
 	}
+
 	public void setCompany(Company company) {
 		this.company = company;
 	}
+
 	@Override
 	public String toString() {
 		return "Client [id=" + id + ", code=" + code + ", name=" + name + ", tin=" + tin + ", company=" + company + "]";
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -136,7 +169,6 @@ public class Client {
 		result = prime * result + ((tin == null) ? 0 : tin.hashCode());
 		return result;
 	}
-
 
 	public void setDeliveryAddress(String deliveryAddress) {
 		this.deliveryAddress = deliveryAddress;
@@ -168,6 +200,14 @@ public class Client {
 
 	public void setInstitutionalCode(InstitutionalCode institutionalCode) {
 		this.institutionalCode = institutionalCode;
+	}
+
+	public void setDepot(Depot depot) {
+		this.depot = depot;
+	}
+
+	public Depot getDepot() {
+		return depot;
 	}
 
 	public int getTerms() {
@@ -202,5 +242,4 @@ public class Client {
 		this.discount = discount;
 	}
 
-	
 }

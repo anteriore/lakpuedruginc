@@ -3,7 +3,7 @@ function ClientInformationFormController(
   ClusterCodesService,
   SalesRepsService,
   InstitutionalCodesService,
-  _
+  DepotsService
 ) {
   var ctrl = this;
 
@@ -13,6 +13,7 @@ function ClientInformationFormController(
   }
 
   ctrl.$onInit = function () {
+    console.log(this);
     ClusterCodesService.list().then(function (response) {
       ctrl.clusters = response.data;
     });
@@ -23,6 +24,16 @@ function ClientInformationFormController(
     InstitutionalCodesService.list().then(function (response) {
       ctrl.institutionalCodes = response.data;
     });
+
+    DepotsService.list().then(function (response) {
+      ctrl.depot = response.data;
+      console.log(ctrl.deliveryDepots);
+    });
+
+    ctrl.status = [
+      { value: 'Active', name: 'Active' },
+      { value: 'Not Active', name: 'Not Active' },
+    ];
   };
 
   ctrl.$onChanges = function (changes) {

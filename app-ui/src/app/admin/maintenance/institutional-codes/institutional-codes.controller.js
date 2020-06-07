@@ -1,4 +1,3 @@
-
 function InstitutionalCodeController($state, InstitutionalCodesService, _) {
   var ctrl = this;
   ctrl.institutionalCodes = [];
@@ -7,43 +6,43 @@ function InstitutionalCodeController($state, InstitutionalCodesService, _) {
   ctrl.sortType = 'id';
   ctrl.sortReverse = false;
   ctrl.institutionalCode = {};
-  
+
   ctrl.$onInit = function () {
-	  ctrl.addInstitutionalCode = false;
-	  ctrl.error = null;
-	  loadInstitutionalCodes();
+    ctrl.addInstitutionalCode = false;
+    ctrl.error = null;
+    loadInstitutionalCodes();
   };
-  
-  function loadInstitutionalCodes(){
-	  InstitutionalCodesService.list().then(function(response){
-		  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.institutionalCodes = response.data;
-	  });
+
+  function loadInstitutionalCodes() {
+    InstitutionalCodesService.list().then(function (response) {
+      console.log('list response: ' + JSON.stringify(response.data));
+      ctrl.institutionalCodes = response.data;
+    });
   }
-  
-  ctrl.showAddInstitutionalCode = function (show){
-	  ctrl.addInstitutionalCode = show;
+
+  ctrl.showAddInstitutionalCode = function (show) {
+    ctrl.addInstitutionalCode = show;
   };
-  
+
   ctrl.editInstitutionalCode = function (id) {
-	  InstitutionalCodesService.get(id).then(function(response){
-		  ctrl.institutionalCode = response.data;
-	  });
-	  ctrl.addInstitutionalCode = true;
+    InstitutionalCodesService.get(id).then(function (response) {
+      ctrl.institutionalCode = response.data;
+    });
+    ctrl.addInstitutionalCode = true;
   };
-  
+
   ctrl.saveInstitutionalCode = function () {
-	    InstitutionalCodesService.save(ctrl.institutionalCode).then(function () {
-	    	  loadInstitutionalCodes();
-	    	  ctrl.showAddInstitutionalCode(false);
-	    	  ctrl.institutionalCode = null;
-	    });
+    InstitutionalCodesService.save(ctrl.institutionalCode).then(function () {
+      loadInstitutionalCodes();
+      ctrl.showAddInstitutionalCode(false);
+      ctrl.institutionalCode = null;
+    });
   };
-  
-  ctrl.deleteInstitutionalCode = function (id){
-	  InstitutionalCodesService.delete(id).then(function(response){
-		  loadInstitutionalCodes();
-	  });
+
+  ctrl.deleteInstitutionalCode = function (id) {
+    InstitutionalCodesService.delete(id).then(function (response) {
+      loadInstitutionalCodes();
+    });
   };
 }
 

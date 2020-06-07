@@ -81,7 +81,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr dir-paginate="c in $ctrl.clients | itemsPerPage: $ctrl.clientsPerPage" total-items="$ctrl.totalClients" current-page="$ctrl.pagination.current"  >
+			<tr dir-paginate="c in $ctrl.clients | itemsPerPage: $ctrl.clientsPerPage | orderBy:$ctrl.sortType:$ctrl.sortReverse" total-items="$ctrl.totalClients" current-page="$ctrl.pagination.current"  >
 				<td>{{c.code}}</td>
 				<td>{{c.name}}</td>
                 <td>{{c.tin}}</td>

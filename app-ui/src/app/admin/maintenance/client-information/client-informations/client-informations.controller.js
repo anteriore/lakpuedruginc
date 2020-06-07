@@ -2,7 +2,9 @@ function ClientInformationsController($state, $rootScope, _, ClientsService) {
   var ctrl = this;
   ctrl.clientInformations = [];
   ctrl.totalClients = 0;
-  ctrl.clientsPerPage = 1;
+  ctrl.clientsPerPage = 5;
+  ctrl.sortType = 'code';
+  ctrl.sortReverse = false;
 
   ctrl.company = $rootScope.selectedCompany;
   getResultsPage(1);
@@ -22,14 +24,11 @@ function ClientInformationsController($state, $rootScope, _, ClientsService) {
       ctrl.clientsPerPage,
       pageNumber - 1
     ).then(function (result) {
-      console.log(result.data);
+      console.log('hi', result.data);
       ctrl.clients = result.data.content;
-      ctrl.totalClients = 3;
+      ctrl.totalClients = result.data.totalElements;
     });
   }
-
-  ctrl.sortType = 'name';
-  ctrl.sortReverse = false;
 
   ctrl.$onInit = function () {
     ctrl.addPurchaseRequest = false;

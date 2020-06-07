@@ -50,6 +50,31 @@
 				</div>
 			</div>
 
+			
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">contactPeron</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.contactPeron" />
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">zipCode</label>
+								<input type="text" class="form-control -border" ng-model="$ctrl.client.zipCode" />
+							</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+
 			<div class="step-form">
 				<div class="horizontal-align -between">
 					<div class="side-one">
@@ -163,6 +188,32 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="step-form">
+				<div class="horizontal-align -between">
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Delivery Depot</label>
+								<select class="form-control select -border" ng-model="$ctrl.client.depot.id" ng-options="i.id as i.name for i in $ctrl.depot" >
+								</select>
+							</div>
+						</div>
+					</div>
+					
+					<div class="side-one">
+						<div class="horizontal-align -between content">
+							<div class="form-group field">
+								<label class="label capitalize-text">Status</label>
+								<select class="form-control select -border" ng-model="$ctrl.client.status" ng-options="i.value as i.name for i in $ctrl.status" >
+								</div>
+						</div>
+					</div>
+					
+					</div>
+				</div>
+			</div>
+			
 
 			<div class="step-form">
 				<div class="horizontal-align -between">

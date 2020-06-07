@@ -19,21 +19,22 @@ function ClientInformationEditController(
   ctrl.edit = function (event) {
     ctrl.client = event;
     var client = JSON.parse(JSON.stringify(event.client));
+    console.log(client, 'EDIT');
     $('#confirmAction').modal('hide');
+    $('#confirmAction').detach();
     ClientsService.update(client).then(function () {
       $state.go('client-informations');
     });
   };
 
   ctrl.confirmEdit = function (event) {
-    console.log(event);
     ctrl.event = event;
-    $('#confirmAction').modal('show');
-    $('#confirmAction').appendTo('body');
+    $('#confirmAction').appendTo('body').modal('show');
   };
 
   ctrl.cancel = function () {
     $('#confirmAction').modal('hide');
+    $('#confirmAction').detach();
   };
 }
 

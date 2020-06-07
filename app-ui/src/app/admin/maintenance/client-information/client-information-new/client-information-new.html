@@ -19,7 +19,7 @@
   client="$ctrl.client"
   message="{{ $ctrl.error }}"
   button="Create Client"
-  on-submit="$ctrl.createClient($event);"
+  on-submit="$ctrl.confirmCreate($event);"
 >
 </client-information-form>
 
@@ -36,7 +36,7 @@
         <p>Are you sure you want to add this client?</p>
         <button
           class="button-link btn btn-create btn-sm"
-          ng-click="$ctrl.addClient($ctrl.newClient);"
+          ng-click="$ctrl.addClient($ctrl.event);"
         >
           Confirm
         </button>
