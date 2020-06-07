@@ -1,23 +1,52 @@
 <div class="main-header">
-    <div class="horizontal-align -between content">
-      <h3 class="title">
-        Vendor Form
-      </h3>
+  <div class="horizontal-align -between content">
+    <h3 class="title">
+      Vendor Form
+    </h3>
+  </div>
+</div>
+<header class="header-form">
+  <a href="/admin/maintenance/vendor" class="btn btn-back back">
+    <i class="ion-ios-arrow-thin-left"></i>
+    <span>Back</span>
+  </a>
+  <span class="divider"></span>
+  <h3 class="heading">
+    New Vendor Form
+  </h3>
+</header>
+<vendor-form
+  vendor="$ctrl.vendor"
+  message="{{ $ctrl.error }}"
+  button="Create Vendor"
+  on-submit="$ctrl.confirmCreate($event);"
+>
+</vendor-form>
+
+<div class="modal fade" id="confirmAction">
+  <div class="modal-dialog -bg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Confirm Action
+        </h4>
+        <button class="close" data-dismiss="modal" type="button"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to add this client?</p>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.addVendor($ctrl.event);"
+        >
+          Confirm
+        </button>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.cancel();"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   </div>
-  <header class="header-form">
-    <a href="/admin/maintenance/vendor" class="btn btn-back back">
-      <i class="ion-ios-arrow-thin-left"></i>
-      <span>Back</span>
-    </a>
-    <span class="divider"></span>
-    <h3 class="heading">
-      New Vendor Form
-    </h3>
-  </header>
-  <vendor-form
-              vendor="$ctrl.vendor"
-              message="{{ $ctrl.error }}"
-              button="Create Vendor"
-              on-submit="$ctrl.createVendor($event);">
-  </vendor-form>
+</div>

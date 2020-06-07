@@ -156,11 +156,36 @@
 		</div>
 
 			
+		<div class="step-form">
+			<div class="horizontal-align -between">
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Type</label>
+							<select class="form-control select -border" ng-model="$ctrl.vendor.type" ng-options="i.value as i.name for i in $ctrl.type" >
+							</select>
+						</div>
+					</div>
+				</div>
+				
+				<div class="side-one">
+					<div class="horizontal-align -between content">
+						<div class="form-group field">
+							<label class="label capitalize-text">Status</label>
+							<select class="form-control select -border" ng-model="$ctrl.vendor.isActive" ng-options="i.value as i.name for i in $ctrl.isActive" >
+							</div>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+		</div>
 		
 	</div>
 		<div class="request-action">
 				<button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button>
-			</div>
+		</div>
+		
 </div>
 
 </form>

@@ -14,6 +14,9 @@ function ClientInformationNewController($state, ClientsService, $rootScope) {
     ctrl.event = event;
     $('#confirmAction').appendTo('body').modal('show');
   };
+  ctrl.cancel = function () {
+    $('#confirmAction').modal('hide');
+  };
 
   ctrl.addClient = function (event) {
     ctrl.client = event;

@@ -1,23 +1,58 @@
 <div class="action-link">
-    <a class="link" href="/admin/maintenance/vendor">Vendor Informations</a>
-    <span class="devider">/</span>
-    <a class="link" href="/admin/maintenance/vendor/edit">EDIT Vendor Information</a>
+  <a class="link" href="/admin/maintenance/vendor">Vendor Informations</a>
+  <span class="devider">/</span>
+  <a class="link" href="/admin/maintenance/vendor/edit"
+    >EDIT Vendor Information</a
+  >
 </div>
 <div class="user-panel">
-    <div class="content horizontal-align -between">
-        <label class="caption">EDIT Vendor Information</label>
-        <header>
-            <a class="btn btn-back back" id="btn-back-action" href="/admin/maintenance/vendor">
-                <i class="ion-ios-arrow-thin-left"></i>
-                <span>Cancel</span>
-            </a>
-        </header>
+  <div class="content horizontal-align -between">
+    <label class="caption">EDIT Vendor Information</label>
+    <header>
+      <a
+        class="btn btn-back back"
+        id="btn-back-action"
+        href="/admin/maintenance/vendor"
+      >
+        <i class="ion-ios-arrow-thin-left"></i>
+        <span>Cancel</span>
+      </a>
+    </header>
+  </div>
+  <hr class="devider" />
+  <vendor-form
+    vendor="$ctrl.vendor"
+    message="{{ $ctrl.error }}"
+    button="Edit user"
+    on-submit="$ctrl.confirmEdit($event);"
+  >
+  </vendor-form>
+</div>
+
+<div class="modal fade" id="confirmAction">
+  <div class="modal-dialog -bg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Confirm Action
+        </h4>
+        <button class="close" data-dismiss="modal" type="button"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to save changes done?</p>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.edit($ctrl.event);"
+        >
+          Confirm
+        </button>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.cancel();"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
-    <hr class="devider">
-    <vendor-form
-        vendor="$ctrl.vendor"
-        message="{{ $ctrl.error }}" 
-        button="Edit user" 
-        on-submit="$ctrl.edit($event);">
-    </vendor-form>
+  </div>
 </div>

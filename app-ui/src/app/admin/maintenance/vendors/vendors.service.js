@@ -28,7 +28,7 @@ function VendorsService($http, globalConfig) {
         itemsPerPage +
         '/' +
         offset +
-        '/company/' +
+        '/' +
         companyId
     );
   };

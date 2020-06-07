@@ -34,7 +34,6 @@ function ClientInformationEditController(
 
   ctrl.cancel = function () {
     $('#confirmAction').modal('hide');
-    $('#confirmAction').detach();
   };
 }
 
