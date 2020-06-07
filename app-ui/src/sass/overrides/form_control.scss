@@ -13,9 +13,13 @@
     border-radius: $border-radius-base;
     color: $greyish-brown;
     background-color: $white-two;
+    -moz-appearance: none;
+    /* for Chrome */
+    -webkit-appearance: none;
     &:focus {
       border-color: $dusk;
-      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px darken($dusk, 2%);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 8px darken($dusk, 2%);
     }
   }
 }

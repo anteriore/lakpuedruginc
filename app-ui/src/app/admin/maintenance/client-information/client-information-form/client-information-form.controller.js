@@ -42,6 +42,7 @@ function ClientInformationFormController(
   };
 
   ctrl.submitForm = function () {
+    console.log('test');
     ctrl.onSubmit({
       $event: {
         client: ctrl.client,

@@ -93,15 +93,35 @@
 						<button class='btn btn-compose'>
 							<i class='ion-ios-compose-outline'  data-toggle="modal" ng-click="$ctrl.goToEdit(c.id)"></i>
 						</button>
-						<button class='btn btn-archive' ng-click="">
+						<!-- <button class='btn btn-archive' ng-click="$ctrl.confirmDelete(c.id)">
 							<i class='ion-android-close'></i>
-						</button>
+						</button> -->
 					</div>
 				</td>
 			</tr>
 		</tbody>
     </table>
     <dir-pagination-controls direction-links="true" auto-hide="false" on-page-change="$ctrl.pageChanged(newPageNumber)"></dir-pagination-controls>
-	
+    
+<!--     
+    <div class='modal fade' id='confirmDeleteAction'>
+		<div class="modal-dialog -bg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					Confirm Action
+				</h4>
+				<button class="close" data-dismiss="modal" type="button">
+				</button>
+			</div>
+			<div class="modal-body">
+				<p>{{$ctrl.itemName}}?</p>
+				<button class="button-link btn btn-create btn-sm" ng-click="$ctrl.deleteFinishedGood($ctrl.id);">Confirm</button>
+				<button class="button-link btn btn-create btn-sm" ng-click="$ctrl.cancelDelete();">Cancel</button>
+			</div>
+			</div>
+		</div>
+    </div> -->
+    
 </div>
 

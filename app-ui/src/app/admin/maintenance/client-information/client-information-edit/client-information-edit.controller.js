@@ -17,6 +17,7 @@ function ClientInformationEditController(
   };
 
   ctrl.edit = function (event) {
+    ctrl.client = event;
     var client = JSON.parse(JSON.stringify(event.client));
     $('#confirmAction').modal('hide');
     ClientsService.update(client).then(function () {
@@ -26,7 +27,7 @@ function ClientInformationEditController(
 
   ctrl.confirmEdit = function (event) {
     console.log(event);
-    ctrl.client = event;
+    ctrl.event = event;
     $('#confirmAction').modal('show');
     $('#confirmAction').appendTo('body');
   };
