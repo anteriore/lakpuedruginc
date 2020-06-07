@@ -58,7 +58,7 @@
                     </a>
                 </th>
                 <th>
-                    <a href="#" ng-click="$ctrl.sortType = 'businessAddress';$ctrl.sortReverse = !$ctrl.sortReverse;">businessAddress
+                    <a href="#" ng-click="$ctrl.sortType = 'businessAddress';$ctrl.sortReverse = !$ctrl.sortReverse;">zipCode
                         <span ng-show="$ctrl.sortType == 'businessAddress' && !$ctrl.sortReverse">
                             <i class="fa fa-caret-down"></i>
                         </span>
@@ -68,7 +68,7 @@
                     </a>
                 </th>
                 <th>
-                    <a href="#" ng-click="$ctrl.sortType = 'lineOfBusiness';$ctrl.sortReverse = !$ctrl.sortReverse;">lineOfBusiness
+                    <a href="#" ng-click="$ctrl.sortType = 'lineOfBusiness';$ctrl.sortReverse = !$ctrl.sortReverse;">status
                         <span ng-show="$ctrl.sortType == 'lineOfBusiness' && !$ctrl.sortReverse">
                             <i class="fa fa-caret-down"></i>
                         </span>
@@ -86,8 +86,8 @@
 				<td>{{c.name}}</td>
                 <td>{{c.tin}}</td>
                 <td>{{c.proprietor}}</td>
-                <td>{{c.businessAddress}}</td>
-                <td>{{c.lineOfBusiness}}</td>
+                <td>{{c.zipCode}}</td>
+                <td>{{c.status}}</td>
 				<td class='tablebutton-form'>
 					<div class='holder'>
 						<button class='btn btn-compose'>
