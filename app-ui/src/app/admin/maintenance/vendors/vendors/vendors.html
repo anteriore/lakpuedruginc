@@ -80,7 +80,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="c in $ctrl.vendors | filter: {name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"  >
+			<tr  dir-paginate="c in $ctrl.vendors | filter: {name: $ctrl.searchName}| itemsPerPage: $ctrl.itemsPerPage | orderBy:$ctrl.sortType:$ctrl.sortReverse" total-items="$ctrl.totalCount" >
 				<td>{{c.code}}</td>
 				<td>{{c.name}}</td>
                 <td>{{c.tin}}</td>
@@ -95,7 +95,9 @@
 					</div>
 				</td>
 			</tr>
-		</tbody>
-	</table>	
+        </tbody>
+        <dir-pagination-controls style="float:right; padding-right:10px;" direction-links="true" auto-hide="true" on-page-change="$ctrl.pageChanged(newPageNumber)"></dir-pagination-controls>
+    </table>	
+
 </div>
 

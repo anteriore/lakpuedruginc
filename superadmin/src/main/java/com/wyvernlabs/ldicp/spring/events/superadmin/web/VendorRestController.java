@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Company;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Vendor;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.VendorRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.helper.OffsetBasedPageRequest;
 
 @RestController
 @RequestMapping("rest/vendors")
@@ -23,7 +26,7 @@ public class VendorRestController {
 
 	private VendorRepository vendorRepository;
 	private CompanyRepository companyRepository;
-	
+
 	public VendorRestController(VendorRepository vendorRepository, CompanyRepository companyRepository) {
 		this.vendorRepository = vendorRepository;
 		this.companyRepository = companyRepository;
@@ -49,10 +52,19 @@ public class VendorRestController {
 		Company company = companyRepository.findOne(companyId);
 		return vendorRepository.findByCompany(company);
 	}
-	
+
 	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
 		vendorRepository.delete(id);
 		return true;
 	}
+
+	@GetMapping("/paginate/{itemsPerPage}/{offset}/{companyId}")
+	public Page<Vendor> paginate(@PathVariable("itemsPerPage") Integer itemsPerPage,
+			@PathVariable("offset") Integer offset, @PathVariable Long companyId) {
+		Company company = companyRepository.findOne(companyId);
+		Pageable pageable = new OffsetBasedPageRequest(offset, itemsPerPage);
+		return vendorRepository.findByCompany(company, pageable);
+	}
+
 }
