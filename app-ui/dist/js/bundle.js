@@ -27,15 +27,23 @@ angular
  **/
 
 angular
-  .module('admin', [
-    'admin.dashboard',
-    'admin.users',
-    'admin.rnd',
-    'admin.config',
-    'admin.purchasing',
-    'admin.shared',
-    'admin.accounting',
-    'admin.sales'
+  .module('layout', [
+    'admin.common'
+  ]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+
+/**
+ *
+ * @ngdoc module
+ * @name app.services
+ *
+ **/
+ angular
+  .module('services', [
+    'ui.router'
   ]);
 })(window.angular);
 (function(angular){
@@ -56,8 +64,15 @@ angular
  **/
 
 angular
-  .module('layout', [
-    'admin.common'
+  .module('admin', [
+    'admin.dashboard',
+    'admin.users',
+    'admin.rnd',
+    'admin.config',
+    'admin.purchasing',
+    'admin.shared',
+    'admin.accounting',
+    'admin.sales'
   ]);
 })(window.angular);
 (function(angular){
@@ -67,13 +82,28 @@ angular
 /**
  *
  * @ngdoc module
- * @name app.services
+ * @name admin.common
+ *
+ * @requires ui.router
+ * @requires angular-loading-bar
+ *
+ * @description
+ *
+ * This is the admin.common module. It includes a run method that setups the loading bar.
  *
  **/
  angular
-  .module('services', [
-    'ui.router'
-  ]);
+  .module('admin.common', [
+    'ui.router',
+    'angular-loading-bar',
+    'ngCookies',
+    'checklist-model',
+    'angularUtils.directives.dirPagination'
+  ])
+   .run(["$transitions", "cfpLoadingBar", function ($transitions, cfpLoadingBar) {
+     $transitions.onStart({}, cfpLoadingBar.start);
+     $transitions.onSuccess({}, cfpLoadingBar.complete);
+   }]);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -137,6 +167,16 @@ angular
   ]);})(window.angular);
 (function(angular){
 'use strict';
+angular
+  .module('admin.sales', [
+    'ui.router',
+    'admin.shared',
+    'admin.dashboard',
+    'admin.accounting',
+    'admin.maintenance'
+  ]);})(window.angular);
+(function(angular){
+'use strict';
 
 /**
  *
@@ -153,16 +193,6 @@ angular
 angular
   .module('admin.rnd', [
     'ui.router'
-  ]);})(window.angular);
-(function(angular){
-'use strict';
-angular
-  .module('admin.sales', [
-    'ui.router',
-    'admin.shared',
-    'admin.dashboard',
-    'admin.accounting',
-    'admin.maintenance'
   ]);})(window.angular);
 (function(angular){
 'use strict';
@@ -203,36 +233,6 @@ angular
   .module('admin.shared', [
     'ui.router'
   ]);})(window.angular);
-(function(angular){
-'use strict';
-
-
-/**
- *
- * @ngdoc module
- * @name admin.common
- *
- * @requires ui.router
- * @requires angular-loading-bar
- *
- * @description
- *
- * This is the admin.common module. It includes a run method that setups the loading bar.
- *
- **/
- angular
-  .module('admin.common', [
-    'ui.router',
-    'angular-loading-bar',
-    'ngCookies',
-    'checklist-model',
-    'angularUtils.directives.dirPagination'
-  ])
-   .run(["$transitions", "cfpLoadingBar", function ($transitions, cfpLoadingBar) {
-     $transitions.onStart({}, cfpLoadingBar.start);
-     $transitions.onSuccess({}, cfpLoadingBar.complete);
-   }]);
-})(window.angular);
 (function(angular){
 'use strict';
 var root = {
@@ -364,6 +364,229 @@ function AuthService($http, globalConfig) {
  */
 angular.module('services').service('AuthService', AuthService);
 })(window.angular);
+(function(angular){
+'use strict';
+PermissionsService.$inject = ["$http", "globalConfig"];
+function PermissionsService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/permissions');
+	};
+
+	this.save = function(permission) {
+		return $http.post(globalConfig.baseUrl + '/rest/permissions', permission);
+	};
+
+	this.update = function(permission) {
+		return $http.post(globalConfig.baseUrl + '/rest/permissions/', permission);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/permissions/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/permissions/delete/', id);
+	};
+}
+
+/**
+ * @ngdoc service
+ * @name PermissionsService
+ * @module services
+ *
+ */
+angular.module('services').service('PermissionsService', PermissionsService);
+})(window.angular);
+(function(angular){
+'use strict';
+
+
+var appNav = {
+  templateUrl: './app-nav.html',
+  controller: 'AppNavController'
+};
+
+angular
+  .module('admin.common')
+  .component('appNav', appNav);})(window.angular);
+(function(angular){
+'use strict';
+
+
+AppNavController.$inject = ["globalConfig", "$http", "$rootScope"];
+function AppNavController(globalConfig, $http, $rootScope) {
+    var ctrl = this;
+
+    ctrl.currentUser = { firstName: "Unknown user", department: { name: 'No ' } };
+
+    ctrl.$onInit = function () {
+        var currentUser = localStorage.getItem('currentUser');
+        if (currentUser != null) {
+            ctrl.currentUser = JSON.parse(currentUser);
+        }
+    }
+
+    
+
+    ctrl.logout = function() {
+      $rootScope.logout();
+    }
+};
+
+/**
+ * @ngdoc type
+ * @module admin.common
+ * @name AppController
+ *
+ */
+angular
+  .module('admin.common')
+  .controller('AppNavController', AppNavController);})(window.angular);
+(function(angular){
+'use strict';
+var appSidenav = {
+  templateUrl: './app-sidenav.html',
+  controller: 'AppSideNavController'
+};
+
+angular
+  .module('admin.common')
+  .component('appSidenav', appSidenav);
+})(window.angular);
+(function(angular){
+'use strict';
+
+
+AppSideNavController.$inject = ["$state", "$rootScope"];
+function AppSideNavController($state, $rootScope) {
+    var ctrl = this;
+
+    ctrl.isPageWithSubMenu = false;
+    ctrl.currentUser = { firstName: "Unknown user", department: { name: 'No ' } };
+
+    ctrl.$onInit = function () {
+        var currentUser = localStorage.getItem('currentUser');
+        if (currentUser != null) {
+            ctrl.currentUser = JSON.parse(currentUser);
+        }
+    }
+
+    var checkPermission = function (code) {
+        if (ctrl.currentUser.permissions[code]) {
+            if (ctrl.currentUser.permissions[code].actions !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    ctrl.showTabs = function (page) {
+        if (checkPermission('superadmin')) {
+            return true;
+        }
+
+        switch (page) {
+            case 'DASHBOARD':
+                return true;
+                break;
+            case 'USERS':
+                return checkPermission('admin-dac') || checkPermission('admin-gc');
+                break;
+            case 'MMD':
+                return checkPermission('mmd-p') || checkPermission('mmd-r');
+                break;
+            case 'RND':
+                return checkPermission('rnd-recipe') || checkPermission('rnd-report') || checkPermission('rnd-items');
+                break;
+            case 'PURCHASING':
+                return checkPermission('purchasing-po') || checkPermission('purchasing-r') || checkPermission('purchasing-v');
+                break;
+            case 'BUILDING1':
+                return checkPermission('building1-jo') || checkPermission('building1-r');
+                break;
+            default:
+                return false;
+        }
+    }
+
+
+    ctrl.navList = {
+        "/admin/dashboard": { withSub: false },
+        "/admin/users": { withSub: false },
+        "/admin/mmd": { withSub: false },
+        "/admin/rnd": { withSub: true },
+        "/admin/purchasing": { withSub: false },
+        "/admin/costing": { withSub: false },
+        "/admin/job_order": { withSub: false },
+        "/admin/accounting": {withSub: false},
+        "/admin/sales": {withSub: false},
+        "/admin/maintenance": {withSub: false}
+
+    }
+
+    ctrl.getPathname = function () {
+        return window.location.pathname;
+    }
+
+    ctrl.checkSub = function (location) {
+        console.log('checkSub: ' + location);
+        ctrl.isPageWithSubMenu = ctrl.navList[location].withSub;
+    }
+
+};
+
+/**
+ * @ngdoc type
+ * @module admin.common
+ * @name AppController
+ *
+ */
+angular
+    .module('admin.common')
+    .controller('AppSideNavController', AppSideNavController);})(window.angular);
+(function(angular){
+'use strict';
+
+var app = {
+  templateUrl: './app.html',
+  controller: 'AppController'
+};
+
+/**
+ * @ngdoc directive
+ * @name app
+ * @module admin.common
+ *
+ **/
+angular
+  .module('admin.common')
+  .component('app', app);})(window.angular);
+(function(angular){
+'use strict';
+
+
+AppController.$inject = ["globalConfig", "$http"];
+function AppController(globalConfig, $http) {
+    var ctrl = this;
+    ctrl.appVersion = globalConfig.version;
+    ctrl.superadminServerVersion = "offline";
+    $http.get(globalConfig.baseUrl + '/version').then(function(response) {
+        console.log("server version response: " + response.data.version);
+        ctrl.superadminServerVersion = response.data.version;
+    });
+};
+
+/**
+ * @ngdoc type
+ * @module admin.common
+ * @name AppController
+ *
+ */
+angular
+  .module('admin.common')
+  .controller('AppController', AppController);})(window.angular);
 (function(angular){
 'use strict';
 PermissionsService.$inject = ["$http", "globalConfig"];
@@ -618,6 +841,60 @@ angular
   .controller('MaintenanceController', MaintenanceController);})(window.angular);
 (function(angular){
 'use strict';
+
+var sales = {
+  bindings: {
+    sales: '<'
+  },
+  templateUrl: './sales.html',
+  controller: 'SalesController'
+};
+
+angular
+  .module('admin.sales')
+  .component('sales', sales)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('sales', {
+        parent: 'app',
+        url: '/admin/sales',
+        component: 'sales'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+
+SalesController.$inject = ["$state", "CompanyService", "$rootScope"];
+function SalesController($state, CompanyService, $rootScope) {
+  var ctrl = this;
+
+  ctrl.currentUser = { firstName: "Unknown user", department: { name: 'No ' } };
+
+  ctrl.$onInit = function () {
+      var currentUser = localStorage.getItem('currentUser');
+      if (currentUser != null) {
+          ctrl.currentUser = JSON.parse(currentUser);
+      }
+  }
+
+  ctrl.checkPermission = function (code) {
+    if (ctrl.currentUser.permissions[code]) {
+        if (ctrl.currentUser.permissions[code].actions !== '') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+}
+
+angular
+  .module('admin.dashboard')
+  .controller('SalesController', SalesController);})(window.angular);
+(function(angular){
+'use strict';
 RecipesService.$inject = ["$http", "globalConfig"];
 function RecipesService($http, globalConfig) {
 
@@ -693,60 +970,6 @@ function RndController($state, _) {
     .module('admin.rnd')
     .controller('RndController', RndController);
   })(window.angular);
-(function(angular){
-'use strict';
-
-var sales = {
-  bindings: {
-    sales: '<'
-  },
-  templateUrl: './sales.html',
-  controller: 'SalesController'
-};
-
-angular
-  .module('admin.sales')
-  .component('sales', sales)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('sales', {
-        parent: 'app',
-        url: '/admin/sales',
-        component: 'sales'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-
-SalesController.$inject = ["$state", "CompanyService", "$rootScope"];
-function SalesController($state, CompanyService, $rootScope) {
-  var ctrl = this;
-
-  ctrl.currentUser = { firstName: "Unknown user", department: { name: 'No ' } };
-
-  ctrl.$onInit = function () {
-      var currentUser = localStorage.getItem('currentUser');
-      if (currentUser != null) {
-          ctrl.currentUser = JSON.parse(currentUser);
-      }
-  }
-
-  ctrl.checkPermission = function (code) {
-    if (ctrl.currentUser.permissions[code]) {
-        if (ctrl.currentUser.permissions[code].actions !== '') {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('SalesController', SalesController);})(window.angular);
 (function(angular){
 'use strict';
 CompanyService.$inject = ["$http", "globalConfig"];
@@ -908,227 +1131,110 @@ angular.module('admin.shared').service('ConversionHelper', ConversionHelper);
 })(window.angular);
 (function(angular){
 'use strict';
-
-
-var appNav = {
-  templateUrl: './app-nav.html',
-  controller: 'AppNavController'
+var searchForm = {
+  bindings: {
+    search: '=',
+    placeholder: '@',
+    button: '@',
+    message: '@',
+    onSubmit: '&',
+  },
+  templateUrl: './app-searchbox.html',
+  controller: 'SearchBoxFormController'
 };
 
 angular
   .module('admin.common')
-  .component('appNav', appNav);})(window.angular);
-(function(angular){
-'use strict';
-
-
-AppNavController.$inject = ["globalConfig", "$http", "$rootScope"];
-function AppNavController(globalConfig, $http, $rootScope) {
-    var ctrl = this;
-
-    ctrl.currentUser = { firstName: "Unknown user", department: { name: 'No ' } };
-
-    ctrl.$onInit = function () {
-        var currentUser = localStorage.getItem('currentUser');
-        if (currentUser != null) {
-            ctrl.currentUser = JSON.parse(currentUser);
-        }
-    }
-
-    
-
-    ctrl.logout = function() {
-      $rootScope.logout();
-    }
-};
-
-/**
- * @ngdoc type
- * @module admin.common
- * @name AppController
- *
- */
-angular
-  .module('admin.common')
-  .controller('AppNavController', AppNavController);})(window.angular);
-(function(angular){
-'use strict';
-var appSidenav = {
-  templateUrl: './app-sidenav.html',
-  controller: 'AppSideNavController'
-};
-
-angular
-  .module('admin.common')
-  .component('appSidenav', appSidenav);
+  .component('searchForm', searchForm);
 })(window.angular);
 (function(angular){
 'use strict';
 
-
-AppSideNavController.$inject = ["$state", "$rootScope"];
-function AppSideNavController($state, $rootScope) {
-    var ctrl = this;
-
-    ctrl.isPageWithSubMenu = false;
-    ctrl.currentUser = { firstName: "Unknown user", department: { name: 'No ' } };
-
-    ctrl.$onInit = function () {
-        var currentUser = localStorage.getItem('currentUser');
-        if (currentUser != null) {
-            ctrl.currentUser = JSON.parse(currentUser);
-        }
+SearchBoxFormController.$inject = ["$state"];
+function SearchBoxFormController($state) {
+  var ctrl = this;
+  ctrl.$onChanges = function (changes) {
+    if (changes.search) {
+      ctrl.search = angular.copy(ctrl.search);
     }
+  };
 
-    var checkPermission = function (code) {
-        if (ctrl.currentUser.permissions[code]) {
-            if (ctrl.currentUser.permissions[code].actions !== '') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    ctrl.showTabs = function (page) {
-        if (checkPermission('superadmin')) {
-            return true;
-        }
-
-        switch (page) {
-            case 'DASHBOARD':
-                return true;
-                break;
-            case 'USERS':
-                return checkPermission('admin-dac') || checkPermission('admin-gc');
-                break;
-            case 'MMD':
-                return checkPermission('mmd-p') || checkPermission('mmd-r');
-                break;
-            case 'RND':
-                return checkPermission('rnd-recipe') || checkPermission('rnd-report') || checkPermission('rnd-items');
-                break;
-            case 'PURCHASING':
-                return checkPermission('purchasing-po') || checkPermission('purchasing-r') || checkPermission('purchasing-v');
-                break;
-            case 'BUILDING1':
-                return checkPermission('building1-jo') || checkPermission('building1-r');
-                break;
-            default:
-                return false;
-        }
-    }
-
-
-    ctrl.navList = {
-        "/admin/dashboard": { withSub: false },
-        "/admin/users": { withSub: false },
-        "/admin/mmd": { withSub: false },
-        "/admin/rnd": { withSub: true },
-        "/admin/purchasing": { withSub: false },
-        "/admin/costing": { withSub: false },
-        "/admin/job_order": { withSub: false },
-        "/admin/accounting": {withSub: false},
-        "/admin/sales": {withSub: false},
-        "/admin/maintenance": {withSub: false}
-
-    }
-
-    ctrl.getPathname = function () {
-        return window.location.pathname;
-    }
-
-    ctrl.checkSub = function (location) {
-        console.log('checkSub: ' + location);
-        ctrl.isPageWithSubMenu = ctrl.navList[location].withSub;
-    }
-
-};
-
-/**
- * @ngdoc type
- * @module admin.common
- * @name AppController
- *
- */
-angular
-    .module('admin.common')
-    .controller('AppSideNavController', AppSideNavController);})(window.angular);
-(function(angular){
-'use strict';
-
-var app = {
-  templateUrl: './app.html',
-  controller: 'AppController'
-};
-
-/**
- * @ngdoc directive
- * @name app
- * @module admin.common
- *
- **/
-angular
-  .module('admin.common')
-  .component('app', app);})(window.angular);
-(function(angular){
-'use strict';
-
-
-AppController.$inject = ["globalConfig", "$http"];
-function AppController(globalConfig, $http) {
-    var ctrl = this;
-    ctrl.appVersion = globalConfig.version;
-    ctrl.superadminServerVersion = "offline";
-    $http.get(globalConfig.baseUrl + '/version').then(function(response) {
-        console.log("server version response: " + response.data.version);
-        ctrl.superadminServerVersion = response.data.version;
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.search));
+    ctrl.onSubmit({
+      $event: {
+    	  search: ctrl.search
+      }
     });
-};
-
-/**
- * @ngdoc type
- * @module admin.common
- * @name AppController
- *
- */
-angular
-  .module('admin.common')
-  .controller('AppController', AppController);})(window.angular);
-(function(angular){
-'use strict';
-PermissionsService.$inject = ["$http", "globalConfig"];
-function PermissionsService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/permissions');
-	};
-
-	this.save = function(permission) {
-		return $http.post(globalConfig.baseUrl + '/rest/permissions', permission);
-	};
-
-	this.update = function(permission) {
-		return $http.post(globalConfig.baseUrl + '/rest/permissions/', permission);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/permissions/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/permissions/delete/', id);
-	};
+  };
 }
 
+angular
+  .module('admin.common')
+  .controller('SearchBoxFormController', SearchBoxFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var login = {
+  bindings: {
+  },
+  templateUrl: './login.html',
+  controller: 'LoginController'
+};
+
+angular
+  .module('admin.common')
+  .component('login', login)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('login', {
+        url: '/login',
+        component: 'login'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+
+LoginController.$inject = ["$state", "$rootScope", "$cookieStore", "AuthService", "UsersService"];
+function LoginController($state, $rootScope, $cookieStore, AuthService, UsersService) {
+    var ctrl = this;
+
+    ctrl.email = 'katharine@yahoo.com';
+    ctrl.password = 'test';
+
+    ctrl.login = function() {
+      console.log("login: " + ctrl.email);
+      AuthService.authenticate(ctrl.email, ctrl.password).then(function(response) {
+        console.log("LOGIN.response: " + JSON.stringify(response));
+        if (response.data) {
+          $rootScope.accessToken = response.data.token;
+          $cookieStore.put('accessToken', response.data.token);
+          
+          UsersService.me().then(function(response) {
+            console.log("### UsersService.me: " + JSON.stringify(response.data));
+            $rootScope.user = response.data;
+            localStorage.setItem('currentUser', JSON.stringify($rootScope.user));
+            $state.go('dashboard');
+          });
+        } else {
+          console.log("####  FAILED TO LOGIN");
+        }
+        
+      });
+    }
+};
+
 /**
- * @ngdoc service
- * @name PermissionsService
- * @module services
+ * @ngdoc type
+ * @module admin.common
+ * @name AppController
  *
  */
-angular.module('services').service('PermissionsService', PermissionsService);
-})(window.angular);
+angular
+  .module('admin.common')
+  .controller('LoginController', LoginController);})(window.angular);
 (function(angular){
 'use strict';
 
@@ -1261,6 +1367,49 @@ angular.module('admin.accounting').service('ChequePrintingsService', ChequePrint
 })(window.angular);
 (function(angular){
 'use strict';
+DebitMemosService.$inject = ["$http", "globalConfig"];
+function DebitMemosService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/debit-memos');
+	};
+
+	this.save = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/debit-memos', client);
+	};
+
+	this.update = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/debit-memos/', client);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/debit-memos/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/debit-memos/delete/',id);
+	};
+	
+	this.listByCompany = function(companyId) {
+		return $http.get(globalConfig.baseUrl + '/rest/debit-memos/company/'+ companyId);
+	};
+	
+	this.listByDepot = function(depotId) {
+		return $http.get(globalConfig.baseUrl + '/rest/debit-memos/depot/'+ depotId);
+	};
+	
+}
+
+/**
+ * @ngdoc service
+ * @name DebitMemosService
+ * @module components.auth
+ *
+ */
+angular.module('admin.accounting').service('DebitMemosService', DebitMemosService);
+})(window.angular);
+(function(angular){
+'use strict';
 CreditMemosService.$inject = ["$http", "globalConfig"];
 function CreditMemosService($http, globalConfig) {
 
@@ -1305,49 +1454,6 @@ function CreditMemosService($http, globalConfig) {
  *
  */
 angular.module('admin.accounting').service('CreditMemosService', CreditMemosService);
-})(window.angular);
-(function(angular){
-'use strict';
-DebitMemosService.$inject = ["$http", "globalConfig"];
-function DebitMemosService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/debit-memos');
-	};
-
-	this.save = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/debit-memos', client);
-	};
-
-	this.update = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/debit-memos/', client);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/debit-memos/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/debit-memos/delete/',id);
-	};
-	
-	this.listByCompany = function(companyId) {
-		return $http.get(globalConfig.baseUrl + '/rest/debit-memos/company/'+ companyId);
-	};
-	
-	this.listByDepot = function(depotId) {
-		return $http.get(globalConfig.baseUrl + '/rest/debit-memos/depot/'+ depotId);
-	};
-	
-}
-
-/**
- * @ngdoc service
- * @name DebitMemosService
- * @module components.auth
- *
- */
-angular.module('admin.accounting').service('DebitMemosService', DebitMemosService);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -1735,212 +1841,6 @@ angular.module('admin.accounting').service('VouchersPayablesService', VouchersPa
 (function(angular){
 'use strict';
 
-var costing = {
-  bindings: {
-    id: '<'
-  },
-  templateUrl: './costing.html',
-  controller: 'CostingController'
-};
-
-angular
-  .module('admin.dashboard')
-  .component('costing', costing)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('costing-view', {
-        parent: 'app',
-        url: '/admin/costing-view?id',
-        component: 'costing',
-        params: {
-          id: null
-        },
-        resolve: {
-          id: ["$transition$", function ($transition$) {
-            return $transition$.params();
-          }]
-        }
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-CostingController.$inject = ["MoInventoryService", "ProductMovementsService", "CostingService", "$state", "EmployeesService", "_"];
-function CostingController(MoInventoryService, ProductMovementsService, CostingService, $state, EmployeesService, _) {
-  var ctrl = this;
-  ctrl.costing = {moInventory: {}, moCostingEmployees: [], moCostingInventories: [], totalCost: 0};
-  
-  ctrl.$onInit = function () {
-    console.log('CostingSaveController: id: ', ctrl.id.id);
-    CostingService.one(ctrl.id.id).then(function(res) {
-      ctrl.costing = res.data;
-      console.log('costing', ctrl.costing);
-    });
-
-    ctrl.findIngredientQuantity = function(itemCode) {
-      var ingredientQuantity = 0;
-      _.forEach(ctrl.costing.moInventory.recipe.activeIngredientGroup.ingredients, function(ingredient) {
-        if (ingredient.item.code === itemCode) {
-          ingredientQuantity = ingredient.quantity;
-          return;
-        } 
-      });
-  
-      return ingredientQuantity;
-    }
-
-    // if (!ctrl.costing.moCostingInventories) {
-    //   ctrl.costing.moCostingInventories = [];
-    // }
-    
-
-    // CostingService.list().then(function(res) {
-    //   ctrl.costings = res.data;
-    // });
-
-    // if (ctrl.id.id) {
-    //   CostingService.one(ctrl.id.id).then(function(res) {
-    //     ctrl.costing = res.data;
-    //   });
-    // } else {
-    //   ctrl.costing = {};
-    // }
-
-
-    // MoInventoryService.list().then(function(res) {
-    //   ctrl.moList = res.data;
-    // });
-
-    // ProductMovementsService.list().then(function(res) {
-    //   ctrl.pmList = res.data;
-    // });
-
-    // EmployeesService.list().then(function(res) {
-    //   ctrl.employees = res.data;
-    //   console.log('employees', ctrl.employees);
-    // });
-    
-  };
-
-  // ctrl.findIngredientQuantity = function(itemCode) {
-  //   var ingredientQuantity = 0;
-  //   _.forEach(ctrl.costing.moInventory.recipe.activeIngredientGroup.ingredients, function(ingredient) {
-  //     if (ingredient.item.code === itemCode) {
-  //       ingredientQuantity = ingredient.quantity;
-  //       return;
-  //     } 
-  //   });
-
-  //   return ingredientQuantity;
-  // }
-
-  // ctrl.updateCostingModel = function() {
-  //   console.log('updateCostingModel');
-  //   if (!ctrl.costing.moCostingInventories) {
-  //     ctrl.costing.moCostingInventories = [];
-  //   }
-
-  //   _.forEach(ctrl.costing.moInventory.inventoryList, function(inventory) {
-  //     ctrl.costing.moCostingInventories.push({
-  //       inventory: inventory,
-  //       cost: inventory.cost
-  //     });
-  //   });
-
-  //   ctrl.recomputeTotal();
-  // }
-
-  // ctrl.addEmployee = function() {
-  //   if (!ctrl.costing.moCostingEmployees) {
-  //     ctrl.costing.moCostingEmployees = [];
-  //   }
-
-  //   ctrl.costing.moCostingEmployees.push({
-  //     employee: ctrl.employeeSelection,
-  //     hoursSpent: ctrl.hoursSpent,
-  //     cost: ctrl.employeeSelection.hourlyRate * ctrl.hoursSpent
-  //   });
-  //   ctrl.recomputeTotal();
-  // }
-
-  // ctrl.recomputeTotal = function() {
-  //   ctrl.costing.totalCost = 0;
-  //   _.forEach(ctrl.costing.moCostingEmployees, function(moCostingEmployee) {
-  //     console.log('moCostingEmployee', moCostingEmployee);
-  //     ctrl.costing.totalCost += moCostingEmployee.cost;
-  //   });
-
-  //   _.forEach(ctrl.costing.moInventory.inventoryList, function(inv) {
-  //     ctrl.costing.totalCost += inv.cost;
-  //   });
-
-  //   console.log('total', ctrl.costing.totalCost);
-  // }
-
-  // ctrl.save = function (event) {
-  //   ctrl.updateCostingModel();
-
-  //   return CostingService
-  //     .save(ctrl.costing)
-  //     .then(function () {
-  //       $state.go('costings');
-  //     });
-  // };
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('CostingController', CostingController);})(window.angular);
-(function(angular){
-'use strict';
-var costingMain = {
-  bindings: {
-    costings: '<'
-  },
-  templateUrl: './costing-main.html',
-  controller: 'CostingMainController'
-};
-
-angular
-  .module('admin.dashboard')
-  .component('costingMain', costingMain)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('costing-main', {
-        parent: 'app',
-        url: '/admin/costing?filter',
-        component: 'costingMain',
-        params: {
-          filter: {
-            value: 'none'
-          }
-        },
-        resolve: {
-          filter: ["$transition$", function ($transition$) {
-            return $transition$.params();
-          }]
-        }
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-CostingMainController.$inject = ["CostingService", "$rootScope", "$state"];
-function CostingMainController(CostingService, $rootScope, $state) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.company = $rootScope.selectedCompany;
-   
-  };
-
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('CostingMainController', CostingMainController);})(window.angular);
-(function(angular){
-'use strict';
-
 var costingSave = {
   bindings: {
     id: '<'
@@ -2099,59 +1999,6 @@ angular
   .controller('CostingSaveController', CostingSaveController);})(window.angular);
 (function(angular){
 'use strict';
-var costings = {
-  bindings: {
-    costings: '<'
-  },
-  templateUrl: './costings.html',
-  controller: 'CostingsController'
-};
-
-angular
-  .module('admin.dashboard')
-  .component('costings', costings)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('costings', {
-        parent: 'app',
-        url: '/admin/costings?filter',
-        component: 'costings',
-        params: {
-          filter: {
-            value: 'none'
-          }
-        },
-        resolve: {
-          filter: ["$transition$", function ($transition$) {
-            return $transition$.params();
-          }]
-        }
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-CostingsController.$inject = ["CostingService", "$rootScope", "$state"];
-function CostingsController(CostingService, $rootScope, $state) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.company = $rootScope.selectedCompany;
-    CostingService.list().then(function(res) {
-      ctrl.costings = res.data;
-    });
-  };
-  
-  ctrl.view = function(id) {
-    $state.go('costing-view', {id: id});
-  }
-
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('CostingsController', CostingsController);})(window.angular);
-(function(angular){
-'use strict';
 
 var joCostSave = {
   bindings: {
@@ -2265,6 +2112,59 @@ function JoCostSaveController(JoCostService, RecipesService, FinishedGoodsServic
 angular
   .module('admin.dashboard')
   .controller('JoCostSaveController', JoCostSaveController);})(window.angular);
+(function(angular){
+'use strict';
+var joCosts = {
+  bindings: {
+    costings: '<'
+  },
+  templateUrl: './jo-costs.html',
+  controller: 'JoCostsController'
+};
+
+angular
+  .module('admin.dashboard')
+  .component('joCosts', joCosts)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('joCosts', {
+        parent: 'app',
+        url: '/admin/joCosts?filter',
+        component: 'joCosts',
+        params: {
+          filter: {
+            value: 'none'
+          }
+        },
+        resolve: {
+          filter: ["$transition$", function ($transition$) {
+            return $transition$.params();
+          }]
+        }
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+JoCostsController.$inject = ["JoCostService", "$rootScope", "$state"];
+function JoCostsController(JoCostService, $rootScope, $state) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.company = $rootScope.selectedCompany;
+    JoCostService.listByCompany(ctrl.company.id).then(function(res) {
+      ctrl.joCosts = res.data;
+    });
+  };
+  
+  ctrl.view = function(id) {
+    $state.go('joCost-view', {id: id});
+  }
+
+}
+
+angular
+  .module('admin.dashboard')
+  .controller('JoCostsController', JoCostsController);})(window.angular);
 (function(angular){
 'use strict';
 
@@ -2390,59 +2290,6 @@ function AccountSummaryReportsService($http, globalConfig) {
  */
 angular.module('admin.dashboard').service('AccountSummaryReportsService', AccountSummaryReportsService);
 })(window.angular);
-(function(angular){
-'use strict';
-var joCosts = {
-  bindings: {
-    costings: '<'
-  },
-  templateUrl: './jo-costs.html',
-  controller: 'JoCostsController'
-};
-
-angular
-  .module('admin.dashboard')
-  .component('joCosts', joCosts)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('joCosts', {
-        parent: 'app',
-        url: '/admin/joCosts?filter',
-        component: 'joCosts',
-        params: {
-          filter: {
-            value: 'none'
-          }
-        },
-        resolve: {
-          filter: ["$transition$", function ($transition$) {
-            return $transition$.params();
-          }]
-        }
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-JoCostsController.$inject = ["JoCostService", "$rootScope", "$state"];
-function JoCostsController(JoCostService, $rootScope, $state) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.company = $rootScope.selectedCompany;
-    JoCostService.listByCompany(ctrl.company.id).then(function(res) {
-      ctrl.joCosts = res.data;
-    });
-  };
-  
-  ctrl.view = function(id) {
-    $state.go('joCost-view', {id: id});
-  }
-
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('JoCostsController', JoCostsController);})(window.angular);
 (function(angular){
 'use strict';
 
@@ -3062,6 +2909,53 @@ function JobOrdersService($http, globalConfig) {
  */
 angular.module('admin.dashboard').service('JobOrdersService', JobOrdersService);
 })(window.angular);
+(function(angular){
+'use strict';
+var costingMain = {
+  bindings: {
+    costings: '<'
+  },
+  templateUrl: './costing-main.html',
+  controller: 'CostingMainController'
+};
+
+angular
+  .module('admin.dashboard')
+  .component('costingMain', costingMain)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('costing-main', {
+        parent: 'app',
+        url: '/admin/costing?filter',
+        component: 'costingMain',
+        params: {
+          filter: {
+            value: 'none'
+          }
+        },
+        resolve: {
+          filter: ["$transition$", function ($transition$) {
+            return $transition$.params();
+          }]
+        }
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+CostingMainController.$inject = ["CostingService", "$rootScope", "$state"];
+function CostingMainController(CostingService, $rootScope, $state) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.company = $rootScope.selectedCompany;
+   
+  };
+
+}
+
+angular
+  .module('admin.dashboard')
+  .controller('CostingMainController', CostingMainController);})(window.angular);
 (function(angular){
 'use strict';
 MaterialIssuancesService.$inject = ["$http", "globalConfig"];
@@ -3734,6 +3628,130 @@ angular.module('admin.dashboard').service('ReportsService', ReportsService);
 })(window.angular);
 (function(angular){
 'use strict';
+
+var salesReports = {
+  templateUrl: './sales-reports.html',
+  controller: 'SalesReportsController'
+};
+
+angular
+  .module('admin.dashboard')
+  .component('salesReports', salesReports)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('sales-reports', {
+        parent: 'app',
+        url: '/admin/dashboard/sales-reports',
+        component: 'salesReports'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+SalesReportsController.$inject = ["$state", "SalesOrdersService", "UsersService", "ProductCategoriesService", "ProductsService", "CategoryService", "ProductDivisionCodesService", "SalesReportsService", "ReportsService", "SalesRepsService", "$rootScope"];
+function SalesReportsController($state, SalesOrdersService, UsersService, ProductCategoriesService, ProductsService, CategoryService, ProductDivisionCodesService, SalesReportsService, ReportsService, SalesRepsService, $rootScope) {
+  var ctrl = this;
+  
+  
+  ctrl.$onInit = function () {
+	  ctrl.company = $rootScope.selectedCompany;
+
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.userAssignedDepots = response.data.depots;
+	  });
+	  SalesRepsService.list().then(function(response){
+		 ctrl.salesReps = response.data;
+		 console.log(ctrl.salesReps);
+	  });
+	  
+	  ProductsService.list().then(function(response){
+		  ctrl.items = response.data;
+	  });
+	  
+	  ProductDivisionCodesService.list().then(function(response){
+		  ctrl.divisions = response.data;
+	  });
+	  
+	  ProductCategoriesService.list().then(function(response){
+		 ctrl.categories = response.data;
+	  });
+  };
+  /*
+  ctrl.exportGeneralSalesReport = function() {
+	  var reportTitle = {title: 'Report : General Sales Report'};
+	  var dates = {date: 'Date Range:' + ctrl.startDate.getFullYear() + "-" + (ctrl.startDate.getMonth() + 1) + "-" + ctrl.startDate.getDate() + " to "+
+		  ctrl.endDate.getFullYear() + "-" + (ctrl.endDate.getMonth() + 1) + "-" + ctrl.endDate.getDate()}
+	  var headers = {
+			    title: 'Account Title'.replace(/,/g, ''), // remove commas to avoid errors
+			    credit: "Credit",
+			    debit: "Debit"
+	  };
+	  SalesReportssService.getJVSalesReports(ctrl.company.id, ctrl.startDate, ctrl.endDate).then(function(response){
+		  ReportsService.exportCSVFile(headers, reportTitle, dates, response.data, "print.csv");
+	  });
+  }
+  
+  */
+  ctrl.generateGeneralSalesReport = function () {
+	  SalesOrdersService.getTotalAmountAndQuantity(ctrl.userAssignedDepot.id, ctrl.startDate, ctrl.endDate, ctrl.salesRep.id).then(function(response){
+		 if(response){
+			 ctrl.gsrAmount = response.data.gsrAmount;
+			 ctrl.gsrQuantity = response.data.gsrQuantity;
+		 } 
+	  });
+  };
+  
+  
+  ctrl.generateItemSalesReport = function () {
+		  SalesReportsService.itemSalesReport(ctrl.userAssignedDepot.id, ctrl.startDate, ctrl.endDate, ctrl.item.id).then(function(response){
+			 if(response){
+				 ctrl.itemAmount = response.data.itemAmount;
+				 ctrl.itemQuantity = response.data.itemQuantity;
+			 } 
+		  });
+  };
+  
+  ctrl.generateItemSalesReportByCategory = function () {
+		  SalesReportsService.itemSalesReportByCategory(ctrl.userAssignedDepot.id, ctrl.startDate, ctrl.endDate, ctrl.division.id, ctrl.category.id).then(function(response){
+				 if(response){
+					 ctrl.itemAmount2 = response.data.itemAmount;
+					 ctrl.itemQuantity2 = response.data.itemQuantity;
+				 } 
+		  });
+  };
+  
+}
+
+angular
+  .module('admin.dashboard')
+  .controller('SalesReportsController', SalesReportsController);
+})(window.angular);
+(function(angular){
+'use strict';
+SalesReportsService.$inject = ["$http", "globalConfig"];
+function SalesReportsService($http, globalConfig) {
+
+	this.itemSalesReport = function(userAssignedDepotId, startDate, endDate, itemId) {
+		return $http.get(globalConfig.baseUrl + '/rest/sales-reports/item-sales-report/depot/'+userAssignedDepotId+'/start/' + startDate + '/end/' + endDate + '/item/' + itemId);
+	};
+	
+	this.itemSalesReportByCategory = function (userAssignedDepotId, startDate, endDate, categoryId, divisionId) {
+		return $http.get(globalConfig.baseUrl + '/rest/sales-reports/item-sales-report/depot/'+userAssignedDepotId+'/start/' + startDate + '/end/' + endDate + '/category/' + categoryId + '/division/' +divisionId);
+
+	};
+
+}
+
+/**
+ * @ngdoc service
+ * @name SalesReportsService
+ * @module components.auth
+ * 
+ */
+angular.module('admin.dashboard').service('SalesReportsService', SalesReportsService);})(window.angular);
+(function(angular){
+'use strict';
 SalesSlipsService.$inject = ["$http", "globalConfig"];
 function SalesSlipsService($http, globalConfig) {
 	
@@ -3899,6 +3917,44 @@ angular.module('admin.maintenance').service('AccountCodesService', AccountCodesS
 })(window.angular);
 (function(angular){
 'use strict';
+BankAccountsService.$inject = ["$http", "globalConfig"];
+function BankAccountsService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/bank-accounts');
+	};
+
+	this.paginate = function(itemsPerPage, offset) {
+		return $http.get(globalConfig.baseUrl + '/rest/bank-accounts/paginate/' + itemsPerPage + '/' + offset);
+	};
+
+	this.save = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/bank-accounts', client);
+	};
+
+	this.update = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/bank-accounts/', client);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/bank-accounts/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/bank-accounts/delete/',id);
+	};
+}
+
+/**
+ * @ngdoc service
+ * @name BankAccountsService
+ * @module components.auth
+ *
+ */
+angular.module('admin.maintenance').service('BankAccountsService', BankAccountsService);
+})(window.angular);
+(function(angular){
+'use strict';
 AccountTitlesService.$inject = ["$http", "globalConfig"];
 function AccountTitlesService($http, globalConfig) {
 
@@ -3944,80 +4000,57 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
-BankAccountsService.$inject = ["$http", "globalConfig"];
-function BankAccountsService($http, globalConfig) {
+var costings = {
+  bindings: {
+    costings: '<'
+  },
+  templateUrl: './costings.html',
+  controller: 'CostingsController'
+};
 
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/bank-accounts');
-	};
-
-	this.paginate = function(itemsPerPage, offset) {
-		return $http.get(globalConfig.baseUrl + '/rest/bank-accounts/paginate/' + itemsPerPage + '/' + offset);
-	};
-
-	this.save = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/bank-accounts', client);
-	};
-
-	this.update = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/bank-accounts/', client);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/bank-accounts/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/bank-accounts/delete/',id);
-	};
-}
-
-/**
- * @ngdoc service
- * @name BankAccountsService
- * @module components.auth
- *
- */
-angular.module('admin.maintenance').service('BankAccountsService', BankAccountsService);
-})(window.angular);
+angular
+  .module('admin.dashboard')
+  .component('costings', costings)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('costings', {
+        parent: 'app',
+        url: '/admin/costings?filter',
+        component: 'costings',
+        params: {
+          filter: {
+            value: 'none'
+          }
+        },
+        resolve: {
+          filter: ["$transition$", function ($transition$) {
+            return $transition$.params();
+          }]
+        }
+      });
+  }]);})(window.angular);
 (function(angular){
 'use strict';
-ClassificationsService.$inject = ["$http", "globalConfig"];
-function ClassificationsService($http, globalConfig) {
+CostingsController.$inject = ["CostingService", "$rootScope", "$state"];
+function CostingsController(CostingService, $rootScope, $state) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.company = $rootScope.selectedCompany;
+    CostingService.list().then(function(res) {
+      ctrl.costings = res.data;
+    });
+  };
+  
+  ctrl.view = function(id) {
+    $state.go('costing-view', {id: id});
+  }
 
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/classifications');
-	};
-
-	this.save = function(classification) {
-		return $http.post(globalConfig.baseUrl + '/rest/classifications', classification);
-	};
-
-	this.update = function(classification) {
-		return $http.post(globalConfig.baseUrl + '/rest/classifications/', classification);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/classifications/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/classifications/delete/',id);
-	};
-	
-	this.listTypes = function(){
-		return $http.get(globalConfig.baseUrl + '/rest/classifications/types');
-	};
 }
 
-/**
- * @ngdoc service
- * @name ClassificationsService
- * @module components.auth
- *
- */
-angular.module('admin.maintenance').service('ClassificationsService', ClassificationsService);
-})(window.angular);
+angular
+  .module('admin.dashboard')
+  .controller('CostingsController', CostingsController);})(window.angular);
 (function(angular){
 'use strict';
 ClientsService.$inject = ["$http", "globalConfig"];
@@ -4292,130 +4325,6 @@ angular.module('admin.maintenance').service('DepotsService', DepotsService);
 })(window.angular);
 (function(angular){
 'use strict';
-
-var salesReports = {
-  templateUrl: './sales-reports.html',
-  controller: 'SalesReportsController'
-};
-
-angular
-  .module('admin.dashboard')
-  .component('salesReports', salesReports)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('sales-reports', {
-        parent: 'app',
-        url: '/admin/dashboard/sales-reports',
-        component: 'salesReports'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-SalesReportsController.$inject = ["$state", "SalesOrdersService", "UsersService", "ProductCategoriesService", "ProductsService", "CategoryService", "ProductDivisionCodesService", "SalesReportsService", "ReportsService", "SalesRepsService", "$rootScope"];
-function SalesReportsController($state, SalesOrdersService, UsersService, ProductCategoriesService, ProductsService, CategoryService, ProductDivisionCodesService, SalesReportsService, ReportsService, SalesRepsService, $rootScope) {
-  var ctrl = this;
-  
-  
-  ctrl.$onInit = function () {
-	  ctrl.company = $rootScope.selectedCompany;
-
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.userAssignedDepots = response.data.depots;
-	  });
-	  SalesRepsService.list().then(function(response){
-		 ctrl.salesReps = response.data;
-		 console.log(ctrl.salesReps);
-	  });
-	  
-	  ProductsService.list().then(function(response){
-		  ctrl.items = response.data;
-	  });
-	  
-	  ProductDivisionCodesService.list().then(function(response){
-		  ctrl.divisions = response.data;
-	  });
-	  
-	  ProductCategoriesService.list().then(function(response){
-		 ctrl.categories = response.data;
-	  });
-  };
-  /*
-  ctrl.exportGeneralSalesReport = function() {
-	  var reportTitle = {title: 'Report : General Sales Report'};
-	  var dates = {date: 'Date Range:' + ctrl.startDate.getFullYear() + "-" + (ctrl.startDate.getMonth() + 1) + "-" + ctrl.startDate.getDate() + " to "+
-		  ctrl.endDate.getFullYear() + "-" + (ctrl.endDate.getMonth() + 1) + "-" + ctrl.endDate.getDate()}
-	  var headers = {
-			    title: 'Account Title'.replace(/,/g, ''), // remove commas to avoid errors
-			    credit: "Credit",
-			    debit: "Debit"
-	  };
-	  SalesReportssService.getJVSalesReports(ctrl.company.id, ctrl.startDate, ctrl.endDate).then(function(response){
-		  ReportsService.exportCSVFile(headers, reportTitle, dates, response.data, "print.csv");
-	  });
-  }
-  
-  */
-  ctrl.generateGeneralSalesReport = function () {
-	  SalesOrdersService.getTotalAmountAndQuantity(ctrl.userAssignedDepot.id, ctrl.startDate, ctrl.endDate, ctrl.salesRep.id).then(function(response){
-		 if(response){
-			 ctrl.gsrAmount = response.data.gsrAmount;
-			 ctrl.gsrQuantity = response.data.gsrQuantity;
-		 } 
-	  });
-  };
-  
-  
-  ctrl.generateItemSalesReport = function () {
-		  SalesReportsService.itemSalesReport(ctrl.userAssignedDepot.id, ctrl.startDate, ctrl.endDate, ctrl.item.id).then(function(response){
-			 if(response){
-				 ctrl.itemAmount = response.data.itemAmount;
-				 ctrl.itemQuantity = response.data.itemQuantity;
-			 } 
-		  });
-  };
-  
-  ctrl.generateItemSalesReportByCategory = function () {
-		  SalesReportsService.itemSalesReportByCategory(ctrl.userAssignedDepot.id, ctrl.startDate, ctrl.endDate, ctrl.division.id, ctrl.category.id).then(function(response){
-				 if(response){
-					 ctrl.itemAmount2 = response.data.itemAmount;
-					 ctrl.itemQuantity2 = response.data.itemQuantity;
-				 } 
-		  });
-  };
-  
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('SalesReportsController', SalesReportsController);
-})(window.angular);
-(function(angular){
-'use strict';
-SalesReportsService.$inject = ["$http", "globalConfig"];
-function SalesReportsService($http, globalConfig) {
-
-	this.itemSalesReport = function(userAssignedDepotId, startDate, endDate, itemId) {
-		return $http.get(globalConfig.baseUrl + '/rest/sales-reports/item-sales-report/depot/'+userAssignedDepotId+'/start/' + startDate + '/end/' + endDate + '/item/' + itemId);
-	};
-	
-	this.itemSalesReportByCategory = function (userAssignedDepotId, startDate, endDate, categoryId, divisionId) {
-		return $http.get(globalConfig.baseUrl + '/rest/sales-reports/item-sales-report/depot/'+userAssignedDepotId+'/start/' + startDate + '/end/' + endDate + '/category/' + categoryId + '/division/' +divisionId);
-
-	};
-
-}
-
-/**
- * @ngdoc service
- * @name SalesReportsService
- * @module components.auth
- * 
- */
-angular.module('admin.dashboard').service('SalesReportsService', SalesReportsService);})(window.angular);
-(function(angular){
-'use strict';
 CategoryService.$inject = ["$http", "globalConfig"];
 function CategoryService($http, globalConfig) {
 
@@ -4586,44 +4495,6 @@ function GroupAndCategoryController($state, _, GroupService) {
 angular
   .module('admin.maintenance')
   .controller('GroupAndCategoryController', GroupAndCategoryController);
-})(window.angular);
-(function(angular){
-'use strict';
-FinishedGoodsService.$inject = ["$http", "globalConfig"];
-function FinishedGoodsService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/finished-goods');
-	};
-
-	this.paginate = function(itemsPerPage, offset) {
-		return $http.get(globalConfig.baseUrl + '/rest/finished-goods/paginate/' + itemsPerPage + '/' + offset);
-	};
-
-	this.save = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/finished-goods', client);
-	};
-
-	this.update = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/finished-goods/', client);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/finished-goods/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/finished-goods/delete/',id);
-	};
-}
-
-/**
- * @ngdoc service
- * @name FinishedGoodsService
- * @module components.auth
- *
- */
-angular.module('admin.maintenance').service('FinishedGoodsService', FinishedGoodsService);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -4816,78 +4687,6 @@ angular.module('admin.maintenance').service('ItemsService', ItemsService);
 })(window.angular);
 (function(angular){
 'use strict';
-ProceduresService.$inject = ["$http", "globalConfig"];
-function ProceduresService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/procedures');
-	};
-
-	this.save = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/procedures', client);
-	};
-
-	this.update = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/procedures/', client);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/procedures/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/procedures/delete/',id);
-	};
-	
-	this.listByArea = function(id){
-		return $http.get(globalConfig.baseUrl + '/rest/procedures/area/' + id);
-	};
-}
-
-/**
- * @ngdoc service
- * @name ProceduresService
- * @module components.auth
- *
- */
-angular.module('admin.maintenance').service('ProceduresService', ProceduresService);
-})(window.angular);
-(function(angular){
-'use strict';
-ProcedureAreasService.$inject = ["$http", "globalConfig"];
-function ProcedureAreasService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/procedure-areas');
-	};
-
-	this.save = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/procedure-areas', client);
-	};
-
-	this.update = function(client) {
-		return $http.post(globalConfig.baseUrl + '/rest/procedure-areas/', client);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/procedure-areas/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/procedure-areas/delete/',id);
-	};
-}
-
-/**
- * @ngdoc service
- * @name ProcedureAreasService
- * @module components.auth
- *
- */
-angular.module('admin.maintenance').service('ProcedureAreasService', ProcedureAreasService);
-})(window.angular);
-(function(angular){
-'use strict';
 MemoTypesService.$inject = ["$http", "globalConfig"];
 function MemoTypesService($http, globalConfig) {
 
@@ -4927,6 +4726,78 @@ function MemoTypesService($http, globalConfig) {
  *
  */
 angular.module('admin.maintenance').service('MemoTypesService', MemoTypesService);
+})(window.angular);
+(function(angular){
+'use strict';
+ProcedureAreasService.$inject = ["$http", "globalConfig"];
+function ProcedureAreasService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/procedure-areas');
+	};
+
+	this.save = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/procedure-areas', client);
+	};
+
+	this.update = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/procedure-areas/', client);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/procedure-areas/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/procedure-areas/delete/',id);
+	};
+}
+
+/**
+ * @ngdoc service
+ * @name ProcedureAreasService
+ * @module components.auth
+ *
+ */
+angular.module('admin.maintenance').service('ProcedureAreasService', ProcedureAreasService);
+})(window.angular);
+(function(angular){
+'use strict';
+ProceduresService.$inject = ["$http", "globalConfig"];
+function ProceduresService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/procedures');
+	};
+
+	this.save = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/procedures', client);
+	};
+
+	this.update = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/procedures/', client);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/procedures/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/procedures/delete/',id);
+	};
+	
+	this.listByArea = function(id){
+		return $http.get(globalConfig.baseUrl + '/rest/procedures/area/' + id);
+	};
+}
+
+/**
+ * @ngdoc service
+ * @name ProceduresService
+ * @module components.auth
+ *
+ */
+angular.module('admin.maintenance').service('ProceduresService', ProceduresService);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -5299,115 +5170,6 @@ angular.module('admin.maintenance').service('ProvinceCodesService', ProvinceCode
 (function(angular){
 'use strict';
 
-var regionCode = {
-  templateUrl: './region-codes.html',
-  controller: 'RegionCodeController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('regionCode', regionCode)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('region-codes', {
-        parent: 'app',
-        url: '/admin/maintenance/region-code',
-        component: 'regionCode'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-RegionCodeController.$inject = ["$state", "RegionCodesService", "_"];
-function RegionCodeController($state, RegionCodesService, _) {
-  var ctrl = this;
-  ctrl.regionCodes = [];
-  ctrl.searchCode = '';
-  ctrl.searchName = '';
-  ctrl.sortType = 'id';
-  ctrl.sortReverse = false;
-  ctrl.regionCode = {};
-  
-  ctrl.$onInit = function () {
-	  ctrl.addRegionCode = false;
-	  ctrl.error = null;
-	  loadRegionCodes();
-  };
-  
-  function loadRegionCodes(){
-	  RegionCodesService.list().then(function(response){
-		  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.regionCodes = response.data;
-	  });
-  }
-  
-  ctrl.showAddRegionCode = function (show){
-	  ctrl.addRegionCode = show;
-  };
-  
-  ctrl.editRegionCode = function (id) {
-	  RegionCodesService.get(id).then(function(response){
-		  ctrl.regionCode = response.data;
-	  });
-	  ctrl.addRegionCode = true;
-  };
-  
-  ctrl.saveRegionCode = function () {
-	    RegionCodesService.save(ctrl.regionCode).then(function () {
-	    	  loadRegionCodes();
-	    	  ctrl.showAddRegionCode(false);
-	    	  ctrl.regionCode = null;
-	    });
-  };
-  
-  ctrl.deleteRegionCode = function (id){
-	  RegionCodesService.delete(id).then(function(response){
-		  loadRegionCodes();
-	  });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('RegionCodeController', RegionCodeController);
-})(window.angular);
-(function(angular){
-'use strict';
-RegionCodesService.$inject = ["$http", "globalConfig"];
-function RegionCodesService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/region-codes');
-	};
-
-	this.save = function(itemType) {
-		return $http.post(globalConfig.baseUrl + '/rest/region-codes', itemType);
-	};
-
-	this.update = function(itemType) {
-		return $http.post(globalConfig.baseUrl + '/rest/region-codes/', itemType);
-	};
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/region-codes/' + id);
-	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/region-codes/delete/',id);
-	};
-}
-
-/**
- * @ngdoc service
- * @name RegionCodesService
- * @module components.auth
- *
- */
-angular.module('admin.maintenance').service('RegionCodesService', RegionCodesService);
-})(window.angular);
-(function(angular){
-'use strict';
-
 var salesRep = {
   templateUrl: './sales-reps.html',
   controller: 'SalesRepController'
@@ -5713,6 +5475,153 @@ angular.module('admin.maintenance').service('ZipCodesService', ZipCodesService);
 })(window.angular);
 (function(angular){
 'use strict';
+
+var regionCode = {
+  templateUrl: './region-codes.html',
+  controller: 'RegionCodeController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('regionCode', regionCode)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('region-codes', {
+        parent: 'app',
+        url: '/admin/maintenance/region-code',
+        component: 'regionCode'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+RegionCodeController.$inject = ["$state", "RegionCodesService", "_"];
+function RegionCodeController($state, RegionCodesService, _) {
+  var ctrl = this;
+  ctrl.regionCodes = [];
+  ctrl.searchCode = '';
+  ctrl.searchName = '';
+  ctrl.sortType = 'id';
+  ctrl.sortReverse = false;
+  ctrl.regionCode = {};
+  
+  ctrl.$onInit = function () {
+	  ctrl.addRegionCode = false;
+	  ctrl.error = null;
+	  loadRegionCodes();
+  };
+  
+  function loadRegionCodes(){
+	  RegionCodesService.list().then(function(response){
+		  console.log("list response: " + JSON.stringify(response.data));
+		  ctrl.regionCodes = response.data;
+	  });
+  }
+  
+  ctrl.showAddRegionCode = function (show){
+	  ctrl.addRegionCode = show;
+  };
+  
+  ctrl.editRegionCode = function (id) {
+	  RegionCodesService.get(id).then(function(response){
+		  ctrl.regionCode = response.data;
+	  });
+	  ctrl.addRegionCode = true;
+  };
+  
+  ctrl.saveRegionCode = function () {
+	    RegionCodesService.save(ctrl.regionCode).then(function () {
+	    	  loadRegionCodes();
+	    	  ctrl.showAddRegionCode(false);
+	    	  ctrl.regionCode = null;
+	    });
+  };
+  
+  ctrl.deleteRegionCode = function (id){
+	  RegionCodesService.delete(id).then(function(response){
+		  loadRegionCodes();
+	  });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('RegionCodeController', RegionCodeController);
+})(window.angular);
+(function(angular){
+'use strict';
+RegionCodesService.$inject = ["$http", "globalConfig"];
+function RegionCodesService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/region-codes');
+	};
+
+	this.save = function(itemType) {
+		return $http.post(globalConfig.baseUrl + '/rest/region-codes', itemType);
+	};
+
+	this.update = function(itemType) {
+		return $http.post(globalConfig.baseUrl + '/rest/region-codes/', itemType);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/region-codes/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/region-codes/delete/',id);
+	};
+}
+
+/**
+ * @ngdoc service
+ * @name RegionCodesService
+ * @module components.auth
+ *
+ */
+angular.module('admin.maintenance').service('RegionCodesService', RegionCodesService);
+})(window.angular);
+(function(angular){
+'use strict';
+FinishedGoodsService.$inject = ["$http", "globalConfig"];
+function FinishedGoodsService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/finished-goods');
+	};
+
+	this.paginate = function(itemsPerPage, offset) {
+		return $http.get(globalConfig.baseUrl + '/rest/finished-goods/paginate/' + itemsPerPage + '/' + offset);
+	};
+
+	this.save = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/finished-goods', client);
+	};
+
+	this.update = function(client) {
+		return $http.post(globalConfig.baseUrl + '/rest/finished-goods/', client);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/finished-goods/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/finished-goods/delete/',id);
+	};
+}
+
+/**
+ * @ngdoc service
+ * @name FinishedGoodsService
+ * @module components.auth
+ *
+ */
+angular.module('admin.maintenance').service('FinishedGoodsService', FinishedGoodsService);
+})(window.angular);
+(function(angular){
+'use strict';
 PurchaseOrdersService.$inject = ["$http", "globalConfig"];
 function PurchaseOrdersService($http, globalConfig) {
 
@@ -5761,178 +5670,6 @@ function PurchaseOrdersService($http, globalConfig) {
  */
 angular.module('admin.purchasing').service('PurchaseOrdersService', PurchaseOrdersService);
 })(window.angular);
-(function(angular){
-'use strict';
-MoInventoryService.$inject = ["$http", "globalConfig"];
-function MoInventoryService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/moInventory');
-	};
-
-	this.save = function(data) {
-		return $http.post(globalConfig.baseUrl + '/rest/moInventory', data);
-	};
-
-	this.saveWithLotNumber = function(data) {
-		return $http.post(globalConfig.baseUrl + '/rest/moInventory/lotnumber', data);
-	};
-
-	// this.update = function(approvedItem) {
-	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/', approvedItem);
-	// };
-
-	this.get = function(id) {
-		return $http.get(globalConfig.baseUrl + '/rest/moInventory/' + id);
-	};
-	
-	this.listByCompany = function(companyId) {
-		return $http.get(globalConfig.baseUrl + '/rest/moInventory/company/' + companyId);
-	};
-
-	this.listByCompanyAndNonlotNumber = function(companyId) {
-		return $http.get(globalConfig.baseUrl + '/rest/moInventory/nonlotnumber/company/' + companyId);
-	};
-
-	this.listByCompanyAndRemainingBatchSize = function(companyId) {
-		return $http.get(globalConfig.baseUrl + '/rest/moInventory/remainingBatchSize/company/' + companyId);
-	};
-
-    
-    this.listByFinishedGood = function(finishedGoodId) {
-		return $http.get(globalConfig.baseUrl + '/rest/moInventory/finishedGood/' + finishedGoodId);
-	};
-	
-	// this.delete = function(id){
-	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/delete/',id);
-	// };
-}
-
-/**
- * @ngdoc service
- * @name MoInventoryService
- * @module components.auth
- *
- */
-angular.module('admin.rnd').service('MoInventoryService', MoInventoryService);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var mo = {
-    templateUrl: './mo.html',
-    controller: 'MoController'
-  };
-  
-  angular
-    .module('admin.rnd')
-    .component('mo', mo)
-    .config(["$stateProvider", function ($stateProvider) {
-      $stateProvider
-        .state('mo', {
-          parent: 'app',
-          url: '/admin/rnd/mo',
-          component: 'mo'
-        });
-    }]);})(window.angular);
-(function(angular){
-'use strict';
-
-  MoController.$inject = ["MoInventoryService", "$state", "_"];
-function MoController(MoInventoryService, $state, _) {
-    var ctrl = this;
-
-    MoInventoryService.list().then(function(res) {
-      ctrl.moList = res.data;
-    });
-
-    ctrl.manufactureOrder = function(mo) {
-      $state.go('mo-manufacture', {id: mo.id});
-    }
-
-    ctrl.view = function(moId) {
-      $state.go('mo-manufacture', {id: moId});
-    }
-   
-  }
-  
-  angular
-    .module('admin.rnd')
-    .controller('MoController', MoController);
-  })(window.angular);
-(function(angular){
-'use strict';
-PpInventoryService.$inject = ["$http", "globalConfig"];
-function PpInventoryService($http, globalConfig) {
-
-	this.list = function() {
-		return $http.get(globalConfig.baseUrl + '/rest/ppInventory');
-	};
-
-	this.save = function(data) {
-		return $http.post(globalConfig.baseUrl + '/rest/ppInventory', data);
-	};
-
-	// this.update = function(approvedItem) {
-	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/', approvedItem);
-	// };
-
-	// this.get = function(id) {
-	// 	return $http.get(globalConfig.baseUrl + '/rest/approved-items/' + id);
-	// };
-	
-	this.listByCompany = function(companyId) {
-		return $http.get(globalConfig.baseUrl + '/rest/ppInventory/company/' + companyId);
-    };
-    
-	
-	// this.delete = function(id){
-	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/delete/',id);
-	// };
-}
-
-/**
- * @ngdoc service
- * @name MoInventoryService
- * @module components.auth
- *
- */
-angular.module('admin.rnd').service('PpInventoryService', PpInventoryService);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var pp = {
-    templateUrl: './pp.html',
-    controller: 'PpController'
-  };
-  
-  angular
-    .module('admin.rnd')
-    .component('pp', pp)
-    .config(["$stateProvider", function ($stateProvider) {
-      $stateProvider
-        .state('pp', {
-          parent: 'app',
-          url: '/admin/rnd/pp',
-          component: 'pp'
-        });
-    }]);})(window.angular);
-(function(angular){
-'use strict';
-
-  PpController.$inject = ["$state", "_"];
-function PpController($state, _) {
-    var ctrl = this;
-
-  
-   
-  }
-  
-  angular
-    .module('admin.rnd')
-    .controller('PpController', PpController);
-  })(window.angular);
 (function(angular){
 'use strict';
 AcknowledgementReceiptsService.$inject = ["$http", "globalConfig"];
@@ -6170,64 +5907,64 @@ angular.module('admin.sales').service('SalesInvoicesService', SalesInvoicesServi
 SalesOrdersService.$inject = ["$http", "globalConfig"];
 function SalesOrdersService($http, globalConfig) {
 
-	this.list = function() {
+	this.list = function () {
 		return $http.get(globalConfig.baseUrl + '/rest/sales-orders');
 	};
 
-	this.save = function(purchaseRequest) {
+	this.save = function (purchaseRequest) {
 		console.log('inside save function')
 		return $http.post('http://localhost:9000/rest/sales-orders', purchaseRequest);
 	};
 
-	this.update = function(purchaseRequest) {
+	this.update = function (purchaseRequest) {
 		return $http.post(globalConfig.baseUrl + '/rest/sales-orders/', purchaseRequest);
 	};
 
-	this.get = function(id) {
+	this.get = function (id) {
 		return $http.get(globalConfig.baseUrl + '/rest/sales-orders/' + id);
 	};
-	
-	this.listByCompany = function(companyId) {
+
+	this.listByCompany = function (companyId) {
 		return $http.get(globalConfig.baseUrl + '/rest/sales-orders/company/' + companyId);
 	};
-	
-	this.listByDepot = function(depotId) {
+
+	this.listByDepot = function (depotId) {
 		return $http.get(globalConfig.baseUrl + '/rest/sales-orders/depot/' + depotId);
 	};
-	
-	this.delete = function(id){
-		return $http.post(globalConfig.baseUrl + '/rest/sales-orders/delete/',id);
+
+	this.delete = function (id) {
+		return $http.post(globalConfig.baseUrl + '/rest/sales-orders/delete/', id);
 	};
-	
-	this.approve = function(id){
+
+	this.approve = function (id) {
 		return $http.post(globalConfig.baseUrl + '/rest/sales-orders/approve/' + id);
 	};
-	
-	this.reject = function(id){
+
+	this.reject = function (id) {
 		return $http.post(globalConfig.baseUrl + '/rest/sales-orders/reject/' + id);
 	};
-	
-	this.getLatestCancelledReqs = function(soId){
+
+	this.getLatestCancelledReqs = function (soId) {
 		return $http.get(globalConfig.baseUrl + '/rest/sales-orders/cancelled-reqs/' + soId);
 	};
-	
-	this.cancelRequestedProduct = function(requestedItem){
+
+	this.cancelRequestedProduct = function (requestedItem) {
 		return $http.post(globalConfig.baseUrl + '/api/sales-order-products/cancel', requestedItem);
 	};
-	
-	this.listNotCompletedByCompanyAndDepot = function(companyId, depotId,  type) {
-		return $http.get(globalConfig.baseUrl + '/rest/sales-orders/company/' + companyId + '/depot/'+depotId+'/type/' + type);
+
+	this.listNotCompletedByCompanyAndDepot = function (companyId, depotId, type) {
+		return $http.get(globalConfig.baseUrl + '/rest/sales-orders/company/' + companyId + '/depot/' + depotId + '/type/' + type);
 	};
-	
-	this.listSoProductsBySoNumber = function(soId) {
+
+	this.listSoProductsBySoNumber = function (soId) {
 		return $http.get(globalConfig.baseUrl + '/api/sales-order-products/so/' + soId);
 	};
-	
+
 	this.getReservedQuantityOfFg = function (fgId, depotId) {
-		return $http.get(globalConfig.baseUrl + '/api/sales-order-products/fg/' + fgId + '/depot/'+depotId+'/reserved-quantity');
+		return $http.get(globalConfig.baseUrl + '/api/sales-order-products/fg/' + fgId + '/depot/' + depotId + '/reserved-quantity');
 	};
-	
-	this.getTotalAmountAndQuantity = function (depotId, dateFrom, dateTo, salesRepId){
+
+	this.getTotalAmountAndQuantity = function (depotId, dateFrom, dateTo, salesRepId) {
 		return $http.get(globalConfig.baseUrl + '/rest/sales-orders/general-sales-report/depot/' + depotId + '/start/' + dateFrom + '/end/' + dateTo + '/sales-rep/' + salesRepId);
 	};
 }
@@ -6239,6 +5976,178 @@ function SalesOrdersService($http, globalConfig) {
  * 
  */
 angular.module('admin.sales').service('SalesOrdersService', SalesOrdersService);})(window.angular);
+(function(angular){
+'use strict';
+MoInventoryService.$inject = ["$http", "globalConfig"];
+function MoInventoryService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/moInventory');
+	};
+
+	this.save = function(data) {
+		return $http.post(globalConfig.baseUrl + '/rest/moInventory', data);
+	};
+
+	this.saveWithLotNumber = function(data) {
+		return $http.post(globalConfig.baseUrl + '/rest/moInventory/lotnumber', data);
+	};
+
+	// this.update = function(approvedItem) {
+	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/', approvedItem);
+	// };
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/moInventory/' + id);
+	};
+	
+	this.listByCompany = function(companyId) {
+		return $http.get(globalConfig.baseUrl + '/rest/moInventory/company/' + companyId);
+	};
+
+	this.listByCompanyAndNonlotNumber = function(companyId) {
+		return $http.get(globalConfig.baseUrl + '/rest/moInventory/nonlotnumber/company/' + companyId);
+	};
+
+	this.listByCompanyAndRemainingBatchSize = function(companyId) {
+		return $http.get(globalConfig.baseUrl + '/rest/moInventory/remainingBatchSize/company/' + companyId);
+	};
+
+    
+    this.listByFinishedGood = function(finishedGoodId) {
+		return $http.get(globalConfig.baseUrl + '/rest/moInventory/finishedGood/' + finishedGoodId);
+	};
+	
+	// this.delete = function(id){
+	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/delete/',id);
+	// };
+}
+
+/**
+ * @ngdoc service
+ * @name MoInventoryService
+ * @module components.auth
+ *
+ */
+angular.module('admin.rnd').service('MoInventoryService', MoInventoryService);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var mo = {
+    templateUrl: './mo.html',
+    controller: 'MoController'
+  };
+  
+  angular
+    .module('admin.rnd')
+    .component('mo', mo)
+    .config(["$stateProvider", function ($stateProvider) {
+      $stateProvider
+        .state('mo', {
+          parent: 'app',
+          url: '/admin/rnd/mo',
+          component: 'mo'
+        });
+    }]);})(window.angular);
+(function(angular){
+'use strict';
+
+  MoController.$inject = ["MoInventoryService", "$state", "_"];
+function MoController(MoInventoryService, $state, _) {
+    var ctrl = this;
+
+    MoInventoryService.list().then(function(res) {
+      ctrl.moList = res.data;
+    });
+
+    ctrl.manufactureOrder = function(mo) {
+      $state.go('mo-manufacture', {id: mo.id});
+    }
+
+    ctrl.view = function(moId) {
+      $state.go('mo-manufacture', {id: moId});
+    }
+   
+  }
+  
+  angular
+    .module('admin.rnd')
+    .controller('MoController', MoController);
+  })(window.angular);
+(function(angular){
+'use strict';
+PpInventoryService.$inject = ["$http", "globalConfig"];
+function PpInventoryService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/ppInventory');
+	};
+
+	this.save = function(data) {
+		return $http.post(globalConfig.baseUrl + '/rest/ppInventory', data);
+	};
+
+	// this.update = function(approvedItem) {
+	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/', approvedItem);
+	// };
+
+	// this.get = function(id) {
+	// 	return $http.get(globalConfig.baseUrl + '/rest/approved-items/' + id);
+	// };
+	
+	this.listByCompany = function(companyId) {
+		return $http.get(globalConfig.baseUrl + '/rest/ppInventory/company/' + companyId);
+    };
+    
+	
+	// this.delete = function(id){
+	// 	return $http.post(globalConfig.baseUrl + '/rest/approved-items/delete/',id);
+	// };
+}
+
+/**
+ * @ngdoc service
+ * @name MoInventoryService
+ * @module components.auth
+ *
+ */
+angular.module('admin.rnd').service('PpInventoryService', PpInventoryService);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var pp = {
+    templateUrl: './pp.html',
+    controller: 'PpController'
+  };
+  
+  angular
+    .module('admin.rnd')
+    .component('pp', pp)
+    .config(["$stateProvider", function ($stateProvider) {
+      $stateProvider
+        .state('pp', {
+          parent: 'app',
+          url: '/admin/rnd/pp',
+          component: 'pp'
+        });
+    }]);})(window.angular);
+(function(angular){
+'use strict';
+
+  PpController.$inject = ["$state", "_"];
+function PpController($state, _) {
+    var ctrl = this;
+
+  
+   
+  }
+  
+  angular
+    .module('admin.rnd')
+    .controller('PpController', PpController);
+  })(window.angular);
 (function(angular){
 'use strict';
 var userEdit = {
@@ -6951,6 +6860,90 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var findFgInventoryModal = {
+	bindings: {
+		fglist: '=',
+		fglistview: '=',
+		message: '@'
+	},
+	templateUrl: './find-fg-inventory-modal.html',
+	controller: 'FindFgInventoryModalController'
+};
+
+angular.module('admin.shared').component('findFgInventoryModal', findFgInventoryModal);})(window.angular);
+(function(angular){
+'use strict';
+
+FindFgInventoryModalController.$inject = ["$state", "FinishedGoodsService", "ProductInventoryService"];
+function FindFgInventoryModalController($state, FinishedGoodsService, ProductInventoryService) {
+	var ctrl = this;
+
+	ctrl.sortType = 'mis';
+	ctrl.sortReverse = false;
+
+	ctrl.checkSelected = function (fg) {
+
+		if (ctrl.fglist.findIndex(i => i.finishedGood.code === fg.finishedGood.code) !== -1) {
+			return true;
+		} else {
+			return false;
+		}
+	};
+
+	ctrl.selectFG = function (fg) {
+		console.log("BURAT :" + ctrl.fglist.indexOf(fg));
+		console.log(ctrl.fglist);
+		console.log(fg);
+		//if the value is not found in the fg list
+
+
+		//if (ctrl.fglist.indexOf(fg) !== -1) {
+		if (ctrl.fglist.findIndex(i => i.finishedGood.code === fg.finishedGood.code) !== -1) {
+			var index = ctrl.fglist.indexOf(fg);
+			ctrl.fglist.splice(index, 1);
+			console.log("splice " + index);
+		} else {
+			ctrl.fglist.push(fg);
+			console.log(fg);
+		}
+
+
+	};
+
+
+
+
+	ctrl.searchInput = function (input) {
+		//ctrl.company = $rootScope.selectedCompany;
+		//console.log("search content:" + ctrl.searchFG);
+		ProductInventoryService.listFinishedGoodView(1).then(function (response) {
+			//ctrl.fglistview = response.data;
+			//console.log(ctrl.fglistview[0].name);
+			//console.log(response);
+			ctrl.fglistview = [];
+
+			for (var i = 0; i < response.data.length; i++) {
+				if (response.data[i].finishedGood.name.toLowerCase().includes(ctrl.searchFG.toLowerCase())) {
+					ctrl.fglistview.push(response.data[i]);
+				}
+			}
+
+
+
+
+		});
+
+	};
+
+
+}
+
+angular
+	.module('admin.shared')
+	.controller('FindFgInventoryModalController', FindFgInventoryModalController);
+})(window.angular);
+(function(angular){
+'use strict';
 var findFgModal = {
 	bindings : {
 		fg : '=',
@@ -7056,90 +7049,6 @@ function FindInventoryModalController($state, InventoryService, $rootScope) {
 angular
   .module('admin.shared')
   .controller('FindInventoryModalController', FindInventoryModalController);
-})(window.angular);
-(function(angular){
-'use strict';
-var findFgInventoryModal = {
-	bindings: {
-		fglist: '=',
-		fglistview: '=',
-		message: '@'
-	},
-	templateUrl: './find-fg-inventory-modal.html',
-	controller: 'FindFgInventoryModalController'
-};
-
-angular.module('admin.shared').component('findFgInventoryModal', findFgInventoryModal);})(window.angular);
-(function(angular){
-'use strict';
-
-FindFgInventoryModalController.$inject = ["$state", "FinishedGoodsService", "ProductInventoryService"];
-function FindFgInventoryModalController($state, FinishedGoodsService, ProductInventoryService) {
-	var ctrl = this;
-
-	ctrl.sortType = 'mis';
-	ctrl.sortReverse = false;
-
-	ctrl.checkSelected = function (fg) {
-
-		if (ctrl.fglist.findIndex(i => i.finishedGood.code === fg.finishedGood.code) !== -1) {
-			return true;
-		} else {
-			return false;
-		}
-	};
-
-	ctrl.selectFG = function (fg) {
-		console.log("BURAT :" + ctrl.fglist.indexOf(fg));
-		console.log(ctrl.fglist);
-		console.log(fg);
-		//if the value is not found in the fg list
-
-
-		//if (ctrl.fglist.indexOf(fg) !== -1) {
-		if (ctrl.fglist.findIndex(i => i.finishedGood.code === fg.finishedGood.code) !== -1) {
-			var index = ctrl.fglist.indexOf(fg);
-			ctrl.fglist.splice(index, 1);
-			console.log("splice " + index);
-		} else {
-			ctrl.fglist.push(fg);
-			console.log(fg);
-		}
-
-
-	};
-
-
-
-
-	ctrl.searchInput = function (input) {
-		//ctrl.company = $rootScope.selectedCompany;
-		//console.log("search content:" + ctrl.searchFG);
-		ProductInventoryService.listFinishedGoodView(1).then(function (response) {
-			//ctrl.fglistview = response.data;
-			//console.log(ctrl.fglistview[0].name);
-			//console.log(response);
-			ctrl.fglistview = [];
-
-			for (var i = 0; i < response.data.length; i++) {
-				if (response.data[i].finishedGood.name.toLowerCase().includes(ctrl.searchFG.toLowerCase())) {
-					ctrl.fglistview.push(response.data[i]);
-				}
-			}
-
-
-
-
-		});
-
-	};
-
-
-}
-
-angular
-	.module('admin.shared')
-	.controller('FindFgInventoryModalController', FindFgInventoryModalController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -7974,6 +7883,61 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var printFgReport = {
+	templateUrl : './print-fg-report.html',
+	controller : 'PrintFgReportController'
+};
+
+angular.module('admin.shared')
+.component('printFgReport', printFgReport)
+.config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('print-fg-report', {
+        url: '/admin/shared/print-fg-report/:depotId',
+		component: 'printFgReport',
+		params: {
+			depotId: null
+		}
+	  });
+	}]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+PrintFgReportController.$inject = ["$state", "ProductInventoryService", "DepotsService", "$stateParams", "$rootScope"];
+function PrintFgReportController($state, ProductInventoryService, DepotsService, $stateParams, $rootScope) {
+  var ctrl = this;
+  
+  
+  ctrl.$onInit = function(){
+	  ctrl.company = $rootScope.selectedCompany;
+	  //ctrl.dates = ctrl.startDate + " to " + ctrl.endDate;
+	  DepotsService.get($stateParams.depotId).then(function(response){
+		  ctrl.reportType = "Finished Goods Summary Report";
+		  ctrl.dates = response.data.name;
+		  ProductInventoryService.listProductInventoryDepotReport(ctrl.company.id, response.data.id).then(function(response){
+			  console.log(response.data);
+			  ctrl.entries = response.data;
+		  }).then(() => {
+			    setTimeout(function(){
+			        window.print();
+			        window.close();
+			      }, 1500);
+			    });
+	 
+	  });
+	  
+	  
+  };
+ 
+}
+
+angular
+  .module('admin.shared')
+  .controller('PrintFgReportController', PrintFgReportController);
+})(window.angular);
+(function(angular){
+'use strict';
 var printJournalReport = {
 	templateUrl : './print-journal-report.html',
 	controller : 'PrintJournalReportController'
@@ -8028,61 +7992,6 @@ function PrintJournalReportController($state, JournalVouchersService, DepotsServ
 angular
   .module('admin.shared')
   .controller('PrintJournalReportController', PrintJournalReportController);
-})(window.angular);
-(function(angular){
-'use strict';
-var printFgReport = {
-	templateUrl : './print-fg-report.html',
-	controller : 'PrintFgReportController'
-};
-
-angular.module('admin.shared')
-.component('printFgReport', printFgReport)
-.config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('print-fg-report', {
-        url: '/admin/shared/print-fg-report/:depotId',
-		component: 'printFgReport',
-		params: {
-			depotId: null
-		}
-	  });
-	}]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-PrintFgReportController.$inject = ["$state", "ProductInventoryService", "DepotsService", "$stateParams", "$rootScope"];
-function PrintFgReportController($state, ProductInventoryService, DepotsService, $stateParams, $rootScope) {
-  var ctrl = this;
-  
-  
-  ctrl.$onInit = function(){
-	  ctrl.company = $rootScope.selectedCompany;
-	  //ctrl.dates = ctrl.startDate + " to " + ctrl.endDate;
-	  DepotsService.get($stateParams.depotId).then(function(response){
-		  ctrl.reportType = "Finished Goods Summary Report";
-		  ctrl.dates = response.data.name;
-		  ProductInventoryService.listProductInventoryDepotReport(ctrl.company.id, response.data.id).then(function(response){
-			  console.log(response.data);
-			  ctrl.entries = response.data;
-		  }).then(() => {
-			    setTimeout(function(){
-			        window.print();
-			        window.close();
-			      }, 1500);
-			    });
-	 
-	  });
-	  
-	  
-  };
- 
-}
-
-angular
-  .module('admin.shared')
-  .controller('PrintFgReportController', PrintFgReportController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -9032,110 +8941,201 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
-var searchForm = {
+
+var costing = {
   bindings: {
-    search: '=',
-    placeholder: '@',
-    button: '@',
-    message: '@',
-    onSubmit: '&',
+    id: '<'
   },
-  templateUrl: './app-searchbox.html',
-  controller: 'SearchBoxFormController'
+  templateUrl: './costing.html',
+  controller: 'CostingController'
 };
 
 angular
-  .module('admin.common')
-  .component('searchForm', searchForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-SearchBoxFormController.$inject = ["$state"];
-function SearchBoxFormController($state) {
-  var ctrl = this;
-  ctrl.$onChanges = function (changes) {
-    if (changes.search) {
-      ctrl.search = angular.copy(ctrl.search);
-    }
-  };
-
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.search));
-    ctrl.onSubmit({
-      $event: {
-    	  search: ctrl.search
-      }
-    });
-  };
-}
-
-angular
-  .module('admin.common')
-  .controller('SearchBoxFormController', SearchBoxFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var login = {
-  bindings: {
-  },
-  templateUrl: './login.html',
-  controller: 'LoginController'
-};
-
-angular
-  .module('admin.common')
-  .component('login', login)
+  .module('admin.dashboard')
+  .component('costing', costing)
   .config(["$stateProvider", function ($stateProvider) {
     $stateProvider
-      .state('login', {
-        url: '/login',
-        component: 'login'
+      .state('costing-view', {
+        parent: 'app',
+        url: '/admin/costing-view?id',
+        component: 'costing',
+        params: {
+          id: null
+        },
+        resolve: {
+          id: ["$transition$", function ($transition$) {
+            return $transition$.params();
+          }]
+        }
       });
   }]);})(window.angular);
 (function(angular){
 'use strict';
 
+CostingController.$inject = ["MoInventoryService", "ProductMovementsService", "CostingService", "$state", "EmployeesService", "_"];
+function CostingController(MoInventoryService, ProductMovementsService, CostingService, $state, EmployeesService, _) {
+  var ctrl = this;
+  ctrl.costing = {moInventory: {}, moCostingEmployees: [], moCostingInventories: [], totalCost: 0};
+  
+  ctrl.$onInit = function () {
+    console.log('CostingSaveController: id: ', ctrl.id.id);
+    CostingService.one(ctrl.id.id).then(function(res) {
+      ctrl.costing = res.data;
+      console.log('costing', ctrl.costing);
+    });
 
-LoginController.$inject = ["$state", "$rootScope", "$cookieStore", "AuthService", "UsersService"];
-function LoginController($state, $rootScope, $cookieStore, AuthService, UsersService) {
-    var ctrl = this;
-
-    ctrl.email = 'katharine@yahoo.com';
-    ctrl.password = 'test';
-
-    ctrl.login = function() {
-      console.log("login: " + ctrl.email);
-      AuthService.authenticate(ctrl.email, ctrl.password).then(function(response) {
-        console.log("LOGIN.response: " + JSON.stringify(response));
-        if (response.data) {
-          $rootScope.accessToken = response.data.token;
-          $cookieStore.put('accessToken', response.data.token);
-          
-          UsersService.me().then(function(response) {
-            console.log("### UsersService.me: " + JSON.stringify(response.data));
-            $rootScope.user = response.data;
-            localStorage.setItem('currentUser', JSON.stringify($rootScope.user));
-            $state.go('dashboard');
-          });
-        } else {
-          console.log("####  FAILED TO LOGIN");
-        }
-        
+    ctrl.findIngredientQuantity = function(itemCode) {
+      var ingredientQuantity = 0;
+      _.forEach(ctrl.costing.moInventory.recipe.activeIngredientGroup.ingredients, function(ingredient) {
+        if (ingredient.item.code === itemCode) {
+          ingredientQuantity = ingredient.quantity;
+          return;
+        } 
       });
+  
+      return ingredientQuantity;
     }
-};
+
+    // if (!ctrl.costing.moCostingInventories) {
+    //   ctrl.costing.moCostingInventories = [];
+    // }
+    
+
+    // CostingService.list().then(function(res) {
+    //   ctrl.costings = res.data;
+    // });
+
+    // if (ctrl.id.id) {
+    //   CostingService.one(ctrl.id.id).then(function(res) {
+    //     ctrl.costing = res.data;
+    //   });
+    // } else {
+    //   ctrl.costing = {};
+    // }
+
+
+    // MoInventoryService.list().then(function(res) {
+    //   ctrl.moList = res.data;
+    // });
+
+    // ProductMovementsService.list().then(function(res) {
+    //   ctrl.pmList = res.data;
+    // });
+
+    // EmployeesService.list().then(function(res) {
+    //   ctrl.employees = res.data;
+    //   console.log('employees', ctrl.employees);
+    // });
+    
+  };
+
+  // ctrl.findIngredientQuantity = function(itemCode) {
+  //   var ingredientQuantity = 0;
+  //   _.forEach(ctrl.costing.moInventory.recipe.activeIngredientGroup.ingredients, function(ingredient) {
+  //     if (ingredient.item.code === itemCode) {
+  //       ingredientQuantity = ingredient.quantity;
+  //       return;
+  //     } 
+  //   });
+
+  //   return ingredientQuantity;
+  // }
+
+  // ctrl.updateCostingModel = function() {
+  //   console.log('updateCostingModel');
+  //   if (!ctrl.costing.moCostingInventories) {
+  //     ctrl.costing.moCostingInventories = [];
+  //   }
+
+  //   _.forEach(ctrl.costing.moInventory.inventoryList, function(inventory) {
+  //     ctrl.costing.moCostingInventories.push({
+  //       inventory: inventory,
+  //       cost: inventory.cost
+  //     });
+  //   });
+
+  //   ctrl.recomputeTotal();
+  // }
+
+  // ctrl.addEmployee = function() {
+  //   if (!ctrl.costing.moCostingEmployees) {
+  //     ctrl.costing.moCostingEmployees = [];
+  //   }
+
+  //   ctrl.costing.moCostingEmployees.push({
+  //     employee: ctrl.employeeSelection,
+  //     hoursSpent: ctrl.hoursSpent,
+  //     cost: ctrl.employeeSelection.hourlyRate * ctrl.hoursSpent
+  //   });
+  //   ctrl.recomputeTotal();
+  // }
+
+  // ctrl.recomputeTotal = function() {
+  //   ctrl.costing.totalCost = 0;
+  //   _.forEach(ctrl.costing.moCostingEmployees, function(moCostingEmployee) {
+  //     console.log('moCostingEmployee', moCostingEmployee);
+  //     ctrl.costing.totalCost += moCostingEmployee.cost;
+  //   });
+
+  //   _.forEach(ctrl.costing.moInventory.inventoryList, function(inv) {
+  //     ctrl.costing.totalCost += inv.cost;
+  //   });
+
+  //   console.log('total', ctrl.costing.totalCost);
+  // }
+
+  // ctrl.save = function (event) {
+  //   ctrl.updateCostingModel();
+
+  //   return CostingService
+  //     .save(ctrl.costing)
+  //     .then(function () {
+  //       $state.go('costings');
+  //     });
+  // };
+}
+
+angular
+  .module('admin.dashboard')
+  .controller('CostingController', CostingController);})(window.angular);
+(function(angular){
+'use strict';
+ClassificationsService.$inject = ["$http", "globalConfig"];
+function ClassificationsService($http, globalConfig) {
+
+	this.list = function() {
+		return $http.get(globalConfig.baseUrl + '/rest/classifications');
+	};
+
+	this.save = function(classification) {
+		return $http.post(globalConfig.baseUrl + '/rest/classifications', classification);
+	};
+
+	this.update = function(classification) {
+		return $http.post(globalConfig.baseUrl + '/rest/classifications/', classification);
+	};
+
+	this.get = function(id) {
+		return $http.get(globalConfig.baseUrl + '/rest/classifications/' + id);
+	};
+	
+	this.delete = function(id){
+		return $http.post(globalConfig.baseUrl + '/rest/classifications/delete/',id);
+	};
+	
+	this.listTypes = function(){
+		return $http.get(globalConfig.baseUrl + '/rest/classifications/types');
+	};
+}
 
 /**
- * @ngdoc type
- * @module admin.common
- * @name AppController
+ * @ngdoc service
+ * @name ClassificationsService
+ * @module components.auth
  *
  */
-angular
-  .module('admin.common')
-  .controller('LoginController', LoginController);})(window.angular);
+angular.module('admin.maintenance').service('ClassificationsService', ClassificationsService);
+})(window.angular);
 (function(angular){
 'use strict';
 var cashReceiptVoucherForm = {
@@ -9806,6 +9806,201 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var debitMemoForm = {
+  bindings: {
+    dm: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './debit-memo-form.html',
+  controller: 'DebitMemoFormController'
+};
+
+angular
+  .module('admin.accounting')
+  .component('debitMemoForm', debitMemoForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+DebitMemoFormController.$inject = ["$state", "DebitMemosService", "MemoTypesService", "UsersService", "SalesSlipsService"];
+function DebitMemoFormController($state, DebitMemosService, MemoTypesService, UsersService, SalesSlipsService) {
+  var ctrl = this;
+  
+  ctrl.$onChanges = function (changes) {
+    if (changes.dm) {
+      ctrl.dm = angular.copy(ctrl.dm);
+    }
+  };
+  
+  ctrl.$onInit = function(){
+	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+
+	  MemoTypesService.listByType("DM").then(function(response){
+		  ctrl.memoTypes = response.data;
+	  });
+	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.depots = response.data.depots;
+	  });
+	  
+	  ctrl.dm.memoSlipType = "DM";
+  };
+  
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.dm));
+    
+    ctrl.onSubmit({
+      $event: {
+    	  dm: ctrl.dm
+      }
+    });
+  };
+  
+  ctrl.loadSalesSlips = function() {
+	  console.log("asd");
+	  SalesSlipsService.listByDepotAndStatus(ctrl.dm.depot.id, ["Pending","Incomplete"]).then(function(response){
+		  ctrl.salesSlips = response.data;
+		  console.log("hello" + JSON.stringify(ctrl.salesSlips));
+		  $("#findSalesSlipModal").modal("show");
+	  });
+  };
+  
+
+
+
+  
+}
+
+angular
+  .module('admin.accounting')
+  .controller('DebitMemoFormController', DebitMemoFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+var debitMemoNew = {
+  templateUrl: './debit-memo-new.html',
+  controller: 'DebitMemoNewController'
+};
+
+angular
+  .module('admin.accounting')
+  .component('debitMemoNew', debitMemoNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('debit-memo-new', {
+        parent: 'app',
+        url: '/admin/accounting/debit-memo/new',
+        component: 'debitMemoNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+DebitMemoNewController.$inject = ["$state", "DebitMemosService", "CompanyService", "DepartmentsService", "PermissionsService"];
+function DebitMemoNewController($state, DebitMemosService, CompanyService, DepartmentsService, PermissionsService) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.company = JSON.parse(window.localStorage.getItem('company'));
+    ctrl.dm = {
+    		date: new Date()
+    };
+  };
+
+  ctrl.createDebitMemo = function (event) {
+	console.log("create " + JSON.stringify(event.dm));
+    DebitMemosService.save(event.dm).then(function () {
+      $state.go('debit-memos');
+    });
+
+  };
+}
+
+angular
+  .module('admin.accounting')
+  .controller('DebitMemoNewController', DebitMemoNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var debitMemo = {
+  templateUrl: './debit-memos.html',
+  controller: 'DebitMemoController'
+};
+
+angular
+  .module('admin.accounting')
+  .component('debitMemo', debitMemo)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('debit-memos', {
+        parent: 'app',
+        url: '/admin/accounting/debit-memo',
+        component: 'debitMemo'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+DebitMemoController.$inject = ["$state", "DebitMemosService", "UsersService", "$rootScope", "_"];
+function DebitMemoController($state, DebitMemosService, UsersService, $rootScope, _) {
+  var ctrl = this;
+  ctrl.debitMemos = [];
+
+  
+  ctrl.sortType = 'date';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addDebitMemo = false;
+	  ctrl.error = null;
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.userAssignedDepots = response.data.depots;
+	  });
+  };
+  
+  ctrl.selectDepot = function (){
+	  loadDebitMemos();
+  };
+  
+  function loadDebitMemos(){
+	  DebitMemosService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
+	  	  console.log("list response: {}", response.data);
+		  ctrl.debitMemos = response.data;
+	  });
+  }
+  
+  ctrl.searchPrf = function(event){
+	  ctrl.debitMemoTable.DataTable.search(event).draw();
+  };
+  
+  ctrl.createNewDebitMemo = function (event) {
+	    console.log('createNewDebitMemo');
+	    $state.go('debit-memo-new');
+  };
+  
+  ctrl.openModal = function(debitMemo){
+	  console.log("show modal" +  ctrl.showModal);
+	  console.log("debitMemo" + JSON.stringify(debitMemo));
+	  ctrl.debitMemo = debitMemo;
+	  $('#debitMemoInfoModal').modal('show');
+	  
+  };
+  
+}
+
+angular
+  .module('admin.accounting')
+  .controller('DebitMemoController', DebitMemoController);
+})(window.angular);
+(function(angular){
+'use strict';
 var creditMemoForm = {
   bindings: {
     cm: '=',
@@ -10018,201 +10213,6 @@ function CreditMemoController($state, CreditMemosService, ReportsService, UsersS
 angular
   .module('admin.accounting')
   .controller('CreditMemoController', CreditMemoController);
-})(window.angular);
-(function(angular){
-'use strict';
-var debitMemoForm = {
-  bindings: {
-    dm: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './debit-memo-form.html',
-  controller: 'DebitMemoFormController'
-};
-
-angular
-  .module('admin.accounting')
-  .component('debitMemoForm', debitMemoForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-DebitMemoFormController.$inject = ["$state", "DebitMemosService", "MemoTypesService", "UsersService", "SalesSlipsService"];
-function DebitMemoFormController($state, DebitMemosService, MemoTypesService, UsersService, SalesSlipsService) {
-  var ctrl = this;
-  
-  ctrl.$onChanges = function (changes) {
-    if (changes.dm) {
-      ctrl.dm = angular.copy(ctrl.dm);
-    }
-  };
-  
-  ctrl.$onInit = function(){
-	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-
-	  MemoTypesService.listByType("DM").then(function(response){
-		  ctrl.memoTypes = response.data;
-	  });
-	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.depots = response.data.depots;
-	  });
-	  
-	  ctrl.dm.memoSlipType = "DM";
-  };
-  
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.dm));
-    
-    ctrl.onSubmit({
-      $event: {
-    	  dm: ctrl.dm
-      }
-    });
-  };
-  
-  ctrl.loadSalesSlips = function() {
-	  console.log("asd");
-	  SalesSlipsService.listByDepotAndStatus(ctrl.dm.depot.id, ["Pending","Incomplete"]).then(function(response){
-		  ctrl.salesSlips = response.data;
-		  console.log("hello" + JSON.stringify(ctrl.salesSlips));
-		  $("#findSalesSlipModal").modal("show");
-	  });
-  };
-  
-
-
-
-  
-}
-
-angular
-  .module('admin.accounting')
-  .controller('DebitMemoFormController', DebitMemoFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-var debitMemoNew = {
-  templateUrl: './debit-memo-new.html',
-  controller: 'DebitMemoNewController'
-};
-
-angular
-  .module('admin.accounting')
-  .component('debitMemoNew', debitMemoNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('debit-memo-new', {
-        parent: 'app',
-        url: '/admin/accounting/debit-memo/new',
-        component: 'debitMemoNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-DebitMemoNewController.$inject = ["$state", "DebitMemosService", "CompanyService", "DepartmentsService", "PermissionsService"];
-function DebitMemoNewController($state, DebitMemosService, CompanyService, DepartmentsService, PermissionsService) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.company = JSON.parse(window.localStorage.getItem('company'));
-    ctrl.dm = {
-    		date: new Date()
-    };
-  };
-
-  ctrl.createDebitMemo = function (event) {
-	console.log("create " + JSON.stringify(event.dm));
-    DebitMemosService.save(event.dm).then(function () {
-      $state.go('debit-memos');
-    });
-
-  };
-}
-
-angular
-  .module('admin.accounting')
-  .controller('DebitMemoNewController', DebitMemoNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var debitMemo = {
-  templateUrl: './debit-memos.html',
-  controller: 'DebitMemoController'
-};
-
-angular
-  .module('admin.accounting')
-  .component('debitMemo', debitMemo)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('debit-memos', {
-        parent: 'app',
-        url: '/admin/accounting/debit-memo',
-        component: 'debitMemo'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-DebitMemoController.$inject = ["$state", "DebitMemosService", "UsersService", "$rootScope", "_"];
-function DebitMemoController($state, DebitMemosService, UsersService, $rootScope, _) {
-  var ctrl = this;
-  ctrl.debitMemos = [];
-
-  
-  ctrl.sortType = 'date';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addDebitMemo = false;
-	  ctrl.error = null;
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.userAssignedDepots = response.data.depots;
-	  });
-  };
-  
-  ctrl.selectDepot = function (){
-	  loadDebitMemos();
-  };
-  
-  function loadDebitMemos(){
-	  DebitMemosService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
-	  	  console.log("list response: {}", response.data);
-		  ctrl.debitMemos = response.data;
-	  });
-  }
-  
-  ctrl.searchPrf = function(event){
-	  ctrl.debitMemoTable.DataTable.search(event).draw();
-  };
-  
-  ctrl.createNewDebitMemo = function (event) {
-	    console.log('createNewDebitMemo');
-	    $state.go('debit-memo-new');
-  };
-  
-  ctrl.openModal = function(debitMemo){
-	  console.log("show modal" +  ctrl.showModal);
-	  console.log("debitMemo" + JSON.stringify(debitMemo));
-	  ctrl.debitMemo = debitMemo;
-	  $('#debitMemoInfoModal').modal('show');
-	  
-  };
-  
-}
-
-angular
-  .module('admin.accounting')
-  .controller('DebitMemoController', DebitMemoController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -10795,6 +10795,56 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var pdcVoucherNew = {
+  templateUrl: './pdc-voucher-new.html',
+  controller: 'PdcVoucherNewController'
+};
+
+angular
+  .module('admin.accounting')
+  .component('pdcVoucherNew', pdcVoucherNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('pdc-voucher-new', {
+        parent: 'app',
+        url: '/admin/accounting/pdc-voucher/new',
+        component: 'pdcVoucherNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+PdcVoucherNewController.$inject = ["$state", "PdcVouchersService", "$rootScope"];
+function PdcVoucherNewController($state, PdcVouchersService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.company = $rootScope.selectedCompany;
+    ctrl.pdc = {
+    		company: ctrl.company,
+    		date: new Date()
+    }
+    };
+
+  ctrl.createPdcVoucher = function (event) {
+    PdcVouchersService.save(event.pdc).then(function (response) {
+    	  console.log("createPdcVoucher " + JSON.stringify(response.data));
+    	  alert("PDC Voucher successfully added");
+    	  $state.go("pdc-vouchers");
+    });
+
+  };
+}
+
+angular
+  .module('admin.accounting')
+  .controller('PdcVoucherNewController', PdcVoucherNewController);
+})(window.angular);
+(function(angular){
+'use strict';
 
 var pdcVoucher = {
   templateUrl: './pdc-vouchers.html',
@@ -10865,56 +10915,6 @@ function PdcVoucherController($state, PdcVouchersService, $rootScope) {
 angular
   .module('admin.accounting')
   .controller('PdcVoucherController', PdcVoucherController);
-})(window.angular);
-(function(angular){
-'use strict';
-var pdcVoucherNew = {
-  templateUrl: './pdc-voucher-new.html',
-  controller: 'PdcVoucherNewController'
-};
-
-angular
-  .module('admin.accounting')
-  .component('pdcVoucherNew', pdcVoucherNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('pdc-voucher-new', {
-        parent: 'app',
-        url: '/admin/accounting/pdc-voucher/new',
-        component: 'pdcVoucherNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-PdcVoucherNewController.$inject = ["$state", "PdcVouchersService", "$rootScope"];
-function PdcVoucherNewController($state, PdcVouchersService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.company = $rootScope.selectedCompany;
-    ctrl.pdc = {
-    		company: ctrl.company,
-    		date: new Date()
-    }
-    };
-
-  ctrl.createPdcVoucher = function (event) {
-    PdcVouchersService.save(event.pdc).then(function (response) {
-    	  console.log("createPdcVoucher " + JSON.stringify(response.data));
-    	  alert("PDC Voucher successfully added");
-    	  $state.go("pdc-vouchers");
-    });
-
-  };
-}
-
-angular
-  .module('admin.accounting')
-  .controller('PdcVoucherNewController', PdcVoucherNewController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -11721,6 +11721,95 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var employeeForm = {
+  bindings: {
+    employee: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './employee-form.html',
+  controller: 'EmployeeFormController'
+};
+
+angular
+  .module('admin.dashboard')
+  .component('employeeForm', employeeForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+EmployeeFormController.$inject = ["$state", "EmployeesService", "$rootScope", "_"];
+function EmployeeFormController($state, EmployeesService, $rootScope, _) {
+  var ctrl = this;
+  
+  ctrl.$onChanges = function (changes) {
+    if (changes.employee) {
+      ctrl.employee = angular.copy(ctrl.employee);
+    }
+  };
+  
+  ctrl.submitForm = function () {	   
+    console.log('submitForm: ' + JSON.stringify(ctrl.employee));
+    ctrl.onSubmit({
+      $event: {
+    	  employee: ctrl.employee
+      }
+    });
+  };
+  
+}
+
+angular
+  .module('admin.dashboard')
+  .controller('EmployeeFormController', EmployeeFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+var employeeNew = {
+  templateUrl: './employee-new.html',
+  controller: 'EmployeeNewController'
+};
+
+angular
+  .module('admin.dashboard')
+  .component('employeeNew', employeeNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('employee-new', {
+        parent: 'app',
+        url: '/admin/dashboard/employee/new',
+        component: 'employeeNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+EmployeeNewController.$inject = ["$state", "EmployeesService", "$rootScope"];
+function EmployeeNewController($state, EmployeesService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+  };
+
+  ctrl.createEmployee = function (event) {
+    EmployeesService.save(event.employee).then(function (response) {
+    	  console.log("create " + JSON.stringify(response.data));
+        $state.go('employee');
+    });
+
+  };
+}
+
+angular
+  .module('admin.dashboard')
+  .controller('EmployeeNewController', EmployeeNewController);
+})(window.angular);
+(function(angular){
+'use strict';
 
 var employee = {
   templateUrl: './employees.html',
@@ -11786,95 +11875,6 @@ function EmployeesController($state, EmployeesService, $rootScope, _) {
 angular
   .module('admin.dashboard')
   .controller('EmployeesController', EmployeesController);
-})(window.angular);
-(function(angular){
-'use strict';
-var employeeNew = {
-  templateUrl: './employee-new.html',
-  controller: 'EmployeeNewController'
-};
-
-angular
-  .module('admin.dashboard')
-  .component('employeeNew', employeeNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('employee-new', {
-        parent: 'app',
-        url: '/admin/dashboard/employee/new',
-        component: 'employeeNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-EmployeeNewController.$inject = ["$state", "EmployeesService", "$rootScope"];
-function EmployeeNewController($state, EmployeesService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-  };
-
-  ctrl.createEmployee = function (event) {
-    EmployeesService.save(event.employee).then(function (response) {
-    	  console.log("create " + JSON.stringify(response.data));
-        $state.go('employee');
-    });
-
-  };
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('EmployeeNewController', EmployeeNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-var employeeForm = {
-  bindings: {
-    employee: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './employee-form.html',
-  controller: 'EmployeeFormController'
-};
-
-angular
-  .module('admin.dashboard')
-  .component('employeeForm', employeeForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-EmployeeFormController.$inject = ["$state", "EmployeesService", "$rootScope", "_"];
-function EmployeeFormController($state, EmployeesService, $rootScope, _) {
-  var ctrl = this;
-  
-  ctrl.$onChanges = function (changes) {
-    if (changes.employee) {
-      ctrl.employee = angular.copy(ctrl.employee);
-    }
-  };
-  
-  ctrl.submitForm = function () {	   
-    console.log('submitForm: ' + JSON.stringify(ctrl.employee));
-    ctrl.onSubmit({
-      $event: {
-    	  employee: ctrl.employee
-      }
-    });
-  };
-  
-}
-
-angular
-  .module('admin.dashboard')
-  .controller('EmployeeFormController', EmployeeFormController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -14145,6 +14145,137 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var bankAccountForm = {
+  bindings: {
+    bankaccount: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './bank-account-form.html',
+  controller: 'BankAccountFormController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('bankAccountForm', bankAccountForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+BankAccountFormController.$inject = ["$state", "BankAccountsService"];
+function BankAccountFormController($state, BankAccountsService) {
+  var ctrl = this;
+  ctrl.$onChanges = function (changes) {
+    if (changes.bankaccount) {
+      ctrl.bankaccount = angular.copy(ctrl.bankaccount);
+    }
+  };
+
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.bankaccount));
+    ctrl.onSubmit({
+      $event: {
+    	  bankaccount: ctrl.bankaccount
+      }
+    });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('BankAccountFormController', BankAccountFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var bankAccount = {
+  templateUrl: './bank-accounts.html',
+  controller: 'BankAccountController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('bankAccount', bankAccount)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('bankAccounts', {
+        parent: 'app',
+        url: '/admin/maintenance/bank-account',
+        component: 'bankAccount'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+BankAccountController.$inject = ["$state", "BankAccountsService", "_"];
+function BankAccountController($state, BankAccountsService, _) {
+  var ctrl = this;
+  ctrl.bankAccounts = [];
+
+  ctrl.searchCode = '';
+  ctrl.searchName = '';
+  ctrl.sortType = 'id';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addBankAccount = false;
+	  ctrl.error = null;
+    ctrl.getData(ctrl.currentPage);
+  };
+  
+  function loadBankAccounts(){
+	  BankAccountsService.list().then(function(response){
+		  console.log("list response: " + JSON.stringify(response.data));
+		  ctrl.bankAccounts = response.data;
+	  });
+  }
+
+  ctrl.totalCount = 0;
+  ctrl.itemsPerPage = 30;
+  ctrl.currentPage = 1;
+
+  ctrl.getData = function(page) {
+    BankAccountsService.paginate(ctrl.itemsPerPage, (page - 1) * ctrl.itemsPerPage).then((res) => {
+      var data = res.data;
+      ctrl.currentPage = page;
+      ctrl.totalCount = data.totalElements;
+      ctrl.bankAccounts = data.content;
+    });
+  }
+  
+  ctrl.showAddBankAccount = function (show){
+	  ctrl.addBankAccount = show;
+  };
+  
+  ctrl.editBankAccount = function (id) {
+	  BankAccountsService.get(id).then(function(response){
+		  ctrl.bankaccount = response.data;
+	  });
+	  ctrl.addBankAccount = true;
+  };
+  
+  ctrl.saveBankAccount = function (event) {
+	    BankAccountsService.save(event.bankaccount).then(function () {
+          ctrl.getData(ctrl.currentPage);
+	    	  ctrl.showAddBankAccount(false);
+	    	  ctrl.bankaccount = null;
+	    });
+  };
+  
+  ctrl.deleteBankAccount = function (id){
+	  BankAccountsService.delete(id).then(function(response){
+		  ctrl.getData(ctrl.currentPage);
+	  });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('BankAccountController', BankAccountController);
+})(window.angular);
+(function(angular){
+'use strict';
 var accountTitleForm = {
   bindings: {
     accounttitle: '=',
@@ -14297,513 +14428,6 @@ function AccountTitleController($state, AccountTitlesService, _) {
 angular
   .module('admin.maintenance')
   .controller('AccountTitleController', AccountTitleController);
-})(window.angular);
-(function(angular){
-'use strict';
-var bankAccountForm = {
-  bindings: {
-    bankaccount: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './bank-account-form.html',
-  controller: 'BankAccountFormController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('bankAccountForm', bankAccountForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-BankAccountFormController.$inject = ["$state", "BankAccountsService"];
-function BankAccountFormController($state, BankAccountsService) {
-  var ctrl = this;
-  ctrl.$onChanges = function (changes) {
-    if (changes.bankaccount) {
-      ctrl.bankaccount = angular.copy(ctrl.bankaccount);
-    }
-  };
-
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.bankaccount));
-    ctrl.onSubmit({
-      $event: {
-    	  bankaccount: ctrl.bankaccount
-      }
-    });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('BankAccountFormController', BankAccountFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var bankAccount = {
-  templateUrl: './bank-accounts.html',
-  controller: 'BankAccountController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('bankAccount', bankAccount)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('bankAccounts', {
-        parent: 'app',
-        url: '/admin/maintenance/bank-account',
-        component: 'bankAccount'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-BankAccountController.$inject = ["$state", "BankAccountsService", "_"];
-function BankAccountController($state, BankAccountsService, _) {
-  var ctrl = this;
-  ctrl.bankAccounts = [];
-
-  ctrl.searchCode = '';
-  ctrl.searchName = '';
-  ctrl.sortType = 'id';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addBankAccount = false;
-	  ctrl.error = null;
-    ctrl.getData(ctrl.currentPage);
-  };
-  
-  function loadBankAccounts(){
-	  BankAccountsService.list().then(function(response){
-		  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.bankAccounts = response.data;
-	  });
-  }
-
-  ctrl.totalCount = 0;
-  ctrl.itemsPerPage = 30;
-  ctrl.currentPage = 1;
-
-  ctrl.getData = function(page) {
-    BankAccountsService.paginate(ctrl.itemsPerPage, (page - 1) * ctrl.itemsPerPage).then((res) => {
-      var data = res.data;
-      ctrl.currentPage = page;
-      ctrl.totalCount = data.totalElements;
-      ctrl.bankAccounts = data.content;
-    });
-  }
-  
-  ctrl.showAddBankAccount = function (show){
-	  ctrl.addBankAccount = show;
-  };
-  
-  ctrl.editBankAccount = function (id) {
-	  BankAccountsService.get(id).then(function(response){
-		  ctrl.bankaccount = response.data;
-	  });
-	  ctrl.addBankAccount = true;
-  };
-  
-  ctrl.saveBankAccount = function (event) {
-	    BankAccountsService.save(event.bankaccount).then(function () {
-          ctrl.getData(ctrl.currentPage);
-	    	  ctrl.showAddBankAccount(false);
-	    	  ctrl.bankaccount = null;
-	    });
-  };
-  
-  ctrl.deleteBankAccount = function (id){
-	  BankAccountsService.delete(id).then(function(response){
-		  ctrl.getData(ctrl.currentPage);
-	  });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('BankAccountController', BankAccountController);
-})(window.angular);
-(function(angular){
-'use strict';
-var classificationForm = {
-  bindings: {
-    classification: '=',
-    company: '<',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './classification-form.html',
-  controller: 'ClassificationFormController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('classificationForm', classificationForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-ClassificationFormController.$inject = ["$state", "ClassificationsService"];
-function ClassificationFormController($state, ClassificationsService) {
-  var ctrl = this;
-
-  ctrl.$onChanges = function (changes) {
-    if (changes.classification) {
-      ctrl.classification = angular.copy(ctrl.classification);
-    }
-  };
-  
-  ctrl.$onInit = function() {
-	  //ClassificationsService.listTypes().then(function(response){
-//		  ctrl.types = response.data;
-//	  });
-  };
-
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.classification));
-    ctrl.onSubmit({
-      $event: {
-        classification: ctrl.classification
-      }
-    });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('ClassificationFormController', ClassificationFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var classification = {
-  templateUrl: './classifications.html',
-  controller: 'ClassificationController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('classification', classification)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('classifications', {
-        parent: 'app',
-        url: '/admin/maintenance/classification',
-        component: 'classification'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-ClassificationController.$inject = ["$state", "ClassificationsService", "$rootScope", "_"];
-function ClassificationController($state, ClassificationsService, $rootScope, _) {
-  var ctrl = this;
-  ctrl.classifications = [];
-  ctrl.companies = [];
-
-  ctrl.searchCode = '';
-  ctrl.searchName = '';
-
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addClassification = false;
-	  ctrl.error = null;
-	  loadClassifications();
-  };
-  
-  function loadClassifications(){
-	  ClassificationsService.list().then(function(response){
-		  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.classifications = response.data;
-	  });
-  }
-  
-  ctrl.showAddClassification = function (show){
-	  ctrl.addClassification = show;
-  };
-  
-  ctrl.editClassification = function (id) {
-	  ClassificationsService.get(id).then(function(response){
-		  ctrl.classification = response.data;
-	  });
-	  ctrl.addClassification = true;
-  };
-  
-  ctrl.saveClassification = function (event) {
-	    ClassificationsService.save(event.classification).then(function () {
-	    	  loadClassifications();
-	    	  ctrl.showAddClassification(false);
-	    });
-  };
-  
-  ctrl.deleteClassification = function (id){
-	  ClassificationsService.delete(id).then(function(response){
-		  loadClassifications();
-	  });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('ClassificationController', ClassificationController);
-})(window.angular);
-(function(angular){
-'use strict';
-var clientInformationEdit = {
-  templateUrl: './client-information-edit.html',
-  controller: 'ClientInformationEditController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('clientInformationEdit', clientInformationEdit)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('client-information-edit', {
-        parent: 'app',
-        url: '/admin/maintenance/client-information/edit/:clientId',
-        component: 'clientInformationEdit'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-ClientInformationEditController.$inject = ["$state", "$stateParams", "ClientsService", "$rootScope"];
-function ClientInformationEditController($state, $stateParams, ClientsService, $rootScope) {
-  var ctrl = this;
-  ctrl.client = {};
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    
-    console.log('clientId: ' + JSON.stringify($stateParams.clientId));
-    
-    
-      
-    ClientsService.get($stateParams.clientId).then(function (response) {
-      ctrl.client = response.data;
-    });
-    
- 
-  };
-  ctrl.edit = function (event) {
-    console.log('ClientInformationEditController edit');
-    var client =  JSON.parse(JSON.stringify(event.client));
-  
-
-    ClientsService.update(client).then(function () {
-      $state.go('client-informations');
-    });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('ClientInformationEditController', ClientInformationEditController);
-})(window.angular);
-(function(angular){
-'use strict';
-var clientInformationForm = {
-  bindings: {
-    client: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './client-information-form.html',
-  controller: 'ClientInformationFormController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('clientInformationForm', clientInformationForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-ClientInformationFormController.$inject = ["$state", "ClusterCodesService", "SalesRepsService", "InstitutionalCodesService", "_"];
-function ClientInformationFormController($state, ClusterCodesService, SalesRepsService, InstitutionalCodesService,_) {
-  var ctrl = this;
-
-  var currentUser = localStorage.getItem('currentUser');
-      if (currentUser != null) {
-          ctrl.currentUser = JSON.parse(currentUser);
-      }
-  
-  ctrl.$onInit = function (){
-    ClusterCodesService.list().then(function(response){
-      ctrl.clusters = response.data;
-    });
-    SalesRepsService.list().then(function(response){
-      ctrl.salesReps = response.data;
-    });
-
-    InstitutionalCodesService.list().then(function(response){
-      ctrl.institutionalCodes = response.data;
-    });
-  };
-  
-  ctrl.$onChanges = function (changes) {
-    if (changes.client) {
-      ctrl.client = angular.copy(ctrl.client);
-    }
-  };
-
-  ctrl.addReference = function() {
-    console.log("addReference clicked");
-    ctrl.client.clientReferencesList.push({
-      name: "", type: "", branch: "", telephoneNumber: ""
-    });
-  }
-
-
-
-  
-  ctrl.submitForm = function () {
-    ctrl.onSubmit({
-      $event: {
-    	  client: ctrl.client
-      }
-    });
-  };
-  
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('ClientInformationFormController', ClientInformationFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-var clientInformationNew = {
-  templateUrl: './client-information-new.html',
-  controller: 'ClientInformationNewController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('clientInformationNew', clientInformationNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('client-information-new', {
-        parent: 'app',
-        url: '/admin/maintenance/client-information/new',
-        component: 'clientInformationNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-ClientInformationNewController.$inject = ["$state", "ClientsService", "$rootScope"];
-function ClientInformationNewController($state, ClientsService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.client = {
-        company: $rootScope.selectedCompany,
-        clientReferencesList: []
-    };
-  };
-
-  ctrl.createClient = function (event) {
-    ClientsService.save(event.client).then(function (response) {
-    	  console.log("createClient " + JSON.stringify(response.data));
-        $state.go('client-informations');
-    });
-
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('ClientInformationNewController', ClientInformationNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var clientInformation = {
-  templateUrl: './client-informations.html',
-  controller: 'ClientInformationsController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('clientInformation', clientInformation)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('client-informations', {
-        parent: 'app',
-        url: '/admin/maintenance/client-information',
-        component: 'clientInformation'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-ClientInformationsController.$inject = ["$state", "$rootScope", "_", "ClientsService"];
-function ClientInformationsController($state, $rootScope, _, ClientsService) {
-  var ctrl = this;
-  ctrl.clientInformations = [];
-  ctrl.totalClients = 0;
-  ctrl.clientsPerPage = 1;
-
-  ctrl.company = $rootScope.selectedCompany;
-  getResultsPage(1);
-  
-  ctrl.pagination = {
-    current: 1
-  };
-
-  ctrl.pageChanged = function(newPage) {
-    getResultsPage(newPage);
-  };
-
-  function getResultsPage(pageNumber) {
-    // this is just an example, in reality this stuff should be in a service
-    ClientsService.paginateByCompany(ctrl.company.id, ctrl.clientsPerPage, pageNumber-1)
-        .then(function(result) {
-            console.log(result.data);
-            ctrl.clients = result.data.content;
-            ctrl.totalClients = 3;
-        });
-  }
-
-  ctrl.sortType = 'name';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-    
-	  ctrl.addPurchaseRequest = false;
-	  ctrl.error = null;
-	  
-  };
-  
-  function loadClients(){
-    ClientsService.list().then((response) => {
-      ctrl.clientInformations = response.data;
-    });
-	  
-  }
-
-  ctrl.goToEdit = function(id) {
-    $state.go("client-information-edit",  { 'clientId': id });
-  }
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('ClientInformationsController', ClientInformationsController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -15266,137 +14890,6 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
-var finishedGoodForm = {
-  bindings: {
-    finishedgood: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './finished-good-form.html',
-  controller: 'FinishedGoodFormController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('finishedGoodForm', finishedGoodForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-FinishedGoodFormController.$inject = ["$state", "FinishedGoodsService"];
-function FinishedGoodFormController($state, FinishedGoodsService) {
-  var ctrl = this;
-  ctrl.$onChanges = function (changes) {
-    if (changes.finishedgood) {
-      ctrl.finishedgood = angular.copy(ctrl.finishedgood);
-    }
-  };
-
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.finishedgood));
-    ctrl.onSubmit({
-      $event: {
-    	  finishedgood: ctrl.finishedgood
-      }
-    });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('FinishedGoodFormController', FinishedGoodFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var finishedGood = {
-  templateUrl: './finished-goods.html',
-  controller: 'FinishedGoodController'
-};
-
-angular
-  .module('admin.maintenance')
-  .component('finishedGood', finishedGood)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('finishedGoods', {
-        parent: 'app',
-        url: '/admin/maintenance/finished-good',
-        component: 'finishedGood'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-FinishedGoodController.$inject = ["$state", "FinishedGoodsService", "_"];
-function FinishedGoodController($state, FinishedGoodsService, _) {
-  var ctrl = this;
-  ctrl.finishedGoods = [];
-
-  ctrl.searchCode = '';
-  ctrl.searchName = '';
-  ctrl.sortType = 'id';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addFinishedGood = false;
-	  ctrl.error = null;
-    ctrl.getData(ctrl.currentPage);
-  };
-  
-  function loadFinishedGoods(){
-	  FinishedGoodsService.list().then(function(response){
-		  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.finishedGoods = response.data;
-	  });
-  }
-
-  ctrl.totalCount = 0;
-  ctrl.itemsPerPage = 30;
-  ctrl.currentPage = 1;
-
-  ctrl.getData = function(page) {
-    FinishedGoodsService.paginate(ctrl.itemsPerPage, (page - 1) * ctrl.itemsPerPage).then((res) => {
-      var data = res.data;
-      ctrl.currentPage = page;
-      ctrl.totalCount = data.totalElements;
-      ctrl.finishedGoods = data.content;
-    });
-  }
-  
-  ctrl.showAddFinishedGood = function (show){
-	  ctrl.addFinishedGood = show;
-  };
-  
-  ctrl.editFinishedGood = function (id) {
-	  FinishedGoodsService.get(id).then(function(response){
-		  ctrl.finishedgood = response.data;
-	  });
-	  ctrl.addFinishedGood = true;
-  };
-  
-  ctrl.saveFinishedGood = function (event) {
-	    FinishedGoodsService.save(event.finishedgood).then(function () {
-          ctrl.getData(ctrl.currentPage);
-	    	  ctrl.showAddFinishedGood(false);
-	    	  ctrl.finishedgood = null;
-	    });
-  };
-  
-  ctrl.deleteFinishedGood = function (id){
-	  FinishedGoodsService.delete(id).then(function(response){
-		  ctrl.getData(ctrl.currentPage);
-	  });
-  };
-}
-
-angular
-  .module('admin.maintenance')
-  .controller('FinishedGoodController', FinishedGoodController);
-})(window.angular);
-(function(angular){
-'use strict';
 var itemTypeForm = {
   bindings: {
     itemtype: '=',
@@ -15641,44 +15134,39 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
-var procedureForm = {
+var memoTypeForm = {
   bindings: {
-    procedure: '=',
+    memotype: '=',
     button: '@',
     message: '@',
     onSubmit: '&'
   },
-  templateUrl: './procedure-form.html',
-  controller: 'ProcedureFormController'
+  templateUrl: './memo-type-form.html',
+  controller: 'MemoTypeFormController'
 };
 
 angular
   .module('admin.maintenance')
-  .component('procedureForm', procedureForm);
+  .component('memoTypeForm', memoTypeForm);
 })(window.angular);
 (function(angular){
 'use strict';
 
-ProcedureFormController.$inject = ["$state", "ProceduresService", "ProcedureAreasService"];
-function ProcedureFormController($state, ProceduresService, ProcedureAreasService) {
+MemoTypeFormController.$inject = ["$state", "MemoTypesService"];
+function MemoTypeFormController($state, MemoTypesService) {
   var ctrl = this;
-  ctrl.procedureTypes = [];
+
   ctrl.$onChanges = function (changes) {
-    if (changes.procedure) {
-      ctrl.procedure = angular.copy(ctrl.procedure);
+    if (changes.memotype) {
+      ctrl.memotype = angular.copy(ctrl.memotype);
     }
   };
-  
-  ctrl.$onInit = function(){
-	  ProcedureAreasService.list().then(function(response){
-		  ctrl.procedureAreas = response.data;
-	  });
-  };
+
   ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.procedure));
+    console.log('submitForm: ' + JSON.stringify(ctrl.memotype));
     ctrl.onSubmit({
       $event: {
-    	  procedure: ctrl.procedure
+    	  memotype: ctrl.memotype
       }
     });
   };
@@ -15686,81 +15174,81 @@ function ProcedureFormController($state, ProceduresService, ProcedureAreasServic
 
 angular
   .module('admin.maintenance')
-  .controller('ProcedureFormController', ProcedureFormController);
+  .controller('MemoTypeFormController', MemoTypeFormController);
 })(window.angular);
 (function(angular){
 'use strict';
 
-var procedure = {
-  templateUrl: './procedures.html',
-  controller: 'ProcedureController'
+var memoType = {
+  templateUrl: './memo-types.html',
+  controller: 'MemoTypeController'
 };
 
 angular
   .module('admin.maintenance')
-  .component('procedure', procedure)
+  .component('memoType', memoType)
   .config(["$stateProvider", function ($stateProvider) {
     $stateProvider
-      .state('procedures', {
+      .state('memo-types', {
         parent: 'app',
-        url: '/admin/maintenance/procedure',
-        component: 'procedure'
+        url: '/admin/maintenance/memo-type',
+        component: 'memoType'
       });
   }]);})(window.angular);
 (function(angular){
 'use strict';
 
-ProcedureController.$inject = ["$state", "ProceduresService", "_"];
-function ProcedureController($state, ProceduresService, _) {
+MemoTypeController.$inject = ["$state", "MemoTypesService", "_"];
+function MemoTypeController($state, MemoTypesService, _) {
   var ctrl = this;
-  ctrl.procedures = [];
+  ctrl.memoTypes = [];
   ctrl.searchCode = '';
   ctrl.searchName = '';
-  ctrl.sortType = '';
+  ctrl.sortType = 'id';
   ctrl.sortReverse = false;
   
   ctrl.$onInit = function () {
-	  ctrl.addProcedure = false;
+	  ctrl.addMemoType = false;
 	  ctrl.error = null;
-	  loadProcedures();
+	  loadMemoTypes();
   };
   
-  function loadProcedures(){
-	  ProceduresService.list().then(function(response){
+  function loadMemoTypes(){
+	  MemoTypesService.list().then(function(response){
 		  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.procedures = response.data;
+		  ctrl.memoTypes = response.data;
 	  });
   }
   
-  ctrl.showAddProcedure = function (show){
-	  ctrl.addProcedure = show;
+  ctrl.showAddMemoType = function (show){
+	  ctrl.addMemoType = show;
   };
   
-  ctrl.editProcedure = function (id) {
-	  ProceduresService.get(id).then(function(response){
-		  ctrl.procedure = response.data;
+  ctrl.editMemoType = function (id) {
+	  MemoTypesService.get(id).then(function(response){
+		  ctrl.memotype = response.data;
 	  });
-	  ctrl.addProcedure = true;
+	  ctrl.addMemoType = true;
   };
   
-  ctrl.saveProcedure = function (event) {
-	    ProceduresService.save(event.procedure).then(function () {
-	    	  loadProcedures();
-	    	  ctrl.showAddProcedure(false);
-	    	  ctrl.procedure = null;
+  ctrl.saveMemoType = function (event) {
+	    MemoTypesService.save(event.memotype).then(function () {
+	    	  loadMemoTypes();
+	    	  ctrl.showAddMemoType(false);
+	    	  ctrl.memotype = null;
 	    });
   };
   
-  ctrl.deleteProcedure = function (id){
-	  ProceduresService.delete(id).then(function(response){
-		  loadProcedures();
+  ctrl.deleteMemoType = function (id){
+	  MemoTypesService.delete(id).then(function(response){
+		  loadMemoTypes();
 	  });
   };
 }
 
 angular
   .module('admin.maintenance')
-  .controller('ProcedureController', ProcedureController);
+  .controller('MemoTypeController', MemoTypeController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -15882,39 +15370,44 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
-var memoTypeForm = {
+var procedureForm = {
   bindings: {
-    memotype: '=',
+    procedure: '=',
     button: '@',
     message: '@',
     onSubmit: '&'
   },
-  templateUrl: './memo-type-form.html',
-  controller: 'MemoTypeFormController'
+  templateUrl: './procedure-form.html',
+  controller: 'ProcedureFormController'
 };
 
 angular
   .module('admin.maintenance')
-  .component('memoTypeForm', memoTypeForm);
+  .component('procedureForm', procedureForm);
 })(window.angular);
 (function(angular){
 'use strict';
 
-MemoTypeFormController.$inject = ["$state", "MemoTypesService"];
-function MemoTypeFormController($state, MemoTypesService) {
+ProcedureFormController.$inject = ["$state", "ProceduresService", "ProcedureAreasService"];
+function ProcedureFormController($state, ProceduresService, ProcedureAreasService) {
   var ctrl = this;
-
+  ctrl.procedureTypes = [];
   ctrl.$onChanges = function (changes) {
-    if (changes.memotype) {
-      ctrl.memotype = angular.copy(ctrl.memotype);
+    if (changes.procedure) {
+      ctrl.procedure = angular.copy(ctrl.procedure);
     }
   };
-
+  
+  ctrl.$onInit = function(){
+	  ProcedureAreasService.list().then(function(response){
+		  ctrl.procedureAreas = response.data;
+	  });
+  };
   ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.memotype));
+    console.log('submitForm: ' + JSON.stringify(ctrl.procedure));
     ctrl.onSubmit({
       $event: {
-    	  memotype: ctrl.memotype
+    	  procedure: ctrl.procedure
       }
     });
   };
@@ -15922,81 +15415,81 @@ function MemoTypeFormController($state, MemoTypesService) {
 
 angular
   .module('admin.maintenance')
-  .controller('MemoTypeFormController', MemoTypeFormController);
+  .controller('ProcedureFormController', ProcedureFormController);
 })(window.angular);
 (function(angular){
 'use strict';
 
-var memoType = {
-  templateUrl: './memo-types.html',
-  controller: 'MemoTypeController'
+var procedure = {
+  templateUrl: './procedures.html',
+  controller: 'ProcedureController'
 };
 
 angular
   .module('admin.maintenance')
-  .component('memoType', memoType)
+  .component('procedure', procedure)
   .config(["$stateProvider", function ($stateProvider) {
     $stateProvider
-      .state('memo-types', {
+      .state('procedures', {
         parent: 'app',
-        url: '/admin/maintenance/memo-type',
-        component: 'memoType'
+        url: '/admin/maintenance/procedure',
+        component: 'procedure'
       });
   }]);})(window.angular);
 (function(angular){
 'use strict';
 
-MemoTypeController.$inject = ["$state", "MemoTypesService", "_"];
-function MemoTypeController($state, MemoTypesService, _) {
+ProcedureController.$inject = ["$state", "ProceduresService", "_"];
+function ProcedureController($state, ProceduresService, _) {
   var ctrl = this;
-  ctrl.memoTypes = [];
+  ctrl.procedures = [];
   ctrl.searchCode = '';
   ctrl.searchName = '';
-  ctrl.sortType = 'id';
+  ctrl.sortType = '';
   ctrl.sortReverse = false;
   
   ctrl.$onInit = function () {
-	  ctrl.addMemoType = false;
+	  ctrl.addProcedure = false;
 	  ctrl.error = null;
-	  loadMemoTypes();
+	  loadProcedures();
   };
   
-  function loadMemoTypes(){
-	  MemoTypesService.list().then(function(response){
+  function loadProcedures(){
+	  ProceduresService.list().then(function(response){
 		  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.memoTypes = response.data;
+		  ctrl.procedures = response.data;
 	  });
   }
   
-  ctrl.showAddMemoType = function (show){
-	  ctrl.addMemoType = show;
+  ctrl.showAddProcedure = function (show){
+	  ctrl.addProcedure = show;
   };
   
-  ctrl.editMemoType = function (id) {
-	  MemoTypesService.get(id).then(function(response){
-		  ctrl.memotype = response.data;
+  ctrl.editProcedure = function (id) {
+	  ProceduresService.get(id).then(function(response){
+		  ctrl.procedure = response.data;
 	  });
-	  ctrl.addMemoType = true;
+	  ctrl.addProcedure = true;
   };
   
-  ctrl.saveMemoType = function (event) {
-	    MemoTypesService.save(event.memotype).then(function () {
-	    	  loadMemoTypes();
-	    	  ctrl.showAddMemoType(false);
-	    	  ctrl.memotype = null;
+  ctrl.saveProcedure = function (event) {
+	    ProceduresService.save(event.procedure).then(function () {
+	    	  loadProcedures();
+	    	  ctrl.showAddProcedure(false);
+	    	  ctrl.procedure = null;
 	    });
   };
   
-  ctrl.deleteMemoType = function (id){
-	  MemoTypesService.delete(id).then(function(response){
-		  loadMemoTypes();
+  ctrl.deleteProcedure = function (id){
+	  ProceduresService.delete(id).then(function(response){
+		  loadProcedures();
 	  });
   };
 }
 
 angular
   .module('admin.maintenance')
-  .controller('MemoTypeController', MemoTypeController);
+  .controller('ProcedureController', ProcedureController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -16592,6 +16085,137 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var finishedGoodForm = {
+  bindings: {
+    finishedgood: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './finished-good-form.html',
+  controller: 'FinishedGoodFormController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('finishedGoodForm', finishedGoodForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+FinishedGoodFormController.$inject = ["$state", "FinishedGoodsService"];
+function FinishedGoodFormController($state, FinishedGoodsService) {
+  var ctrl = this;
+  ctrl.$onChanges = function (changes) {
+    if (changes.finishedgood) {
+      ctrl.finishedgood = angular.copy(ctrl.finishedgood);
+    }
+  };
+
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.finishedgood));
+    ctrl.onSubmit({
+      $event: {
+    	  finishedgood: ctrl.finishedgood
+      }
+    });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('FinishedGoodFormController', FinishedGoodFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var finishedGood = {
+  templateUrl: './finished-goods.html',
+  controller: 'FinishedGoodController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('finishedGood', finishedGood)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('finishedGoods', {
+        parent: 'app',
+        url: '/admin/maintenance/finished-good',
+        component: 'finishedGood'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+FinishedGoodController.$inject = ["$state", "FinishedGoodsService", "_"];
+function FinishedGoodController($state, FinishedGoodsService, _) {
+  var ctrl = this;
+  ctrl.finishedGoods = [];
+
+  ctrl.searchCode = '';
+  ctrl.searchName = '';
+  ctrl.sortType = 'id';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addFinishedGood = false;
+	  ctrl.error = null;
+    ctrl.getData(ctrl.currentPage);
+  };
+  
+  function loadFinishedGoods(){
+	  FinishedGoodsService.list().then(function(response){
+		  console.log("list response: " + JSON.stringify(response.data));
+		  ctrl.finishedGoods = response.data;
+	  });
+  }
+
+  ctrl.totalCount = 0;
+  ctrl.itemsPerPage = 30;
+  ctrl.currentPage = 1;
+
+  ctrl.getData = function(page) {
+    FinishedGoodsService.paginate(ctrl.itemsPerPage, (page - 1) * ctrl.itemsPerPage).then((res) => {
+      var data = res.data;
+      ctrl.currentPage = page;
+      ctrl.totalCount = data.totalElements;
+      ctrl.finishedGoods = data.content;
+    });
+  }
+  
+  ctrl.showAddFinishedGood = function (show){
+	  ctrl.addFinishedGood = show;
+  };
+  
+  ctrl.editFinishedGood = function (id) {
+	  FinishedGoodsService.get(id).then(function(response){
+		  ctrl.finishedgood = response.data;
+	  });
+	  ctrl.addFinishedGood = true;
+  };
+  
+  ctrl.saveFinishedGood = function (event) {
+	    FinishedGoodsService.save(event.finishedgood).then(function () {
+          ctrl.getData(ctrl.currentPage);
+	    	  ctrl.showAddFinishedGood(false);
+	    	  ctrl.finishedgood = null;
+	    });
+  };
+  
+  ctrl.deleteFinishedGood = function (id){
+	  FinishedGoodsService.delete(id).then(function(response){
+		  ctrl.getData(ctrl.currentPage);
+	  });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('FinishedGoodController', FinishedGoodController);
+})(window.angular);
+(function(angular){
+'use strict';
 var purchaseOrderForm = {
   bindings: {
     po: '=',
@@ -16785,6 +16409,1512 @@ function PurchaseOrdersController($state, PurchaseOrdersService, CompanyService,
 angular
   .module('admin.purchasing')
   .controller('PurchaseOrdersController', PurchaseOrdersController);
+})(window.angular);
+(function(angular){
+'use strict';
+var acknowledgementReceiptForm = {
+  bindings: {
+    ar: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './acknowledgement-receipt-form.html',
+  controller: 'AcknowledgementReceiptFormController'
+};
+
+angular
+  .module('admin.sales')
+  .component('acknowledgementReceiptForm', acknowledgementReceiptForm);
+})(window.angular);
+(function(angular){
+'use strict';
+AcknowledgementReceiptFormController.$inject = ["$state", "AcknowledgementReceiptsService", "OrderSlipsService", "SalesInvoicesService", "UsersService", "SalesSlipsService", "$rootScope"];
+function AcknowledgementReceiptFormController(
+  $state,
+  AcknowledgementReceiptsService,
+  OrderSlipsService,
+  SalesInvoicesService,
+  UsersService,
+  SalesSlipsService,
+  $rootScope
+) {
+  var ctrl = this;
+
+  ctrl.$onChanges = function(changes) {
+    if (changes.ar) {
+      ctrl.ar = angular.copy(ctrl.ar);
+    }
+  };
+
+  ctrl.$onInit = function() {
+    ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+    UsersService.get(ctrl.user.id).then(function(response) {
+      ctrl.depots = response.data.depots;
+    });
+    ctrl.ar.date = new Date();
+    ctrl.salesSlips = [];
+    ctrl.selectedSalesSlips = [];
+    ctrl.ar.payments = [];
+  };
+
+  ctrl.findSalesSlip = function() {
+    SalesSlipsService.listByDepotAndClientAndStatus(
+      ctrl.ar.depot.id,
+      ctrl.ar.client.id,
+      ['Pending', 'Incomplete']
+    ).then(function(response) {
+      ctrl.salesSlips = response.data;
+      console.log(response.data);
+      console.log('selected sales slip size' + ctrl.selectedSalesSlips.length);
+      $('#salesSlipsModal').modal('show');
+    });
+  };
+
+  ctrl.selectSalesSlip = function(os) {
+    var index = ctrl.customizedIndexOf(ctrl.selectedSalesSlips, os);
+    if (index !== -1) {
+      ctrl.selectedSalesSlips.splice(index, 1);
+      ctrl.ar.payments.splice(index, 1);
+    } else {
+      ctrl.selectedSalesSlips.push(os);
+      ctrl.ar.payments.push({
+        reference: os,
+        appliedAmount: 0
+      });
+    }
+  };
+
+  ctrl.computeTotalPayment = function() {
+    ctrl.totalAmount = 0;
+    ctrl.siAmount = 0;
+    for (var i = 0; i < ctrl.ar.payments.length; i++) {
+      if (ctrl.ar.payments[i].reference.salesOrder.type === 'DR_SI') {
+        ctrl.siAmount += ctrl.ar.payments[i].appliedAmount;
+      } else {
+        ctrl.totalAmount += ctrl.ar.payments[i].appliedAmount;
+      }
+    }
+  };
+
+  ctrl.clearPayments = function() {
+    ctrl.ar.payments = [];
+    ctrl.selectedSalesSlips = [];
+    ctrl.salesSlips = [];
+  };
+
+  ctrl.customizedIndexOf = function(list, os) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id == os.id) return i;
+    }
+    return -1;
+  };
+  ctrl.submitForm = function() {
+    console.log('submitForm: ' + JSON.stringify(ctrl.ar));
+    for (var i = 0; i < ctrl.ar.payments.length; i++) {
+      if (ctrl.ar.payments[i].reference.salesOrder.type === 'OS') {
+        ctrl.ar.payments[i].reference.type = 'OS';
+      } else if (ctrl.ar.payments[i].reference.salesOrder.type === 'DR_SI') {
+        ctrl.ar.payments[i].reference.type = 'DR_SI';
+      }
+    }
+    ctrl.onSubmit({
+      $event: {
+        ar: ctrl.ar
+      }
+    });
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller(
+    'AcknowledgementReceiptFormController',
+    AcknowledgementReceiptFormController
+  );
+})(window.angular);
+(function(angular){
+'use strict';
+var acknowledgementReceiptNew = {
+  templateUrl: './acknowledgement-receipt-new.html',
+  controller: 'AcknowledgementReceiptNewController'
+};
+
+angular
+  .module('admin.sales')
+  .component('acknowledgementReceiptNew', acknowledgementReceiptNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('acknowledgement-receipt-new', {
+        parent: 'app',
+        url: '/admin/sales/acknowledgement-receipt/new',
+        component: 'acknowledgementReceiptNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+AcknowledgementReceiptNewController.$inject = ["$state", "AcknowledgementReceiptsService", "$rootScope"];
+function AcknowledgementReceiptNewController($state, AcknowledgementReceiptsService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.ar = {
+    		company: $rootScope.selectedCompany,
+    		preparedBy: ctrl.user,
+    		releasedBy: ctrl.user,
+    		checkedBy: ctrl.user,
+    		approvedBy: ctrl.user
+    };
+  };
+
+  ctrl.createAcknowledgementReceipt = function (event) {
+    AcknowledgementReceiptsService.save(event.ar).then(function (response) {
+    	  console.log("create " + JSON.stringify(response.data));
+      $state.go('acknowledgement-receipts');
+    });
+
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller('AcknowledgementReceiptNewController', AcknowledgementReceiptNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var acknowledgementReceipt = {
+  templateUrl: './acknowledgement-receipts.html',
+  controller: 'AcknowledgementReceiptController'
+};
+
+angular
+  .module('admin.sales')
+  .component('acknowledgementReceipt', acknowledgementReceipt)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('acknowledgement-receipts', {
+        parent: 'app',
+        url: '/admin/sales/acknowledgement-receipt',
+        component: 'acknowledgementReceipt'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+AcknowledgementReceiptController.$inject = ["$state", "AcknowledgementReceiptsService", "UsersService", "$rootScope", "$location", "_"];
+function AcknowledgementReceiptController(
+  $state,
+  AcknowledgementReceiptsService,
+  UsersService,
+  $rootScope,
+  $location,
+  _
+) {
+  var ctrl = this;
+  ctrl.acknowledgementReceipts = [];
+
+  ctrl.sortType = 'date';
+  ctrl.sortReverse = false;
+
+  ctrl.$onInit = function() {
+    ctrl.addAcknowledgementReceipt = false;
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+    UsersService.get(ctrl.user.id).then(function(response) {
+      ctrl.userAssignedDepots = response.data.depots;
+    });
+  };
+
+  ctrl.selectDepot = function() {
+    loadAcknowledgementReceipts();
+  };
+
+  function loadAcknowledgementReceipts() {
+    ctrl.company = $rootScope.selectedCompany;
+    AcknowledgementReceiptsService.listByDepot(ctrl.userAssignedDepot.id).then(
+      function(response) {
+        console.log('list response: {}', response.data);
+        ctrl.acknowledgementReceipts = response.data;
+      }
+    );
+  }
+
+  ctrl.openModal = function(ar) {
+    ctrl.ar = ar;
+  };
+
+  ctrl.createNewAcknowledgementReceipt = function(event) {
+    console.log('createNewAcknowledgementReceipt');
+    $state.go('acknowledgement-receipt-new');
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller(
+    'AcknowledgementReceiptController',
+    AcknowledgementReceiptController
+  );
+})(window.angular);
+(function(angular){
+'use strict';
+var orderReceiptForm = {
+  bindings: {
+    or: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './order-receipt-form.html',
+  controller: 'OrderReceiptFormController'
+};
+
+angular
+  .module('admin.sales')
+  .component('orderReceiptForm', orderReceiptForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+
+OrderReceiptFormController.$inject = ["$state", "OrderReceiptsService", "OrderSlipsService", "AcknowledgementReceiptsService", "UsersService", "SalesSlipsService", "$rootScope"];
+function OrderReceiptFormController($state, OrderReceiptsService, OrderSlipsService, AcknowledgementReceiptsService, UsersService, SalesSlipsService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onChanges = function (changes) {
+    if (changes.or) {
+      ctrl.or = angular.copy(ctrl.or);
+    }
+  };
+  
+  ctrl.$onInit = function() {
+	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.depots = response.data.depots;
+	  });
+	  ctrl.or.date = new Date();
+	  ctrl.or.acknowledgementReceipt = {};
+	  ctrl.payments = [];
+  };
+
+  ctrl.findAcknowledgementReceipt = function(){
+	  AcknowledgementReceiptsService.listByDepotWithSIAmount(ctrl.or.depot.id).then(function(response){
+		  ctrl.acknowledgementReceipts = response.data;
+		  console.log(response.data);
+	  });
+  };
+  
+  ctrl.selectAcknowledgementReceipt = function(ar){
+	  ctrl.or.acknowledgementReceipt = ar;
+	  for(let payment of ctrl.or.acknowledgementReceipt.payments){
+		  if(payment.reference.salesOrder.type === "DR_SI"){
+			  ctrl.payments.push(payment);
+		  }
+	  }
+  };
+  
+  ctrl.submitForm = function () {
+    ctrl.onSubmit({
+      $event: {
+    	  or: ctrl.or
+      }
+    });
+  };
+  
+}
+
+angular
+  .module('admin.sales')
+  .controller('OrderReceiptFormController', OrderReceiptFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+var orderReceiptNew = {
+  templateUrl: './order-receipt-new.html',
+  controller: 'OrderReceiptNewController'
+};
+
+angular
+  .module('admin.sales')
+  .component('orderReceiptNew', orderReceiptNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('order-receipt-new', {
+        parent: 'app',
+        url: '/admin/sales/order-receipt/new',
+        component: 'orderReceiptNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+OrderReceiptNewController.$inject = ["$state", "OrderReceiptsService", "$rootScope"];
+function OrderReceiptNewController($state, OrderReceiptsService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.or = {
+    		preparedBy: ctrl.user,
+    		date: new Date()
+    };
+  };
+
+  ctrl.createOrderReceipt = function (event) {
+    OrderReceiptsService.save(event.or).then(function (response) {
+    	  console.log("create " + JSON.stringify(response.data));
+      $state.go('order-receipts');
+    });
+
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller('OrderReceiptNewController', OrderReceiptNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var orderReceipt = {
+  templateUrl: './order-receipts.html',
+  controller: 'OrderReceiptController'
+};
+
+angular
+  .module('admin.sales')
+  .component('orderReceipt', orderReceipt)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('order-receipts', {
+        parent: 'app',
+        url: '/admin/sales/order-receipt',
+        component: 'orderReceipt'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+OrderReceiptController.$inject = ["$state", "OrderReceiptsService", "UsersService", "$rootScope", "$location", "_"];
+function OrderReceiptController($state, OrderReceiptsService, UsersService, $rootScope, $location, _) {
+  var ctrl = this;
+  ctrl.orderReceipts = [];
+
+  
+  ctrl.sortType = 'date';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addOrderReceipt = false;
+	  ctrl.error = null;
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.userAssignedDepots = response.data.depots;
+	  });
+  };
+  
+  ctrl.selectDepot = function (){
+	  loadOrderReceipts();
+  };
+  
+  function loadOrderReceipts(){
+	  ctrl.company = $rootScope.selectedCompany;
+	  OrderReceiptsService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
+	  	  console.log("list response: {}", response.data);
+		  ctrl.orderReceipts = response.data;
+	  });
+  }
+  
+  ctrl.openModal = function(or){
+	  ctrl.or = or;
+  };
+  
+  ctrl.createNewOrderReceipt = function (event) {
+	    console.log('createNewOrderReceipt');
+	    $state.go('order-receipt-new');
+	    
+  };
+  
+ 
+}
+
+angular
+  .module('admin.sales')
+  .controller('OrderReceiptController', OrderReceiptController);
+})(window.angular);
+(function(angular){
+'use strict';
+var orderSlipNew = {
+  templateUrl: './order-slip-new.html',
+  controller: 'OrderSlipNewController'
+};
+
+angular
+  .module('admin.sales')
+  .component('orderSlipNew', orderSlipNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('order-slip-new', {
+        parent: 'app',
+        url: '/admin/sales/order-slip/new',
+        component: 'orderSlipNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+OrderSlipNewController.$inject = ["$state", "OrderSlipsService", "$rootScope"];
+function OrderSlipNewController($state, OrderSlipsService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.os = {
+    		company: $rootScope.selectedCompany,
+    		preparedBy: ctrl.user,
+    		releasedBy: ctrl.user,
+    		checkedBy: ctrl.user,
+    		approvedBy: ctrl.user
+    };
+  };
+
+  ctrl.createOrderSlip = function (event) {
+    OrderSlipsService.save(event.os).then(function (response) {
+    	  console.log("create " + JSON.stringify(response.data));
+      $state.go('order-slips');
+    });
+
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller('OrderSlipNewController', OrderSlipNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+var orderSlipForm = {
+  bindings: {
+    os: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './order-slip-form.html',
+  controller: 'OrderSlipFormController'
+};
+
+angular
+  .module('admin.sales')
+  .component('orderSlipForm', orderSlipForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+OrderSlipFormController.$inject = ["$state", "OrderSlipsService", "SalesOrdersService", "ProductInventoryService", "UsersService", "$rootScope"];
+function OrderSlipFormController($state, OrderSlipsService, SalesOrdersService, ProductInventoryService, UsersService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onChanges = function (changes) {
+    if (changes.os) {
+      ctrl.os = angular.copy(ctrl.os);
+    }
+  };
+  
+  ctrl.$onInit = function() {
+	  ctrl.os.orderedProducts = [];
+	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.depots = response.data.depots;
+	  });
+	  ctrl.type = "OS";
+	  ctrl.os.date = new Date();
+  };
+
+  ctrl.computeTotalAmount = function(value, index){
+	  ctrl.os.orderedProducts[index].amount = value;
+	  ctrl.os.totalAmount = 0;
+	  for(var i = 0; i < ctrl.os.orderedProducts.length; i++){
+		  ctrl.os.totalAmount += ctrl.os.orderedProducts[i].quantity * ctrl.os.orderedProducts[i].unitPrice ;
+	  }
+  };
+  
+
+  
+  ctrl.showSoProductModal = function(fg){
+	  ctrl.company = $rootScope.selectedCompany;
+	  console.log("SALES ORDER NUMBER" + ctrl.os.salesOrder.number);
+	  ProductInventoryService.listByDepotAndFinishedGood(ctrl.os.depot.id, fg.id).then(function(response){
+		  ctrl.inventorylist = response.data;
+		  $("#findSoProductModal").modal('show');
+		  
+	  });
+	  
+	  
+  };
+  
+  
+  ctrl.getProductsOfFg = function (fg){
+	  var array = [];
+	  for(var i = 0; i < ctrl.os.orderedProducts.length ; i++){
+		  if(fg.finishedGood.id == ctrl.os.orderedProducts[i].product.finishedGood.id){
+			  array.push(ctrl.os.orderedProducts[i]);
+		  }
+	  }
+	  return array;
+  };
+  
+  ctrl.findSoModal = function(){
+	  ctrl.company = $rootScope.selectedCompany;
+	  SalesOrdersService.listNotCompletedByCompanyAndDepot(ctrl.company.id, ctrl.os.depot.id, ctrl.type).then(function(response){
+		  ctrl.salesOrders = response.data;
+		  console.log("ressonse" + JSON.stringify(ctrl.salesOrders));
+		  $("#findSoModal").modal("show");
+	  });
+	  
+  };
+  
+  ctrl.getTotalQuantity = function(fg){
+	  var sum = 0;
+	  for(var i = 0; i < ctrl.os.orderedProducts.length ; i++){
+		  if(fg.finishedGood.id == ctrl.os.orderedProducts[i].product.finishedGood.id){
+			  sum += ctrl.os.orderedProducts[i].quantity;
+		  }
+	  }
+	  return sum;
+  };
+ 
+  
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.os));
+    for(var i = 0; i < ctrl.os.orderedProducts.length; i++){
+    	ctrl.os.orderedProducts[i].orderSlipNo = ctrl.os.number;
+    }
+    
+    ctrl.os.type ="OS";
+    ctrl.onSubmit({
+      $event: {
+    	  os: ctrl.os
+      }
+    });
+  };
+  
+}
+
+angular
+  .module('admin.sales')
+  .controller('OrderSlipFormController', OrderSlipFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var orderSlip = {
+  templateUrl: './order-slips.html',
+  controller: 'OrderSlipController'
+};
+
+angular
+  .module('admin.sales')
+  .component('orderSlip', orderSlip)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('order-slips', {
+        parent: 'app',
+        url: '/admin/sales/order-slip',
+        component: 'orderSlip'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+OrderSlipController.$inject = ["$state", "OrderSlipsService", "UsersService", "$rootScope", "$location", "_"];
+function OrderSlipController($state, OrderSlipsService, UsersService, $rootScope, $location, _) {
+  var ctrl = this;
+  ctrl.orderSlips = [];
+
+  
+  ctrl.sortType = 'date';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addOrderSlip = false;
+	  ctrl.error = null;
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.userAssignedDepots = response.data.depots;
+	  });
+  };
+  
+  ctrl.selectDepot = function (){
+	  loadOrderSlips();
+  };
+  
+  function loadOrderSlips(){
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  ctrl.company = $rootScope.selectedCompany;
+	  OrderSlipsService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
+	  	  console.log("list response: {}", response.data);
+		  ctrl.orderSlips = response.data;
+	  });
+  }
+  
+  ctrl.searchPrf = function(event){
+	  ctrl.prfTable.DataTable.search(event).draw();
+  };
+  
+  ctrl.createNewOrderSlip = function (event) {
+	    console.log('createNewOrderSlip');
+	    $state.go('order-slip-new');
+	    
+  };
+  
+  ctrl.openModal = function(orderSlip){
+	  ctrl.os = orderSlip;
+  };
+  
+  /*
+  ctrl.showAddOrderSlip = function (show){
+	  ctrl.addOrderSlip = show;
+  };
+  
+  
+  
+  ctrl.saveOrderSlip = function (event) {
+	    OrderSlipsService.save(event.purchaserequest).then(function () {
+	    	  loadOrderSlips();
+	    	  ctrl.showAddOrderSlip(false);
+	    	  ctrl.purchaserequest = null;
+	    });
+  };
+  */
+  
+  ctrl.deleteOrderSlip = function (id){
+	  OrderSlipsService.delete(id).then(function(response){
+		  loadOrderSlips();
+	  });
+  };
+  
+ 
+}
+
+angular
+  .module('admin.sales')
+  .controller('OrderSlipController', OrderSlipController);
+})(window.angular);
+(function(angular){
+'use strict';
+var returnSlipForm = {
+  bindings: {
+    rs: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './return-slip-form.html',
+  controller: 'ReturnSlipFormController'
+};
+
+angular
+  .module('admin.sales')
+  .component('returnSlipForm', returnSlipForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+ReturnSlipFormController.$inject = ["$state", "ReturnSlipsService", "SalesSlipsService", "ProductInventoryService", "PurchaseOrdersService", "UsersService", "$rootScope"];
+function ReturnSlipFormController($state, ReturnSlipsService, SalesSlipsService, ProductInventoryService, PurchaseOrdersService, UsersService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.stockOnHandList = [];
+  ctrl.reserved= [];
+  ctrl.$onInit = function(){
+	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+	  
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.depots = response.data.depots;
+	  });
+	  
+	  ctrl.rs.date = new Date();
+  };
+  ctrl.$onChanges = function (changes) {
+    if (changes.rs) {
+      ctrl.rs = angular.copy(ctrl.rs);
+    }
+  };
+  
+  
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.rs));
+    ctrl.onSubmit({
+      $event: {
+    	  rs: ctrl.rs
+      }
+    });
+  };
+  
+  ctrl.computeTotalAmount = function(value, index){
+	  ctrl.rs.returnSlipProducts[index].amount = value;
+	  ctrl.rs.totalAmount = 0;
+	  for(var i = 0; i < ctrl.rs.returnSlipProducts.length; i++){
+		  ctrl.rs.totalAmount += ctrl.rs.returnSlipProducts[i].goodQuantity * ctrl.rs.returnSlipProducts[i].unitPrice ;
+	  }
+  };
+  
+  ctrl.findSalesSlip = function(){
+	  SalesSlipsService.listByDepot(ctrl.rs.depot.id).then(function(response){
+		  ctrl.salesSlips = response.data;
+		  console.log(response.data);
+		  $("#salesSlipsModal").modal("show");
+	  });
+  };
+  
+  ctrl.findProduct = function(){
+	  ProductInventoryService.listByDepot(ctrl.rs.depot.id).then(function(response){
+		  ctrl.productsInDepot = response.data;
+		  console.log(JSON.stringify(response.data));
+		  $("#findProductModal").modal('show');
+	  });
+  };
+  
+
+
+}
+
+angular
+  .module('admin.sales')
+  .controller('ReturnSlipFormController', ReturnSlipFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+var returnSlipNew = {
+  templateUrl: './return-slip-new.html',
+  controller: 'ReturnSlipNewController'
+};
+
+angular
+  .module('admin.sales')
+  .component('returnSlipNew', returnSlipNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('return-slip-new', {
+        parent: 'app',
+        url: '/admin/sales/return-slip/new',
+        component: 'returnSlipNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+ReturnSlipNewController.$inject = ["$state", "$stateParams", "ReturnSlipsService", "CompanyService", "DepartmentsService", "PermissionsService"];
+function ReturnSlipNewController($state, $stateParams, ReturnSlipsService, CompanyService, DepartmentsService, PermissionsService) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.rs = {
+    		company: ctrl.user.company,
+    		returnSlipProducts: []
+    };
+  };
+
+  ctrl.createReturnSlip = function (event) {
+	console.log("create " + JSON.stringify(event.rs));
+    ReturnSlipsService.save(event.rs).then(function () {
+      $state.go('return-slips');
+    });
+
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller('ReturnSlipNewController', ReturnSlipNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var returnSlip = {
+  templateUrl: './return-slips.html',
+  controller: 'ReturnSlipController'
+};
+
+angular
+  .module('admin.sales')
+  .component('returnSlip', returnSlip)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('return-slips', {
+        parent: 'app',
+        url: '/admin/sales/return-slip',
+        component: 'returnSlip'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+ReturnSlipController.$inject = ["$state", "ReturnSlipsService", "UsersService", "$rootScope", "$location", "_"];
+function ReturnSlipController($state, ReturnSlipsService, UsersService, $rootScope, $location, _) {
+  var ctrl = this;
+  ctrl.returnSlips = [];
+
+  
+  ctrl.sortType = 'date';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addReturnSlip = false;
+	  ctrl.error = null;
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.userAssignedDepots = response.data.depots;
+	  });
+  };
+  
+  ctrl.selectDepot = function(){
+	  loadReturnSlips();
+  };
+  
+  function loadReturnSlips(){
+	  ctrl.company = $rootScope.selectedCompany;
+	  ReturnSlipsService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
+	  	  console.log("list response: {}", response.data);
+		  ctrl.returnSlips = response.data;
+	  });
+  }
+  
+  ctrl.searchPrf = function(event){
+	  ctrl.prfTable.DataTable.search(event).draw();
+  };
+  
+  ctrl.createNewReturnSlip = function (event) {
+	    console.log('createNewReturnSlip');
+	    $state.go('return-slip-new');
+	    
+  };
+  
+  /*
+  ctrl.openModal = function(returnSlip){
+	  console.log("show modal" +  ctrl.showModal);
+	  ctrl.so = returnSlip;
+	  ReturnSlipsService.getLatestCancelledReqs(ctrl.so.id).then(function(response){
+		  ctrl.cancelreqs = response.data;
+		  for(var i = 0; i < ctrl.so.products.length; i++){
+			  for(var j = 0; j < ctrl.cancelreqs.length; j++){
+				  if(ctrl.so.products[i].id == ctrl.cancelreqs[j].returnSlipProduct.id){
+					  console.log("hi" + ctrl.cancelreqs);
+					  ctrl.so.products[i].cancelReq = ctrl.cancelreqs[j];
+				  }
+			  }
+		  }
+	  });
+	  
+	  console.log("returnSlip" + JSON.stringify(ctrl.so));
+
+	  $('#soInfoModal').modal('show');
+	  
+  };
+  */
+  ctrl.edit = function (so) {
+	  $state.go('return-slip-edit', { 'soId': so.id });
+  };
+  /*
+  ctrl.showAddReturnSlip = function (show){
+	  ctrl.addReturnSlip = show;
+  };
+  
+  
+  
+  ctrl.saveReturnSlip = function (event) {
+	    ReturnSlipsService.save(event.purchaserequest).then(function () {
+	    	  loadReturnSlips();
+	    	  ctrl.showAddReturnSlip(false);
+	    	  ctrl.purchaserequest = null;
+	    });
+  };
+  */
+  
+  ctrl.deleteReturnSlip = function (id){
+	  ReturnSlipsService.delete(id).then(function(response){
+		  loadReturnSlips();
+	  });
+  };
+  
+ 
+}
+
+angular
+  .module('admin.sales')
+  .controller('ReturnSlipController', ReturnSlipController);
+})(window.angular);
+(function(angular){
+'use strict';
+var salesInvoiceForm = {
+  bindings: {
+    si: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './sales-invoice-form.html',
+  controller: 'SalesInvoiceFormController'
+};
+
+angular
+  .module('admin.sales')
+  .component('salesInvoiceForm', salesInvoiceForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+SalesInvoiceFormController.$inject = ["$state", "SalesInvoicesService", "SalesOrdersService", "ProductInventoryService", "UsersService", "$rootScope"];
+function SalesInvoiceFormController($state, SalesInvoicesService, SalesOrdersService, ProductInventoryService, UsersService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onChanges = function (changes) {
+    if (changes.si) {
+      ctrl.si = angular.copy(ctrl.si);
+    }
+  };
+  
+  ctrl.$onInit = function() {
+	  ctrl.si.orderedProducts = [];
+	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.depots = response.data.depots;
+	  });
+	  ctrl.type = "DR_SI";
+	  ctrl.si.date = new Date();
+  };
+
+  ctrl.computeTotalAmount = function(value, index){
+	  ctrl.si.orderedProducts[index].amount = value;
+	  ctrl.si.totalAmount = 0;
+	  for(var i = 0; i < ctrl.si.orderedProducts.length; i++){
+		  ctrl.si.totalAmount += ctrl.si.orderedProducts[i].quantity * ctrl.si.orderedProducts[i].unitPrice ;
+	  }
+  };
+  
+  ctrl.addVat = function(){
+	  if(ctrl.si.vat){
+		 ctrl.si.totalAmount = ctrl.si.totalAmount + (ctrl.si.totalAmount * 0.12);
+	  }else{
+		 ctrl.si.totalAmount = ctrl.si.totalAmount - (ctrl.si.totalAmount * 0.12);
+	  }
+  };
+
+  
+  ctrl.showSoProductModal = function(fg){
+	  ctrl.company = $rootScope.selectedCompany;
+	  console.log("SALES ORDER NUMBER" + ctrl.si.salesOrder.number);
+	  ProductInventoryService.listByDepotAndFinishedGood(ctrl.si.depot.id, fg.id).then(function(response){
+		  ctrl.inventorylist = response.data;
+		  $("#findSoProductModal").modal('show');
+		  
+	  });
+	  
+	  
+  };
+  
+  
+  ctrl.getProductsOfFg = function (fg){
+	  var array = [];
+	  for(var i = 0; i < ctrl.si.orderedProducts.length ; i++){
+		  if(fg.finishedGood.id == ctrl.si.orderedProducts[i].product.finishedGood.id){
+			  array.push(ctrl.si.orderedProducts[i]);
+		  }
+	  }
+	  return array;
+  };
+  
+  ctrl.findSoModal = function(){
+	  ctrl.company = $rootScope.selectedCompany;
+	  SalesOrdersService.listNotCompletedByCompanyAndDepot(ctrl.company.id, ctrl.si.depot.id, ctrl.type).then(function(response){
+		  ctrl.salesOrders = response.data;
+		  console.log("ressonse" + JSON.stringify(ctrl.salesOrders));
+		  $("#findSoModal").modal("show");
+	  });
+	  
+  };
+  
+  ctrl.getTotalQuantity = function(fg){
+	  var sum = 0;
+	  for(var i = 0; i < ctrl.si.orderedProducts.length ; i++){
+		  if(fg.finishedGood.id == ctrl.si.orderedProducts[i].product.finishedGood.id){
+			  sum += ctrl.si.orderedProducts[i].quantity;
+		  }
+	  }
+	  return sum;
+  };
+ 
+  
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.si));
+    for(var i = 0; i < ctrl.si.orderedProducts.length; i++){
+    	ctrl.si.orderedProducts[i].orderSlipNo = ctrl.si.number;
+    }
+    
+    ctrl.si.type = "DR_SI";
+    ctrl.onSubmit({
+      $event: {
+    	  si: ctrl.si
+      }
+    });
+  };
+  
+}
+
+angular
+  .module('admin.sales')
+  .controller('SalesInvoiceFormController', SalesInvoiceFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+var salesInvoiceNew = {
+  templateUrl: './sales-invoice-new.html',
+  controller: 'SalesInvoiceNewController'
+};
+
+angular
+  .module('admin.sales')
+  .component('salesInvoiceNew', salesInvoiceNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('sales-invoice-new', {
+        parent: 'app',
+        url: '/admin/sales/sales-invoice/new',
+        component: 'salesInvoiceNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+SalesInvoiceNewController.$inject = ["$state", "SalesInvoicesService", "$rootScope"];
+function SalesInvoiceNewController($state, SalesInvoicesService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.si = {
+    		company: $rootScope.selectedCompany,
+    		preparedBy: ctrl.user,
+    		releasedBy: ctrl.user,
+    		checkedBy: ctrl.user,
+    		approvedBy: ctrl.user
+    };
+  };
+
+  ctrl.createSalesInvoice = function (event) {
+    SalesInvoicesService.save(event.si).then(function (response) {
+    	  console.log("create " + JSON.stringify(response.data));
+      $state.go('sales-invoices');
+    });
+
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller('SalesInvoiceNewController', SalesInvoiceNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var salesInvoice = {
+  templateUrl: './sales-invoices.html',
+  controller: 'SalesInvoiceController'
+};
+
+angular
+  .module('admin.sales')
+  .component('salesInvoice', salesInvoice)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('sales-invoices', {
+        parent: 'app',
+        url: '/admin/sales/sales-invoice',
+        component: 'salesInvoice'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+SalesInvoiceController.$inject = ["$state", "SalesInvoicesService", "UsersService", "$rootScope", "$location", "_"];
+function SalesInvoiceController($state, SalesInvoicesService, UsersService, $rootScope, $location, _) {
+  var ctrl = this;
+  ctrl.salesInvoices = [];
+
+  
+  ctrl.sortType = 'date';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addSalesInvoice = false;
+	  ctrl.error = null;
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.userAssignedDepots = response.data.depots;
+	  });
+	  
+  };
+  
+  ctrl.selectDepot = function (){
+	  loadSalesInvoices();
+  };
+  
+  function loadSalesInvoices(){
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  ctrl.company = $rootScope.selectedCompany;
+	  SalesInvoicesService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
+	  	  console.log("list response: {}", response.data);
+		  ctrl.salesInvoices = response.data;
+	  });
+  }
+  
+  ctrl.searchPrf = function(event){
+	  ctrl.prfTable.DataTable.search(event).draw();
+  };
+  
+  ctrl.createNewSalesInvoice = function (event) {
+	    console.log('createNewSalesInvoice');
+	    $state.go('sales-invoice-new');
+	    
+  };
+  
+  ctrl.openModal = function(orderSlip){
+	  ctrl.si = orderSlip;
+  };
+  
+  /*
+  ctrl.showAddSalesInvoice = function (show){
+	  ctrl.addSalesInvoice = show;
+  };
+  
+  
+  
+  ctrl.saveSalesInvoice = function (event) {
+	    SalesInvoicesService.save(event.purchaserequest).then(function () {
+	    	  loadSalesInvoices();
+	    	  ctrl.showAddSalesInvoice(false);
+	    	  ctrl.purchaserequest = null;
+	    });
+  };
+  */
+  
+  ctrl.deleteSalesInvoice = function (id){
+	  SalesInvoicesService.delete(id).then(function(response){
+		  loadSalesInvoices();
+	  });
+  };
+  
+ 
+}
+
+angular
+  .module('admin.sales')
+  .controller('SalesInvoiceController', SalesInvoiceController);
+})(window.angular);
+(function(angular){
+'use strict';
+var salesOrderForm = {
+  bindings: {
+    so: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './sales-order-form.html',
+  controller: 'SalesOrderFormController'
+};
+
+angular
+  .module('admin.sales')
+  .component('salesOrderForm', salesOrderForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+SalesOrderFormController.$inject = ["$state", "SalesOrdersService", "ItemsService", "ProductInventoryService", "PurchaseOrdersService", "UsersService", "$rootScope"];
+function SalesOrderFormController($state, SalesOrdersService, ItemsService, ProductInventoryService, PurchaseOrdersService, UsersService, $rootScope) {
+  var ctrl = this;
+
+  ctrl.stockOnHandList = [];
+  ctrl.reserved = [];
+  ctrl.$onInit = function () {
+
+    ctrl.so.number = "0001";
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+
+    SalesOrdersService.list().then(function (response) {
+      console.log("list response: {}", response.data);
+      ctrl.so.number = pad(parseInt(response.data[response.data.length - 1].number) + 1, 4);
+
+
+    });
+    UsersService.get(ctrl.user.id).then(function (response) {
+      ctrl.depots = response.data.depots;
+    });
+
+    ctrl.so.date = new Date();
+  };
+
+  function pad(number, length) {
+    var str = '' + number;
+    while (str.length < length) {
+      str = '0' + str;
+
+    }
+    return str;
+
+  }
+
+  ctrl.$onChanges = function (changes) {
+    if (changes.so) {
+      ctrl.so = angular.copy(ctrl.so);
+    }
+  };
+
+
+  ctrl.submitForm = function () {
+    console.log('submitForm: POTANGINA ' + JSON.stringify(ctrl.so));
+    for (var i = 0; i < ctrl.so.products.length; i++) {
+      ctrl.so.products[i].depot = ctrl.so.depot;
+      ctrl.so.products[i].soNumber = ctrl.so.number;
+    }
+    console.log('HERE')
+    SalesOrdersService.save(ctrl.so)
+    ctrl.onSubmit({
+      $event: {
+        so: ctrl.so
+      }
+    });
+
+  };
+
+  ctrl.enterdown = function ($event) {
+
+
+    if ($event.keyCode === 13) {
+
+      var form = $event.target.form;
+      var index = Array.prototype.indexOf.call(form, $event.target);
+      form.elements[index + 1].focus();
+      console.log(index);
+      $event.preventDefault();
+    }
+  };
+
+  ctrl.computeTotalAmount = function (value, index) {
+    ctrl.so.products[index].amount = value;
+    ctrl.so.totalAmount = 0;
+    for (var i = 0; i < ctrl.so.products.length; i++) {
+      ctrl.so.totalAmount += ctrl.so.products[i].quantity * ctrl.so.products[i].unitPrice;
+    }
+  };
+
+  ctrl.findProduct = function () {
+    ctrl.company = $rootScope.selectedCompany;
+    ProductInventoryService.listFinishedGoodView(ctrl.company.id).then(function (response) {
+
+      ctrl.fglistview = response.data;
+      console.log(ctrl.fglistview);
+      console.log("so products");
+      console.log(ctrl.so.products);
+      $("#findFgInventoryModal").modal('show');
+    });
+
+  };
+
+
+
+}
+
+angular
+  .module('admin.sales')
+  .controller('SalesOrderFormController', SalesOrderFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+var salesOrderNew = {
+  templateUrl: './sales-order-new.html',
+  controller: 'SalesOrderNewController'
+};
+
+angular
+  .module('admin.sales')
+  .component('salesOrderNew', salesOrderNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('sales-order-new', {
+        parent: 'app',
+        url: '/admin/sales/sales-order/new',
+        component: 'salesOrderNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+SalesOrderNewController.$inject = ["$state", "$stateParams", "SalesOrdersService", "CompanyService", "DepartmentsService", "PermissionsService"];
+function SalesOrderNewController($state, $stateParams, SalesOrdersService, CompanyService, DepartmentsService, PermissionsService) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.so = {
+    		requestedBy : ctrl.user,
+    		company: ctrl.user.company,
+    		preparedBy : ctrl.user,
+    		checkedBy : ctrl.user,
+    		products: []
+    };
+  };
+
+  ctrl.createSalesOrder = function (event) {
+	console.log("create " + JSON.stringify(event.so));
+    SalesOrdersService.save(event.so).then(function () {
+      $state.go('sales-orders');
+    });
+
+  };
+}
+
+angular
+  .module('admin.sales')
+  .controller('SalesOrderNewController', SalesOrderNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var salesOrder = {
+  templateUrl: './sales-orders.html',
+  controller: 'SalesOrderController'
+};
+
+angular
+  .module('admin.sales')
+  .component('salesOrder', salesOrder)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('sales-orders', {
+        parent: 'app',
+        url: '/admin/sales/sales-order',
+        component: 'salesOrder'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+SalesOrderController.$inject = ["$state", "SalesOrdersService", "SalesRepsService", "UsersService", "$rootScope", "$location", "_"];
+function SalesOrderController($state, SalesOrdersService, SalesRepsService, UsersService, $rootScope, $location, _) {
+  var ctrl = this;
+  ctrl.salesOrders = [];
+
+  
+  ctrl.sortType = 'date';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addSalesOrder = false;
+	  ctrl.error = null;
+	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+	  UsersService.get(ctrl.user.id).then(function(response){
+		  ctrl.userAssignedDepots = response.data.depots;
+	  });
+	  
+	  SalesRepsService.list().then(function(response){
+		  ctrl.salesReps = response.data;
+	  });
+	  
+	  
+  };
+  
+  ctrl.selectDepot = function(){
+	  loadSalesOrders();
+  };
+  
+  function loadSalesOrders(){
+	  ctrl.company = $rootScope.selectedCompany;
+	  SalesOrdersService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
+	  	  console.log("list response: {}", response.data);
+		  ctrl.salesOrders = response.data;
+	  });
+  }
+  
+  ctrl.searchPrf = function(event){
+	  ctrl.prfTable.DataTable.search(event).draw();
+  };
+  
+  ctrl.createNewSalesOrder = function (event) {
+	    console.log('createNewSalesOrder');
+	    $state.go('sales-order-new');
+	    
+  };
+  
+  ctrl.openModal = function(salesOrder){
+	  console.log("show modal" +  ctrl.showModal);
+	  ctrl.so = salesOrder;
+	  SalesOrdersService.getLatestCancelledReqs(ctrl.so.id).then(function(response){
+		  ctrl.cancelreqs = response.data;
+		  for(var i = 0; i < ctrl.so.products.length; i++){
+			  for(var j = 0; j < ctrl.cancelreqs.length; j++){
+				  if(ctrl.so.products[i].id == ctrl.cancelreqs[j].salesOrderProduct.id){
+					  console.log("hi" + ctrl.cancelreqs);
+					  ctrl.so.products[i].cancelReq = ctrl.cancelreqs[j];
+				  }
+			  }
+		  }
+	  });
+	  
+	  console.log("salesOrder" + JSON.stringify(ctrl.so));
+
+	  $('#soInfoModal').modal('show');
+	  
+  };
+  
+  ctrl.edit = function (so) {
+	  $state.go('sales-order-edit', { 'soId': so.id });
+  };
+  /*
+  ctrl.showAddSalesOrder = function (show){
+	  ctrl.addSalesOrder = show;
+  };
+  
+  
+  
+  ctrl.saveSalesOrder = function (event) {
+	    SalesOrdersService.save(event.purchaserequest).then(function () {
+	    	  loadSalesOrders();
+	    	  ctrl.showAddSalesOrder(false);
+	    	  ctrl.purchaserequest = null;
+	    });
+  };
+  */
+  
+  ctrl.deleteSalesOrder = function (id){
+	  SalesOrdersService.delete(id).then(function(response){
+		  loadSalesOrders();
+	  });
+  };
+  
+ 
+}
+
+angular
+  .module('admin.sales')
+  .controller('SalesOrderController', SalesOrderController);
 })(window.angular);
 (function(angular){
 'use strict';
@@ -17534,1495 +18664,6 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
-var acknowledgementReceiptForm = {
-  bindings: {
-    ar: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './acknowledgement-receipt-form.html',
-  controller: 'AcknowledgementReceiptFormController'
-};
-
-angular
-  .module('admin.sales')
-  .component('acknowledgementReceiptForm', acknowledgementReceiptForm);
-})(window.angular);
-(function(angular){
-'use strict';
-AcknowledgementReceiptFormController.$inject = ["$state", "AcknowledgementReceiptsService", "OrderSlipsService", "SalesInvoicesService", "UsersService", "SalesSlipsService", "$rootScope"];
-function AcknowledgementReceiptFormController(
-  $state,
-  AcknowledgementReceiptsService,
-  OrderSlipsService,
-  SalesInvoicesService,
-  UsersService,
-  SalesSlipsService,
-  $rootScope
-) {
-  var ctrl = this;
-
-  ctrl.$onChanges = function(changes) {
-    if (changes.ar) {
-      ctrl.ar = angular.copy(ctrl.ar);
-    }
-  };
-
-  ctrl.$onInit = function() {
-    ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-    UsersService.get(ctrl.user.id).then(function(response) {
-      ctrl.depots = response.data.depots;
-    });
-    ctrl.ar.date = new Date();
-    ctrl.salesSlips = [];
-    ctrl.selectedSalesSlips = [];
-    ctrl.ar.payments = [];
-  };
-
-  ctrl.findSalesSlip = function() {
-    SalesSlipsService.listByDepotAndClientAndStatus(
-      ctrl.ar.depot.id,
-      ctrl.ar.client.id,
-      ['Pending', 'Incomplete']
-    ).then(function(response) {
-      ctrl.salesSlips = response.data;
-      console.log(response.data);
-      console.log('selected sales slip size' + ctrl.selectedSalesSlips.length);
-      $('#salesSlipsModal').modal('show');
-    });
-  };
-
-  ctrl.selectSalesSlip = function(os) {
-    var index = ctrl.customizedIndexOf(ctrl.selectedSalesSlips, os);
-    if (index !== -1) {
-      ctrl.selectedSalesSlips.splice(index, 1);
-      ctrl.ar.payments.splice(index, 1);
-    } else {
-      ctrl.selectedSalesSlips.push(os);
-      ctrl.ar.payments.push({
-        reference: os,
-        appliedAmount: 0
-      });
-    }
-  };
-
-  ctrl.computeTotalPayment = function() {
-    ctrl.totalAmount = 0;
-    ctrl.siAmount = 0;
-    for (var i = 0; i < ctrl.ar.payments.length; i++) {
-      if (ctrl.ar.payments[i].reference.salesOrder.type === 'DR_SI') {
-        ctrl.siAmount += ctrl.ar.payments[i].appliedAmount;
-      } else {
-        ctrl.totalAmount += ctrl.ar.payments[i].appliedAmount;
-      }
-    }
-  };
-
-  ctrl.clearPayments = function() {
-    ctrl.ar.payments = [];
-    ctrl.selectedSalesSlips = [];
-    ctrl.salesSlips = [];
-  };
-
-  ctrl.customizedIndexOf = function(list, os) {
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].id == os.id) return i;
-    }
-    return -1;
-  };
-  ctrl.submitForm = function() {
-    console.log('submitForm: ' + JSON.stringify(ctrl.ar));
-    for (var i = 0; i < ctrl.ar.payments.length; i++) {
-      if (ctrl.ar.payments[i].reference.salesOrder.type === 'OS') {
-        ctrl.ar.payments[i].reference.type = 'OS';
-      } else if (ctrl.ar.payments[i].reference.salesOrder.type === 'DR_SI') {
-        ctrl.ar.payments[i].reference.type = 'DR_SI';
-      }
-    }
-    ctrl.onSubmit({
-      $event: {
-        ar: ctrl.ar
-      }
-    });
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller(
-    'AcknowledgementReceiptFormController',
-    AcknowledgementReceiptFormController
-  );
-})(window.angular);
-(function(angular){
-'use strict';
-var acknowledgementReceiptNew = {
-  templateUrl: './acknowledgement-receipt-new.html',
-  controller: 'AcknowledgementReceiptNewController'
-};
-
-angular
-  .module('admin.sales')
-  .component('acknowledgementReceiptNew', acknowledgementReceiptNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('acknowledgement-receipt-new', {
-        parent: 'app',
-        url: '/admin/sales/acknowledgement-receipt/new',
-        component: 'acknowledgementReceiptNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-AcknowledgementReceiptNewController.$inject = ["$state", "AcknowledgementReceiptsService", "$rootScope"];
-function AcknowledgementReceiptNewController($state, AcknowledgementReceiptsService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.ar = {
-    		company: $rootScope.selectedCompany,
-    		preparedBy: ctrl.user,
-    		releasedBy: ctrl.user,
-    		checkedBy: ctrl.user,
-    		approvedBy: ctrl.user
-    };
-  };
-
-  ctrl.createAcknowledgementReceipt = function (event) {
-    AcknowledgementReceiptsService.save(event.ar).then(function (response) {
-    	  console.log("create " + JSON.stringify(response.data));
-      $state.go('acknowledgement-receipts');
-    });
-
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller('AcknowledgementReceiptNewController', AcknowledgementReceiptNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var acknowledgementReceipt = {
-  templateUrl: './acknowledgement-receipts.html',
-  controller: 'AcknowledgementReceiptController'
-};
-
-angular
-  .module('admin.sales')
-  .component('acknowledgementReceipt', acknowledgementReceipt)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('acknowledgement-receipts', {
-        parent: 'app',
-        url: '/admin/sales/acknowledgement-receipt',
-        component: 'acknowledgementReceipt'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-AcknowledgementReceiptController.$inject = ["$state", "AcknowledgementReceiptsService", "UsersService", "$rootScope", "$location", "_"];
-function AcknowledgementReceiptController(
-  $state,
-  AcknowledgementReceiptsService,
-  UsersService,
-  $rootScope,
-  $location,
-  _
-) {
-  var ctrl = this;
-  ctrl.acknowledgementReceipts = [];
-
-  ctrl.sortType = 'date';
-  ctrl.sortReverse = false;
-
-  ctrl.$onInit = function() {
-    ctrl.addAcknowledgementReceipt = false;
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-    UsersService.get(ctrl.user.id).then(function(response) {
-      ctrl.userAssignedDepots = response.data.depots;
-    });
-  };
-
-  ctrl.selectDepot = function() {
-    loadAcknowledgementReceipts();
-  };
-
-  function loadAcknowledgementReceipts() {
-    ctrl.company = $rootScope.selectedCompany;
-    AcknowledgementReceiptsService.listByDepot(ctrl.userAssignedDepot.id).then(
-      function(response) {
-        console.log('list response: {}', response.data);
-        ctrl.acknowledgementReceipts = response.data;
-      }
-    );
-  }
-
-  ctrl.openModal = function(ar) {
-    ctrl.ar = ar;
-  };
-
-  ctrl.createNewAcknowledgementReceipt = function(event) {
-    console.log('createNewAcknowledgementReceipt');
-    $state.go('acknowledgement-receipt-new');
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller(
-    'AcknowledgementReceiptController',
-    AcknowledgementReceiptController
-  );
-})(window.angular);
-(function(angular){
-'use strict';
-var orderReceiptForm = {
-  bindings: {
-    or: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './order-receipt-form.html',
-  controller: 'OrderReceiptFormController'
-};
-
-angular
-  .module('admin.sales')
-  .component('orderReceiptForm', orderReceiptForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-
-OrderReceiptFormController.$inject = ["$state", "OrderReceiptsService", "OrderSlipsService", "AcknowledgementReceiptsService", "UsersService", "SalesSlipsService", "$rootScope"];
-function OrderReceiptFormController($state, OrderReceiptsService, OrderSlipsService, AcknowledgementReceiptsService, UsersService, SalesSlipsService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onChanges = function (changes) {
-    if (changes.or) {
-      ctrl.or = angular.copy(ctrl.or);
-    }
-  };
-  
-  ctrl.$onInit = function() {
-	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.depots = response.data.depots;
-	  });
-	  ctrl.or.date = new Date();
-	  ctrl.or.acknowledgementReceipt = {};
-	  ctrl.payments = [];
-  };
-
-  ctrl.findAcknowledgementReceipt = function(){
-	  AcknowledgementReceiptsService.listByDepotWithSIAmount(ctrl.or.depot.id).then(function(response){
-		  ctrl.acknowledgementReceipts = response.data;
-		  console.log(response.data);
-	  });
-  };
-  
-  ctrl.selectAcknowledgementReceipt = function(ar){
-	  ctrl.or.acknowledgementReceipt = ar;
-	  for(let payment of ctrl.or.acknowledgementReceipt.payments){
-		  if(payment.reference.salesOrder.type === "DR_SI"){
-			  ctrl.payments.push(payment);
-		  }
-	  }
-  };
-  
-  ctrl.submitForm = function () {
-    ctrl.onSubmit({
-      $event: {
-    	  or: ctrl.or
-      }
-    });
-  };
-  
-}
-
-angular
-  .module('admin.sales')
-  .controller('OrderReceiptFormController', OrderReceiptFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-var orderReceiptNew = {
-  templateUrl: './order-receipt-new.html',
-  controller: 'OrderReceiptNewController'
-};
-
-angular
-  .module('admin.sales')
-  .component('orderReceiptNew', orderReceiptNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('order-receipt-new', {
-        parent: 'app',
-        url: '/admin/sales/order-receipt/new',
-        component: 'orderReceiptNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-OrderReceiptNewController.$inject = ["$state", "OrderReceiptsService", "$rootScope"];
-function OrderReceiptNewController($state, OrderReceiptsService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.or = {
-    		preparedBy: ctrl.user,
-    		date: new Date()
-    };
-  };
-
-  ctrl.createOrderReceipt = function (event) {
-    OrderReceiptsService.save(event.or).then(function (response) {
-    	  console.log("create " + JSON.stringify(response.data));
-      $state.go('order-receipts');
-    });
-
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller('OrderReceiptNewController', OrderReceiptNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var orderReceipt = {
-  templateUrl: './order-receipts.html',
-  controller: 'OrderReceiptController'
-};
-
-angular
-  .module('admin.sales')
-  .component('orderReceipt', orderReceipt)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('order-receipts', {
-        parent: 'app',
-        url: '/admin/sales/order-receipt',
-        component: 'orderReceipt'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-OrderReceiptController.$inject = ["$state", "OrderReceiptsService", "UsersService", "$rootScope", "$location", "_"];
-function OrderReceiptController($state, OrderReceiptsService, UsersService, $rootScope, $location, _) {
-  var ctrl = this;
-  ctrl.orderReceipts = [];
-
-  
-  ctrl.sortType = 'date';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addOrderReceipt = false;
-	  ctrl.error = null;
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.userAssignedDepots = response.data.depots;
-	  });
-  };
-  
-  ctrl.selectDepot = function (){
-	  loadOrderReceipts();
-  };
-  
-  function loadOrderReceipts(){
-	  ctrl.company = $rootScope.selectedCompany;
-	  OrderReceiptsService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
-	  	  console.log("list response: {}", response.data);
-		  ctrl.orderReceipts = response.data;
-	  });
-  }
-  
-  ctrl.openModal = function(or){
-	  ctrl.or = or;
-  };
-  
-  ctrl.createNewOrderReceipt = function (event) {
-	    console.log('createNewOrderReceipt');
-	    $state.go('order-receipt-new');
-	    
-  };
-  
- 
-}
-
-angular
-  .module('admin.sales')
-  .controller('OrderReceiptController', OrderReceiptController);
-})(window.angular);
-(function(angular){
-'use strict';
-var orderSlipForm = {
-  bindings: {
-    os: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './order-slip-form.html',
-  controller: 'OrderSlipFormController'
-};
-
-angular
-  .module('admin.sales')
-  .component('orderSlipForm', orderSlipForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-OrderSlipFormController.$inject = ["$state", "OrderSlipsService", "SalesOrdersService", "ProductInventoryService", "UsersService", "$rootScope"];
-function OrderSlipFormController($state, OrderSlipsService, SalesOrdersService, ProductInventoryService, UsersService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onChanges = function (changes) {
-    if (changes.os) {
-      ctrl.os = angular.copy(ctrl.os);
-    }
-  };
-  
-  ctrl.$onInit = function() {
-	  ctrl.os.orderedProducts = [];
-	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.depots = response.data.depots;
-	  });
-	  ctrl.type = "OS";
-	  ctrl.os.date = new Date();
-  };
-
-  ctrl.computeTotalAmount = function(value, index){
-	  ctrl.os.orderedProducts[index].amount = value;
-	  ctrl.os.totalAmount = 0;
-	  for(var i = 0; i < ctrl.os.orderedProducts.length; i++){
-		  ctrl.os.totalAmount += ctrl.os.orderedProducts[i].quantity * ctrl.os.orderedProducts[i].unitPrice ;
-	  }
-  };
-  
-
-  
-  ctrl.showSoProductModal = function(fg){
-	  ctrl.company = $rootScope.selectedCompany;
-	  console.log("SALES ORDER NUMBER" + ctrl.os.salesOrder.number);
-	  ProductInventoryService.listByDepotAndFinishedGood(ctrl.os.depot.id, fg.id).then(function(response){
-		  ctrl.inventorylist = response.data;
-		  $("#findSoProductModal").modal('show');
-		  
-	  });
-	  
-	  
-  };
-  
-  
-  ctrl.getProductsOfFg = function (fg){
-	  var array = [];
-	  for(var i = 0; i < ctrl.os.orderedProducts.length ; i++){
-		  if(fg.finishedGood.id == ctrl.os.orderedProducts[i].product.finishedGood.id){
-			  array.push(ctrl.os.orderedProducts[i]);
-		  }
-	  }
-	  return array;
-  };
-  
-  ctrl.findSoModal = function(){
-	  ctrl.company = $rootScope.selectedCompany;
-	  SalesOrdersService.listNotCompletedByCompanyAndDepot(ctrl.company.id, ctrl.os.depot.id, ctrl.type).then(function(response){
-		  ctrl.salesOrders = response.data;
-		  console.log("ressonse" + JSON.stringify(ctrl.salesOrders));
-		  $("#findSoModal").modal("show");
-	  });
-	  
-  };
-  
-  ctrl.getTotalQuantity = function(fg){
-	  var sum = 0;
-	  for(var i = 0; i < ctrl.os.orderedProducts.length ; i++){
-		  if(fg.finishedGood.id == ctrl.os.orderedProducts[i].product.finishedGood.id){
-			  sum += ctrl.os.orderedProducts[i].quantity;
-		  }
-	  }
-	  return sum;
-  };
- 
-  
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.os));
-    for(var i = 0; i < ctrl.os.orderedProducts.length; i++){
-    	ctrl.os.orderedProducts[i].orderSlipNo = ctrl.os.number;
-    }
-    
-    ctrl.os.type ="OS";
-    ctrl.onSubmit({
-      $event: {
-    	  os: ctrl.os
-      }
-    });
-  };
-  
-}
-
-angular
-  .module('admin.sales')
-  .controller('OrderSlipFormController', OrderSlipFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-var orderSlipNew = {
-  templateUrl: './order-slip-new.html',
-  controller: 'OrderSlipNewController'
-};
-
-angular
-  .module('admin.sales')
-  .component('orderSlipNew', orderSlipNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('order-slip-new', {
-        parent: 'app',
-        url: '/admin/sales/order-slip/new',
-        component: 'orderSlipNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-OrderSlipNewController.$inject = ["$state", "OrderSlipsService", "$rootScope"];
-function OrderSlipNewController($state, OrderSlipsService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.os = {
-    		company: $rootScope.selectedCompany,
-    		preparedBy: ctrl.user,
-    		releasedBy: ctrl.user,
-    		checkedBy: ctrl.user,
-    		approvedBy: ctrl.user
-    };
-  };
-
-  ctrl.createOrderSlip = function (event) {
-    OrderSlipsService.save(event.os).then(function (response) {
-    	  console.log("create " + JSON.stringify(response.data));
-      $state.go('order-slips');
-    });
-
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller('OrderSlipNewController', OrderSlipNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var orderSlip = {
-  templateUrl: './order-slips.html',
-  controller: 'OrderSlipController'
-};
-
-angular
-  .module('admin.sales')
-  .component('orderSlip', orderSlip)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('order-slips', {
-        parent: 'app',
-        url: '/admin/sales/order-slip',
-        component: 'orderSlip'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-OrderSlipController.$inject = ["$state", "OrderSlipsService", "UsersService", "$rootScope", "$location", "_"];
-function OrderSlipController($state, OrderSlipsService, UsersService, $rootScope, $location, _) {
-  var ctrl = this;
-  ctrl.orderSlips = [];
-
-  
-  ctrl.sortType = 'date';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addOrderSlip = false;
-	  ctrl.error = null;
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.userAssignedDepots = response.data.depots;
-	  });
-  };
-  
-  ctrl.selectDepot = function (){
-	  loadOrderSlips();
-  };
-  
-  function loadOrderSlips(){
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  ctrl.company = $rootScope.selectedCompany;
-	  OrderSlipsService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
-	  	  console.log("list response: {}", response.data);
-		  ctrl.orderSlips = response.data;
-	  });
-  }
-  
-  ctrl.searchPrf = function(event){
-	  ctrl.prfTable.DataTable.search(event).draw();
-  };
-  
-  ctrl.createNewOrderSlip = function (event) {
-	    console.log('createNewOrderSlip');
-	    $state.go('order-slip-new');
-	    
-  };
-  
-  ctrl.openModal = function(orderSlip){
-	  ctrl.os = orderSlip;
-  };
-  
-  /*
-  ctrl.showAddOrderSlip = function (show){
-	  ctrl.addOrderSlip = show;
-  };
-  
-  
-  
-  ctrl.saveOrderSlip = function (event) {
-	    OrderSlipsService.save(event.purchaserequest).then(function () {
-	    	  loadOrderSlips();
-	    	  ctrl.showAddOrderSlip(false);
-	    	  ctrl.purchaserequest = null;
-	    });
-  };
-  */
-  
-  ctrl.deleteOrderSlip = function (id){
-	  OrderSlipsService.delete(id).then(function(response){
-		  loadOrderSlips();
-	  });
-  };
-  
- 
-}
-
-angular
-  .module('admin.sales')
-  .controller('OrderSlipController', OrderSlipController);
-})(window.angular);
-(function(angular){
-'use strict';
-var returnSlipForm = {
-  bindings: {
-    rs: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './return-slip-form.html',
-  controller: 'ReturnSlipFormController'
-};
-
-angular
-  .module('admin.sales')
-  .component('returnSlipForm', returnSlipForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-ReturnSlipFormController.$inject = ["$state", "ReturnSlipsService", "SalesSlipsService", "ProductInventoryService", "PurchaseOrdersService", "UsersService", "$rootScope"];
-function ReturnSlipFormController($state, ReturnSlipsService, SalesSlipsService, ProductInventoryService, PurchaseOrdersService, UsersService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.stockOnHandList = [];
-  ctrl.reserved= [];
-  ctrl.$onInit = function(){
-	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-	  
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.depots = response.data.depots;
-	  });
-	  
-	  ctrl.rs.date = new Date();
-  };
-  ctrl.$onChanges = function (changes) {
-    if (changes.rs) {
-      ctrl.rs = angular.copy(ctrl.rs);
-    }
-  };
-  
-  
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.rs));
-    ctrl.onSubmit({
-      $event: {
-    	  rs: ctrl.rs
-      }
-    });
-  };
-  
-  ctrl.computeTotalAmount = function(value, index){
-	  ctrl.rs.returnSlipProducts[index].amount = value;
-	  ctrl.rs.totalAmount = 0;
-	  for(var i = 0; i < ctrl.rs.returnSlipProducts.length; i++){
-		  ctrl.rs.totalAmount += ctrl.rs.returnSlipProducts[i].goodQuantity * ctrl.rs.returnSlipProducts[i].unitPrice ;
-	  }
-  };
-  
-  ctrl.findSalesSlip = function(){
-	  SalesSlipsService.listByDepot(ctrl.rs.depot.id).then(function(response){
-		  ctrl.salesSlips = response.data;
-		  console.log(response.data);
-		  $("#salesSlipsModal").modal("show");
-	  });
-  };
-  
-  ctrl.findProduct = function(){
-	  ProductInventoryService.listByDepot(ctrl.rs.depot.id).then(function(response){
-		  ctrl.productsInDepot = response.data;
-		  console.log(JSON.stringify(response.data));
-		  $("#findProductModal").modal('show');
-	  });
-  };
-  
-
-
-}
-
-angular
-  .module('admin.sales')
-  .controller('ReturnSlipFormController', ReturnSlipFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-var returnSlipNew = {
-  templateUrl: './return-slip-new.html',
-  controller: 'ReturnSlipNewController'
-};
-
-angular
-  .module('admin.sales')
-  .component('returnSlipNew', returnSlipNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('return-slip-new', {
-        parent: 'app',
-        url: '/admin/sales/return-slip/new',
-        component: 'returnSlipNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-ReturnSlipNewController.$inject = ["$state", "$stateParams", "ReturnSlipsService", "CompanyService", "DepartmentsService", "PermissionsService"];
-function ReturnSlipNewController($state, $stateParams, ReturnSlipsService, CompanyService, DepartmentsService, PermissionsService) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.rs = {
-    		company: ctrl.user.company,
-    		returnSlipProducts: []
-    };
-  };
-
-  ctrl.createReturnSlip = function (event) {
-	console.log("create " + JSON.stringify(event.rs));
-    ReturnSlipsService.save(event.rs).then(function () {
-      $state.go('return-slips');
-    });
-
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller('ReturnSlipNewController', ReturnSlipNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var returnSlip = {
-  templateUrl: './return-slips.html',
-  controller: 'ReturnSlipController'
-};
-
-angular
-  .module('admin.sales')
-  .component('returnSlip', returnSlip)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('return-slips', {
-        parent: 'app',
-        url: '/admin/sales/return-slip',
-        component: 'returnSlip'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-ReturnSlipController.$inject = ["$state", "ReturnSlipsService", "UsersService", "$rootScope", "$location", "_"];
-function ReturnSlipController($state, ReturnSlipsService, UsersService, $rootScope, $location, _) {
-  var ctrl = this;
-  ctrl.returnSlips = [];
-
-  
-  ctrl.sortType = 'date';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addReturnSlip = false;
-	  ctrl.error = null;
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.userAssignedDepots = response.data.depots;
-	  });
-  };
-  
-  ctrl.selectDepot = function(){
-	  loadReturnSlips();
-  };
-  
-  function loadReturnSlips(){
-	  ctrl.company = $rootScope.selectedCompany;
-	  ReturnSlipsService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
-	  	  console.log("list response: {}", response.data);
-		  ctrl.returnSlips = response.data;
-	  });
-  }
-  
-  ctrl.searchPrf = function(event){
-	  ctrl.prfTable.DataTable.search(event).draw();
-  };
-  
-  ctrl.createNewReturnSlip = function (event) {
-	    console.log('createNewReturnSlip');
-	    $state.go('return-slip-new');
-	    
-  };
-  
-  /*
-  ctrl.openModal = function(returnSlip){
-	  console.log("show modal" +  ctrl.showModal);
-	  ctrl.so = returnSlip;
-	  ReturnSlipsService.getLatestCancelledReqs(ctrl.so.id).then(function(response){
-		  ctrl.cancelreqs = response.data;
-		  for(var i = 0; i < ctrl.so.products.length; i++){
-			  for(var j = 0; j < ctrl.cancelreqs.length; j++){
-				  if(ctrl.so.products[i].id == ctrl.cancelreqs[j].returnSlipProduct.id){
-					  console.log("hi" + ctrl.cancelreqs);
-					  ctrl.so.products[i].cancelReq = ctrl.cancelreqs[j];
-				  }
-			  }
-		  }
-	  });
-	  
-	  console.log("returnSlip" + JSON.stringify(ctrl.so));
-
-	  $('#soInfoModal').modal('show');
-	  
-  };
-  */
-  ctrl.edit = function (so) {
-	  $state.go('return-slip-edit', { 'soId': so.id });
-  };
-  /*
-  ctrl.showAddReturnSlip = function (show){
-	  ctrl.addReturnSlip = show;
-  };
-  
-  
-  
-  ctrl.saveReturnSlip = function (event) {
-	    ReturnSlipsService.save(event.purchaserequest).then(function () {
-	    	  loadReturnSlips();
-	    	  ctrl.showAddReturnSlip(false);
-	    	  ctrl.purchaserequest = null;
-	    });
-  };
-  */
-  
-  ctrl.deleteReturnSlip = function (id){
-	  ReturnSlipsService.delete(id).then(function(response){
-		  loadReturnSlips();
-	  });
-  };
-  
- 
-}
-
-angular
-  .module('admin.sales')
-  .controller('ReturnSlipController', ReturnSlipController);
-})(window.angular);
-(function(angular){
-'use strict';
-var salesInvoiceForm = {
-  bindings: {
-    si: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './sales-invoice-form.html',
-  controller: 'SalesInvoiceFormController'
-};
-
-angular
-  .module('admin.sales')
-  .component('salesInvoiceForm', salesInvoiceForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-SalesInvoiceFormController.$inject = ["$state", "SalesInvoicesService", "SalesOrdersService", "ProductInventoryService", "UsersService", "$rootScope"];
-function SalesInvoiceFormController($state, SalesInvoicesService, SalesOrdersService, ProductInventoryService, UsersService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onChanges = function (changes) {
-    if (changes.si) {
-      ctrl.si = angular.copy(ctrl.si);
-    }
-  };
-  
-  ctrl.$onInit = function() {
-	  ctrl.si.orderedProducts = [];
-	  ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.depots = response.data.depots;
-	  });
-	  ctrl.type = "DR_SI";
-	  ctrl.si.date = new Date();
-  };
-
-  ctrl.computeTotalAmount = function(value, index){
-	  ctrl.si.orderedProducts[index].amount = value;
-	  ctrl.si.totalAmount = 0;
-	  for(var i = 0; i < ctrl.si.orderedProducts.length; i++){
-		  ctrl.si.totalAmount += ctrl.si.orderedProducts[i].quantity * ctrl.si.orderedProducts[i].unitPrice ;
-	  }
-  };
-  
-  ctrl.addVat = function(){
-	  if(ctrl.si.vat){
-		 ctrl.si.totalAmount = ctrl.si.totalAmount + (ctrl.si.totalAmount * 0.12);
-	  }else{
-		 ctrl.si.totalAmount = ctrl.si.totalAmount - (ctrl.si.totalAmount * 0.12);
-	  }
-  };
-
-  
-  ctrl.showSoProductModal = function(fg){
-	  ctrl.company = $rootScope.selectedCompany;
-	  console.log("SALES ORDER NUMBER" + ctrl.si.salesOrder.number);
-	  ProductInventoryService.listByDepotAndFinishedGood(ctrl.si.depot.id, fg.id).then(function(response){
-		  ctrl.inventorylist = response.data;
-		  $("#findSoProductModal").modal('show');
-		  
-	  });
-	  
-	  
-  };
-  
-  
-  ctrl.getProductsOfFg = function (fg){
-	  var array = [];
-	  for(var i = 0; i < ctrl.si.orderedProducts.length ; i++){
-		  if(fg.finishedGood.id == ctrl.si.orderedProducts[i].product.finishedGood.id){
-			  array.push(ctrl.si.orderedProducts[i]);
-		  }
-	  }
-	  return array;
-  };
-  
-  ctrl.findSoModal = function(){
-	  ctrl.company = $rootScope.selectedCompany;
-	  SalesOrdersService.listNotCompletedByCompanyAndDepot(ctrl.company.id, ctrl.si.depot.id, ctrl.type).then(function(response){
-		  ctrl.salesOrders = response.data;
-		  console.log("ressonse" + JSON.stringify(ctrl.salesOrders));
-		  $("#findSoModal").modal("show");
-	  });
-	  
-  };
-  
-  ctrl.getTotalQuantity = function(fg){
-	  var sum = 0;
-	  for(var i = 0; i < ctrl.si.orderedProducts.length ; i++){
-		  if(fg.finishedGood.id == ctrl.si.orderedProducts[i].product.finishedGood.id){
-			  sum += ctrl.si.orderedProducts[i].quantity;
-		  }
-	  }
-	  return sum;
-  };
- 
-  
-  ctrl.submitForm = function () {
-    console.log('submitForm: ' + JSON.stringify(ctrl.si));
-    for(var i = 0; i < ctrl.si.orderedProducts.length; i++){
-    	ctrl.si.orderedProducts[i].orderSlipNo = ctrl.si.number;
-    }
-    
-    ctrl.si.type = "DR_SI";
-    ctrl.onSubmit({
-      $event: {
-    	  si: ctrl.si
-      }
-    });
-  };
-  
-}
-
-angular
-  .module('admin.sales')
-  .controller('SalesInvoiceFormController', SalesInvoiceFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-var salesInvoiceNew = {
-  templateUrl: './sales-invoice-new.html',
-  controller: 'SalesInvoiceNewController'
-};
-
-angular
-  .module('admin.sales')
-  .component('salesInvoiceNew', salesInvoiceNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('sales-invoice-new', {
-        parent: 'app',
-        url: '/admin/sales/sales-invoice/new',
-        component: 'salesInvoiceNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-SalesInvoiceNewController.$inject = ["$state", "SalesInvoicesService", "$rootScope"];
-function SalesInvoiceNewController($state, SalesInvoicesService, $rootScope) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.si = {
-    		company: $rootScope.selectedCompany,
-    		preparedBy: ctrl.user,
-    		releasedBy: ctrl.user,
-    		checkedBy: ctrl.user,
-    		approvedBy: ctrl.user
-    };
-  };
-
-  ctrl.createSalesInvoice = function (event) {
-    SalesInvoicesService.save(event.si).then(function (response) {
-    	  console.log("create " + JSON.stringify(response.data));
-      $state.go('sales-invoices');
-    });
-
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller('SalesInvoiceNewController', SalesInvoiceNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var salesInvoice = {
-  templateUrl: './sales-invoices.html',
-  controller: 'SalesInvoiceController'
-};
-
-angular
-  .module('admin.sales')
-  .component('salesInvoice', salesInvoice)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('sales-invoices', {
-        parent: 'app',
-        url: '/admin/sales/sales-invoice',
-        component: 'salesInvoice'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-SalesInvoiceController.$inject = ["$state", "SalesInvoicesService", "UsersService", "$rootScope", "$location", "_"];
-function SalesInvoiceController($state, SalesInvoicesService, UsersService, $rootScope, $location, _) {
-  var ctrl = this;
-  ctrl.salesInvoices = [];
-
-  
-  ctrl.sortType = 'date';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addSalesInvoice = false;
-	  ctrl.error = null;
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.userAssignedDepots = response.data.depots;
-	  });
-	  
-  };
-  
-  ctrl.selectDepot = function (){
-	  loadSalesInvoices();
-  };
-  
-  function loadSalesInvoices(){
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  ctrl.company = $rootScope.selectedCompany;
-	  SalesInvoicesService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
-	  	  console.log("list response: {}", response.data);
-		  ctrl.salesInvoices = response.data;
-	  });
-  }
-  
-  ctrl.searchPrf = function(event){
-	  ctrl.prfTable.DataTable.search(event).draw();
-  };
-  
-  ctrl.createNewSalesInvoice = function (event) {
-	    console.log('createNewSalesInvoice');
-	    $state.go('sales-invoice-new');
-	    
-  };
-  
-  ctrl.openModal = function(orderSlip){
-	  ctrl.si = orderSlip;
-  };
-  
-  /*
-  ctrl.showAddSalesInvoice = function (show){
-	  ctrl.addSalesInvoice = show;
-  };
-  
-  
-  
-  ctrl.saveSalesInvoice = function (event) {
-	    SalesInvoicesService.save(event.purchaserequest).then(function () {
-	    	  loadSalesInvoices();
-	    	  ctrl.showAddSalesInvoice(false);
-	    	  ctrl.purchaserequest = null;
-	    });
-  };
-  */
-  
-  ctrl.deleteSalesInvoice = function (id){
-	  SalesInvoicesService.delete(id).then(function(response){
-		  loadSalesInvoices();
-	  });
-  };
-  
- 
-}
-
-angular
-  .module('admin.sales')
-  .controller('SalesInvoiceController', SalesInvoiceController);
-})(window.angular);
-(function(angular){
-'use strict';
-var salesOrderForm = {
-  bindings: {
-    so: '=',
-    button: '@',
-    message: '@',
-    onSubmit: '&'
-  },
-  templateUrl: './sales-order-form.html',
-  controller: 'SalesOrderFormController'
-};
-
-angular
-  .module('admin.sales')
-  .component('salesOrderForm', salesOrderForm);
-})(window.angular);
-(function(angular){
-'use strict';
-
-SalesOrderFormController.$inject = ["$state", "SalesOrdersService", "ItemsService", "ProductInventoryService", "PurchaseOrdersService", "UsersService", "$rootScope"];
-function SalesOrderFormController($state, SalesOrdersService, ItemsService, ProductInventoryService, PurchaseOrdersService, UsersService, $rootScope) {
-  var ctrl = this;
-
-  ctrl.stockOnHandList = [];
-  ctrl.reserved = [];
-  ctrl.$onInit = function () {
-
-    ctrl.so.number = "0001";
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-
-    UsersService.get(ctrl.user.id).then(function (response) {
-      ctrl.depots = response.data.depots;
-    });
-
-    ctrl.so.date = new Date();
-  };
-  ctrl.$onChanges = function (changes) {
-    if (changes.so) {
-      ctrl.so = angular.copy(ctrl.so);
-    }
-  };
-
-
-  ctrl.submitForm = function () {
-    console.log('submitForm: POTANGINA ' + JSON.stringify(ctrl.so));
-    for (var i = 0; i < ctrl.so.products.length; i++) {
-      ctrl.so.products[i].depot = ctrl.so.depot;
-      ctrl.so.products[i].soNumber = ctrl.so.number;
-    }
-    console.log('HERE')
-    SalesOrdersService.save(ctrl.so)
-    ctrl.onSubmit({
-      $event: {
-        so: ctrl.so
-      }
-    });
-
-  };
-
-  ctrl.enterdown = function ($event) {
-
-
-    if ($event.keyCode === 13) {
-
-      var form = $event.target.form;
-      var index = Array.prototype.indexOf.call(form, $event.target);
-      form.elements[index + 1].focus();
-      console.log(index);
-      $event.preventDefault();
-    }
-  };
-
-  ctrl.computeTotalAmount = function (value, index) {
-    ctrl.so.products[index].amount = value;
-    ctrl.so.totalAmount = 0;
-    for (var i = 0; i < ctrl.so.products.length; i++) {
-      ctrl.so.totalAmount += ctrl.so.products[i].quantity * ctrl.so.products[i].unitPrice;
-    }
-  };
-
-  ctrl.findProduct = function () {
-    ctrl.company = $rootScope.selectedCompany;
-    ProductInventoryService.listFinishedGoodView(ctrl.company.id).then(function (response) {
-
-      ctrl.fglistview = response.data;
-      console.log(ctrl.fglistview);
-      console.log("so products");
-      console.log(ctrl.so.products);
-      $("#findFgInventoryModal").modal('show');
-    });
-
-  };
-
-
-
-}
-
-angular
-  .module('admin.sales')
-  .controller('SalesOrderFormController', SalesOrderFormController);
-})(window.angular);
-(function(angular){
-'use strict';
-var salesOrderNew = {
-  templateUrl: './sales-order-new.html',
-  controller: 'SalesOrderNewController'
-};
-
-angular
-  .module('admin.sales')
-  .component('salesOrderNew', salesOrderNew)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('sales-order-new', {
-        parent: 'app',
-        url: '/admin/sales/sales-order/new',
-        component: 'salesOrderNew'
-      });
-  }]);
-})(window.angular);
-(function(angular){
-'use strict';
-
-SalesOrderNewController.$inject = ["$state", "$stateParams", "SalesOrdersService", "CompanyService", "DepartmentsService", "PermissionsService"];
-function SalesOrderNewController($state, $stateParams, SalesOrdersService, CompanyService, DepartmentsService, PermissionsService) {
-  var ctrl = this;
-  
-  ctrl.$onInit = function () {
-    ctrl.error = null;
-    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
-    ctrl.so = {
-    		requestedBy : ctrl.user,
-    		company: ctrl.user.company,
-    		preparedBy : ctrl.user,
-    		checkedBy : ctrl.user,
-    		products: []
-    };
-  };
-
-  ctrl.createSalesOrder = function (event) {
-	console.log("create " + JSON.stringify(event.so));
-    SalesOrdersService.save(event.so).then(function () {
-      $state.go('sales-orders');
-    });
-
-  };
-}
-
-angular
-  .module('admin.sales')
-  .controller('SalesOrderNewController', SalesOrderNewController);
-})(window.angular);
-(function(angular){
-'use strict';
-
-var salesOrder = {
-  templateUrl: './sales-orders.html',
-  controller: 'SalesOrderController'
-};
-
-angular
-  .module('admin.sales')
-  .component('salesOrder', salesOrder)
-  .config(["$stateProvider", function ($stateProvider) {
-    $stateProvider
-      .state('sales-orders', {
-        parent: 'app',
-        url: '/admin/sales/sales-order',
-        component: 'salesOrder'
-      });
-  }]);})(window.angular);
-(function(angular){
-'use strict';
-
-SalesOrderController.$inject = ["$state", "SalesOrdersService", "SalesRepsService", "UsersService", "$rootScope", "$location", "_"];
-function SalesOrderController($state, SalesOrdersService, SalesRepsService, UsersService, $rootScope, $location, _) {
-  var ctrl = this;
-  ctrl.salesOrders = [];
-
-  
-  ctrl.sortType = 'date';
-  ctrl.sortReverse = false;
-  
-  ctrl.$onInit = function () {
-	  ctrl.addSalesOrder = false;
-	  ctrl.error = null;
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  UsersService.get(ctrl.user.id).then(function(response){
-		  ctrl.userAssignedDepots = response.data.depots;
-	  });
-	  
-	  SalesRepsService.list().then(function(response){
-		  ctrl.salesReps = response.data;
-	  });
-	  
-	  
-  };
-  
-  ctrl.selectDepot = function(){
-	  loadSalesOrders();
-  };
-  
-  function loadSalesOrders(){
-	  ctrl.company = $rootScope.selectedCompany;
-	  SalesOrdersService.listByDepot(ctrl.userAssignedDepot.id).then(function(response){
-	  	  console.log("list response: {}", response.data);
-		  ctrl.salesOrders = response.data;
-	  });
-  }
-  
-  ctrl.searchPrf = function(event){
-	  ctrl.prfTable.DataTable.search(event).draw();
-  };
-  
-  ctrl.createNewSalesOrder = function (event) {
-	    console.log('createNewSalesOrder');
-	    $state.go('sales-order-new');
-	    
-  };
-  
-  ctrl.openModal = function(salesOrder){
-	  console.log("show modal" +  ctrl.showModal);
-	  ctrl.so = salesOrder;
-	  SalesOrdersService.getLatestCancelledReqs(ctrl.so.id).then(function(response){
-		  ctrl.cancelreqs = response.data;
-		  for(var i = 0; i < ctrl.so.products.length; i++){
-			  for(var j = 0; j < ctrl.cancelreqs.length; j++){
-				  if(ctrl.so.products[i].id == ctrl.cancelreqs[j].salesOrderProduct.id){
-					  console.log("hi" + ctrl.cancelreqs);
-					  ctrl.so.products[i].cancelReq = ctrl.cancelreqs[j];
-				  }
-			  }
-		  }
-	  });
-	  
-	  console.log("salesOrder" + JSON.stringify(ctrl.so));
-
-	  $('#soInfoModal').modal('show');
-	  
-  };
-  
-  ctrl.edit = function (so) {
-	  $state.go('sales-order-edit', { 'soId': so.id });
-  };
-  /*
-  ctrl.showAddSalesOrder = function (show){
-	  ctrl.addSalesOrder = show;
-  };
-  
-  
-  
-  ctrl.saveSalesOrder = function (event) {
-	    SalesOrdersService.save(event.purchaserequest).then(function () {
-	    	  loadSalesOrders();
-	    	  ctrl.showAddSalesOrder(false);
-	    	  ctrl.purchaserequest = null;
-	    });
-  };
-  */
-  
-  ctrl.deleteSalesOrder = function (id){
-	  SalesOrdersService.delete(id).then(function(response){
-		  loadSalesOrders();
-	  });
-  };
-  
- 
-}
-
-angular
-  .module('admin.sales')
-  .controller('SalesOrderController', SalesOrderController);
-})(window.angular);
-(function(angular){
-'use strict';
 var findApprovedItemModal = {
 	bindings : {
 		approvedreceipt : '=',
@@ -19072,19 +18713,395 @@ angular
 })(window.angular);
 (function(angular){
 'use strict';
+var clientInformationEdit = {
+  templateUrl: './client-information-edit.html',
+  controller: 'ClientInformationEditController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('clientInformationEdit', clientInformationEdit)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('client-information-edit', {
+        parent: 'app',
+        url: '/admin/maintenance/client-information/edit/:clientId',
+        component: 'clientInformationEdit'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+ClientInformationEditController.$inject = ["$state", "$stateParams", "ClientsService", "$rootScope"];
+function ClientInformationEditController($state, $stateParams, ClientsService, $rootScope) {
+  var ctrl = this;
+  ctrl.client = {};
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    
+    console.log('clientId: ' + JSON.stringify($stateParams.clientId));
+    
+    
+      
+    ClientsService.get($stateParams.clientId).then(function (response) {
+      ctrl.client = response.data;
+    });
+    
+ 
+  };
+  ctrl.edit = function (event) {
+    console.log('ClientInformationEditController edit');
+    var client =  JSON.parse(JSON.stringify(event.client));
+  
+
+    ClientsService.update(client).then(function () {
+      $state.go('client-informations');
+    });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('ClientInformationEditController', ClientInformationEditController);
+})(window.angular);
+(function(angular){
+'use strict';
+var clientInformationForm = {
+  bindings: {
+    client: '=',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './client-information-form.html',
+  controller: 'ClientInformationFormController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('clientInformationForm', clientInformationForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+ClientInformationFormController.$inject = ["$state", "ClusterCodesService", "SalesRepsService", "InstitutionalCodesService", "_"];
+function ClientInformationFormController($state, ClusterCodesService, SalesRepsService, InstitutionalCodesService,_) {
+  var ctrl = this;
+
+  var currentUser = localStorage.getItem('currentUser');
+      if (currentUser != null) {
+          ctrl.currentUser = JSON.parse(currentUser);
+      }
+  
+  ctrl.$onInit = function (){
+    ClusterCodesService.list().then(function(response){
+      ctrl.clusters = response.data;
+    });
+    SalesRepsService.list().then(function(response){
+      ctrl.salesReps = response.data;
+    });
+
+    InstitutionalCodesService.list().then(function(response){
+      ctrl.institutionalCodes = response.data;
+    });
+  };
+  
+  ctrl.$onChanges = function (changes) {
+    if (changes.client) {
+      ctrl.client = angular.copy(ctrl.client);
+    }
+  };
+
+  ctrl.addReference = function() {
+    console.log("addReference clicked");
+    ctrl.client.clientReferencesList.push({
+      name: "", type: "", branch: "", telephoneNumber: ""
+    });
+  }
+
+
+
+  
+  ctrl.submitForm = function () {
+    ctrl.onSubmit({
+      $event: {
+    	  client: ctrl.client
+      }
+    });
+  };
+  
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('ClientInformationFormController', ClientInformationFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+var clientInformationNew = {
+  templateUrl: './client-information-new.html',
+  controller: 'ClientInformationNewController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('clientInformationNew', clientInformationNew)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('client-information-new', {
+        parent: 'app',
+        url: '/admin/maintenance/client-information/new',
+        component: 'clientInformationNew'
+      });
+  }]);
+})(window.angular);
+(function(angular){
+'use strict';
+
+ClientInformationNewController.$inject = ["$state", "ClientsService", "$rootScope"];
+function ClientInformationNewController($state, ClientsService, $rootScope) {
+  var ctrl = this;
+  
+  ctrl.$onInit = function () {
+    ctrl.error = null;
+    ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
+    ctrl.client = {
+        company: $rootScope.selectedCompany,
+        clientReferencesList: []
+    };
+  };
+
+  ctrl.createClient = function (event) {
+    ClientsService.save(event.client).then(function (response) {
+    	  console.log("createClient " + JSON.stringify(response.data));
+        $state.go('client-informations');
+    });
+
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('ClientInformationNewController', ClientInformationNewController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var clientInformation = {
+  templateUrl: './client-informations.html',
+  controller: 'ClientInformationsController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('clientInformation', clientInformation)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('client-informations', {
+        parent: 'app',
+        url: '/admin/maintenance/client-information',
+        component: 'clientInformation'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+ClientInformationsController.$inject = ["$state", "$rootScope", "_", "ClientsService"];
+function ClientInformationsController($state, $rootScope, _, ClientsService) {
+  var ctrl = this;
+  ctrl.clientInformations = [];
+  ctrl.totalClients = 0;
+  ctrl.clientsPerPage = 1;
+
+  ctrl.company = $rootScope.selectedCompany;
+  getResultsPage(1);
+  
+  ctrl.pagination = {
+    current: 1
+  };
+
+  ctrl.pageChanged = function(newPage) {
+    getResultsPage(newPage);
+  };
+
+  function getResultsPage(pageNumber) {
+    // this is just an example, in reality this stuff should be in a service
+    ClientsService.paginateByCompany(ctrl.company.id, ctrl.clientsPerPage, pageNumber-1)
+        .then(function(result) {
+            console.log(result.data);
+            ctrl.clients = result.data.content;
+            ctrl.totalClients = 3;
+        });
+  }
+
+  ctrl.sortType = 'name';
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+    
+	  ctrl.addPurchaseRequest = false;
+	  ctrl.error = null;
+	  
+  };
+  
+  function loadClients(){
+    ClientsService.list().then((response) => {
+      ctrl.clientInformations = response.data;
+    });
+	  
+  }
+
+  ctrl.goToEdit = function(id) {
+    $state.go("client-information-edit",  { 'clientId': id });
+  }
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('ClientInformationsController', ClientInformationsController);
+})(window.angular);
+(function(angular){
+'use strict';
+var classificationForm = {
+  bindings: {
+    classification: '=',
+    company: '<',
+    button: '@',
+    message: '@',
+    onSubmit: '&'
+  },
+  templateUrl: './classification-form.html',
+  controller: 'ClassificationFormController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('classificationForm', classificationForm);
+})(window.angular);
+(function(angular){
+'use strict';
+
+ClassificationFormController.$inject = ["$state", "ClassificationsService"];
+function ClassificationFormController($state, ClassificationsService) {
+  var ctrl = this;
+
+  ctrl.$onChanges = function (changes) {
+    if (changes.classification) {
+      ctrl.classification = angular.copy(ctrl.classification);
+    }
+  };
+  
+  ctrl.$onInit = function() {
+	  //ClassificationsService.listTypes().then(function(response){
+//		  ctrl.types = response.data;
+//	  });
+  };
+
+  ctrl.submitForm = function () {
+    console.log('submitForm: ' + JSON.stringify(ctrl.classification));
+    ctrl.onSubmit({
+      $event: {
+        classification: ctrl.classification
+      }
+    });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('ClassificationFormController', ClassificationFormController);
+})(window.angular);
+(function(angular){
+'use strict';
+
+var classification = {
+  templateUrl: './classifications.html',
+  controller: 'ClassificationController'
+};
+
+angular
+  .module('admin.maintenance')
+  .component('classification', classification)
+  .config(["$stateProvider", function ($stateProvider) {
+    $stateProvider
+      .state('classifications', {
+        parent: 'app',
+        url: '/admin/maintenance/classification',
+        component: 'classification'
+      });
+  }]);})(window.angular);
+(function(angular){
+'use strict';
+
+ClassificationController.$inject = ["$state", "ClassificationsService", "$rootScope", "_"];
+function ClassificationController($state, ClassificationsService, $rootScope, _) {
+  var ctrl = this;
+  ctrl.classifications = [];
+  ctrl.companies = [];
+
+  ctrl.searchCode = '';
+  ctrl.searchName = '';
+
+  ctrl.sortReverse = false;
+  
+  ctrl.$onInit = function () {
+	  ctrl.addClassification = false;
+	  ctrl.error = null;
+	  loadClassifications();
+  };
+  
+  function loadClassifications(){
+	  ClassificationsService.list().then(function(response){
+		  console.log("list response: " + JSON.stringify(response.data));
+		  ctrl.classifications = response.data;
+	  });
+  }
+  
+  ctrl.showAddClassification = function (show){
+	  ctrl.addClassification = show;
+  };
+  
+  ctrl.editClassification = function (id) {
+	  ClassificationsService.get(id).then(function(response){
+		  ctrl.classification = response.data;
+	  });
+	  ctrl.addClassification = true;
+  };
+  
+  ctrl.saveClassification = function (event) {
+	    ClassificationsService.save(event.classification).then(function () {
+	    	  loadClassifications();
+	    	  ctrl.showAddClassification(false);
+	    });
+  };
+  
+  ctrl.deleteClassification = function (id){
+	  ClassificationsService.delete(id).then(function(response){
+		  loadClassifications();
+	  });
+  };
+}
+
+angular
+  .module('admin.maintenance')
+  .controller('ClassificationController', ClassificationController);
+})(window.angular);
+(function(angular){
+'use strict';
 angular.module('templates', []).run(['$templateCache', function($templateCache) {$templateCache.put('./root.html','<div ui-view></div>');
 $templateCache.put('./accounting.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">ACCOUNTING</h4><div class="action-link"><a href="#">Reports</a></div></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a ng-if="$ctrl.checkPermission(\'superadmin\')" href="/admin/accounting/purchase-voucher"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Purchase Vouchers</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/journal-voucher"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Journal Vouchers</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/vouchers-payable"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Vouchers Payables</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/account-title"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Account Titles</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/cheque-printing"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Cheque Printings</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/cheque-disbursement"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Cheque Disbursement Vouchers</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/credit-memo"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Credit Memos</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/debit-memo"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Debit Memos</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/cash-receipt-voucher"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Cash Receipt Vouchers</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/pdc-disbursement"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">PDC Disbursements</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/accounting/pdc-voucher"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">PDC Vouchers</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/sales-journal-voucher"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Sales Journal Vouchers</span></i></div></a><div class="clear-float"></div></div><!--<div class="accounting-content">--><!--<div class="admin-header">--><!--<div class="title">--><!--<h4 class="md">Dashboard</h4>--><!--</div>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#departmentCodeModal" data-toggle="modal" class="link" href="#">Department &amp; Area Code</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findVendorModal" data-toggle="modal" class="link" href="#">Find Vendor</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findClientModal" data-toggle="modal" class="link" href="#">Find Client</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findGroupAndCategoriesModal" data-toggle="modal" class="link" href="#">Groups &amp; Categories</a>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="departmentCodeModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Department &amp; Area Code</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Departments</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Area Code</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">033</span>--><!--<span class="dept">Quezon City</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">044</span>--><!--<span class="dept">Cebu</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">055</span>--><!--<span class="dept">Bulacan</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findVendorModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Vendor--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Vendor</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/accounting" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="edMWCmgwo1u+dK9VTCWnBNMaDxrv8skefxqMlkkXSEVDtfqpuX9YCPBOsbrPdkCH7EpcCZecvSzuWRjbgDPJrQ=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table table-list">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findClientModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Client--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Client</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/accounting" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="SL26hNGK3mMCGVEcQjOKGDGDeQ9/eniHnp4mtRpVb2xy21YnAMUlMEwjT/PBYG2bDtMqHAcUDLUP3bL403HuhA=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table find-vendor">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findGroupAndCategoriesModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Groups &amp; Categories</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="groups-section">--><!--<div class="horizontal-align -between">--><!--<p>Groups</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<ul class="groups-list">--><!--<li class="-active">Miscellaneous</li>--><!--<li>Office Supplies</li>--><!--<li>Project</li>--><!--</ul>--><!--</div>--><!--<div class="categories-section">--><!--<div class="horizontal-align -between">--><!--<p>Categories</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="categories scroll-section">--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--&lt;!&ndash;--><!--.action-link--><!--= link_to \'Department & Area Code\', \'#\', { data: { target: \'#departmentCodeModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Vendor\', \'#\', { data: { target: \'#findVendorModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Client\', \'#\', { data: { target: \'#findClientModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Groups & Categories\', \'#\', { data: { target: \'#findGroupAndCategoriesModal\', toggle: :modal }, class: \'link\' }--><!--= render \'admin/accountings/department_and_area_code\'--><!--= render \'admin/accountings/find_vendor\'--><!--= render \'admin/accountings/find_client\'--><!--= render \'admin/accountings/groups_and_categories\' &ndash;&gt;-->');
 $templateCache.put('./dashboard.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">DASHBOARD</h4><div class="action-link"><a href="#">Reports</a></div></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-pr\')" href="/admin/dashboard/purchase-request"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Purchase Requests RM/PM</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-pr\')" href="/admin/dashboard/purchase-request?eng=1"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Purchase Requests Non-RM/PM</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-rr\')" href="/admin/dashboard/receiving-receipt"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Receiving Receipts</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-ar\')" href="/admin/dashboard/approved-receipt"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Approved Receipts</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/material-reevaluation"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Material Reevaluations</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/inventory"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Inventory</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/material-issuance"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Material Issuance Slips</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/material-receiving"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Material Receiving Slips</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/inventory-movements"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Inventory Movement Slips</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/product-movements"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Product Movements</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/product-inventory"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Product Inventory</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/product-issuances"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">FG-IS</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/product-receivings"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">FG-RS</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/depot-inventory"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Depot Inventory</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/employee"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Employee</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/job-order"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Job Order</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/engineering-items"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Engineering Items</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/engineering-inventory"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Engineering Inventory</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/account-summary-report"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Account Summary Reports</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/dashboard/sales-reports"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Sales Reports</span></i></div></a><div class="clear-float"></div></div><!--<div class="dashboard-content">--><!--<div class="admin-header">--><!--<div class="title">--><!--<h4 class="md">Dashboard</h4>--><!--</div>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#departmentCodeModal" data-toggle="modal" class="link" href="#">Department &amp; Area Code</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findVendorModal" data-toggle="modal" class="link" href="#">Find Vendor</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findClientModal" data-toggle="modal" class="link" href="#">Find Client</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findGroupAndCategoriesModal" data-toggle="modal" class="link" href="#">Groups &amp; Categories</a>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="departmentCodeModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Department &amp; Area Code</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Departments</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Area Code</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">033</span>--><!--<span class="dept">Quezon City</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">044</span>--><!--<span class="dept">Cebu</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">055</span>--><!--<span class="dept">Bulacan</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findVendorModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Vendor--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Vendor</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/dashboard" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="edMWCmgwo1u+dK9VTCWnBNMaDxrv8skefxqMlkkXSEVDtfqpuX9YCPBOsbrPdkCH7EpcCZecvSzuWRjbgDPJrQ=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table table-list">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findClientModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Client--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Client</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/dashboard" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="SL26hNGK3mMCGVEcQjOKGDGDeQ9/eniHnp4mtRpVb2xy21YnAMUlMEwjT/PBYG2bDtMqHAcUDLUP3bL403HuhA=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table find-vendor">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findGroupAndCategoriesModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Groups &amp; Categories</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="groups-section">--><!--<div class="horizontal-align -between">--><!--<p>Groups</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<ul class="groups-list">--><!--<li class="-active">Miscellaneous</li>--><!--<li>Office Supplies</li>--><!--<li>Project</li>--><!--</ul>--><!--</div>--><!--<div class="categories-section">--><!--<div class="horizontal-align -between">--><!--<p>Categories</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="categories scroll-section">--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--&lt;!&ndash;--><!--.action-link--><!--= link_to \'Department & Area Code\', \'#\', { data: { target: \'#departmentCodeModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Vendor\', \'#\', { data: { target: \'#findVendorModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Client\', \'#\', { data: { target: \'#findClientModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Groups & Categories\', \'#\', { data: { target: \'#findGroupAndCategoriesModal\', toggle: :modal }, class: \'link\' }--><!--= render \'admin/dashboards/department_and_area_code\'--><!--= render \'admin/dashboards/find_vendor\'--><!--= render \'admin/dashboards/find_client\'--><!--= render \'admin/dashboards/groups_and_categories\' &ndash;&gt;-->');
-$templateCache.put('./maintenance.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">MAINTENANCE</h4><div class="action-link"><a href="#">Reports</a></div></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-finished-good\')" href="/admin/maintenance/finished-good"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Finished Goods</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\')" href="/admin/maintenance/client-information"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Client</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\')" href="/admin/maintenance/vendor"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Vendor</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\')" href="/admin/maintenance/classification"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Classification</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'admin-gc\')" href="/admin/maintenance/group-and-category"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Group & Categories</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'admin-dac\')" href="/admin/maintenance/department-and-area"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Department Area & Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-items\')" href="/admin/maintenance/item"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Items</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-items\')" href="/admin/maintenance/unit"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Units</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-item-types\')" href="/admin/maintenance/item-type"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Item Types</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/depots"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Depots</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/products"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Products</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/procedure"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Procedure</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/procedure-area"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Production Area</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/memo-type"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Memo Types</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/bank-account"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Bank Accounts</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/product-division-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Product Divisions</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/region-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Region Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/cluster-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Cluster Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/institutional-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Institutional Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/account-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Account Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/province-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Province Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/sales-rep"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Sales Reps</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/zip-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Zip Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/product-category"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Product Categories</span></i></div></a><div class="clear-float"></div></div><!--<div class="sales-content">--><!--<div class="admin-header">--><!--<div class="title">--><!--<h4 class="md">maintenance</h4>--><!--</div>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#departmentCodeModal" data-toggle="modal" class="link" href="#">Department &amp; Area Code</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findVendorModal" data-toggle="modal" class="link" href="#">Find Vendor</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findClientModal" data-toggle="modal" class="link" href="#">Find Client</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findGroupAndCategoriesModal" data-toggle="modal" class="link" href="#">Groups &amp; Categories</a>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="departmentCodeModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Department &amp; Area Code</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Departments</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Area Code</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">033</span>--><!--<span class="dept">Quezon City</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">044</span>--><!--<span class="dept">Cebu</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">055</span>--><!--<span class="dept">Bulacan</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findVendorModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Vendor--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Vendor</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/sales" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="edMWCmgwo1u+dK9VTCWnBNMaDxrv8skefxqMlkkXSEVDtfqpuX9YCPBOsbrPdkCH7EpcCZecvSzuWRjbgDPJrQ=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table table-list">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findClientModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Client--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Client</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/sales" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="SL26hNGK3mMCGVEcQjOKGDGDeQ9/eniHnp4mtRpVb2xy21YnAMUlMEwjT/PBYG2bDtMqHAcUDLUP3bL403HuhA=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table find-vendor">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findGroupAndCategoriesModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Groups &amp; Categories</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="groups-section">--><!--<div class="horizontal-align -between">--><!--<p>Groups</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<ul class="groups-list">--><!--<li class="-active">Miscellaneous</li>--><!--<li>Office Supplies</li>--><!--<li>Project</li>--><!--</ul>--><!--</div>--><!--<div class="categories-section">--><!--<div class="horizontal-align -between">--><!--<p>Categories</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="categories scroll-section">--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--&lt;!&ndash;--><!--.action-link--><!--= link_to \'Department & Area Code\', \'#\', { data: { target: \'#departmentCodeModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Vendor\', \'#\', { data: { target: \'#findVendorModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Client\', \'#\', { data: { target: \'#findClientModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Groups & Categories\', \'#\', { data: { target: \'#findGroupAndCategoriesModal\', toggle: :modal }, class: \'link\' }--><!--= render \'admin/saless/department_and_area_code\'--><!--= render \'admin/saless/find_vendor\'--><!--= render \'admin/saless/find_client\'--><!--= render \'admin/saless/groups_and_categories\' &ndash;&gt;-->');
 $templateCache.put('./rnd.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">R &amp; D</h4></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a href="/admin/rnd/recipes"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Recipe</span></i></div></a><a href="/admin/rnd/mo"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Manufacturing Order</span></i></div></a><a href="/admin/rnd/pp"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Packaging process</span></i></div></a></div><div class="clear-float"></div>');
+$templateCache.put('./maintenance.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">MAINTENANCE</h4><div class="action-link"><a href="#">Reports</a></div></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-finished-good\')" href="/admin/maintenance/finished-good"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Finished Goods</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\')" href="/admin/maintenance/client-information"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Client</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\')" href="/admin/maintenance/vendor"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Vendor</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\')" href="/admin/maintenance/classification"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Classification</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'admin-gc\')" href="/admin/maintenance/group-and-category"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Group & Categories</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'admin-dac\')" href="/admin/maintenance/department-and-area"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Department Area & Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-items\')" href="/admin/maintenance/item"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Items</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-items\')" href="/admin/maintenance/unit"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Units</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'rnd-item-types\')" href="/admin/maintenance/item-type"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Item Types</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/depots"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Depots</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/products"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Products</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/procedure"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Procedure</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/procedure-area"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Production Area</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/memo-type"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Memo Types</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/bank-account"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Bank Accounts</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/product-division-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Product Divisions</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/region-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Region Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/cluster-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Cluster Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/institutional-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Institutional Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/account-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Account Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/province-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Province Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/sales-rep"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Sales Reps</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/zip-code"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Zip Codes</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/maintenance/product-category"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Product Categories</span></i></div></a><div class="clear-float"></div></div><!--<div class="sales-content">--><!--<div class="admin-header">--><!--<div class="title">--><!--<h4 class="md">maintenance</h4>--><!--</div>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#departmentCodeModal" data-toggle="modal" class="link" href="#">Department &amp; Area Code</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findVendorModal" data-toggle="modal" class="link" href="#">Find Vendor</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findClientModal" data-toggle="modal" class="link" href="#">Find Client</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findGroupAndCategoriesModal" data-toggle="modal" class="link" href="#">Groups &amp; Categories</a>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="departmentCodeModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Department &amp; Area Code</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Departments</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Area Code</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">033</span>--><!--<span class="dept">Quezon City</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">044</span>--><!--<span class="dept">Cebu</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">055</span>--><!--<span class="dept">Bulacan</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findVendorModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Vendor--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Vendor</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/sales" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="edMWCmgwo1u+dK9VTCWnBNMaDxrv8skefxqMlkkXSEVDtfqpuX9YCPBOsbrPdkCH7EpcCZecvSzuWRjbgDPJrQ=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table table-list">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findClientModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Client--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Client</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/sales" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="SL26hNGK3mMCGVEcQjOKGDGDeQ9/eniHnp4mtRpVb2xy21YnAMUlMEwjT/PBYG2bDtMqHAcUDLUP3bL403HuhA=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table find-vendor">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findGroupAndCategoriesModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Groups &amp; Categories</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="groups-section">--><!--<div class="horizontal-align -between">--><!--<p>Groups</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<ul class="groups-list">--><!--<li class="-active">Miscellaneous</li>--><!--<li>Office Supplies</li>--><!--<li>Project</li>--><!--</ul>--><!--</div>--><!--<div class="categories-section">--><!--<div class="horizontal-align -between">--><!--<p>Categories</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="categories scroll-section">--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--&lt;!&ndash;--><!--.action-link--><!--= link_to \'Department & Area Code\', \'#\', { data: { target: \'#departmentCodeModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Vendor\', \'#\', { data: { target: \'#findVendorModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Client\', \'#\', { data: { target: \'#findClientModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Groups & Categories\', \'#\', { data: { target: \'#findGroupAndCategoriesModal\', toggle: :modal }, class: \'link\' }--><!--= render \'admin/saless/department_and_area_code\'--><!--= render \'admin/saless/find_vendor\'--><!--= render \'admin/saless/find_client\'--><!--= render \'admin/saless/groups_and_categories\' &ndash;&gt;-->');
 $templateCache.put('./sales.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">SALES</h4><div class="action-link"><a href="#">Reports</a></div></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/sales-order"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Sales Order</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/order-slip"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Order Slip</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/sales-invoice"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Sales Invoices</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/acknowledgement-receipt"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Acknowledgement Receipts</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/return-slip"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Return Slips</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/sales-journal-voucher"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Sales Journal Vouchers</span></i></div></a><a ng-if="$ctrl.checkPermission(\'superadmin\') || $ctrl.checkPermission(\'purchasing-me\')" href="/admin/sales/order-receipt"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Official Receipts</span></i></div></a><div class="clear-float"></div></div><!--<div class="sales-content">--><!--<div class="admin-header">--><!--<div class="title">--><!--<h4 class="md">Dashboard</h4>--><!--</div>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#departmentCodeModal" data-toggle="modal" class="link" href="#">Department &amp; Area Code</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findVendorModal" data-toggle="modal" class="link" href="#">Find Vendor</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findClientModal" data-toggle="modal" class="link" href="#">Find Client</a>--><!--</div>--><!--<div class="action-link">--><!--<a data-target="#findGroupAndCategoriesModal" data-toggle="modal" class="link" href="#">Groups &amp; Categories</a>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="departmentCodeModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Department &amp; Area Code</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Departments</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">CA-AHOL</span>--><!--<span class="dept">Accounting Holdings</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--<div class="section department-area -left">--><!--<div class="horizontal-align -start header">--><!--<p class="caption">Area Code</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">033</span>--><!--<span class="dept">Quezon City</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">044</span>--><!--<span class="dept">Cebu</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--<p class="department-list horizontal-align -between">--><!--<span class="code">055</span>--><!--<span class="dept">Bulacan</span>--><!--<span class="ion-android-close delete"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findVendorModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Vendor--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Vendor</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/sales" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="edMWCmgwo1u+dK9VTCWnBNMaDxrv8skefxqMlkkXSEVDtfqpuX9YCPBOsbrPdkCH7EpcCZecvSzuWRjbgDPJrQ=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table table-list">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findClientModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">--><!--Find Client--><!--<a class="button-link btn btn-create btn-sm float-lg-right" href="#">+ Add Client</a>--><!--</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="searchbox-modal">--><!--<div class="searchbox-content">--><!--<form action="/admin/sales" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="\u2713"><input type="hidden" name="authenticity_token" value="SL26hNGK3mMCGVEcQjOKGDGDeQ9/eniHnp4mtRpVb2xy21YnAMUlMEwjT/PBYG2bDtMqHAcUDLUP3bL403HuhA=="><div class="search-modal horizontal-align -between">--><!--<input class="form-control -borderless search" placeholder="code, name, description" type="text" name="search">--><!--<div class="modal-action">--><!--<input type="submit" name="commit" value="Search Item" class="btn btn-action btn-md" data-disable-with="Search Item">--><!--</div>--><!--</div>--><!--</form></div>--><!--</div>--><!--<div class="wrapper scroll-section">--><!--<table class="table find-vendor">--><!--<thead>--><!--<tr>--><!--<th>Code</th>--><!--<th>Vendor Description</th>--><!--<th>T.I.N No.</th>--><!--<th></th>--><!--</tr>--><!--</thead>--><!--<tbody>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--<tr>--><!--<td>CN10330</td>--><!--<td>Chad Mendez</td>--><!--<td>030-623-391-429</td>--><!--<td class="tablebutton-form">--><!--<div class="holder">--><!--<button class="btn btn-compose">--><!--<i class="ion-ios-compose-outline"></i>--><!--</button>--><!--<button class="btn btn-archive">--><!--<i class="ion-android-close"></i>--><!--</button>--><!--</div>--><!--</td>--><!--</tr>--><!--</tbody>--><!--</table>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--<div class="modal fade" id="findGroupAndCategoriesModal">--><!--<div class="modal-dialog -bg">--><!--<div class="modal-content">--><!--<div class="modal-header">--><!--<h4 class="modal-title">Groups &amp; Categories</h4>--><!--<button class="close" data-dismiss="modal" type="button">--><!--<span class="ion-android-close close-modal"></span>--><!--</button>--><!--</div>--><!--<div class="modal-body">--><!--<div class="horizontal-align -between">--><!--<div class="groups-section">--><!--<div class="horizontal-align -between">--><!--<p>Groups</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<ul class="groups-list">--><!--<li class="-active">Miscellaneous</li>--><!--<li>Office Supplies</li>--><!--<li>Project</li>--><!--</ul>--><!--</div>--><!--<div class="categories-section">--><!--<div class="horizontal-align -between">--><!--<p>Categories</p>--><!--<div class="action-link bold-link">--><!--<a class="link" href="#">+ Add</a>--><!--</div>--><!--</div>--><!--<div class="categories scroll-section">--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--<p class="list">--><!--Capital Expenditures--><!--<span class="delete ion-android-close float-xl-right"></span>--><!--</p>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--</div>--><!--&lt;!&ndash;--><!--.action-link--><!--= link_to \'Department & Area Code\', \'#\', { data: { target: \'#departmentCodeModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Vendor\', \'#\', { data: { target: \'#findVendorModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Find Client\', \'#\', { data: { target: \'#findClientModal\', toggle: :modal }, class: \'link\' }--><!--.action-link--><!--= link_to \'Groups & Categories\', \'#\', { data: { target: \'#findGroupAndCategoriesModal\', toggle: :modal }, class: \'link\' }--><!--= render \'admin/saless/department_and_area_code\'--><!--= render \'admin/saless/find_vendor\'--><!--= render \'admin/saless/find_client\'--><!--= render \'admin/saless/groups_and_categories\' &ndash;&gt;-->');
 $templateCache.put('./app-nav.html','<div class="navbar-header horizontal-align -start"><div class="navbar-brand"><div id="logo"><h3 class="title">{{$ctrl.currentUser.company.name}}</h3></div></div><div class="content horizontal-align -between"><h3 class="title">{{$ctrl.currentUser.department.name}}</h3><!-- <i class="arrow ion-ios-arrow-down"></i> --> <a ng-click="$ctrl.logout()" href="">Logout</a></div></div>');
 $templateCache.put('./app-sidenav.html','<div id="admin-content"><div class="account"><p class="name">{{$ctrl.currentUser.firstName}} {{$ctrl.currentUser.lastName}}</p><label class="type">{{$ctrl.currentUser.department.name}} Account</label></div><div class="admin-selection"><ul id="admin-ul"><li ng-show="$ctrl.showTabs(\'DASHBOARD\')" class="list"><a class="link {{ $ctrl.getPathname().indexOf(\'/admin/dashboard\') == 0 ? \'-active\' : \'\'}}" ng-click="$ctrl.checkSub(\'/admin/dashboard\')" href="/admin/dashboard"><i class="icon ion-ios-list-outline"></i> <span class="caption">DASHBOARD</span></a></li><li ng-show="$ctrl.showTabs(\'DASHBOARD\')" class="list"><a class="link {{ $ctrl.getPathname().indexOf(\'/admin/maintenance\') == 0 ? \'-active\' : \'\'}}" ng-click="$ctrl.checkSub(\'/admin/maintenance\')" href="/admin/maintenance"><i class="icon ion-ios-list-outline"></i> <span class="caption">MAINTENANCE</span></a></li><li ng-show="$ctrl.showTabs(\'USERS\')" class="list"><a class="link {{ $ctrl.getPathname().indexOf(\'/admin/users\') == 0 ? \'-active\' : \'\'}}" ng-click="$ctrl.checkSub(\'/admin/users\')" href="/admin/users"><i class="icon ion-ios-people-outline"></i> <span class="caption">USERS</span></a></li><li ng-show="$ctrl.showTabs(\'USERS\')" class="list"><a class="link {{ $ctrl.getPathname().indexOf(\'/admin/accounting\') == 0 ? \'-active\' : \'\'}}" ng-click="$ctrl.checkSub(\'/admin/accounting\')" href="/admin/accounting"><i class="icon ion-ios-people-outline"></i> <span class="caption">ACCOUNTING</span></a></li><li ng-show="$ctrl.showTabs(\'USERS\')" class="list"><a class="link {{ $ctrl.getPathname().indexOf(\'/admin/sales\') == 0 ? \'-active\' : \'\'}}" ng-click="$ctrl.checkSub(\'/admin/sales\')" href="/admin/sales"><i class="icon ion-ios-people-outline"></i> <span class="caption">SALES</span></a></li><li ng-show="$ctrl.showTabs(\'MMD\')" class="list"><a class="link" ng-click="$ctrl.checkSub(\'/admin/mmd\')" href="/admin/mmd"><i class="icon ion-ios-list-outline"></i> <span class="caption">MMD</span></a></li><li ng-show="$ctrl.showTabs(\'RND\')" class="list"><a class="link" ng-click="$ctrl.checkSub(\'/admin/rnd\')" href="/admin/rnd"><i class="icon ion-ios-flask-outline"></i> <span class="caption">R &amp; D</span></a></li><li ng-show="$ctrl.showTabs(\'PURCHASING\')" class="list"><a class="link {{ $ctrl.getPathname().indexOf(\'/admin/purchasing\') == 0 ? \'-active\' : \'\'}}" ng-click="$ctrl.checkSub(\'/admin/purchasing\')" href="/admin/purchasing"><i class="icon ion-ios-cart-outline"></i> <span class="caption">PURCHASING</span></a></li><li ng-show="$ctrl.showTabs(\'COSTING\')" class="list"><a class="link {{ $ctrl.getPathname().indexOf(\'/admin/costing\') == 0 ? \'-active\' : \'\'}}" href="/admin/costing" ng-click="$ctrl.checkSub(\'/admin/costing\')"><i class="icon ion-ios-pricetags-outline"></i> <span class="caption">COSTING</span></a></li><li ng-show="$ctrl.showTabs(\'BUILDING1\')" class="list"><a class="link" ng-click="$ctrl.checkSub(\'/admin/job_order\')"><i class="icon ion-ios-briefcase-outline"></i> <span class="caption">BUILDING 1</span></a></li></ul></div><!--<div ng-show="$ctrl.isPageWithSubMenu" class="navigation">--><!--<div id="navtools">--><!--<ul class="nav-list" id="navtools-ul">--><!--<li class="list"> &lt;!&ndash; DASHBOARD &ndash;&gt;--><!--<a class="ion-ios-list-outline link" ng-click="$ctrl.checkSub(\'/admin/dashboard\')" href="/admin/dashboard"></a>--><!--</li>--><!--<li class="list"> &lt;!&ndash; USERS &ndash;&gt;--><!--<a class="ion-ios-people-outline link" ng-click="$ctrl.checkSub(\'/admin/users\')" href="/admin/users"></a>--><!--</li>--><!--<li class="list"> &lt;!&ndash; MMD &ndash;&gt;--><!--<a class="ion-ios-list-outline link {{ $ctrl.getPathname().indexOf(\'/admin/mmd\') == 0 ? \'-active\' : \'\'}}"--><!--ng-click="$ctrl.checkSub(\'/admin/mmd\')"--><!--href="/admin/mmd"></a>--><!--</li>--><!--<li class="list"> &lt;!&ndash; R &amp; D &ndash;&gt;--><!--<a class="ion-ios-flask-outline link {{ $ctrl.getPathname().indexOf(\'/admin/rnd\') == 0 ? \'-active\' : \'\'}}"--><!--ng-click="$ctrl.checkSub(\'/admin/rnd\')"--><!--href="/admin/rnd"--><!--&gt;</a>--><!--</li>--><!--<li class="list"> &lt;!&ndash; PURCHASING &ndash;&gt;--><!--<a class="ion-ios-briefcase-outline link"></a>--><!--</li>--><!--<li class="list"> &lt;!&ndash; COSTING &ndash;&gt;--><!--<a class="ion-ios-star-outline link"></a>--><!--</li>--><!--<li class="list"> &lt;!&ndash; BUILDING 1 &ndash;&gt;--><!--<a class="ion-ios-calculator-outline link"></a>--><!--</li>--><!--</ul>--><!--</div>--><!--<div class="selections" id="selection">--><!--&lt;!&ndash; DASHBOARD &ndash;&gt;--><!--<section class="section">--><!--<ul class="ul-style">--><!--</ul>--><!--</section>--><!--&lt;!&ndash; USERS &ndash;&gt;--><!--<section class="section">--><!--<ul class="ul-style">--><!--</ul>--><!--</section>--><!--&lt;!&ndash; MMD &ndash;&gt;--><!--<section class="section {{ $ctrl.getPathname().indexOf(\'/admin/mmd\') == 0 ? \'-display\' : \'\'}}">--><!--<ul class="ul-style">--><!--<li class="list">--><!--<a class="link -selected" href="/mmd/pris">Production Request Inventory Slip</a>--><!--</li>--><!--<li class="list">--><!--<a class="link " href="/mmd/rs/tolling">Receiving Slip | Tolling</a>--><!--</li>--><!--<li class="list">--><!--<a class="link " href="/mmd/rs/rmpm">Receiving Slip | RM / PM</a>--><!--</li>--><!--<li class="list">--><!--<a class="link " href="/mmd/approved_receipt">Approved Receipts</a>--><!--</li>--><!--<li class="list">--><!--<a class="link " href="/mmd/material_receive">Material Receiving</a>--><!--</li>--><!--<li class="list">--><!--<a class="link " href="/mmd/material_adjustment">Material Adjustment</a>--><!--</li>--><!--<li class="list">--><!--<a class="link " href="/mmd/transfer-of-stocks">Transfer of Stocks</a>--><!--</li>--><!--<li class="list">--><!--<a class="link " href="/mmd/material_evaluation">Material Re-Evaluation</a>--><!--</li>--><!--</ul>--><!--</section>--><!--&lt;!&ndash; R &amp; D &ndash;&gt;--><!--<section class="section {{ $ctrl.getPathname().indexOf(\'/admin/rnd\') == 0 ? \'-display\' : \'\'}}">--><!--<ul class="ul-style">--><!--<li class="list">--><!--<a class="link -selected" href="#">F.G Recipe Form</a>--><!--</li>--><!--</ul>--><!--</section>--><!--&lt;!&ndash; COSTING &ndash;&gt;--><!--<section class="section">--><!--<ul class="ul-style">--><!--<li class="list">--><!--<a class="link -selected" href="#">Job Order</a>--><!--</li>--><!--<li class="list">--><!--<a class="link" href="#">Production Process</a>--><!--</li>--><!--</ul>--><!--</section>--><!--&lt;!&ndash; PURCHASING &ndash;&gt;--><!--<section class="section">--><!--<ul class="ul-style">--><!--<li class="list">--><!--<a class="link -selected" href="#">Delivery Receipts</a>--><!--</li>--><!--<li class="list">--><!--<a class="link" href="#">Order Slops</a>--><!--</li>--><!--<li class="list">--><!--<a class="link" href="#">Return Slips</a>--><!--</li>--><!--<li class="list">--><!--<a class="link" href="#">A.R / P.R</a>--><!--</li>--><!--</ul>--><!--</section>--><!--&lt;!&ndash; BUILDING 1 &ndash;&gt;--><!--<section class="section">--><!--<ul class="ul-style">--><!--<li class="list">--><!--<a class="link -selected" href="#">No Content yet</a>--><!--</li>--><!--</ul>--><!--</section>--><!--</div>--><!--</div>--></div>');
 $templateCache.put('./app.html','<div class="admin-layout"><app-nav id="navigation-bar"></app-nav><app-sidenav class="sidenav"></app-sidenav><div class="main" ui-view></div></div><div class="horizontal-align -center"><div><p style="border:1px solid black"><b>App Development Version:</b> {{$ctrl.appVersion}} <b>Backend: </b>{{$ctrl.superadminServerVersion}}</p></div></div>');
 $templateCache.put('./sales-journal-vouchers.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Sales Journal Voucher</h3></div></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="form-group rmpm"><label>Type:</label><select class="form-control select" ng-model="$ctrl.type" name="fromDepots"><option value="OS">OS</option><option value="DR_SI">DR_SI</option></select></div><div class="form-group rmpm"><label>Depot:</label><select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots"></select></div><div class="form-group rmpm"><label>From:</label><input class="form-control -borderless search" placeholder="Date From" type="date" date="dd-MM-yyyy" name="search" ng-model="$ctrl.dateFrom"></div><div class="form-group rmpm"><label>To:</label><input class="form-control -borderless search" placeholder="Date To" type="date" date="dd-MM-yyyy" name="search" ng-model="$ctrl.dateTo"></div></div><div class="request-action"><button type="button" ng-click="$ctrl.search()" class="btn btn-create btn-md">Search</button></div></div><table id="sjvTable" ng-if="$ctrl.salesJournalVouchers" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'client\';$ctrl.sortReverse = !$ctrl.sortReverse;">Client <span ng-show="$ctrl.sortType == \'client\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'client\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'si\';$ctrl.sortReverse = !$ctrl.sortReverse;">SI <span ng-show="$ctrl.sortType == \'si\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'si\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'amount\';$ctrl.sortReverse = !$ctrl.sortReverse;">Amount <span ng-show="$ctrl.sortType == \'amount\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'amount\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'tax\';$ctrl.sortReverse = !$ctrl.sortReverse;">Tax <span ng-show="$ctrl.sortType == \'tax\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'tax\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'receivable\';$ctrl.sortReverse = !$ctrl.sortReverse;">Accounts Receivable <span ng-show="$ctrl.sortType == \'receivable\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'receivable\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th></tr></thead><tbody><tr ng-repeat="salesJournalVoucher in $ctrl.salesJournalVouchers | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{salesJournalVoucher.date | date}}</td><td>{{salesJournalVoucher.number}}</td><td>{{salesJournalVoucher.salesOrder.client.name}}</td><td>{{salesJournalVoucher.totalAmount * (1 - (salesJournalVoucher.taxPercentage / 100))}}</td><td>{{salesJournalVoucher.totalAmount * (salesJournalVoucher.taxPercentage / 100)}}</td><td>{{salesJournalVoucher.totalAmount}}</td></tr></tbody><tfoot><th></th><th></th><th>Total:</th><th>{{$ctrl.totalAmount.toFixed(2)}}</th><th>{{$ctrl.totalTaxAmount.toFixed(2)}}</th><th>{{$ctrl.totalAccountsReceivable.toFixed(2)}}</th></tfoot></table><div class="request-action"><button type="button" ng-click="$ctrl.print()" class="btn btn-primary btn-md">Print</button></div>');
 $templateCache.put('./costing.html','<h1>Costing</h1><div class="form-content"><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="title horizontal-align -between"><h3 class="bg">MO Inventory</h3></div><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="title horizontal-align -between"><div><p class="title">Mo Number</p><span class="content">{{$ctrl.costing.moInventory.moNumber}}</span></div><div><p class="title">FG Code</p><span class="content">{{$ctrl.costing.moInventory.finishedGood.code}}</span></div><div><p class="title">Batch Size</p><span class="content">{{$ctrl.costing.moInventory.batchSize}}</span></div><div><p class="title">Lot Number</p><span class="content">{{$ctrl.costing.moInventory.lotNumber}}</span></div><div><p class="title">MO Date</p><span class="content">{{$ctrl.costing.moInventory.dateCreated | date}}</span></div></div><table ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Control Number</td><td>Inventory Quantity</td><td>Cost</td></tr></thead><tbody><tr ng-repeat="moCostingInv in $ctrl.costing.moCostingInventories"><td>{{moCostingInv.inventory.item.name}} {{inv.item.code}}</td><td>{{moCostingInv.inventory.item.type.code}}</td><td>{{moCostingInv.inventory.controlNumber}}</td><td>{{moCostingInv.inventory.number = $ctrl.findIngredientQuantity(moCostingInv.inventory.item.code) * $ctrl.costing.moInventory.batchSize}}</td><td>{{moCostingInv.cost}}</td></tr></tbody></table><div ng-if="$ctrl.costing.jobOrders.length > 0" class="title horizontal-align -between"><h3 class="bg">Job Orders</h3></div><table ng-if="$ctrl.costing.jobOrders.length > 0" class="table table-list"><thead><tr><td>Date</td><td>Fullname</td><td>Time In</td><td>Time Out</td><td>Hourly Rate</td><td>Hours Spent</td><td>Cost</td></tr></thead><tbody><tr ng-repeat="jobOrder in $ctrl.costing.jobOrders"><td>{{jobOrder.date | date}}</td><td>{{jobOrder.employee.firstName}} {{jobOrder.employee.lastName}}</td><td>{{jobOrder.timeIn | date:\'h:mma\'}}</td><td>{{jobOrder.timeOut | date:\'h:mma\'}}</td><td>{{jobOrder.employee.hourlyRate}}</td><td>{{jobOrder.numberOfHours}}</td><td>{{jobOrder.employee.hourlyRate * jobOrder.numberOfHours}}</td></tr></tbody></table><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0"><label>Total Cost:</label>{{$ctrl.costing.totalCost}}</div><!-- <div class="request-action">\r\n        <button type="button" class="btn btn-create btn-md" ng-click="$ctrl.save()">Save</button>\r\n    </div> --><!-- <h1>MO Costing</h1>\r\n        <div ng-repeat="costing in $ctrl.costings">\r\n            <pre>{{costing | json}}</pre>\r\n        </div> --></div>');
-$templateCache.put('./costing-save.html','<h1>New MO Costing</h1><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Select MO</label><select class="form-control select -borderless" ng-model="$ctrl.costing.moInventory" ng-change="$ctrl.listJobOrdersByMoInventory()" ng-options="d.finishedGood.code for d in $ctrl.moList" name="finishedGood"></select></div></div></div></div></div><div class="form-content"><!-- <div ng-if="$ctrl.costing.moInventory.inventoryList" class="step-form" style="border: solid 1px #eee; padding: 10px;">\r\n            <div class="horizontal-align -between">\r\n                <div class="side-one">\r\n                    <div class="horizontal-align -between content">\r\n                        <div class="form-group field">\r\n                            <label class="label capitalize-text">Select Employee</label>\r\n                            <select class="form-control select -borderless" ng-model="$ctrl.employeeSelection" ng-options="e.firstName + \' \' + e.lastName + \':\' + e.hourlyRate + \'/hr\' for e in $ctrl.employees"\r\n                                name="employeeSelection">\r\n                            </select>\r\n\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class="side-two">\r\n                    <div class="form-group">\r\n                        <div class="horizontal-align -between content">\r\n                            <div class="form-group field">\r\n                                <label class="label capitalize-text">Employee Hours</label>\r\n                                <input type="number" class="form-control -border" ng-model="$ctrl.hoursSpent" />\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                \r\n            </div>\r\n            <div class="side-two">\r\n                    <div class="form-group">\r\n                            <input class="btn btn-create btn-md" type="button" value="Add Employee" ng-click="$ctrl.addEmployee()">\r\n                    </div>\r\n                </div>\r\n\r\n        </div> --><!-- <pre>{{ $ctrl.costing.moInventory | json}}</pre> --><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="title horizontal-align -between"><h3 class="bg">MO Inventory</h3></div><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="title horizontal-align -between"><div class="horizontal-align -between"><div class="horizontal-align -between content"><div><p class="title">Mo Number:</p><span class="content">{{$ctrl.costing.moInventory.moNumber}}</span></div><div><p class="title">FG Code</p><span class="content">{{$ctrl.costing.moInventory.finishedGood.code}}</span></div><div><p class="title">Batch Size</p><span class="content">{{$ctrl.costing.moInventory.batchSize}}</span></div></div><div class="horizontal-align -between content"><div><p class="title">Lot Number:</p><span class="content">{{$ctrl.costing.moInventory.lotNumber}}</span></div><div><p class="title">MO Date</p><span class="content">{{$ctrl.costing.moInventory.dateCreated | date}}</span></div></div></div></div><table ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Control Number</td><td>Inventory Quantity</td><td>Unit Price</td><td>Cost</td></tr></thead><tbody><tr ng-repeat="inv in $ctrl.costing.moInventory.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{inv.controlNumber}}</td><td>{{inv.number = $ctrl.findIngredientQuantity(inv.item.code) * $ctrl.costing.moInventory.batchSize}}</td><td>0<!-- {{inv.item.unitPrice}} --></td><td>0<!-- {{inv.cost}} --></td></tr></tbody></table><div ng-if="$ctrl.costing.jobOrders.length > 0" class="title horizontal-align -between"><h3 class="bg">Job Orders</h3></div><table ng-if="$ctrl.costing.jobOrders.length > 0" class="table table-list"><thead><tr><td>Date</td><td>Fullname</td><td>Time in</td><td>Time out</td><td>Hourly Rate</td><td>Hours Spent</td><td>Cost</td></tr></thead><tbody><tr ng-repeat="jobOrder in $ctrl.costing.jobOrders"><td>{{jobOrder.date | date}}</td><td>{{jobOrder.employee.firstName}} {{jobOrder.employee.lastName}}</td><td>{{jobOrder.timeIn | date:\'h:mma\'}}</td><td>{{jobOrder.timeOut | date:\'h:mma\'}}</td><td>{{jobOrder.employee.hourlyRate}}</td><td>{{jobOrder.numberOfHours}}</td><td>{{jobOrder.employee.hourlyRate * jobOrder.numberOfHours}}</td></tr></tbody></table><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0"><label>Total Cost:</label>{{$ctrl.costing.totalCost}}</div><div class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.save()">Save</button></div><!-- <h1>MO Costing</h1>\r\n        <div ng-repeat="costing in $ctrl.costings">\r\n            <pre>{{costing | json}}</pre>\r\n        </div> --></div></div>');
 $templateCache.put('./costing-main.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Costing</h4></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a href="/admin/joCosts"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Job Order Cost Sheet</span></i></div></a><a href="/admin/costings"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Costing</span></i></div></a></div>');
+$templateCache.put('./costing-save.html','<h1>New MO Costing</h1><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Select MO</label><select class="form-control select -borderless" ng-model="$ctrl.costing.moInventory" ng-change="$ctrl.listJobOrdersByMoInventory()" ng-options="d.finishedGood.code for d in $ctrl.moList" name="finishedGood"></select></div></div></div></div></div><div class="form-content"><!-- <div ng-if="$ctrl.costing.moInventory.inventoryList" class="step-form" style="border: solid 1px #eee; padding: 10px;">\r\n            <div class="horizontal-align -between">\r\n                <div class="side-one">\r\n                    <div class="horizontal-align -between content">\r\n                        <div class="form-group field">\r\n                            <label class="label capitalize-text">Select Employee</label>\r\n                            <select class="form-control select -borderless" ng-model="$ctrl.employeeSelection" ng-options="e.firstName + \' \' + e.lastName + \':\' + e.hourlyRate + \'/hr\' for e in $ctrl.employees"\r\n                                name="employeeSelection">\r\n                            </select>\r\n\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class="side-two">\r\n                    <div class="form-group">\r\n                        <div class="horizontal-align -between content">\r\n                            <div class="form-group field">\r\n                                <label class="label capitalize-text">Employee Hours</label>\r\n                                <input type="number" class="form-control -border" ng-model="$ctrl.hoursSpent" />\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                \r\n            </div>\r\n            <div class="side-two">\r\n                    <div class="form-group">\r\n                            <input class="btn btn-create btn-md" type="button" value="Add Employee" ng-click="$ctrl.addEmployee()">\r\n                    </div>\r\n                </div>\r\n\r\n        </div> --><!-- <pre>{{ $ctrl.costing.moInventory | json}}</pre> --><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="title horizontal-align -between"><h3 class="bg">MO Inventory</h3></div><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="title horizontal-align -between"><div class="horizontal-align -between"><div class="horizontal-align -between content"><div><p class="title">Mo Number:</p><span class="content">{{$ctrl.costing.moInventory.moNumber}}</span></div><div><p class="title">FG Code</p><span class="content">{{$ctrl.costing.moInventory.finishedGood.code}}</span></div><div><p class="title">Batch Size</p><span class="content">{{$ctrl.costing.moInventory.batchSize}}</span></div></div><div class="horizontal-align -between content"><div><p class="title">Lot Number:</p><span class="content">{{$ctrl.costing.moInventory.lotNumber}}</span></div><div><p class="title">MO Date</p><span class="content">{{$ctrl.costing.moInventory.dateCreated | date}}</span></div></div></div></div><table ng-if="$ctrl.costing.moInventory.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Control Number</td><td>Inventory Quantity</td><td>Unit Price</td><td>Cost</td></tr></thead><tbody><tr ng-repeat="inv in $ctrl.costing.moInventory.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{inv.controlNumber}}</td><td>{{inv.number = $ctrl.findIngredientQuantity(inv.item.code) * $ctrl.costing.moInventory.batchSize}}</td><td>0<!-- {{inv.item.unitPrice}} --></td><td>0<!-- {{inv.cost}} --></td></tr></tbody></table><div ng-if="$ctrl.costing.jobOrders.length > 0" class="title horizontal-align -between"><h3 class="bg">Job Orders</h3></div><table ng-if="$ctrl.costing.jobOrders.length > 0" class="table table-list"><thead><tr><td>Date</td><td>Fullname</td><td>Time in</td><td>Time out</td><td>Hourly Rate</td><td>Hours Spent</td><td>Cost</td></tr></thead><tbody><tr ng-repeat="jobOrder in $ctrl.costing.jobOrders"><td>{{jobOrder.date | date}}</td><td>{{jobOrder.employee.firstName}} {{jobOrder.employee.lastName}}</td><td>{{jobOrder.timeIn | date:\'h:mma\'}}</td><td>{{jobOrder.timeOut | date:\'h:mma\'}}</td><td>{{jobOrder.employee.hourlyRate}}</td><td>{{jobOrder.numberOfHours}}</td><td>{{jobOrder.employee.hourlyRate * jobOrder.numberOfHours}}</td></tr></tbody></table><div ng-if="$ctrl.costing.moInventory.inventoryList.length > 0"><label>Total Cost:</label>{{$ctrl.costing.totalCost}}</div><div class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.save()">Save</button></div><!-- <h1>MO Costing</h1>\r\n        <div ng-repeat="costing in $ctrl.costings">\r\n            <pre>{{costing | json}}</pre>\r\n        </div> --></div></div>');
 $templateCache.put('./costings.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Costings</h4></div><hr class="devider"></div><div class="main-header"><a href="/admin/costing-save" class="btn btn-create btn-md button-link">Add new costing</a></div><!-- <div class="search-box horizontal-align -between">\r\n        <div class=" search-modal horizontal-align -between">\r\n                <div class="input-group-addon" style="border: 0\t !important;"><i class="fa fa-search"></i></div>\r\n                <input class="form-control -borderless search" placeholder="id" type="text" name="search" ng-model="$ctrl.searchId"/>\r\n                <input class="form-control -borderless search" placeholder="moNumber" type="text" name="search" ng-model="$ctrl.searchMoNumber"/>\r\n                <input class="form-control -borderless search" placeholder="lotNumber" type="text" name="search" ng-model="$ctrl.searchLotNumber"/>\r\n            </div>\r\n    </div> --><table ng-if="$ctrl.costings" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">MO # <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'moNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">FinishedGood <span ng-show="$ctrl.sortType == \'moNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'moNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'lotNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Total Cost <span ng-show="$ctrl.sortType == \'lotNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'lotNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="cost in $ctrl.costings"><td>{{cost.moInventory.moNumber || \'N/A\'}}</td><td>{{cost.moInventory.finishedGood.name}}</td><td>{{cost.totalCost}}</td><td><i class="ion-ios-compose-outline" ng-click="$ctrl.view(cost.id)"></i></td></tr></tbody></table><div class="clear-float"></div>');
 $templateCache.put('./jo-cost-save.html','<h1>New Job Order Cost Sheet</h1><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="step-form"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.joCost.finishedGood.code" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.joCost.finishedGood.name" readonly="readonly" class="form-control -border"></div></div></div></div></div><div class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.selectFinishedGood()">Select Finished Good</button></div></div><div class="form-content"><div ng-if="$ctrl.joCost.jobOrderCostSheetIngredients.length > 0" class="title horizontal-align -between"><h3 class="bg">Material Cost</h3></div><table ng-if="$ctrl.joCost.jobOrderCostSheetIngredients.length > 0" class="table table-list"><thead><tr><td>Material</td><td>Quantity Needed</td><td>Unit</td><td>Cost Per Unit</td><td>Amount</td></tr></thead><tbody><tr ng-repeat="jocsIng in $ctrl.joCost.jobOrderCostSheetIngredients"><td>{{jocsIng.ingredient.item.name}} {{jocsIng.ingredient.item.code}} ({{jocsIng.ingredient.item.type.code}})</td><td>{{jocsIng.ingredient.quantity}}</td><td>{{jocsIng.ingredient.item.unit.code}}</td><td><input type="number" ng-model="jocsIng.costPerUnit" ng-blur="$ctrl.recomputeTotal()" class="form-control -border"></td><td>{{jocsIng.ingredient.quantity * jocsIng.costPerUnit}}</td></tr></tbody></table><table ng-if="$ctrl.joCost.jobOrderCostSheetIngredients.length > 0" class="table table-list"><thead><tr><td>Task</td><td>Hours</td><td>Rate/Hr</td></tr></thead><tbody><tr ng-repeat="jocsPA in $ctrl.joCost.jobOrderCostSheetProcedureAreas"><td>{{jocsPA.procedureArea.name}} ({{jocsPA.procedureArea.code}})</td><td><input type="number" ng-model="jocsPA.hours" ng-blur="$ctrl.recomputeTotal()" class="form-control -border"></td><td><input type="number" ng-model="jocsPA.ratePerHour" ng-blur="$ctrl.recomputeTotal()" class="form-control -border"></td></tr></tbody></table><div ng-if="$ctrl.joCost.jobOrderCostSheetIngredients.length > 0"><label>Total Cost:</label>{{$ctrl.joCost.grandTotal}}</div><div ng-if="$ctrl.joCost.jobOrderCostSheetIngredients.length > 0" class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.save()">Save</button></div><find-fg-modal fg="$ctrl.joCost.finishedGood"></find-fg-modal></div></div>');
 $templateCache.put('./jo-costs.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Job Order Cost Sheets</h4></div><hr class="devider"></div><div class="main-header"><a href="/admin/joCost-save" class="btn btn-create btn-md button-link">Add new job order cost sheet</a></div><!-- <div class="search-box horizontal-align -between">\r\n        <div class=" search-modal horizontal-align -between">\r\n                <div class="input-group-addon" style="border: 0\t !important;"><i class="fa fa-search"></i></div>\r\n                <input class="form-control -borderless search" placeholder="id" type="text" name="search" ng-model="$ctrl.searchId"/>\r\n                <input class="form-control -borderless search" placeholder="moNumber" type="text" name="search" ng-model="$ctrl.searchMoNumber"/>\r\n                <input class="form-control -borderless search" placeholder="lotNumber" type="text" name="search" ng-model="$ctrl.searchLotNumber"/>\r\n            </div>\r\n    </div> --><table ng-if="$ctrl.joCosts" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date Created <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'finishedGood\';$ctrl.sortReverse = !$ctrl.sortReverse;">Finished Good <span ng-show="$ctrl.sortType == \'finishedGood\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'finishedGood\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">Jo Estimate # <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'lastUpdate\';$ctrl.sortReverse = !$ctrl.sortReverse;">Last Update <span ng-show="$ctrl.sortType == \'lastUpdate\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'lastUpdate\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'active\';$ctrl.sortReverse = !$ctrl.sortReverse;">Active <span ng-show="$ctrl.sortType == \'active\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'active\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="joCost in $ctrl.joCosts"><td>{{ joCost.createdDate || \'N/A\'}}</td><td>{{joCost.finishedGood.name}} ({{joCost.finishedGood.code}})</td><td>{{joCost.id}}</td><td>{{joCost.lastUpdate || \'N/A\'}}</td><td>{{joCost.active || false}}</td><td><i class="ion-ios-compose-outline" ng-click="$ctrl.view(cost.id)"></i></td></tr></tbody></table><div class="clear-float"></div>');
@@ -19096,18 +19113,18 @@ $templateCache.put('./engineering-items.html','<div class="modal-dialog -bg"><di
 $templateCache.put('./inventory.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Inventory<h3></h3></h3></div></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Item code" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>Code</th><th>Item</th><th>Quantity</th><th>Unit</th><th>Stock Card</th></tr></thead><tbody><tr ng-repeat="inventoryItem in $ctrl.inventoryList"><td>{{inventoryItem[1].code}}</td><td>{{inventoryItem[1].name}}</td><td>{{inventoryItem[0]}}</td><td>{{inventoryItem[1].unit.code}}</td><td><button type="button" class="btn btn-info" data-target="#viewInventoryModal" data-toggle="modal" ng-click="$ctrl.openModal(inventoryItem)">View</button></td></tr></tbody></table></div><view-stock-card-modal stockcards="$ctrl.stockCards" item="$ctrl.item"></view-stock-card-modal><div class="modal fade" id="viewInventoryModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">View</h4><button data-dismiss="modal" class="close"><span class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Item Code: <span class="content">{{$ctrl.item.code}}</span></p><p class="title">Name: <span class="content">{{$ctrl.item.name}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Unit: <span class="content">{{$ctrl.item.unit.code}}</span></p><p class="title">Type: <span class="content">{{$ctrl.item.type.name}}</span></p></div><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Control #</th><th>Expiry</th><th>Quantity</th><th></th></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.controlList"><td>{{inventory.controlNumber}}</td><td>{{inventory.expiration | date}}</td><td>{{inventory.quantity}}</td><td><button type="button" class="btn btn-info" data-target="#stockCardModal" data-toggle="modal" ng-click="$ctrl.openStockCard(inventory)">View</button></td></tr></tbody></table></div></div><div class="modal-footer"><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
 $templateCache.put('./product-inventory.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Product Inventory<h3></h3></h3></div></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Item code" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>Code</th><th>FG</th><th>Quantity</th><th>Unit(SMALL/BIG)</th><th>Stock Card</th></tr></thead><tbody><tr ng-repeat="productInventoryItem in $ctrl.productInventoryList"><td>{{productInventoryItem[\'product\'].finishedGood.code}}</td><td>{{productInventoryItem[\'product\'].finishedGood.name}}</td><td>{{productInventoryItem[\'sum\']}}</td><td>{{productInventoryItem[\'product\'].smallUnit.code}} / {{productInventoryItem[\'product\'].bigUnit.code}}</td><td><button type="button" class="btn btn-info" data-target="#viewProductInventoryModal" data-toggle="modal" ng-click="$ctrl.openModal(productInventoryItem)">View</button></td></tr></tbody></table></div><view-stock-card-modal stockcards="$ctrl.stockCards" item="$ctrl.finishedGood"></view-stock-card-modal><div class="modal fade" id="viewProductInventoryModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">View</h4><button data-dismiss="modal" class="close"><span class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">FG Code: <span class="content">{{$ctrl.finishedGood.code}}</span></p><p class="title">Name: <span class="content">{{$ctrl.finishedGood.name}}</span></p></div><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Lot #</th><th>Expiry</th><th>Quantity</th><th></th></tr></thead><tbody><tr ng-repeat="productInventory in $ctrl.productList"><td>{{productInventory.product.lotNumber}}</td><td>{{productInventory.product.expiration | date}}</td><td>{{productInventory.quantity}}</td><td><button type="button" class="btn btn-info" data-target="#stockCardModal" data-toggle="modal" ng-click="$ctrl.openStockCard(productInventory)">View</button></td></tr></tbody></table></div></div><div class="modal-footer"><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
 $templateCache.put('./sales-reports.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Sales Reports</h3></div></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" date="dd-MM-yyyy" placeholder="Start Date" type="date" name="search" ng-model="$ctrl.startDate"> <input class="form-control -borderless search" date="dd-MM-yyyy" placeholder="End Date" type="date" name="search" ng-model="$ctrl.endDate"></div><div class="search-box horizontal-align -between"><select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots"></select></div></div><b>General Sales Report</b><table class="table table-list"><thead><tr><th>SR Code</th><th>Division</th><th>Category</th></tr></thead><tbody><tr><td><select class="form-control select" ng-model="$ctrl.salesRep.id" ng-options="d.id as d.name for d in $ctrl.salesReps"></select></td><td>ALL</td><td>ALL</td><td><button class="btn btn-compose" ng-click="$ctrl.generateGeneralSalesReport()" class="btn btn-show"><i class="ion-ios-download"></i></button></td></tr></tbody><tfoot><tr><th>TOTAL AMOUNT:</th><th>{{$ctrl.gsrAmount}}</th><th>TOTAL QUANTITY:</th><th>{{$ctrl.gsrQuantity}}</th></tr></tfoot></table><b>Sales Rep Client Report</b><table class="table table-list"><tr><th>Sales Rep Code</th><th></th></tr><tr><td><select class="form-control select" ng-model="$ctrl.salesRepId" ng-options="d.id as d.name for d in $ctrl.salesReps"></select></td><td><a class="btn btn-compose" href="/admin/shared/sales-rep-client-report/sales-rep/{{$ctrl.salesRepId}}" class="btn btn-show"><i class="ion-ios-printer"></i></a></td></tr></table><b>Item Sales Report (By Product)</b><table class="table table-list"><tr><th>Code</th><th></th></tr><tr><td><select class="form-control select" ng-model="$ctrl.item.id" ng-options="d.id as d.finishedGood.name for d in $ctrl.items"></select></td><td><button class="btn btn-compose" ng-click="$ctrl.generateItemSalesReport()" class="btn btn-show"><i class="ion-ios-download"></i></button> <a class="btn btn-compose" href="/admin/shared/item-sales-report/depot/{{$ctrl.userAssignedDepot.id}}/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}/item/{{$ctrl.item.id}}" class="btn btn-show"><i class="ion-ios-printer"></i></a></td></tr><tfoot><tr><th>TOTAL AMOUNT:</th><th>{{$ctrl.itemAmount}}</th><th>TOTAL QUANTITY:</th><th>{{$ctrl.itemQuantity}}</th></tr></tfoot></table><b>Item Sales Report (By Category/Division)</b><table class="table table-list"><tr><th>Division</th><th>Category</th><th></th></tr><tr><td><select class="form-control select" ng-model="$ctrl.division.id" ng-options="d.id as d.title for d in $ctrl.divisions"></select></td><td><select class="form-control select" ng-model="$ctrl.category.id" ng-options="d.id as d.title for d in $ctrl.categories"></select></td><td><button class="btn btn-compose" ng-click="$ctrl.generateItemSalesReportByCategory()" class="btn btn-show"><i class="ion-ios-download"></i></button> <a class="btn btn-compose" href="/admin/shared/item-sales-report/{{$ctrl.salesRepId}}" class="btn btn-show"><i class="ion-ios-printer"></i></a></td></tr><tfoot><tr><th>TOTAL AMOUNT:</th><th>{{$ctrl.itemAmount2}}</th><th>TOTAL QUANTITY:</th><th>{{$ctrl.itemQuantity2}}</th></tr></tfoot></table>');
+$templateCache.put('./mo.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Manufacturing Order</h4></div><hr class="devider"></div><div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Manufacturing Order</h3></div><a href="/admin/rnd/mo/multi-test" class="btn btn-warning btn-md button-link">Multi-test</a> <a href="/admin/rnd/mo/new" class="btn btn-create btn-md button-link">Create Pre-Manufacturing Order</a></div><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="id" type="text" name="search" ng-model="$ctrl.searchId"> <input class="form-control -borderless search" placeholder="moNumber" type="text" name="search" ng-model="$ctrl.searchMoNumber"> <input class="form-control -borderless search" placeholder="lotNumber" type="text" name="search" ng-model="$ctrl.searchLotNumber"></div></div><table ng-if="$ctrl.moList" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">Pre-MO # <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'moNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">MO # <span ng-show="$ctrl.sortType == \'moNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'moNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'lotNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Lot # <span ng-show="$ctrl.sortType == \'lotNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'lotNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Name</th><th>Batch Size</th><th>Date Created</th><th></th></tr></thead><tbody><tr ng-repeat="mo in $ctrl.moList | filter: {id: $ctrl.searchId, moNumber: $ctrl.searchMoNumber, lotNumber:$ctrl.searchLotNumber}| orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{mo.id}}</td><td>{{mo.moNumber || \'N/A\'}}</td><td>{{mo.lotNumber || \'N/A\'}}</td><td>{{mo.moName}}</td><td>{{mo.batchSize}}</td><td>{{mo.dateCreated | date}}</td><td><i class="ion-ios-compose-outline" ng-click="$ctrl.view(mo.id)"></i> <a href="#" ng-if="!mo.moNumber" ng-click="$ctrl.manufactureOrder(mo);" class="btn btn-create btn-md button-link">Manufacture Order</a></td></tr></tbody></table><view-product-modal product="$ctrl.product"></view-product-modal><div class="clear-float"></div>');
+$templateCache.put('./pp.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Packaging Process</h4></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a href="/admin/rnd/pp/new"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Create PP</span></i></div></a></div><div class="clear-float"></div>');
 $templateCache.put('./account-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Account Codes <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddAccountCode(true)">+ Add Account Codes</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddAccountCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveAccountCode()" ng-if="$ctrl.addAccountCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.account.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.accountCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Description</label><input ng-model="$ctrl.accountCode.description" class="form-control -border" placeholder="Description" type="text" name="title"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="accountCode in $ctrl.accountCodes | filter: {code: $ctrl.searchCode} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{accountCode.id}}</td><td>{{accountCode.code}}</td><td>{{accountCode.description}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editAccountCode(accountCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteAccountCode(accountCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./cluster-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-area">Find Cluster Codes <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddClusterCode(true)">+ Add Cluster Codes</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddClusterCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveClusterCode()" ng-if="$ctrl.addClusterCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.cluster.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.clusterCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Title</label><input ng-model="$ctrl.clusterCode.area" class="form-control -border" placeholder="Title" type="text" name="area"></div><div class="form-group col-md-4"><label for="name">Description</label><input ng-model="$ctrl.clusterCode.description" class="form-control -border" placeholder="Description" type="text" name="area"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'area\';$ctrl.sortReverse = !$ctrl.sortReverse;">Title <span ng-show="$ctrl.sortType == \'area\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'area\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="clusterCode in $ctrl.clusterCodes | filter: {code: $ctrl.searchCode, area: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{clusterCode.id}}</td><td>{{clusterCode.code}}</td><td>{{clusterCode.area}}</td><td>{{clusterCode.description}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editClusterCode(clusterCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteClusterCode(clusterCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./groups-and-categories.html','<h4 class="modal-title">Groups &amp; Categories</h4><button class="close" data-dismiss="modal" type="button"><span class="ion-android-close close-modal"></span></button><div class="modal-body"><div class="horizontal-align -between"><div class="groups-section"><div class="horizontal-align -between"><p>Groups</p><div class="action-link bold-link"><a class="link" href="#" ng-click="$ctrl.toggleGroupForm()">+ Add</a></div></div><form ng-show="!$ctrl.hideGroup" novalidate ng-submit="$ctrl.submitGroup();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.group.id"><div class="form-group"><label for="name">Name</label><input ng-model="$ctrl.group.name" class="form-control -border" placeholder="Name" type="text" name="name"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.groupButtonText }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form><ul class="groups-list"><li ng-repeat="group in $ctrl.groups" class="{{ $ctrl.selectedGroup && $ctrl.selectedGroup.id == group.id ? \'-active\' : \'\'}}" ng-click="$ctrl.onSelectGroup(group)">{{group.name}}</li></ul></div><div class="categories-section"><div class="horizontal-align -between"><p>Categories</p><div class="action-link bold-link"><a class="link" href="#" ng-click="$ctrl.toggleCategoryForm()">+ Add</a></div></div><form ng-show="!$ctrl.hideCategory" novalidate ng-submit="$ctrl.submitCategory();" method="post"><div class="horizontal-align -between" id="add-category"><input type="hidden" ng-model="$ctrl.category.id"><div class="form-group"><label for="name">Name</label><input ng-model="$ctrl.category.name" class="form-control -border" placeholder="Name" type="text" name="name"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.categoryButtonText }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="categories scroll-section"><p ng-repeat="category in $ctrl.selectedGroup.categories" class="list">{{category.name}} <span class="delete ion-android-close float-xl-right" ng-click="$ctrl.removeCategory($index);"></span></p></div></div></div></div>');
 $templateCache.put('./institutional-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Institutional Codes <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddInstitutionalCode(true)">+ Add Institutional Codes</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddInstitutionalCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveInstitutionalCode()" ng-if="$ctrl.addInstitutionalCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.institutional.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.institutionalCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Description</label><input ng-model="$ctrl.institutionalCode.description" class="form-control -border" placeholder="Description" type="text" name="title"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="institutionalCode in $ctrl.institutionalCodes | filter: {code: $ctrl.searchCode} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{institutionalCode.id}}</td><td>{{institutionalCode.code}}</td><td>{{institutionalCode.description}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editInstitutionalCode(institutionalCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteInstitutionalCode(institutionalCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./product-categories.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Product Category <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProductCategory(true)">+ Add Product Category</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddProductCategory(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveProductCategory()" ng-if="$ctrl.addProductCategory" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.productCategory.id"><div class="form-group col-md-3"><label for="code">Code</label><input ng-model="$ctrl.productCategory.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-3"><label for="name">Title</label><input ng-model="$ctrl.productCategory.title" class="form-control -border" placeholder="Title" type="text" name="title"></div><div class="form-group col-md-3"><label for="name">Description</label><input ng-model="$ctrl.productCategory.description" class="form-control -border" placeholder="Description" type="text" name="title"></div><div class="form-group col-md-3"><label for="name">Division</label><select class="form-control select" ng-model="$ctrl.productCategory.productDivision.id" ng-options="d.id as d.title for d in $ctrl.divisions"></select></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'title\';$ctrl.sortReverse = !$ctrl.sortReverse;">Title <span ng-show="$ctrl.sortType == \'title\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'title\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'division\';$ctrl.sortReverse = !$ctrl.sortReverse;">Division <span ng-show="$ctrl.sortType == \'division\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'division\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="productCategory in $ctrl.productCategories | filter: {code: $ctrl.searchCode, title: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{productCategory.id}}</td><td>{{productCategory.code}}</td><td>{{productCategory.title}}</td><td>{{productCategory.description}}</td><td>{{productCategory.productDivision.title}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editProductCategory(productCategory.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteProductCategory(productCategory.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./product-division-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Product Division <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProductDivisionCode(true)">+ Add Product Division</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddProductDivisionCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveProductDivisionCode()" ng-if="$ctrl.addProductDivisionCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.productDivision.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.productDivisionCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Title</label><input ng-model="$ctrl.productDivisionCode.title" class="form-control -border" placeholder="Title" type="text" name="title"></div><div class="form-group col-md-4"><label for="name">Description</label><input ng-model="$ctrl.productDivisionCode.description" class="form-control -border" placeholder="Description" type="text" name="title"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'title\';$ctrl.sortReverse = !$ctrl.sortReverse;">Title <span ng-show="$ctrl.sortType == \'title\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'title\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="productDivisionCode in $ctrl.productDivisionCodes | filter: {code: $ctrl.searchCode, title: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{productDivisionCode.id}}</td><td>{{productDivisionCode.code}}</td><td>{{productDivisionCode.title}}</td><td>{{productDivisionCode.description}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editProductDivisionCode(productDivisionCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteProductDivisionCode(productDivisionCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
-$templateCache.put('./province-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-area">Find Province Codes <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProvinceCode(true)">+ Add Province Codes</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddProvinceCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveProvinceCode()" ng-if="$ctrl.addProvinceCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.province.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.provinceCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Title</label><input ng-model="$ctrl.provinceCode.area" class="form-control -border" placeholder="Title" type="text" name="area"></div><div class="form-group col-md-4"><label for="name">Description</label><input ng-model="$ctrl.provinceCode.description" class="form-control -border" placeholder="Description" type="text" name="area"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'area\';$ctrl.sortReverse = !$ctrl.sortReverse;">Area <span ng-show="$ctrl.sortType == \'area\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'area\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="provinceCode in $ctrl.provinceCodes | filter: {code: $ctrl.searchCode, area: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{provinceCode.id}}</td><td>{{provinceCode.code}}</td><td>{{provinceCode.area}}</td><td>{{provinceCode.description}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editProvinceCode(provinceCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteProvinceCode(provinceCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./region-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-area">Find Region Codes <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddRegionCode(true)">+ Add Region Codes</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddRegionCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveRegionCode()" ng-if="$ctrl.addRegionCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.region.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.regionCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Title</label><input ng-model="$ctrl.regionCode.area" class="form-control -border" placeholder="Title" type="text" name="area"></div><div class="form-group col-md-4"><label for="name">Description</label><input ng-model="$ctrl.regionCode.description" class="form-control -border" placeholder="Description" type="text" name="area"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'area\';$ctrl.sortReverse = !$ctrl.sortReverse;">Area <span ng-show="$ctrl.sortType == \'area\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'area\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="regionCode in $ctrl.regionCodes | filter: {code: $ctrl.searchCode, area: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{regionCode.id}}</td><td>{{regionCode.code}}</td><td>{{regionCode.area}}</td><td>{{regionCode.description}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editRegionCode(regionCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteRegionCode(regionCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./sales-reps.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-area">Find Sales Reps <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddSalesRep(true)">+ Add Sales Reps</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddSalesRep(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveSalesRep()" ng-if="$ctrl.addSalesRep" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.salesRep.id"><div class="form-group col-md-3"><label for="code">Code</label><input ng-model="$ctrl.salesRep.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-3"><label for="name">Name</label><input ng-model="$ctrl.salesRep.name" class="form-control -border" placeholder="Title" type="text" name="area"></div><div class="form-group col-md-3"><label for="type">Region Codes</label><select class="form-control select -border" ng-model="$ctrl.salesRep.regionCode" ng-options="a as a.code for a in $ctrl.regionCodes" name="regionCodes"></select></div><div class="form-group col-md-3"><label for="type">Prod Category</label><select class="form-control select -border" ng-model="$ctrl.salesRep.productCategory" ng-options="a as a.name for a in $ctrl.productCategories" name="productCategory"></select></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'regionCode\';$ctrl.sortReverse = !$ctrl.sortReverse;">Region Code <span ng-show="$ctrl.sortType == \'regionCode\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'regionCode\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'prodCategoryCode\';$ctrl.sortReverse = !$ctrl.sortReverse;">Prod Category <span ng-show="$ctrl.sortType == \'prodCategoryCode\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'prodCategoryCode\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="salesRep in $ctrl.salesReps | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{salesRep.id}}</td><td>{{salesRep.code}}</td><td>{{salesRep.name}}</td><td>{{salesRep.regionCode.code}}</td><td>{{salesRep.productCategory.name}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editSalesRep(salesRep.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteSalesRep(salesRep.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
+$templateCache.put('./province-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-area">Find Province Codes <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProvinceCode(true)">+ Add Province Codes</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddProvinceCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveProvinceCode()" ng-if="$ctrl.addProvinceCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.province.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.provinceCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Title</label><input ng-model="$ctrl.provinceCode.area" class="form-control -border" placeholder="Title" type="text" name="area"></div><div class="form-group col-md-4"><label for="name">Description</label><input ng-model="$ctrl.provinceCode.description" class="form-control -border" placeholder="Description" type="text" name="area"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'area\';$ctrl.sortReverse = !$ctrl.sortReverse;">Area <span ng-show="$ctrl.sortType == \'area\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'area\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="provinceCode in $ctrl.provinceCodes | filter: {code: $ctrl.searchCode, area: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{provinceCode.id}}</td><td>{{provinceCode.code}}</td><td>{{provinceCode.area}}</td><td>{{provinceCode.description}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editProvinceCode(provinceCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteProvinceCode(provinceCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./zip-codes.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-area">Find Zip Codes <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddZipCode(true)">+ Add Zip Codes</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddZipCode(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0 !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><form novalidate ng-submit="$ctrl.saveZipCode()" ng-if="$ctrl.addZipCode" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.zipCode.id"><div class="form-group col-md-3"><label for="code">Code</label><input ng-model="$ctrl.zipCode.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-3"><label for="name">Description</label><input ng-model="$ctrl.zipCode.description" class="form-control -border" placeholder="Title" type="text" name="description"></div><div class="form-group col-md-3"><label for="type">Region Codes</label><select class="form-control select -border" ng-model="$ctrl.zipCode.regionCode" ng-options="a as a.code for a in $ctrl.regionCodes" name="regionCodes"></select></div><div class="form-group col-md-3"><label for="type">Province Code</label><select class="form-control select -border" ng-model="$ctrl.zipCode.provinceCode" ng-options="a as a.code for a in $ctrl.provinceCodes" name="productCategory"></select></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="Save" class="btn btn-create btn-md" data-disable-with="Save"></div></form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'description\';$ctrl.sortReverse = !$ctrl.sortReverse;">Description <span ng-show="$ctrl.sortType == \'description\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'description\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'regionCode\';$ctrl.sortReverse = !$ctrl.sortReverse;">Region Code <span ng-show="$ctrl.sortType == \'regionCode\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'regionCode\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'provinceCode\';$ctrl.sortReverse = !$ctrl.sortReverse;">Province Code <span ng-show="$ctrl.sortType == \'provinceCode\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'provinceCode\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="zipCode in $ctrl.zipCodes | filter: {code: $ctrl.searchCode, description: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{zipCode.code}}</td><td>{{zipCode.description}}</td><td>{{zipCode.regionCode.code}}</td><td>{{zipCode.provinceCode.code}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editZipCode(zipCode.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteZipCode(zipCode.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
-$templateCache.put('./mo.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Manufacturing Order</h4></div><hr class="devider"></div><div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Manufacturing Order</h3></div><a href="/admin/rnd/mo/multi-test" class="btn btn-warning btn-md button-link">Multi-test</a> <a href="/admin/rnd/mo/new" class="btn btn-create btn-md button-link">Create Pre-Manufacturing Order</a></div><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="id" type="text" name="search" ng-model="$ctrl.searchId"> <input class="form-control -borderless search" placeholder="moNumber" type="text" name="search" ng-model="$ctrl.searchMoNumber"> <input class="form-control -borderless search" placeholder="lotNumber" type="text" name="search" ng-model="$ctrl.searchLotNumber"></div></div><table ng-if="$ctrl.moList" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">Pre-MO # <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'moNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">MO # <span ng-show="$ctrl.sortType == \'moNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'moNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'lotNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Lot # <span ng-show="$ctrl.sortType == \'lotNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'lotNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Name</th><th>Batch Size</th><th>Date Created</th><th></th></tr></thead><tbody><tr ng-repeat="mo in $ctrl.moList | filter: {id: $ctrl.searchId, moNumber: $ctrl.searchMoNumber, lotNumber:$ctrl.searchLotNumber}| orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{mo.id}}</td><td>{{mo.moNumber || \'N/A\'}}</td><td>{{mo.lotNumber || \'N/A\'}}</td><td>{{mo.moName}}</td><td>{{mo.batchSize}}</td><td>{{mo.dateCreated | date}}</td><td><i class="ion-ios-compose-outline" ng-click="$ctrl.view(mo.id)"></i> <a href="#" ng-if="!mo.moNumber" ng-click="$ctrl.manufactureOrder(mo);" class="btn btn-create btn-md button-link">Manufacture Order</a></td></tr></tbody></table><view-product-modal product="$ctrl.product"></view-product-modal><div class="clear-float"></div>');
-$templateCache.put('./pp.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Packaging Process</h4></div><hr class="devider"></div><div class="mmd-content"><company-nav></company-nav><a href="/admin/rnd/pp/new"><div class="mmd-card"><i class="icon ion-ios-paper-outline"><span class="caption">Create PP</span></i></div></a></div><div class="clear-float"></div>');
 $templateCache.put('./print-account-summary-report.html','<div class="horizontal-align -between modal-information"><p class="title">Report: <span class="content">{{$ctrl.reportType}}</span></p><p class="title">Dates: <span class="content">{{$ctrl.dates}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Company: <span class="content">{{$ctrl.company.name}}</span></p></div><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Account Title</th><th>Credit</th><th>Debit</th></tr></thead><tbody><tr ng-repeat="entry in $ctrl.entries"><td>{{entry.title}}</td><td>{{entry.credit}}</td><td>{{entry.debit}}</td></tr></tbody></table></div>');
 $templateCache.put('./account-title-table.html','<style>.dropdown-submenu {\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\t.dropdown-submenu .dropdown-menu {\r\n\t\ttop: 0;\r\n\t\tleft: 100%;\r\n\t\tmargin-top: -1px;\r\n\t}</style><script>$(document).ready(function () {\r\n\t\t$(\'.dropdown-submenu a.test\').on("click", function (e) {\r\n\t\t\t$(this).next(\'ul\').toggle();\r\n\t\t\te.stopPropagation();\r\n\t\t\te.preventDefault();\r\n\t\t});\r\n\t});</script><table class="table table-list"><thead><tr><th>Account Title</th><th>Department</th><th>Group</th><th>Area</th><th>Debit</th><th>Credit</th><th ng-if="!$ctrl.readonly">Action</th></tr></thead><tbody><tr ng-if="!$ctrl.readonly"><td><div class="dropdown"><button type="button" ng-click="$ctrl.myFunction()" ng-if="$ctrl.accountTitle.id == null" class="dropbtn">Select</button> <button type="button" ng-click="$ctrl.myFunction()" ng-if="$ctrl.accountTitle.id != null" class="dropbtn">{{$ctrl.accountTitle.title}}</button><div id="myDropdown" class="dropdown-content"><input type="text" ng-model="$ctrl.search" placeholder="Search.." id="myInput" ng-change="$ctrl.filterFunction()"> <a ng-if="$ctrl.accountTitle.parent != null" ng-click="$ctrl.selectAccountTitle($ctrl.accountTitle.parent)">Parent: {{$ctrl.accountTitle.parent.title}}</a> <a ng-repeat="a in $ctrl.accountTitlesList" ng-click="$ctrl.selectAccountTitle(a)">{{a.title}}</a></div></div></td><td><select class="form-control select -border" ng-model="$ctrl.department" ng-options="d as d.name for d in $ctrl.departments" name="departments"></select></td><td><select class="form-control select -border" ng-model="$ctrl.group" ng-options="g as g.name for g in $ctrl.groups" name="groups"></select></td><td><select class="form-control select -border" ng-model="$ctrl.area" ng-options="a as a.name for a in $ctrl.areas" name="areas"></select></td><td><input type="number" ng-if="$ctrl.accountTitle.type == \'Debit\'" ng-model="$ctrl.amount"></td><td><input type="number" ng-if="$ctrl.accountTitle.type == \'Credit\'" ng-model="$ctrl.amount"></td><td><button type="button" ng-click="$ctrl.addRow()" class="btn btn-success">Add</button></td></tr><tr ng-repeat="at in $ctrl.accounttitles"><td>{{at.accountTitle.title}}</td><td>{{at.department.name}}</td><td>{{at.group.name}}</td><td>{{at.area.name}}</td><td ng-if="at.accountTitle.type == \'Debit\'">{{at.amount.toFixed(2)}}</td><td ng-if="at.accountTitle.type == \'Debit\'">-------</td><td ng-if="at.accountTitle.type == \'Credit\'">-------</td><td ng-if="at.accountTitle.type == \'Credit\'">{{at.amount.toFixed(2)}}</td><td><button type="button" ng-click="$ctrl.deleteRow($index)" ng-if="!$ctrl.readonly" class="btn btn-danger">Remove</button></td></tr></tbody><tfoot><tr ng-if="!$ctrl.readonly"><th>Total</th><th></th><th></th><th></th><th>{{$ctrl.debitAmount.toFixed(2)}}</th><th>{{$ctrl.creditAmount.toFixed(2)}}</th><th></th></tr></tfoot></table>');
 $templateCache.put('./company-nav.html','<ul ng-show="$ctrl.showCompanyNav()" class="companyTabs nav nav-tabs"><li class="nav-item" ng-repeat="company in $ctrl.companies"><a class="nav-link {{ $ctrl.company != null && $ctrl.company.id == company.id ? \'active\' : \'\'}}" ng-click="$ctrl.selectCompany(company);">{{company.name}}</a></li></ul>');
@@ -19118,8 +19135,8 @@ $templateCache.put('./find-inventory-modal.html','<style>.highlight{\r\n\t\tback
 $templateCache.put('./find-item-modal.html','<style>.highlight{\r\n\t\tbackground-color:#7ed321;\r\n\t}</style><div class="modal fade" id="findItemModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Item</h4><button class="close"><span data-dismiss="modal" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="wrapper scroll-section"><table datatable="ng" ng-if="$ctrl.items" class="table table-list"><thead><tr><th>Type</th><th>Item Code</th><th>Item Description</th><th>Unit</th><th>Current Stocks</th><th>Pending PRF</th><th>Pending PO</th><th>Quarantined</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="item in $ctrl.itemsWithDetails" ng-click="$ctrl.getItem(item)" ng-class="{highlight: $ctrl.isItemPresent(item) !== -1}"><td>{{item.item.type.code}}</td><td>{{item.item.code}}</td><td>{{item.item.name}}</td><td>{{item.item.unit.code}}</td><td>{{item.stockOnHand}}</td><td>{{item.pendingPrf}}</td><td>{{item.pendingPo}}</td><td>{{item.pendingRr}}</td></tr></tbody></table></div><a class="btn btn-info">Selected Item List</a><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Type</th><th>Item Code</th><th>Name</th><th>Unit</th><th>Current Stocks</th><th>Pending PRF</th><th>Pending PO</th><th>Quarantined</th></tr></thead><tbody><tr ng-repeat="item in $ctrl.itemlist"><td>{{item.item.type.code}}</td><td>{{item.item.code}}</td><td>{{item.item.name}}</td><td>{{item.item.unit.code}}</td><td>{{item.stockOnHand}}</td><td>{{item.pendingPrf}}</td><td>{{item.pendingPo}}</td><td>{{item.pendingRr}}</td></tr></tbody></table></div><div class="modal-footer"><button class="btn btn-cancel" data-dismiss="modal" ng-click="$ctrl.onButtonSelect()">Done</button></div></div></div></div></div>');
 $templateCache.put('./find-mis-modal.html','<div class="modal fade" id="findMISModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">MIS</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="MIS #" type="text" name="search" ng-model="$ctrl.searchMIS"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'mis\';$ctrl.sortReverse = !$ctrl.sortReverse;">MIS <span ng-show="$ctrl.sortType == \'mis\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'mis\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date</th><th>Requested By</th></tr></thead><tbody><tr ng-repeat="mis in $ctrl.misList | filter: {mis.misNo: $ctrl.searchMIS} | orderBy:$ctrl.sortType:$ctrl.sortReverse" data-dismiss="modal" ng-click="$ctrl.selectMIS(mis)"><td>{{mis.misNo}}</td><td>{{mis.date | date}}</td><td>{{mis.requestedBy.firstName}} {{mis.requestedBy.lastName}}</td></tr></tbody></table><div class="request-action"><button type="button" data-dismiss="modal" class="btn btn-create btn-md">Select</button></div></div></div></div></div></div>');
 $templateCache.put('./find-product-inventory-modal.html','<style>.highlight {\r\n\tbackground-color: #7ed321;\r\n}</style><div class="modal fade" id="findInventoryModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Inventory</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0 !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Control #" type="text" name="search" ng-model="$ctrl.searchlotNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'lotNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Lot Number <span ng-show="$ctrl.sortType == \'lotNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'lotNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date Entry</th><th>Expiration</th><th>FG</th><th>Stock on Hand</th></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.inventorylist | filter: {lotNumber: $ctrl.searchlotNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectInventory(inventory)" ng-class="{highlight: $ctrl.issuedlist.indexOf(inventory) !== -1}"><td>{{inventory.product.lotNumber}}</td><td>{{inventory.dateCreated | date}}</td><td>{{inventory.product.expiration | date}}</td><td>{{inventory.product.finishedGood.code}}-{{inventory.product.finishedGood.name}}</td><td>{{inventory.quantity}}</td></tr></tbody></table><div class="request-action"><button type="button" data-dismiss="modal" class="btn btn-create btn-md">Select</button></div></div></div></div></div></div>');
-$templateCache.put('./find-purchase-order-modal.html','<div class="modal fade" id="findPurchaseOrderModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Purchase Order</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRF #" type="text" name="search" ng-model="$ctrl.searchNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">PO # <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date</th><th>Vendor</th><th>Action</th></tr></thead><tbody><tr ng-repeat="po in $ctrl.purchaseOrders  | filter: {number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.getPurchaseOrder(po)" data-dismiss="modal"><td>{{po.number}}</td><td>{{po.date | date}}</td><td>{{po.vendor.code}}-{{po.vendor.name}}</td><td><button class="btn btn-primary" type="button">View</button></td></tr></tbody></table></div></div></div></div></div>');
 $templateCache.put('./find-product-modal.html','<style>.highlight{\r\n\t\tbackground-color:#7ed321;\r\n\t}</style><div class="modal fade" id="findProductModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">{{$ctrl.fg.code}} {{$ctrl.fg.name}}</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="FG Code" type="text" name="search" ng-model="$ctrl.searchFG"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'fg\';$ctrl.sortReverse = !$ctrl.sortReverse;">Lot # <span ng-show="$ctrl.sortType == \'fg\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'fg\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>FG Code</th><th>Name</th><th>Expiration</th><th>Stock</th></tr></thead><tbody><tr ng-repeat="productInventory in $ctrl.productlist | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectProduct(productInventory)" ng-class="{highlight: $ctrl.issuedproductlist.indexOf(productInventory.product) !== -1}"><td>{{productInventory.product.lotNumber}}</td><td>{{productInventory.product.finishedGood.code}}</td><td>{{productInventory.product.finishedGood.name}}</td><td>{{productInventory.product.expiration | date}}</td><td>{{productInventory.quantity}}</td></tr></tbody></table><div class="request-action"><button type="button" data-dismiss="modal" class="btn btn-create btn-md">Select</button></div></div></div></div></div></div>');
+$templateCache.put('./find-purchase-order-modal.html','<div class="modal fade" id="findPurchaseOrderModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Purchase Order</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRF #" type="text" name="search" ng-model="$ctrl.searchNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">PO # <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date</th><th>Vendor</th><th>Action</th></tr></thead><tbody><tr ng-repeat="po in $ctrl.purchaseOrders  | filter: {number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.getPurchaseOrder(po)" data-dismiss="modal"><td>{{po.number}}</td><td>{{po.date | date}}</td><td>{{po.vendor.code}}-{{po.vendor.name}}</td><td><button class="btn btn-primary" type="button">View</button></td></tr></tbody></table></div></div></div></div></div>');
 $templateCache.put('./find-requested-items-modal.html','<style>.highlight{\r\n\t\tbackground-color:#7ed321;\r\n\t}</style><div class="modal fade" id="findRequestedItemsModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Requested Items</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRF #" type="text" name="search" ng-model="$ctrl.searchNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">PRF # <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Code</th><th>Item</th><th>Type</th><th>Quantity</th><th>Unit</th><th></th></tr></thead><tbody><tr ng-repeat="requestedItem in $ctrl.requestedItems | filter: {number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectRequestedItem(requestedItem)" ng-class="{highlight: $ctrl.selectedItems.indexOf(requestedItem) !== -1}"><td>{{requestedItem.prfNumber}}</td><td>{{requestedItem.item.code}}</td><td>{{requestedItem.item.name}}</td><td>{{requestedItem.item.type.code}}</td><td>{{requestedItem.quantityRequested}}</td><td>{{requestedItem.unit.code}}</td><td></td></tr></tbody></table><div class="request-action"><button type="button" data-dismiss="modal" class="btn btn-create btn-md">Select PRF</button></div></div></div></div></div></div>');
 $templateCache.put('./find-sales-slip-modal.html','<div class="modal fade" id="findSalesSlipModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Sales Slip</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !imsortant"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRF #" type="text" name="search" ng-model="$ctrl.searchNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date</th><th>Type</th><th>Client</th><th>Amount</th></tr></thead><tbody><tr ng-repeat="ss in $ctrl.salesslips  | filter: {number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.getSalesSlip(ss)" data-dismiss="modal"><td>{{ss.number}}</td><td>{{ss.date | date}}</td><td>{{ss.type}}</td><td>{{ss.salesOrder.client.code}}-{{ss.salesOrder.client.name}}</td><td>{{ss.remainingBalance.toFixed(2)}}</td></tr></tbody></table></div></div></div></div></div>');
 $templateCache.put('./find-so-modal.html','<div class="modal fade" id="findSoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Sales Order</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !imsortant"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRF #" type="text" name="search" ng-model="$ctrl.searchNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">PO # <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date</th><th>Client</th><th>Action</th></tr></thead><tbody><tr ng-repeat="so in $ctrl.salesorders  | filter: {number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.getSalesOrder(so)" data-dismiss="modal"><td>{{so.number}}</td><td>{{so.date | date}}</td><td>{{so.client.code}}-{{so.client.name}}</td><td><button class="btn btn-primary" type="button">View</button></td></tr></tbody></table></div></div></div></div></div>');
@@ -19141,8 +19158,8 @@ $templateCache.put('./print-stock-card.html','<h4>Control #{{$ctrl.stockcards[0]
 $templateCache.put('./print-vp-report.html','<div class="horizontal-align -between modal-information"><p class="title">Report: <span class="content">{{$ctrl.reportType}}</span></p><p class="title">Dates: <span class="content">{{$ctrl.dates}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Company: <span class="content">{{$ctrl.company.name}}</span></p></div><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>VP No</th><th>Date</th><th>Payee</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr ng-repeat="vp in $ctrl.entries"><td>{{vp.number}}</td><td>{{vp.date | date}}</td><td>{{vp.payee}}</td><td>{{vp.amount}}</td><td>{{vp.status}}</td></tr></tbody></table></div>');
 $templateCache.put('./sales-rep-client-report.html','<div class="horizontal-align -between modal-information"><p class="title">Report: <span class="content">{{$ctrl.reportType}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Company: <span class="content">{{$ctrl.company.name}}</span></p></div><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Client Code</th><th>Client Name</th><th>Address</th><th>Contact Person</th><th>Telephone Number</th><th>TIN Number</th></tr></thead><tbody><tr ng-repeat="entry in $ctrl.entries"><td>{{entry.code}}</td><td>{{entry.name}}</td><td>{{entry.businessAddress}}</td><td>{{entry.proprietor}}</td><td>{{entry.telephoneNumbers}}</td><td>{{entry.tin}}</td></tr></tbody></table></div>');
 $templateCache.put('./view-ackreceipt-modal.html','<div class="modal fade" id="ackReceiptInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Acknowledgement Receipt No. {{$ctrl.ar.number}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Prepared By: <span class="content">{{$ctrl.ar.preparedBy.firstName}} {{$ctrl.ar.preparedBy.lastName}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Date: <span class="content">{{$ctrl.ar.date | date}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Client: <span class="content">{{$ctrl.ar.client.name}}</span></p></div><a target="_blank" href="/admin/shared/print-os/{{$ctrl.os.id}}" class="btn btn-info">Print Receipt</a><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>Type</th><th>Number</th><th>Date</th><th>Amount</th><th>Paid</th></tr></thead><tbody><tr ng-repeat="payment in $ctrl.ar.payments"><td>{{payment.reference.type}}</td><td>{{payment.reference.number}}</td><td>{{payment.reference.date | date}}</td><td>{{payment.reference.totalAmount.toFixed(2)}}</td><td>{{payment.appliedAmount.toFixed(2)}}</td></tr></tbody><tfoot><tr><td>Total Applied Amount:</td><td>{{$ctrl.ar.osAmount.toFixed(2)}}</td><td>Total SI Amount:</td><td>{{$ctrl.ar.siAmount.toFixed(2)}}</td></tr></tfoot></table></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.ar.remarks}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.ar.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
-$templateCache.put('./view-prf-modal.html','<div class="modal fade" id="prfInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">PRF No. {{ $ctrl.prf.number }} {{$ctrl.prf.date | date}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date Needed <span class="content">{{ $ctrl.prf.dateNeeded | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Requested By: <span class="content">{{$ctrl.prf.requestedBy.firstName}} {{$ctrl.prf.requestedBy.lastName}}</span></p></div><a target="_blank" href="/admin/shared/print-prf/{{$ctrl.prf.id}}" class="btn btn-info">Print Purchase Request</a><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>Code</th><th>Item</th><th>Quantity</th><th>Unit</th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="requestedItem in $ctrl.prf.requestedItems"><td>{{requestedItem.item.code}}</td><td>{{requestedItem.item.name}}</td><td>{{requestedItem.quantityRequested}}</td><td>{{requestedItem.item.unit.code}}</td><td>{{requestedItem.status}}</td><td><p ng-if="requestedItem.status == \'Cancelled\'">{{requestedItem.cancelReq.reason}}</p><a ng-if="requestedItem.status != \'PO Created\' && requestedItem.status != \'Cancelled\' " target="_blank" ng-click="$ctrl.cancelItem(requestedItem)" data-toggle="modal" data-target="#cancelItemDiv" class="btn btn-danger">Cancel</a></td></tr></tbody></table></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.prf.remarks}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.prf.date | date}}</p><button class="btn btn-create" ng-if="$ctrl.prf.status != \'Approved\' && $ctrl.prf.status != \'Rejected\' && $ctrl.prf.status != \'Cancelled\'" ng-click="$ctrl.approve($ctrl.prf.id)" data-dismiss="modal">Approve</button> <button class="btn btn-danger" ng-if="$ctrl.prf.status != \'Approved\' && $ctrl.prf.status != \'Rejected\' && $ctrl.prf.status != \'Cancelled\'" ng-click="$ctrl.reject($ctrl.prf.id)">Reject</button> <button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div><div class="modal fade" id="cancelItemDiv"><div class="modal-dialog -bg"><div class="modal-content"><form novalidate ng-submit="$ctrl.submitCancel();" method="post"><div class="modal-header"><h4 class="modal-title">Cancel {{$ctrl.cancelledItem.requestedItem.item.code}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="horizontal-align -between modal-information"><input class="form-control -border" placeholder="Cancel reason" ng-model="$ctrl.cancelledItem.reason" type="text" name="last_name"></div><div class="modal-footer"><p class="date">Created at {{$ctrl.prf.date | date}}</p><button ng-click="$ctrl.submitCancel()" data-dismiss="modal">OK</button></div></form></div></div></div>');
 $templateCache.put('./view-os-modal.html','<div class="modal fade" id="osInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">{{$ctrl.os.salesOrder.type}} No. {{ $ctrl.os.number }} {{$ctrl.os.date | date}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Prepared By: <span class="content">{{$ctrl.os.preparedBy.firstName}} {{$ctrl.os.preparedBy.lastName}}</span></p></div><a target="_blank" href="/admin/shared/print-os/{{$ctrl.os.id}}" class="btn btn-info">Print {{$ctrl.os.salesOrder.type}}</a><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>Code</th><th>FG</th><th>Lot #</th><th>Expiration</th><th>Quantity</th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="product in $ctrl.os.orderedProducts"><td>{{product.product.finishedGood.code}}</td><td>{{product.product.finishedGood.name}}</td><td>{{product.product.lotNumber}}</td><td>{{product.product.expiration | date}}</td><td>{{product.quantity}}</td><td>{{product.status}}</td></tr></tbody></table></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.os.remarks}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.os.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
+$templateCache.put('./view-prf-modal.html','<div class="modal fade" id="prfInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">PRF No. {{ $ctrl.prf.number }} {{$ctrl.prf.date | date}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date Needed <span class="content">{{ $ctrl.prf.dateNeeded | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Requested By: <span class="content">{{$ctrl.prf.requestedBy.firstName}} {{$ctrl.prf.requestedBy.lastName}}</span></p></div><a target="_blank" href="/admin/shared/print-prf/{{$ctrl.prf.id}}" class="btn btn-info">Print Purchase Request</a><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>Code</th><th>Item</th><th>Quantity</th><th>Unit</th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="requestedItem in $ctrl.prf.requestedItems"><td>{{requestedItem.item.code}}</td><td>{{requestedItem.item.name}}</td><td>{{requestedItem.quantityRequested}}</td><td>{{requestedItem.item.unit.code}}</td><td>{{requestedItem.status}}</td><td><p ng-if="requestedItem.status == \'Cancelled\'">{{requestedItem.cancelReq.reason}}</p><a ng-if="requestedItem.status != \'PO Created\' && requestedItem.status != \'Cancelled\' " target="_blank" ng-click="$ctrl.cancelItem(requestedItem)" data-toggle="modal" data-target="#cancelItemDiv" class="btn btn-danger">Cancel</a></td></tr></tbody></table></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.prf.remarks}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.prf.date | date}}</p><button class="btn btn-create" ng-if="$ctrl.prf.status != \'Approved\' && $ctrl.prf.status != \'Rejected\' && $ctrl.prf.status != \'Cancelled\'" ng-click="$ctrl.approve($ctrl.prf.id)" data-dismiss="modal">Approve</button> <button class="btn btn-danger" ng-if="$ctrl.prf.status != \'Approved\' && $ctrl.prf.status != \'Rejected\' && $ctrl.prf.status != \'Cancelled\'" ng-click="$ctrl.reject($ctrl.prf.id)">Reject</button> <button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div><div class="modal fade" id="cancelItemDiv"><div class="modal-dialog -bg"><div class="modal-content"><form novalidate ng-submit="$ctrl.submitCancel();" method="post"><div class="modal-header"><h4 class="modal-title">Cancel {{$ctrl.cancelledItem.requestedItem.item.code}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="horizontal-align -between modal-information"><input class="form-control -border" placeholder="Cancel reason" ng-model="$ctrl.cancelledItem.reason" type="text" name="last_name"></div><div class="modal-footer"><p class="date">Created at {{$ctrl.prf.date | date}}</p><button ng-click="$ctrl.submitCancel()" data-dismiss="modal">OK</button></div></form></div></div></div>');
 $templateCache.put('./view-product-modal.html','<div class="modal fade" id="productInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">View Product</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">FG Code <span class="content">{{ $ctrl.product.finishedGood.code }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Name <span class="content">{{$ctrl.product.finishedGood.name }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Lot # <span class="content">{{ $ctrl.product.lotNumber }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Expiration <span class="content">{{$ctrl.product.expiration | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Classification <span class="content">{{ $ctrl.product.classification.name}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Category <span class="content">{{$ctrl.product.category.name }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Small UOM <span class="content">{{ $ctrl.product.smallUnit.name }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Big UOM <span class="content">{{$ctrl.product.bigUnit.name }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Unit Price <span class="content">{{ $ctrl.product.unitPrice }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Quantity Per Box <span class="content">{{$ctrl.product.quantityPerBox }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Reorder Level <span class="content">{{$ctrl.product.reorderLevel}}</span></p></div></div><div class="modal-footer"><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
 $templateCache.put('./view-rr-modal.html','<div class="modal fade" id="rrModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Receiving Slip {{$ctrl.rr.number}}</h4><button data-dismiss="modal" class="close"><span class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">R.R No: <span class="content">{{$ctrl.rr.number}}</span></p><p class="title">DR / SI: <span class="content">{{$ctrl.rr.drNumber}}/{{$ctrl.rr.siNumber}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Vendor: <span class="content">{{$ctrl.rr.purchaseOrder.vendor.code}} {{$ctrl.rr.purchaseOrder.vendor.name}}</span></p><p class="title">Received By: <span class="content">{{$ctrl.rr.receivedBy.department.name}}</span></p></div><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Item Code</th><th>Item Name</th><th>Material Type</th><th>Status</th><th>Quantity</th></tr></thead><tbody><tr ng-repeat="receivedItem in $ctrl.rr.receivedItems"><td>{{receivedItem.item.code}}</td><td>{{receivedItem.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':receivedItem.item.type.code == \'RM\', \'-orangish\':receivedItem.item.type.code ==\'PM\'}">{{receivedItem.item.type.code}}</label></td><td>{{receivedItem.status}}</td><td>{{receivedItem.quantity}} {{receivedItem.unit.code}}</td></tr></tbody></table></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.rr.date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
 $templateCache.put('./view-so-modal.html','<div class="modal fade" id="soInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">SO No. {{ $ctrl.so.number }} {{$ctrl.so.date | date}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Prepared By: <span class="content">{{$ctrl.so.preparedBy.firstName}} {{$ctrl.so.preparedBy.lastName}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Type: <span class="content">{{$ctrl.so.type}}</span></p></div><a target="_blank" href="/admin/shared/print-so/{{$ctrl.so.id}}" class="btn btn-info">Print Sales Order</a><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>Code</th><th>FG</th><th>Quantity</th><th>Status</th><th>Remaining</th><th></th></tr></thead><tbody><tr ng-repeat="product in $ctrl.so.products"><td>{{product.finishedGood.code}}</td><td>{{product.finishedGood.name}}</td><td>{{product.quantity}}</td><td>{{product.status}}</td><td>{{product.quantityRemaining}}</td><td><p ng-if="product.status == \'Cancelled\'">{{product.cancelReq.reason}}</p><a ng-if="product.status != \'In Transit\' && product.status != \'Incomplete\' && product.status != \'Cancelled\' " target="_blank" ng-click="$ctrl.cancelItem(product)" data-toggle="modal" data-target="#cancelItemDiv" class="btn btn-danger">Cancel</a></td></tr></tbody></table></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.so.remarks}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.so.date | date}}</p><button class="btn btn-create" ng-if="$ctrl.so.status == \'Pending\'" ng-click="$ctrl.approve($ctrl.so.id)" data-dismiss="modal">Approve</button> <button class="btn btn-danger" ng-if="$ctrl.so.status == \'Pending\'" ng-click="$ctrl.reject($ctrl.so.id)">Reject</button> <button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div><div class="modal fade" id="cancelItemDiv"><div class="modal-dialog -bg"><div class="modal-content"><form novalidate ng-submit="$ctrl.submitCancel();" method="post"><div class="modal-header"><h4 class="modal-title">Cancel {{$ctrl.cancelledItem.requestedItem.item.code}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="horizontal-align -between modal-information"><input class="form-control -border" placeholder="Cancel reason" ng-model="$ctrl.cancelledItem.reason" type="text" name="last_name"></div><div class="modal-footer"><p class="date">Created at {{$ctrl.so.date | date}}</p><button ng-click="$ctrl.submitCancel()" data-dismiss="modal">OK</button></div></form></div></div></div>');
@@ -19188,20 +19205,20 @@ $templateCache.put('./vouchers-payable-form.html','<style>.highlightred{\r\n\t\t
 $templateCache.put('./vouchers-payable-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Vouchers Payable Form</h3></div></div><header class="header-form"><a href="/admin/accounting/vouchers-payable" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Vouchers Payable Form</h3></header><vouchers-payable-form vp="$ctrl.vp" message="{{ $ctrl.error }}" button="Create Vouchers Payable" on-submit="$ctrl.createVouchersPayable($event);"></vouchers-payable-form>');
 $templateCache.put('./vouchers-payables.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Vouchers Payables</h3></div><!-- <a href="/admin/accounting/vouchers-payable-tolling/new" ng-click="" class="btn btn-create btn-md button-link" style="background-color:blueviolet;">Create AR Tolling</a> --> <a ng-click="$ctrl.exportReport()" class="btn btn-warning btn-md button-link">Export</a> <a href="/admin/shared/print-vp-report/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class="btn btn-primary btn-md button-link">Generate Report</a> <a href="/admin/accounting/vouchers-payable/new" ng-click="" class="btn btn-create btn-md button-link">Create VP</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="VP No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="RR No" type="text" name="search" ng-model="$ctrl.searchRRNumber"></div><div class="search-box horizontal-align -between"><input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.startDate"> <input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.endDate"></div></div><table class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">VP No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'rrNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'rrNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'rrNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'materialType\';$ctrl.sortReverse = !$ctrl.sortReverse;">Vendor <span ng-show="$ctrl.sortType == \'materialType\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'materialType\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'drsi\';$ctrl.sortReverse = !$ctrl.sortReverse;">Amount <span ng-show="$ctrl.sortType == \'drsi\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'drsi\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'drsi\';$ctrl.sortReverse = !$ctrl.sortReverse;">Status <span ng-show="$ctrl.sortType == \'drsi\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'drsi\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="vp in $ctrl.vouchersPayables "><td>{{vp.number}}</td><td>{{vp.date | date}}</td><td>{{vp.vendor.name}}</td><td>{{vp.totalAmount}}</td><td>{{vp.status}}</td><td class="tablebutton-form"><div class="holder"><button class="btn btn-compose" data-toggle="modal" ng-click="$ctrl.openModal(vp)" data-target="#vpModal" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button> <button class="btn btn-compose" ng-if="vp.status == \'Pending\'"><i class="ion-ios-compose-outline" ng-click="$ctrl.goToEdit(vp.id)"></i></button></div></td></tr></tbody></table><view-vp-modal vp="$ctrl.vp" approve="$ctrl.approve($event)"></view-vp-modal>');
 $templateCache.put('./approval-receipt-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findReceivingReceipts()" data-target="#selectRRModal" data-toggle="modal">Select Received Item</a></div><div class="form-group rmpm"><label class="label capitalize-text">RR Number</label><input disabled="disabled" type="text" ng-model="$ctrl.ar.receivingReceipt.number" ng-change="$ctrl.populateApprovedItems()" readonly="readonly" class="form-control -border"></div></div></div><div class="form-content" ng-if="$ctrl.ar.receivingReceipt"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">AR Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.ar.date"></div></div></div></div></div></div><label class="label capitalize-text">Control Number</label><input type="text" class="form-control -border" ng-model="$ctrl.ar.controlNumber"><div class="step-form"><div class="horizontal-align -between"><div><p>Item Code</p><div class="horizontal-align -between content"><div class="form-group field"><input type="text" class="form-control -border" ng-model="$ctrl.ar.item.code" disabled="disabled"></div></div></div><label>-</label><div><p>RR Number</p><div class="horizontal-align -between content"><div class="form-group field"><input type="text" class="form-control -border" ng-model="$ctrl.ar.receivingReceipt.number" disabled="disabled"></div></div></div><label>-</label><div><p>Items Received</p><div class="horizontal-align -between content"><div class="form-group field"><input type="text" class="form-control -border" ng-model="$ctrl.ar.receivedQuantity" disabled="disabled"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Received By</label><input type="text" ng-value="$ctrl.ar.receivedBy.department.name" class="form-control -border" disabled="disabled"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">DR #</label><input disabled="disabled" type="text" ng-model="$ctrl.ar.receivingReceipt.drNumber" readonly="readonly" class="form-control -border"></div><div class="form-group field"><label for="department">SI #</label><input disabled="disabled" type="text" ng-model="$ctrl.ar.receivingReceipt.siNumber" readonly="readonly" class="form-control -border"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Max Containers</label><input type="text" class="form-control -border" ng-model="$ctrl.ar.maxContainers"></div><div class="form-group field"><label class="label capitalize-text">Specified Gravity</label><input type="text" ng-model="$ctrl.ar.specifiedGravity" class="form-control -border"></div></div></div></div></div><table class="table table-list"><thead><tr><th>Item</th><th>Received</th><th>Rejected</th><th>QCSamples</th><th>Approved</th><th>Expiration</th><th>Best Before</th><th>Re-eval</th><th>Re-test</th></tr></thead><tbody id="table-less-padding"><tr><td>{{$ctrl.ar.item.name}} {{$ctrl.ar.item.code}}</td><td><input disabled="disabled" type="text" ng-model="$ctrl.ar.receivedQuantity" ng-change="$ctrl.calculateTotal($ctrl.ar)" class="form-control -border"></td><!-- <td><input type="text" ng-model="$ctrl.ar.approvedQuantity" ng-change="$ctrl.calculateTotal($ctrl.ar)" class="form-control -border" /></td>--><td><input type="text" ng-model="$ctrl.ar.rejectedQuantity" ng-change="$ctrl.calculateTotal($ctrl.ar)" class="form-control -border"></td><td><input type="text" ng-model="$ctrl.ar.qcSamples" ng-change="$ctrl.calculateTotal($ctrl.ar)" class="form-control -border"></td><td><input type="text" ng-model="$ctrl.ar.approvedQuantity" class="form-control -border"></td><td><input type="date" ng-model="$ctrl.ar.expiration" class="form-control -border"></td><td><input type="date" ng-model="$ctrl.ar.bestBefore" class="form-control -border"></td><td><input type="date" ng-model="$ctrl.ar.reevaluation" class="form-control -border"></td><td><input type="date" ng-model="$ctrl.ar.retest" class="form-control -border"></td></tr></tbody></table><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.ar.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></form><div class="modal fade" id="selectRRModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Receiving Receipt Item</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th></th><th>RR #</th><th>Date</th><th>Status</th><th>Item</th><th>Code</th><th></th></tr></thead><tbody><tr ng-repeat="rr in $ctrl.receivingReceipts"><td>{{rr.number}}</td><td>{{rr.date | date}}</td><td>{{rr.receivedItem.status}}</td><td>{{rr.receivedItem.item.name}}</td><td>{{rr.receivedItem.item.code}}</td><td><button class="btn btn-primary" ng-click="$ctrl.populateApprovedItems(rr)" data-dismiss="modal" type="button">Select</button></td></tr></tbody></table></div></div></div></div>');
-$templateCache.put('./approval-receipt-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Approval Receipt Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/approved-receipt" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Approval Receipt Form</h3></header><approved-receipt-form ar="$ctrl.ar" message="{{ $ctrl.error }}" button="Create Approval Receipt" on-submit="$ctrl.createApprovedReceipt($event);"></approved-receipt-form>');
 $templateCache.put('./approval-receipts.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Approved Receipts</h3></div><!-- <a href="/admin/dashboard/approved-receipt-tolling/new" ng-click="" class="btn btn-create btn-md button-link" style="background-color:blueviolet;">Create AR Tolling</a> --> <a href="/admin/dashboard/approved-receipt/new" ng-click="" class="btn btn-create btn-md button-link">Create AR</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="AR No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="RR No" type="text" name="search" ng-model="$ctrl.searchRRNumber"></div></div><table ng-if="$ctrl.approvalReceipts" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">AR No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'rrNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">RR No <span ng-show="$ctrl.sortType == \'rrNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'rrNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'materialType\';$ctrl.sortReverse = !$ctrl.sortReverse;">Material Type <span ng-show="$ctrl.sortType == \'materialType\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'materialType\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'quantity\';$ctrl.sortReverse = !$ctrl.sortReverse;">No of items <span ng-show="$ctrl.sortType == \'quantity\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'quantity\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'drNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Control Number <span ng-show="$ctrl.sortType == \'drNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'drNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'drsi\';$ctrl.sortReverse = !$ctrl.sortReverse;">DR/SI <span ng-show="$ctrl.sortType == \'drsi\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'drsi\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="ar in $ctrl.approvalReceipts | filter: {number: $ctrl.searchNumber, rrNumber: $ctrl.searchRRNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{ar.number}}</td><td>{{ar.rrNumber}}</td><td>{{ar.item.type.name}}</td><td>{{ar.approvedQuantity}}</td><td>{{ar.controlNumber}}</td><td>{{ar.receivingReceipt.drNumber}}/{{ar.receivingReceipt.siNumber}}</td><td class="tablebutton-form"><div class="holder"><button class="btn btn-compose" data-toggle="modal" ng-click="$ctrl.openModal(ar)" data-target="#arModal" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button> <button class="btn btn-compose"><i class="ion-ios-compose-outline" data-toggle="modal" ng-click=""></i></button> <button class="btn btn-archive" ng-click=""><i class="ion-ios-box-outline"></i></button></div></td></tr></tbody></table><div class="modal fade" id="arModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Approved Receipt No. {{$ctrl.ar.number}}</h4><button data-dismiss="modal" class="close"><span class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">A.R No: <span class="content">{{$ctrl.ar.number}}</span></p><p class="title">R.R No: <span class="content">{{$ctrl.ar.rrNumber}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">DR / SI: <span class="content">{{$ctrl.ar.receivingReceipt.drNumber}}/{{$ctrl.ar.receivingReceipt.siNumber}}</span></p><p class="title">Source: <span class="content">{{$ctrl.ar.company.name}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Max Containers: <span class="content">{{$ctrl.ar.maxContainers}}</span></p><p class="title">Control Number: <span class="content">{{$ctrl.ar.controlNumber}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Spec. Gravity: <span class="content">{{$ctrl.ar.specifiedGravity}}</span></p></div><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Item Code</th><th>Item Name</th><th>Material Type</th><th>Total</th><th>Expiration</th><th></th></tr></thead><tbody><tr><td>{{$ctrl.ar.item.code}}</td><td>{{$ctrl.ar.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':$ctrl.ar.item.type.code == \'RM\', \'-orangish\':$ctrl.ar.item.type.code ==\'PM\'}">{{$ctrl.ar.item.type.name}}</label></td><td>{{$ctrl.ar.approvedQuantity}} {{$ctrl.ar.unit}}</td><td>{{$ctrl.ar.expiration | date}}</td><td><button class="btn btn-compose" data-toggle="modal" ng-click="$ctrl.openModalApprovedItem($ctrl.ar)" data-target="#approvedItemModal" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button></td></tr></tbody></table></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.ar.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div><div class="modal fade" id="approvedItemModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Approved Item</h4><button data-dismiss="modal" class="close"><span class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Item Name: <span class="content">{{$ctrl.approvedItem.item.name}} {{$ctrl.approvedItem.item.code}}</span></p><p class="title"><!-- EMPTY --></p></div><div class="horizontal-align -between modal-information"><p class="title">Material Type: <span class="content"><label class="custom-label -narrow" ng-class="{\'-apple\':$ctrl.approvedItem.item.type.code == \'RM\', \'-orangish\':$ctrl.approvedItem.item.type.code ==\'PM\'}">{{$ctrl.approvedItem.item.type.name}}</label></span></p><p class="title"><!-- EMPTY --></p></div><div class="horizontal-align -between modal-information"><p class="title">Received Quantity: <span class="content">{{$ctrl.approvedItem.receivedQuantity}}</span></p><p class="title">Approved Quantity: <span class="content">{{$ctrl.approvedItem.approvedQuantity}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Rejected Quantity: <span class="content">{{$ctrl.approvedItem.rejectedQuantity}}</span></p><p class="title">QC Samples: <span class="content">{{$ctrl.approvedItem.qcSamples}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Total Quantity: <span class="content">{{$ctrl.approvedItem.totalQuantity}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Expiration: <span class="content">{{$ctrl.approvedItem.expiration | date}}</span></p><p class="title">Best before: <span class="content">{{$ctrl.approvedItem.bestBefore | date}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Re-evaluation: <span class="content">{{$ctrl.approvedItem.reevaluation | date}}</span></p><p class="title">Re-test: <span class="content">{{$ctrl.approvedItem.retest | date}}</span></p></div></div></div></div></div>');
 $templateCache.put('./employee-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="name-group"><div class="form-group"><label for="first_name">First name</label><input class="form-control -border" ng-model="$ctrl.employee.firstName" autofocus="autofocus" placeholder="First name" type="text" name="first_name"></div><div class="form-group"><label for="last_name">Last name</label><input class="form-control -border" ng-model="$ctrl.employee.lastName" placeholder="Last name" type="text" name="last_name"></div><div class="form-group initial"><label class="middle" for="M.I">Middle Name</label><input class="form-control -border" placeholder="MI" ng-model="$ctrl.employee.middleName" type="text" name="middle_initial"></div><div class="form-group initial"><label class="middle" for="M.I">Given Name</label><input class="form-control -border" placeholder="Given Name" ng-model="$ctrl.employee.givenName" type="text" name="middle_initial"></div></div><div class="horizontal-align -between" id="security-group"><div class="form-group"><label for="email">Employee No</label><input class="form-control -border" ng-model="$ctrl.employee.number" type="text" name="email"></div><div class="form-group"><label for="password">Tax Exempt Code</label><input class="form-control -border" type="text" ng-model="$ctrl.employee.taxExemptCode" name="password"></div><div class="form-group"><label for="Confirm password">ATM Account No</label><input class="form-control -border" type="password" ng-model="$ctrl.employee.atmAccountNo" name="confirm_password"></div></div><div class="horizontal-align -between" id="account-group"><div class="form-group"><label for="company">Pagibig ID</label><input class="form-control -border" type="text" ng-model="$ctrl.employee.pagibigId" name="confirm_password"></div><div class="form-group"><label for="department">SSS No</label><input class="form-control -border" type="text" ng-model="$ctrl.employee.sssNo" name="department"></div><div class="form-group initial"><label for="Employee type">Hourly Rate</label><input class="form-control -border" type="text" ng-model="$ctrl.employee.hourlyRate" name="employee_type"></div></div><div class="horizontal-align -between" id="account-group"><div class="form-group"><label for="company">Gender</label><select class="form-control -border" ng-model="$ctrl.employee.gender"><option value="MALE">MALE</option><option value="FEMALE">FEMALE</option></select></div><div class="form-group"><label for="department">Level Code</label><input class="form-control -border" type="text" ng-model="$ctrl.employee.levelCode" name="department"></div><div class="form-group"><label for="email">Monthly Salary</label><input class="form-control -border" placeholder="Monthly Salary" ng-model="$ctrl.employee.monthlySalary" type="text" name="email"></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form>');
 $templateCache.put('./employee-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Employee Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/employee" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading"></h3></header><employee-form employee="$ctrl.employee" message="{{ $ctrl.error }}" button="Submit" on-submit="$ctrl.createEmployee($event);"></employee-form>');
 $templateCache.put('./employees.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Employees</h3></div><a href="#" ng-click="$ctrl.createNewEmployee($event);" class="btn btn-create btn-md button-link">Create New Request</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Emp No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Name" type="text" name="search" ng-model="$ctrl.searchName"></div></div><table ng-if="$ctrl.employees" class="table table-list"><thead><tr><th>Emp No</th><th>Name</th><th>Given Name</th><th>Gender</th><th>Monthly Salary</th><th>Hourly Rate</th><th></th></tr></thead><tbody><tr ng-repeat="employee in $ctrl.employees | filter: {date: $ctrl.searchName, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{employee.number}}</td><td>{{employee.firstName}} {{employee.middleName}} {{employee.lastName}}</td><td>{{employee.givenName}}</td><td>{{employee.gender}}</td><td>{{employee.monthlySalary}}</td><td>{{employee.hourlyRate}}</td><td class="tablebutton-form"><div class="holder"><button data-toggle="modal" ng-click="$ctrl.openModal(employee)" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button> <button class="btn btn-archive" ng-click="$ctrl.deleteEmployee(employee.id)"><i class="ion-ios-box-outline"></i></button></div></td></tr></tbody></table><view-employee-modal employee="$ctrl.employee"></view-employee-modal>');
-$templateCache.put('./job-order-form.html','<style>.highlight{\r\n\t\tbackground-color:#7ed321;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findMoInventory()" data-target="#selectMoModal" data-toggle="modal">Select MO</a></div><div class="form-group rmpm"><label class="label capitalize-text">MO Number</label><input disabled="disabled" type="text" ng-model="$ctrl.jo.mo.moNumber" readonly="readonly" class="form-control -border"></div><div class="form-group rmpm"><label class="label capitalize-text">Date</label><input type="date" ng-model="$ctrl.jo.date" readonly="readonly" class="form-control -border"></div></div></div><a href="#" data-target="#selectEmployeeModal" data-toggle="modal" class="btn btn-success">Select Employees</a><table class="table table-list"><thead><tr><th>Emp No</th><th>Name</th><th>Time In</th><th>Time Out</th><th># of Hours</th><th>Area</th><th>Procedure</th><th>Output</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="employee in $ctrl.selectedEmployees"><td>{{employee.number}}</td><td>{{employee.firstName}} {{employee.lastName}}</td><td><input type="time" ng-change="$ctrl.displayThis(employee.timeIn)" ng-model="employee.timeIn"></td><td><input type="time" ng-change="$ctrl.displayThis(employee.timeOut)" ng-model="employee.timeOut"></td><td><input type="text" ng-model="employee.numberOfHours"></td><td><select ng-change="$ctrl.selectArea(employee.procedureArea)" ng-model="employee.procedureArea.id" class="form-control select -border" ng-options="i.id as i.code for i in $ctrl.procedureAreas" name="areas"></select></td><td><select ng-model="employee.procedure.id" class="form-control select -border" ng-options="i.id as i.code for i in $ctrl.procedures"></select></td><td><input type="text" ng-model="employee.output"></td></tr></tbody></table><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><div class="modal fade" id="selectMoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find MO</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th>MO #</th><th>Date</th><th>Lot #</th><th>FG</th><th>Batch Size</th><th></th></tr></thead><tbody><tr ng-repeat="mo in $ctrl.mos"><td>{{mo.moNumber}}</td><td>{{mo.dateCreated | date}}</td><td>{{mo.lotNumber}}</td><td>{{mo.finishedGood.code}}</td><td>{{mo.batchSize}}</td><td><button class="btn btn-primary" ng-click="$ctrl.selectMO(mo)" data-dismiss="modal" type="button">Select</button></td></tr></tbody></table></div></div></div></div><div class="modal fade" id="selectEmployeeModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Select Employees</h4><button class="close"><span data-dismiss="modal" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Emp No</th><th>Name</th><th>Gender</th><th>Monthy Salary</th><th>Hourly Rate</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="employee in $ctrl.employees" ng-click="$ctrl.getEmployee(employee)" ng-class="{highlight: $ctrl.isEmployeePresent(employee) !== -1}"><td>{{employee.number}}</td><td>{{employee.firstName}} {{employee.lastName}}</td><td>{{employee.gender}}</td><td>{{employee.monthlySalary.toFixed(2)}}</td><td>{{employee.hourlyRate.toFixed(2)}}</td></tr></tbody></table></div><a class="btn btn-info">Selected Employees</a><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Emp No</th><th>Name</th><th>Gender</th><th>Monthy Salary</th><th>Hourly Rate</th></tr></thead><tbody><tr ng-repeat="employee in $ctrl.selectedEmployees"><td>{{employee.number}}</td><td>{{employee.firstName}} {{employee.lastName}}</td><td>{{employee.gender}}</td><td>{{employee.monthlySalary.toFixed(2)}}</td><td>{{employee.hourlyRate.toFixed(2)}}</td></tr></tbody></table></div><div class="modal-footer"><button class="btn btn-cancel" data-dismiss="modal">Done</button></div></div></div></div></div>');
-$templateCache.put('./job-order-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Job Order Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/job-order" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Job Order Form</h3></header><job-order-form jo="$ctrl.jo" message="{{ $ctrl.error }}" button="Create Job Order" on-submit="$ctrl.createJobOrder($event);"></job-order-form>');
-$templateCache.put('./job-orders.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Job Order Slips<h3></h3></h3></div><a href="#" ng-click="$ctrl.createNewJO($event);" class="btn btn-create btn-md button-link">Create JO</a></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="JO No" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>MO No</th><th>Date</th><th>Employee</th><th>Procedure</th><th>Time in</th><th>Time out</th><th></th></tr></thead><tbody><tr ng-repeat="jo in $ctrl.jobOrderSlips"><td>{{jo.moInventory.moNumber}}</td><td>{{jo.date | date}}</td><td>{{jo.employee.firstName}} {{jo.employee.lastName}}</td><td>{{jo.procedure.code}}</td><td>{{jo.timeIn | date:\'h:mma\'}}</td><td>{{jo.timeOut | date:\'h:mma\'}}</td><td><a href="#" class="btn btn-info" data-target="#joModal" data-toggle="modal" ng-click="$ctrl.openModal(jo)">View</a></td></tr></tbody></table></div><div class="modal fade" id="joModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">JO No. {{ $ctrl.jo.joNo }}</h4><button class="close"><span class="ion-android-close close-modal" data-disjos="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date <span class="content">{{ $ctrl.jo.date | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Employee <span class="content">{{$ctrl.jo.employee.firstName}} {{$ctrl.jo.employee.lastName}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.jo.date | date}}</p><button class="btn btn-cancel" data-disjos="modal">Close</button></div></div></div></div>');
-$templateCache.put('./material-issuance-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="label capitalize-text">MIS Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div><div class="form-group rmpm"><label class="label capitalize-text">Date</label><input type="date" ng-model="$ctrl.mis.date" class="form-control -border"></div></div></div><label class="remarks">Requested By:</label><input type="text" class="form-control -border" ng-value="$ctrl.name"><div class="form-group approve-remarks"><label class="remarks">Remarks</label><textarea class="form-control -border" ng-model="$ctrl.mis.remarks" placeholder="Remarks" rows="3"></textarea></div><table class="table table-bordered"><thead><tr><th>Control #</th><th>Item</th><th>Type</th><th>Stock on Hand</th><th>Quantity</th><th>Remaining</th></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.mis.inventoryList" ng-class="{highlightred: $ctrl.stockOnHandList[$index] - $ctrl.mis.inventoryList[$index].quantity < 0}"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}} {{inventory.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':inventory.item.type.code == \'RM\', \'-orangish\':inventory.item.type.code ==\'PM\'}">{{inventory.item.type.code}}</label></td><td>{{$ctrl.stockOnHandList[$index]}}</td><td><input type="text" ng-model="$ctrl.mis.inventoryList[$index].quantity"></td><td>{{$ctrl.stockOnHandList[$index] - $ctrl.mis.inventoryList[$index].quantity}}</td></tr></tbody></table><div class="request-action"><button type="button" ng-click="$ctrl.selectFromInventory()" class="btn btn-create btn-md">Select from Inventory</button></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></form><find-inventory-modal issuedinventorylist="$ctrl.mis.inventoryList" stockonhand="$ctrl.stockOnHandList" message="{{ $ctrl.error }}"></find-inventory-modal>');
-$templateCache.put('./material-issuance-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Material Issuance Slip</h3></div></div><header class="header-form"><a href="/admin/dashboard/material-issuance" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading"></h3></header><material-issuance-form mis="$ctrl.mis" message="{{ $ctrl.error }}" button="Submit" on-submit="$ctrl.createMIS($event);"></material-issuance-form>');
-$templateCache.put('./material-issuances.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Material Issuance Slips<h3></h3></h3></div><a href="#" ng-click="$ctrl.createNewMIS($event);" class="btn btn-create btn-md button-link">Create MIS</a></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Control No" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>MIS No</th><th>Date</th><th>Requested By</th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="mis in $ctrl.materialIssuanceSlips"><td>{{mis.misNo}}</td><td>{{mis.date | date}}</td><td>{{mis.requestedBy.firstName}} {{mis.requestedBy.lastName}}</td><td>{{mis.status}}</td><td><a href="#" class="btn btn-info" data-target="#misModal" data-toggle="modal" ng-click="$ctrl.openModal(mis)">View</a></td></tr></tbody></table></div><div class="modal fade" id="misModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">MIS No. {{ $ctrl.mis.misNo }}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date <span class="content">{{ $ctrl.mis.date | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Requested By: <span class="content">{{$ctrl.mis.requestedBy.firstName}} {{$ctrl.mis.requestedBy.lastName}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.mis.remarks}}</span></p></div></div><table class="table table-list"><thead><tr><td>Control #</td><td>Item</td><td>Type</td><td>Quantity</td></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.mis.inventoryList"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}} {{inventory.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':inventory.item.type.code == \'RM\', \'-orangish\':inventory.item.type.code ==\'PM\'}">{{inventory.item.type.name}}</label></td><td>{{inventory.quantity}}</td></tr></tbody></table><div class="modal-footer"><p class="date">Created at {{$ctrl.mis.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
 $templateCache.put('./inventory-movement-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">MRIS Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.inventorymovement.date"></div></div></div></div></div></div><!-- <div class="horizontal-align -start rmpm-content">\r\n\t\t\t  <div class="horizontal-align -start rmpm-code">\r\n\t\t\t    <div class="form-group rmpm action">\r\n\t\t\t    \t\t<a href="#" class="button-link btn btn-action btn-md" data-target="#findPurchaseOrderModal" data-toggle="modal">Select PO</a>\r\n\t\t\t    </div>\r\n\t\t\t    <div class="form-group rmpm">\r\n\t\t\t    \t\t<label class="label capitalize-text">P.O. #</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.number" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t    <div class="form-group rmpm">\r\n\t\t\t    \t\t<input type="hidden"  ng-model="$ctrl.rr.purchaseOrder.id"/>\r\n\t\t\t    \t\t<label class="label capitalize-text">Code</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.code" ng-change="$ctrl.loadToReceivedItems()" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t  </div>\r\n\t\t\t  <div class="side-two">\r\n\t\t\t    <div class="form-group">\r\n\t\t\t      \t<label class="label capitalize-text">Name</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.name" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t  </div>\r\n\t\t</div> --><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Requested By</label><input type="text" ng-value="$ctrl.name" class="form-control -border"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content">Type<div class="form-group field"><label class="label capitalize-text">IN</label><input type="radio" ng-model="$ctrl.inventorymovement.type" value="IN"><label class="label capitalize-text">OUT</label><input type="radio" ng-model="$ctrl.inventorymovement.type" value="OUT"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content">Classification<div class="form-group field" ng-if="$ctrl.inventorymovement.type == \'IN\'"><label class="label capitalize-text">Return</label><input type="radio" ng-model="$ctrl.inventorymovement.classification" value="RETURN"><label class="label capitalize-text">Adjustment</label><input type="radio" ng-model="$ctrl.inventorymovement.classification" value="ADJUSTMENT"></div><div class="form-group field" ng-if="$ctrl.inventorymovement.type == \'OUT\'"><label class="label capitalize-text">Expired</label><input type="radio" ng-model="$ctrl.inventorymovement.classification" value="EXPIRED"><label class="label capitalize-text">Adjustment</label><input type="radio" ng-model="$ctrl.inventorymovement.classification" value="ADJUSTMENT"><label class="label capitalize-text">MO</label><input type="radio" ng-model="$ctrl.inventorymovement.classification" value="MO"></div></div></div></div></div><div class="step-form" ng-if="$ctrl.inventorymovement.classification == \'MO\'"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">MO Number</label><textarea type="text" class="form-control -border" ng-model="$ctrl.inventorymovement.moNumber"></textarea></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.inventorymovement.remarks"></textarea></div></div></div></div></div><table class="table table-list"><thead><tr><!-- <th>PRF # </th> --><th>Control #</th><th>Code</th><th>Item</th><th>Stock on Hand</th><th>Quantity</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="inventory in $ctrl.inventorymovement.inventory"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}}</td><td>{{inventory.item.name}}</td><td>{{$ctrl.stockOnHandList[$index]}}</td><td><input type="text" ng-model="inventory.quantity"></td></tr></tbody></table><div class="request-action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findInventoryModal" data-toggle="modal">Select Item</a></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><find-inventory-modal issuedinventorylist="$ctrl.inventorymovement.inventory" stockonhand="$ctrl.stockOnHandList" message="{{ $ctrl.error }}"></find-inventory-modal><!-- <find-purchase-order-modal\r\n\t\tpo="$ctrl.rr.purchaseOrder"\r\n\t\tmessage="{{ $ctrl.error }}"\r\n            button="Select PO"\r\n            >\r\n    </find-purchase-order-modal>\r\n\t<find-vendor-modal\r\n\t\t\tvendor="$ctrl.po.vendor"\r\n            message="{{ $ctrl.error }}"\r\n            button="Select Vendor"\r\n            >\r\n    </find-vendor-modal> -->');
 $templateCache.put('./inventory-movement-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Inventory Movement Slip (MRIS)</h3></div></div><header class="header-form"><a href="/admin/dashboard/inventory-movements" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading"></h3></header><inventory-movement-form inventorymovement="$ctrl.inventoryMovement" message="{{ $ctrl.error }}" button="Submit" on-submit="$ctrl.createMRIS($event);"></inventory-movement-form>');
 $templateCache.put('./inventory-movements.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Inventory Movement Slip<h3></h3></h3></div><a href="#" ng-click="$ctrl.createNewMRIS($event);" class="btn btn-create btn-md button-link">Create MRIS</a></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="MRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>MRIS No.</th><th>Date</th><th>IN/OUT</th><th>Requested By</th><th></th></tr></thead><tbody><tr ng-repeat="inventoryMovement in $ctrl.inventoryMovementList"><td>{{inventoryMovement.number}}</td><td>{{inventoryMovement.date | date}}</td><td>{{inventoryMovement.type}}</td><td>{{inventoryMovement.requestedBy.firstName}} {{inventoryMovement.requestedBy.lastName}}</td><td><button type="button" class="btn btn-info" data-target="#inventoryMovementModal" data-toggle="modal" ng-click="$ctrl.openModal(inventoryMovement)">View</button></td></tr></tbody></table></div><div class="modal fade" id="inventoryMovementModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">MRIS No. {{ $ctrl.mris.number }} {{$ctrl.mris.date | date}}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Requested By: <span class="content">{{$ctrl.mris.requestedBy.firstName}} {{$ctrl.mris.requestedBy.lastName}}</span></p></div><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>Control #</th><th>Code</th><th>Item</th><th>Quantity</th><th>Unit</th><th></th></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.mris.inventory"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}}</td><td>{{inventory.item.name}}</td><td>{{inventory.quantity}}</td><td>{{inventory.item.unit.code}}</td><td></td></tr></tbody></table></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.mris.remarks}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.mris.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
+$templateCache.put('./job-order-form.html','<style>.highlight{\r\n\t\tbackground-color:#7ed321;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findMoInventory()" data-target="#selectMoModal" data-toggle="modal">Select MO</a></div><div class="form-group rmpm"><label class="label capitalize-text">MO Number</label><input disabled="disabled" type="text" ng-model="$ctrl.jo.mo.moNumber" readonly="readonly" class="form-control -border"></div><div class="form-group rmpm"><label class="label capitalize-text">Date</label><input type="date" ng-model="$ctrl.jo.date" readonly="readonly" class="form-control -border"></div></div></div><a href="#" data-target="#selectEmployeeModal" data-toggle="modal" class="btn btn-success">Select Employees</a><table class="table table-list"><thead><tr><th>Emp No</th><th>Name</th><th>Time In</th><th>Time Out</th><th># of Hours</th><th>Area</th><th>Procedure</th><th>Output</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="employee in $ctrl.selectedEmployees"><td>{{employee.number}}</td><td>{{employee.firstName}} {{employee.lastName}}</td><td><input type="time" ng-change="$ctrl.displayThis(employee.timeIn)" ng-model="employee.timeIn"></td><td><input type="time" ng-change="$ctrl.displayThis(employee.timeOut)" ng-model="employee.timeOut"></td><td><input type="text" ng-model="employee.numberOfHours"></td><td><select ng-change="$ctrl.selectArea(employee.procedureArea)" ng-model="employee.procedureArea.id" class="form-control select -border" ng-options="i.id as i.code for i in $ctrl.procedureAreas" name="areas"></select></td><td><select ng-model="employee.procedure.id" class="form-control select -border" ng-options="i.id as i.code for i in $ctrl.procedures"></select></td><td><input type="text" ng-model="employee.output"></td></tr></tbody></table><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><div class="modal fade" id="selectMoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find MO</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th>MO #</th><th>Date</th><th>Lot #</th><th>FG</th><th>Batch Size</th><th></th></tr></thead><tbody><tr ng-repeat="mo in $ctrl.mos"><td>{{mo.moNumber}}</td><td>{{mo.dateCreated | date}}</td><td>{{mo.lotNumber}}</td><td>{{mo.finishedGood.code}}</td><td>{{mo.batchSize}}</td><td><button class="btn btn-primary" ng-click="$ctrl.selectMO(mo)" data-dismiss="modal" type="button">Select</button></td></tr></tbody></table></div></div></div></div><div class="modal fade" id="selectEmployeeModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Select Employees</h4><button class="close"><span data-dismiss="modal" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Emp No</th><th>Name</th><th>Gender</th><th>Monthy Salary</th><th>Hourly Rate</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="employee in $ctrl.employees" ng-click="$ctrl.getEmployee(employee)" ng-class="{highlight: $ctrl.isEmployeePresent(employee) !== -1}"><td>{{employee.number}}</td><td>{{employee.firstName}} {{employee.lastName}}</td><td>{{employee.gender}}</td><td>{{employee.monthlySalary.toFixed(2)}}</td><td>{{employee.hourlyRate.toFixed(2)}}</td></tr></tbody></table></div><a class="btn btn-info">Selected Employees</a><div class="wrapper scroll-section"><table class="table table-list"><thead><tr><th>Emp No</th><th>Name</th><th>Gender</th><th>Monthy Salary</th><th>Hourly Rate</th></tr></thead><tbody><tr ng-repeat="employee in $ctrl.selectedEmployees"><td>{{employee.number}}</td><td>{{employee.firstName}} {{employee.lastName}}</td><td>{{employee.gender}}</td><td>{{employee.monthlySalary.toFixed(2)}}</td><td>{{employee.hourlyRate.toFixed(2)}}</td></tr></tbody></table></div><div class="modal-footer"><button class="btn btn-cancel" data-dismiss="modal">Done</button></div></div></div></div></div>');
+$templateCache.put('./job-order-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Job Order Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/job-order" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Job Order Form</h3></header><job-order-form jo="$ctrl.jo" message="{{ $ctrl.error }}" button="Create Job Order" on-submit="$ctrl.createJobOrder($event);"></job-order-form>');
+$templateCache.put('./job-orders.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Job Order Slips<h3></h3></h3></div><a href="#" ng-click="$ctrl.createNewJO($event);" class="btn btn-create btn-md button-link">Create JO</a></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="JO No" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>MO No</th><th>Date</th><th>Employee</th><th>Procedure</th><th>Time in</th><th>Time out</th><th></th></tr></thead><tbody><tr ng-repeat="jo in $ctrl.jobOrderSlips"><td>{{jo.moInventory.moNumber}}</td><td>{{jo.date | date}}</td><td>{{jo.employee.firstName}} {{jo.employee.lastName}}</td><td>{{jo.procedure.code}}</td><td>{{jo.timeIn | date:\'h:mma\'}}</td><td>{{jo.timeOut | date:\'h:mma\'}}</td><td><a href="#" class="btn btn-info" data-target="#joModal" data-toggle="modal" ng-click="$ctrl.openModal(jo)">View</a></td></tr></tbody></table></div><div class="modal fade" id="joModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">JO No. {{ $ctrl.jo.joNo }}</h4><button class="close"><span class="ion-android-close close-modal" data-disjos="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date <span class="content">{{ $ctrl.jo.date | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Employee <span class="content">{{$ctrl.jo.employee.firstName}} {{$ctrl.jo.employee.lastName}}</span></p></div></div><div class="modal-footer"><p class="date">Created at {{$ctrl.jo.date | date}}</p><button class="btn btn-cancel" data-disjos="modal">Close</button></div></div></div></div>');
+$templateCache.put('./approval-receipt-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Approval Receipt Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/approved-receipt" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Approval Receipt Form</h3></header><approved-receipt-form ar="$ctrl.ar" message="{{ $ctrl.error }}" button="Create Approval Receipt" on-submit="$ctrl.createApprovedReceipt($event);"></approved-receipt-form>');
+$templateCache.put('./material-issuance-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="label capitalize-text">MIS Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div><div class="form-group rmpm"><label class="label capitalize-text">Date</label><input type="date" ng-model="$ctrl.mis.date" class="form-control -border"></div></div></div><label class="remarks">Requested By:</label><input type="text" class="form-control -border" ng-value="$ctrl.name"><div class="form-group approve-remarks"><label class="remarks">Remarks</label><textarea class="form-control -border" ng-model="$ctrl.mis.remarks" placeholder="Remarks" rows="3"></textarea></div><table class="table table-bordered"><thead><tr><th>Control #</th><th>Item</th><th>Type</th><th>Stock on Hand</th><th>Quantity</th><th>Remaining</th></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.mis.inventoryList" ng-class="{highlightred: $ctrl.stockOnHandList[$index] - $ctrl.mis.inventoryList[$index].quantity < 0}"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}} {{inventory.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':inventory.item.type.code == \'RM\', \'-orangish\':inventory.item.type.code ==\'PM\'}">{{inventory.item.type.code}}</label></td><td>{{$ctrl.stockOnHandList[$index]}}</td><td><input type="text" ng-model="$ctrl.mis.inventoryList[$index].quantity"></td><td>{{$ctrl.stockOnHandList[$index] - $ctrl.mis.inventoryList[$index].quantity}}</td></tr></tbody></table><div class="request-action"><button type="button" ng-click="$ctrl.selectFromInventory()" class="btn btn-create btn-md">Select from Inventory</button></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></form><find-inventory-modal issuedinventorylist="$ctrl.mis.inventoryList" stockonhand="$ctrl.stockOnHandList" message="{{ $ctrl.error }}"></find-inventory-modal>');
+$templateCache.put('./material-issuances.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Material Issuance Slips<h3></h3></h3></div><a href="#" ng-click="$ctrl.createNewMIS($event);" class="btn btn-create btn-md button-link">Create MIS</a></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Control No" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>MIS No</th><th>Date</th><th>Requested By</th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="mis in $ctrl.materialIssuanceSlips"><td>{{mis.misNo}}</td><td>{{mis.date | date}}</td><td>{{mis.requestedBy.firstName}} {{mis.requestedBy.lastName}}</td><td>{{mis.status}}</td><td><a href="#" class="btn btn-info" data-target="#misModal" data-toggle="modal" ng-click="$ctrl.openModal(mis)">View</a></td></tr></tbody></table></div><div class="modal fade" id="misModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">MIS No. {{ $ctrl.mis.misNo }}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date <span class="content">{{ $ctrl.mis.date | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Requested By: <span class="content">{{$ctrl.mis.requestedBy.firstName}} {{$ctrl.mis.requestedBy.lastName}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.mis.remarks}}</span></p></div></div><table class="table table-list"><thead><tr><td>Control #</td><td>Item</td><td>Type</td><td>Quantity</td></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.mis.inventoryList"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}} {{inventory.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':inventory.item.type.code == \'RM\', \'-orangish\':inventory.item.type.code ==\'PM\'}">{{inventory.item.type.name}}</label></td><td>{{inventory.quantity}}</td></tr></tbody></table><div class="modal-footer"><p class="date">Created at {{$ctrl.mis.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
+$templateCache.put('./material-issuance-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Material Issuance Slip</h3></div></div><header class="header-form"><a href="/admin/dashboard/material-issuance" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading"></h3></header><material-issuance-form mis="$ctrl.mis" message="{{ $ctrl.error }}" button="Submit" on-submit="$ctrl.createMIS($event);"></material-issuance-form>');
 $templateCache.put('./material-receiving-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="label capitalize-text">MRS Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div><div class="form-group rmpm"><label class="label capitalize-text">Date</label><input type="date" ng-model="$ctrl.mrs.date" class="form-control -border"></div></div></div><label class="remarks">Received By:</label><input type="text" class="form-control -border" ng-value="$ctrl.name"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findMISModal" data-toggle="modal">Select MIS</a></div><div class="form-group rmpm"><label class="label capitalize-text">MIS Number</label><input disabled="disabled" type="text" ng-model="$ctrl.mrs.mis.misNo" readonly="readonly" class="form-control -border"></div></div></div><div class="form-group approve-remarks"><label class="remarks">Remarks</label><textarea class="form-control -border" ng-model="$ctrl.mrs.remarks" placeholder="Remarks" rows="3"></textarea></div><table class="table table-bordered"><thead><tr><th>Control #</th><th>Item</th><th>Type</th><th>Quantity</th></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.mrs.mis.inventoryList"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}} {{inventory.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':inventory.item.type.code == \'RM\', \'-orangish\':inventory.item.type.code ==\'PM\'}">{{inventory.item.type.name}}</label></td><td>{{inventory.quantity}}</td></tr></tbody></table><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></form><div class="modal fade" id="findMISModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">MIS</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="MIS #" type="text" name="search" ng-model="$ctrl.searchMIS"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'mis\';$ctrl.sortReverse = !$ctrl.sortReverse;">MIS <span ng-show="$ctrl.sortType == \'mis\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'mis\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date</th><th>From Company</th><th>Requested By</th></tr></thead><tbody><tr ng-repeat="mis in $ctrl.misList | filter: {mis: $ctrl.searchMIS} | orderBy:$ctrl.sortType:$ctrl.sortReverse" data-dismiss="modal" ng-click="$ctrl.selectMIS(mis)"><td>{{mis.misNo}}</td><td>{{mis.date | date}}</td><td>{{mis.company.name}}</td><td>{{mis.requestedBy.firstName}} {{mis.requestedBy.lastName}}</td></tr></tbody></table><div class="request-action"><button type="button" data-dismiss="modal" class="btn btn-create btn-md">Select</button></div></div></div></div></div></div>');
 $templateCache.put('./material-receiving-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Material Receiving Slip</h3></div></div><header class="header-form"><a href="/admin/dashboard/material-receiving" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading"></h3></header><material-receiving-form mrs="$ctrl.mrs" message="{{ $ctrl.error }}" button="Submit" on-submit="$ctrl.createMRS($event);"></material-receiving-form>');
 $templateCache.put('./material-receivings.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Material Receiving Slips<h3></h3></h3></div><a href="#" ng-click="$ctrl.createNewMRS($event);" class="btn btn-create btn-md button-link">Create MRS</a></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Control No" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>MRS No</th><th>Date</th><th>Received By</th><th></th></tr></thead><tbody><tr ng-repeat="mrs in $ctrl.materialReceivingSlips"><td>{{mrs.mrsNo}}</td><td>{{mrs.date | date}}</td><td>{{mrs.receivedBy.firstName}} {{mrs.receivedBy.lastName}}</td><td><a href="#" class="btn btn-info" data-target="#mrsModal" data-toggle="modal" ng-click="$ctrl.openModal(mrs)">View</a></td></tr></tbody></table></div><div class="modal fade" id="mrsModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">MRS No. {{ $ctrl.mrs.mrsNo }}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date <span class="content">{{ $ctrl.mrs.date | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Requested By: <span class="content">{{$ctrl.mrs.receivedBy.firstName}} {{$ctrl.mrs.receivedBy.lastName}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.mrs.remarks}}</span></p></div></div><table class="table table-list"><thead><tr><td>Control #</td><td>Item</td><td>Type</td><td>Quantity</td></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.mrs.mis.inventoryList"><td>{{inventory.controlNumber}}</td><td>{{inventory.item.code}} {{inventory.item.name}}</td><td><label class="custom-label -narrow" ng-class="{\'-apple\':inventory.item.type.code == \'RM\', \'-orangish\':inventory.item.type.code ==\'PM\'}">{{inventory.item.type.name}}</label></td><td>{{inventory.quantity}}</td></tr></tbody></table><div class="modal-footer"><p class="date">Created at {{$ctrl.mis.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
@@ -19214,23 +19231,28 @@ $templateCache.put('./product-issuances.html','<div class="main-header"><div cla
 $templateCache.put('./product-movement-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Product Movement #</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.pm.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="label capitalize-text">Depot Code</label><select class="form-control select -border" ng-model="$ctrl.pm.depot.id" ng-options="d.id as d.code for d in $ctrl.depots" name="depot"></select></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><h5>Type</h5><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">IN</label><input type="radio" ng-change="$ctrl.changeType()" ng-model="$ctrl.pm.type" value="IN"><label class="label capitalize-text">OUT</label><input type="radio" ng-change="$ctrl.changeType()" ng-model="$ctrl.pm.type" value="OUT"></div></div></div></div></div><table class="table table-list"><thead><tr><!-- <th>PRF # </th> --><th>Lot #</th><th>Code</th><th>Product Name</th><th>Stock on Hand</th><th>Quantity</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="product in $ctrl.pm.products"><td>{{product.product.lotNumber}}</td><td>{{product.product.finishedGood.code}}</td><td>{{product.product.finishedGood.name}}</td><td>{{$ctrl.stockOnHandList[$index]}}</td><td><input type="text" ng-model="$ctrl.pm.products[$index].quantity"></td></tr></tbody></table><div class="request-action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findProduct()">Select Product</a></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.pm.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><find-product-modal productlist="$ctrl.productsInDepot" issuedlist="$ctrl.pm.products" stockonhand="$ctrl.stockOnHandList"></find-product-modal><find-fg-modal fg="$ctrl.finishedGood"></find-fg-modal>');
 $templateCache.put('./product-movement-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Product Movements</h3></div></div><header class="header-form"><a href="/admin/dashboard/product-movements" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Product Movement Form</h3></header><product-movement-form pm="$ctrl.pm" message="{{ $ctrl.error }}" button="Create Product Movement" on-submit="$ctrl.createProductMovement($event);"></product-movement-form>');
 $templateCache.put('./product-movements.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Product Movements</h3></div><a href="#" ng-click="$ctrl.createNewProductMovement($event);" class="btn btn-create btn-md button-link">Create New Request</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Product Movement No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><table class="table table-list"><thead><tr><th>Ref No.</th><th>Date</th><th>Type</th><th>Depot</th><th></th></tr></thead><tbody><tr ng-repeat="pm in $ctrl.productMovements | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{pm.number}}</td><td>{{pm.date | date}}</td><td>{{pm.type}}</td><td>{{pm.depot.name}}</td><td class="tablebutton-form"><div class="holder"><button data-toggle="modal" ng-click="$ctrl.openModal(pm)" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button></div></td></tr></tbody></table>');
+$templateCache.put('./purchase-request-edit.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div></div><header class="header-form"><a href="/admin/dashboard/purchase-request" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">Edit Purchase Request</h3></header><purchase-request-form prf="$ctrl.prf" message="{{ $ctrl.error }}" button="Edit Purchase Request" on-submit="$ctrl.editPurchaseRequest($event);"></purchase-request-form>');
+$templateCache.put('./purchase-request-eng.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div></div><header class="header-form"><a href="/admin/dashboard/purchase-request?eng=1" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Purchase Request (ENG)</h3></header><purchase-request-form prf="$ctrl.prf" message="{{ $ctrl.error }}" button="Create Purchase Request" on-submit="$ctrl.createPurchaseRequest($event)"></purchase-request-form>');
+$templateCache.put('./purchase-request-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">PRF Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.prf.date"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date Needed</label><input type="date" class="form-control -border" ng-model="$ctrl.prf.dateNeeded"></div></div></div><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Department</label><input type="text" class="form-control -border" ng-model="$ctrl.prf.department.name"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Requested By</label><input type="hidden" ng-model="$ctrl.prf.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.prf.requestedBy.firstName}} {{$ctrl.prf.requestedBy.lastName}}"></div></div></div></div></div></div><table class="table table-list"><thead><tr><th>Type</th><th>Item Code</th><th>Name</th><th>Unit</th><th>Current Stocks</th><th>Pending PRF</th><th>Pending PO</th><th>Quarantined</th><td>Required</td><th ng-if="$ctrl.engineering">MOQ</th><th>Lacking</th><th>Requested</th></tr></thead><tbody><tr ng-repeat="i in $ctrl.prf.requestedItems" ng-class="{highlightred: i.quantityLacking <= 0 }"><td><label class="custom-label -narrow" ng-class="{\'-apple\':i.item.type.code == \'RM\', \'-orangish\':i.item.type.code ==\'PM\', \'-aqua\': i.item.type.code == \'ENG\' }">{{i.item.type.code}}</label></td><td ng-if="i.item.code !== undefined">{{i.item.code}}</td><td ng-if="i.item.name !== undefined">{{i.item.name}}</td><td ng-if="i.item.unit !== undefined">{{i.item.unit.code}}</td><td>{{i.stockOnHand}}</td><td>{{i.pendingPrf}}</td><td>{{i.pendingPo}}</td><td>{{i.pendingRr}}</td><td><input ng-change="$ctrl.computeTotalQuantity(item, i.quantityRequired, $index)" type="text" ng-model="i.quantityRequired"></td><td ng-if="$ctrl.engineering"><input ng-change="$ctrl.computeTotalQuantity(item, i.quantityRequired, $index)" type="text" ng-model="i.moqQuantity"></td><td>{{i.quantityLacking}}</td><td>{{i.quantityRequested}}</td></tr></tbody></table><div class="request-action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.selectItem()" data-target="#findItemModal" data-toggle="modal">Select Item</a></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.prf.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></form><find-item-modal itemlist="$ctrl.itemlist" message="{{ $ctrl.error }}" button="Select Item" on-submit="$ctrl.selectedItems($event);"></find-item-modal>');
+$templateCache.put('./purchase-request-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div></div><header class="header-form"><a href="/admin/dashboard/purchase-request" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Purchase Request Form</h3></header><purchase-request-form prf="$ctrl.prf" message="{{ $ctrl.error }}" button="Create Purchase Request" on-submit="$ctrl.createPurchaseRequest($event);"></purchase-request-form>');
+$templateCache.put('./purchase-requests.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div><a href="#" ng-click="$ctrl.createNewPurchaseRequest($event);" class="btn btn-create btn-md button-link">Create New Request</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><table ng-if="$ctrl.purchaseRequests" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">PRF Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">PRF No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'dateNeeded\';$ctrl.sortReverse = !$ctrl.sortReverse;">Needed <span ng-show="$ctrl.sortType == \'dateNeeded\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'dateNeeded\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Status <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="purchaseRequest in $ctrl.purchaseRequests | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{purchaseRequest.date | date}}</td><td>{{purchaseRequest.number}}</td><td>{{purchaseRequest.dateNeeded | date}}</td><td>{{purchaseRequest.status}}</td><td ng-if="purchaseRequest.status != \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(purchaseRequest)"></i></button></div></td><td ng-if="purchaseRequest.status == \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(purchaseRequest)"></i></button> <button class="btn btn-info" ng-if="purchaseRequest.status == \'Cancelled\'" ng-click="$ctrl.edit(purchaseRequest)">Edit</button></div></td></tr></tbody></table><view-prf-modal prf="$ctrl.prf" cancelreqs="$ctrl.cancelreqs"></view-prf-modal>');
 $templateCache.put('./product-receiving-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="label capitalize-text">FG-RS Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div><div class="form-group rmpm"><label class="label capitalize-text">Date</label><input type="date" ng-model="$ctrl.prs.date" class="form-control -border"></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="remarks">Received By:</label><input type="text" class="form-control -border" ng-value="$ctrl.name"></div><div class="form-group rmpm"><label class="label capitalize-text">Depot</label><select class="form-control select" ng-model="$ctrl.prs.depot.id" ng-options="d.id as d.name for d in $ctrl.depots" name="toDepots"></select></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.openPISModal()" data-toggle="modal">Select FG-IS</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG-IS Number</label><input disabled="disabled" type="text" ng-model="$ctrl.prs.pis.pisNo" readonly="readonly" class="form-control -border"></div></div></div><div class="form-group approve-remarks"><label class="remarks">Remarks</label><textarea class="form-control -border" ng-model="$ctrl.prs.remarks" placeholder="Remarks" rows="3"></textarea></div><table class="table table-bordered"><thead><tr><th>Lot #</th><th>Code</th><th>FG</th><th>Quantity</th></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.prs.pis.inventoryList"><td>{{inventory.product.lotNumber}}</td><td>{{inventory.product.finishedGood.code}}</td><td>{{inventory.product.finishedGood.name}}</td><td>{{inventory.quantity}}</td></tr></tbody></table><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></form><div class="modal fade" id="findPISModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">FG-IS</h4><button class="close" data-dispiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PIS #" type="text" name="search" ng-model="$ctrl.searchPIS"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'pis\';$ctrl.sortReverse = !$ctrl.sortReverse;">PIS <span ng-show="$ctrl.sortType == \'pis\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'pis\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Date</th><th>Requested By</th><th>Shipped From</th></tr></thead><tbody><tr ng-repeat="pis in $ctrl.pisList | filter: {pis: $ctrl.searchPIS} | orderBy:$ctrl.sortType:$ctrl.sortReverse" data-dismiss="modal" ng-click="$ctrl.selectPIS(pis)"><td>{{pis.pisNo}}</td><td>{{pis.date | date}}</td><td>{{pis.requestedBy.firstName}} {{pis.requestedBy.lastName}}</td><td>{{pis.fromDepot.code}}</td></tr></tbody></table></div></div></div></div></div>');
 $templateCache.put('./product-receiving-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">FG Receiving Slip</h3></div></div><header class="header-form"><a href="/admin/dashboard/product-receiving" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading"></h3></header><product-receiving-form prs="$ctrl.prs" message="{{ $ctrl.error }}" button="Submit" on-submit="$ctrl.createPRS($event);"></product-receiving-form>');
 $templateCache.put('./product-receivings.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">FG Receiving Slips<h3></h3></h3></div><a href="#" ng-click="$ctrl.createNewPRS($event);" class="btn btn-create btn-md button-link">Create FG-RS</a></div><div class="evaluation-content"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Control No" type="text" name="search" ng-model="$ctrl.searchNumber"></div><table class="table table-list"><thead><tr><th>FG-RS No</th><th>Date</th><th>Requested By</th><th>Shipped From</th><th></th></tr></thead><tbody><tr ng-repeat="prs in $ctrl.productReceivingSlips"><td>{{prs.prsNo}}</td><td>{{prs.date | date}}</td><td>{{prs.receivedBy.firstName}} {{prs.receivedBy.lastName}}</td><td>{{prs.pis.fromDepot.code}}</td><td><a href="#" class="btn btn-info" data-target="#prsModal" data-toggle="modal" ng-click="$ctrl.openModal(prs)">View</a></td></tr></tbody></table></div><div class="modal fade" id="prsModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">FG-RS No. {{ $ctrl.prs.prsNo }}</h4><button class="close"><span class="ion-android-close close-modal" data-dispiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">Date <span class="content">{{ $ctrl.prs.date | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Shipped From: <span class="content">{{$ctrl.prs.pis.fromDepot.code}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Received By: <span class="content">{{$ctrl.prs.requestedBy.firstName}} {{$ctrl.prs.requestedBy.lastName}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.prs.remarks}}</span></p></div></div><table class="table table-list"><thead><tr><td>Lot #</td><td>Code</td><td>FG</td><td>Quantity</td></tr></thead><tbody><tr ng-repeat="inventory in $ctrl.prs.pis.inventoryList"><td>{{inventory.product.lotNumber}}</td><td>{{inventory.product.finishedGood.code}}</td><td>{{inventory.product.finishedGood.name}}</td><td>{{inventory.quantity}}</td></tr></tbody></table><div class="modal-footer"><p class="date">Created at {{$ctrl.prs.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div>');
-$templateCache.put('./purchase-request-edit.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div></div><header class="header-form"><a href="/admin/dashboard/purchase-request" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">Edit Purchase Request</h3></header><purchase-request-form prf="$ctrl.prf" message="{{ $ctrl.error }}" button="Edit Purchase Request" on-submit="$ctrl.editPurchaseRequest($event);"></purchase-request-form>');
-$templateCache.put('./purchase-request-eng.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div></div><header class="header-form"><a href="/admin/dashboard/purchase-request?eng=1" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Purchase Request (ENG)</h3></header><purchase-request-form prf="$ctrl.prf" message="{{ $ctrl.error }}" button="Create Purchase Request" on-submit="$ctrl.createPurchaseRequest($event)"></purchase-request-form>');
-$templateCache.put('./purchase-request-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div></div><header class="header-form"><a href="/admin/dashboard/purchase-request" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Purchase Request Form</h3></header><purchase-request-form prf="$ctrl.prf" message="{{ $ctrl.error }}" button="Create Purchase Request" on-submit="$ctrl.createPurchaseRequest($event);"></purchase-request-form>');
-$templateCache.put('./purchase-request-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">PRF Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.prf.date"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date Needed</label><input type="date" class="form-control -border" ng-model="$ctrl.prf.dateNeeded"></div></div></div><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Department</label><input type="text" class="form-control -border" ng-model="$ctrl.prf.department.name"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Requested By</label><input type="hidden" ng-model="$ctrl.prf.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.prf.requestedBy.firstName}} {{$ctrl.prf.requestedBy.lastName}}"></div></div></div></div></div></div><table class="table table-list"><thead><tr><th>Type</th><th>Item Code</th><th>Name</th><th>Unit</th><th>Current Stocks</th><th>Pending PRF</th><th>Pending PO</th><th>Quarantined</th><td>Required</td><th ng-if="$ctrl.engineering">MOQ</th><th>Lacking</th><th>Requested</th></tr></thead><tbody><tr ng-repeat="i in $ctrl.prf.requestedItems" ng-class="{highlightred: i.quantityLacking <= 0 }"><td><label class="custom-label -narrow" ng-class="{\'-apple\':i.item.type.code == \'RM\', \'-orangish\':i.item.type.code ==\'PM\', \'-aqua\': i.item.type.code == \'ENG\' }">{{i.item.type.code}}</label></td><td ng-if="i.item.code !== undefined">{{i.item.code}}</td><td ng-if="i.item.name !== undefined">{{i.item.name}}</td><td ng-if="i.item.unit !== undefined">{{i.item.unit.code}}</td><td>{{i.stockOnHand}}</td><td>{{i.pendingPrf}}</td><td>{{i.pendingPo}}</td><td>{{i.pendingRr}}</td><td><input ng-change="$ctrl.computeTotalQuantity(item, i.quantityRequired, $index)" type="text" ng-model="i.quantityRequired"></td><td ng-if="$ctrl.engineering"><input ng-change="$ctrl.computeTotalQuantity(item, i.quantityRequired, $index)" type="text" ng-model="i.moqQuantity"></td><td>{{i.quantityLacking}}</td><td>{{i.quantityRequested}}</td></tr></tbody></table><div class="request-action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.selectItem()" data-target="#findItemModal" data-toggle="modal">Select Item</a></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.prf.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></form><find-item-modal itemlist="$ctrl.itemlist" message="{{ $ctrl.error }}" button="Select Item" on-submit="$ctrl.selectedItems($event);"></find-item-modal>');
-$templateCache.put('./purchase-requests.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Request Forms</h3></div><a href="#" ng-click="$ctrl.createNewPurchaseRequest($event);" class="btn btn-create btn-md button-link">Create New Request</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><table ng-if="$ctrl.purchaseRequests" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">PRF Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">PRF No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'dateNeeded\';$ctrl.sortReverse = !$ctrl.sortReverse;">Needed <span ng-show="$ctrl.sortType == \'dateNeeded\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'dateNeeded\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Status <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="purchaseRequest in $ctrl.purchaseRequests | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{purchaseRequest.date | date}}</td><td>{{purchaseRequest.number}}</td><td>{{purchaseRequest.dateNeeded | date}}</td><td>{{purchaseRequest.status}}</td><td ng-if="purchaseRequest.status != \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(purchaseRequest)"></i></button></div></td><td ng-if="purchaseRequest.status == \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(purchaseRequest)"></i></button> <button class="btn btn-info" ng-if="purchaseRequest.status == \'Cancelled\'" ng-click="$ctrl.edit(purchaseRequest)">Edit</button></div></td></tr></tbody></table><view-prf-modal prf="$ctrl.prf" cancelreqs="$ctrl.cancelreqs"></view-prf-modal>');
-$templateCache.put('./receiving-receipt-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">RR Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.rr.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findPurchaseOrderModal" data-toggle="modal">Select PO</a></div><div class="form-group rmpm"><label class="label capitalize-text">P.O. #</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.number" readonly="readonly" class="form-control -border"></div><div class="form-group rmpm"><input type="hidden" ng-model="$ctrl.rr.purchaseOrder.id"><label class="label capitalize-text">Code</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.code" ng-change="$ctrl.loadToReceivedItems()" readonly="readonly" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.name" readonly="readonly" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Received By</label><input type="text" ng-value="$ctrl.rr.receivedBy.department.name" class="form-control -border"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">DR</label><input type="text" ng-model="$ctrl.rr.drNumber" class="form-control -border"></div><div class="form-group field"><label for="department">SI</label><input type="text" ng-model="$ctrl.rr.siNumber" class="form-control -border"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Origin</label><input type="text" class="form-control -border" ng-model="$ctrl.rr.origin"></div><div class="form-group field"><label class="label capitalize-text">P.O. Number</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.number" class="form-control -border" readonly="readonly"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.rr.remarks"></textarea></div></div></div></div></div><table class="table table-list"><thead><tr><th>PRF #</th><th>Code</th><th>Item</th><th>Quantity</th><th>Previous RR</th><th>Lacking</th><th>Quantity Received</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="receivedItem in $ctrl.receivedItemsView" ng-class="{highlightred: $ctrl.rr.receivedItems[$index].quantity > receivedItem.quantityOrdered - receivedItem.pendingRr }"><td>{{receivedItem.prfNumber}}</td><td>{{receivedItem.item.code}}</td><td>{{receivedItem.item.name}}</td><td>{{receivedItem.quantityOrdered}}</td><td>{{receivedItem.pendingRr}}</td><td>{{receivedItem.quantityOrdered - receivedItem.pendingRr}}</td><td><input ng-model="$ctrl.rr.receivedItems[$index].quantity"></td></tr></tbody></table></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><find-purchase-order-modal po="$ctrl.rr.purchaseOrder" receiveditems="$ctrl.rr.receivedItems" receiveditemsview="$ctrl.receivedItemsView" message="{{ $ctrl.error }}" button="Select PO"></find-purchase-order-modal><find-vendor-modal vendor="$ctrl.po.vendor" message="{{ $ctrl.error }}" button="Select Vendor"></find-vendor-modal>');
-$templateCache.put('./receiving-receipt-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Receiving Receipt Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/receiving-receipt" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Receiving Receipt Form</h3></header><receiving-receipt-form rr="$ctrl.rr" message="{{ $ctrl.error }}" button="Create Receiving Receipt" on-submit="$ctrl.createReceivingReceipt($event);"></receiving-receipt-form>');
-$templateCache.put('./receiving-receipts.html','<div class="client-rmpm"><div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Receiving Receipt Slips</h3></div><a href="#" ng-click="$ctrl.createNewReceivingReceipt($event);" class="btn btn-create btn-md button-link">Create New Request</a> <a href="#" ng-click="$ctrl.createNewReceivingReceiptTolling($event);" style="background-color:blueviolet" class="btn btn-create btn-md button-link">Create New RR Tolling Request</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="RR No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><nav class="nav nav-pills nav-fill nav-form"><a ng-click="$ctrl.listByStatus(\'Pending\')" class="nav-item nav-link item" ng-class="{active: $ctrl.status === \'Pending\'}">Pending</a> <a ng-click="$ctrl.listByStatus(\'Incomplete\')" class="nav-item nav-link item" ng-class="{active: $ctrl.status === \'Incomplete\'}">Incomplete</a> <a ng-click="$ctrl.listByStatus(\'Completed\')" class="nav-item nav-link item" ng-class="{active: $ctrl.status === \'Completed\'}">Completed</a></nav><div class="tab-content"><div class="tab-pane fade show active" id="quarantined"><table class="table table-list"><thead><tr><th>R.R No</th><th>Date</th><th>DR / SI</th><th>Received By</th><th></th></tr></thead><tbody><tr ng-repeat="rr in $ctrl.receivingReceipts"><td>{{rr.number}}</td><td>{{rr.date | date}}</td><td>DR:{{rr.drNumber}}<br>SI:{{rr.siNumber}}</td><td>{{rr.receivedBy.department.name}}</td><td class="tablebutton-form"><div class="holder"><button data-toggle="modal" ng-click="$ctrl.openModal(rr)" data-target="#rrModal" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button> <button class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button class="btn btn-archive"><i class="ion-ios-box-outline"></i></button></div></td></tr></tbody></table></div></div></div><view-rr-modal rr="$ctrl.rr"></view-rr-modal>');
-$templateCache.put('./receiving-receipt-tolling-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">RR Number</label><input type="text" class="form-control -border" ng-model="$ctrl.rr.number"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.rr.date"></div></div></div></div></div></div><!-- <div class="horizontal-align -start rmpm-content">\r\n\t\t\t  <div class="horizontal-align -start rmpm-code">\r\n\t\t\t    <div class="form-group rmpm action">\r\n\t\t\t    \t\t<a href="#" class="button-link btn btn-action btn-md" data-target="#findPurchaseOrderModal" data-toggle="modal">Select PO</a>\r\n\t\t\t    </div>\r\n\t\t\t    <div class="form-group rmpm">\r\n\t\t\t    \t\t<label class="label capitalize-text">P.O. #</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.number" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t    <div class="form-group rmpm">\r\n\t\t\t    \t\t<input type="hidden"  ng-model="$ctrl.rr.purchaseOrder.id"/>\r\n\t\t\t    \t\t<label class="label capitalize-text">Code</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.code" ng-change="$ctrl.loadToReceivedItems()" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t  </div>\r\n\t\t\t  <div class="side-two">\r\n\t\t\t    <div class="form-group">\r\n\t\t\t      \t<label class="label capitalize-text">Name</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.name" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t  </div>\r\n\t\t</div> --><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Received By</label><input type="text" ng-value="$ctrl.rr.receivedBy.department.name" class="form-control -border"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">DR</label><input type="text" ng-model="$ctrl.rr.drNumber" class="form-control -border"></div><div class="form-group field"><label for="department">SI</label><input type="text" ng-model="$ctrl.rr.siNumber" class="form-control -border"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Origin</label><input type="text" class="form-control -border" ng-model="$ctrl.rr.origin"></div><!-- <div class="form-group field">\r\n\t\t\t\t\t\t\t<label class="label capitalize-text">P.O. Number</label>\r\n\t\t\t    \t\t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.number" class="form-control -border" readonly/>\r\n            \t\t\t</div> --></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.rr.remarks"></textarea></div></div></div></div></div><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.addItemHere();">+ Add Item</button><table class="table table-list"><thead><tr><!-- <th>PRF # </th> --><th>Item Code</th><th>Unit Code</th><th>Quantity</th><th></th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="receivedItem in $ctrl.rr.receivedItems"><!-- <td>{{prf.number}}</td> --><td><select class="form-control select -borderless" ng-model="receivedItem.item.id" ng-options="d.id as d.code for d in $ctrl.items" name="item"></select></td><td><select class="form-control select -borderless" ng-model="receivedItem.unit.id" ng-options="d.id as d.code for d in $ctrl.units" name="unit"></select></td><td><input type="text" model="receivedItem.quantity"></td><td><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.removeItem($index);">x</button></td></tr></tbody></table></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><!-- <find-purchase-order-modal\r\n\t\tpo="$ctrl.rr.purchaseOrder"\r\n\t\tmessage="{{ $ctrl.error }}"\r\n            button="Select PO"\r\n            >\r\n    </find-purchase-order-modal>\r\n\t<find-vendor-modal\r\n\t\t\tvendor="$ctrl.po.vendor"\r\n            message="{{ $ctrl.error }}"\r\n            button="Select Vendor"\r\n            >\r\n    </find-vendor-modal> -->');
-$templateCache.put('./receiving-receipt-tolling-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Receiving Receipt Tolling Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/receiving-receipt" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Receiving Receipt Tolling Form</h3></header><receiving-receipt-tolling-form rr="$ctrl.rr" message="{{ $ctrl.error }}" button="Create Receiving Receipt" on-submit="$ctrl.createReceivingReceipt($event);"></receiving-receipt-tolling-form>');
-$templateCache.put('./account-titles.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Account Title <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddAccountTitle(true)">+ Add AccountTitle</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddAccountTitle(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="title" type="text" name="search" ng-model="$ctrl.searchTitle"></div></div></form></div><account-title-form ng-show="$ctrl.addAccountTitle" accounttitle="$ctrl.accountTitle" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveAccountTitle($event);"></account-title-form><div><h4>Level {{$ctrl.level}}</h4><ul class="breadcrumb"><li ng-repeat="history in $ctrl.accountTitleHistory"><a ng-click="$ctrl.digAccountTitle(history.id, history.title, history.level, -1)">{{history.title}}</a></li></ul></div><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'title\';$ctrl.sortReverse = !$ctrl.sortReverse;">Title <span ng-show="$ctrl.sortType == \'title\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'title\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'type\';$ctrl.sortReverse = !$ctrl.sortReverse;">Type <span ng-show="$ctrl.sortType == \'type\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'type\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="accountTitle in $ctrl.accountTitles | filter: {title: $ctrl.searchTitle } | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{accountTitle.id}}</td><td>{{accountTitle.title}}</td><td>{{accountTitle.type}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.digAccountTitle(accountTitle.id, accountTitle.title, accountTitle.level + 1, accountTitle.parent != null ? accountTitle.parent.id : -1)" class="btn btn-compose"><i class="ion-ios-download"></i></button> <button ng-click="$ctrl.editAccountTitle(accountTitle.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteAccountTitle(accountTitle.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
-$templateCache.put('./account-title-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.accounttitle.id"><div class="form-group"><label for="code">Title</label><input ng-model="$ctrl.accounttitle.title" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group"><label for="name">Type</label><select ng-model="$ctrl.accounttitle.type" class="form-control -border"><option value="Credit">Credit</option><option value="Debit">Debit</option></select></div><div class="form-group"><label for="tin">Parent</label><input ng-value="$ctrl.accounttitle.parent.title" readonly="readonly" class="form-control -border" type="text"></div><div class="form-group"><label for="tin">Level</label><input ng-model="$ctrl.accounttitle.level" readonly="readonly" class="form-control -border" type="text"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
+$templateCache.put('./purchase-order-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">PO Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.po.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findVendorModal" data-toggle="modal">Select Vendor</a></div><div class="form-group rmpm"><input type="hidden" ng-model="$ctrl.po.vendor.id"><label class="label capitalize-text">Code</label><input type="text" ng-model="$ctrl.po.vendor.code" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.po.vendor.name" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">Department</label><select class="form-control select -borderless" ng-model="$ctrl.po.department.id" ng-options="d.id as d.name for d in $ctrl.departments" name="department"></select></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">Area</label><select class="form-control select -borderless" ng-model="$ctrl.po.area.id" ng-options="a.id as a.name for a in $ctrl.areas" name="area"></select></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Curr.</label><input type="text" class="form-control -border" ng-model="$ctrl.po.currency"></div></div><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Job Order No.</label><input type="text" class="form-control -border" ng-model="$ctrl.po.jobOrderNo"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Terms</label><input type="text" class="form-control -border" ng-model="$ctrl.po.terms"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Due Date</label><input type="date" class="form-control -border" ng-model="$ctrl.po.dueDate"></div></div></div><div class="side-two"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Deliver To</label><input type="text" class="form-control -border" ng-model="$ctrl.po.deliverTo"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.po.remarks"></textarea></div></div></div></div></div><table class="table table-list"><thead><tr><th>PRF #</th><th>Code</th><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="orderedItem in $ctrl.po.orderedItems"><td>{{orderedItem.prfNumber}}</td><td>{{orderedItem.item.code}}</td><td>{{orderedItem.item.name}}</td><td>{{orderedItem.quantity}}</td><td><input ng-change="$ctrl.computeTotalAmount(orderedItem.quantity * orderedItem.unitPrice, $index)" type="text" ng-model="orderedItem.unitPrice" required></td><td>{{ orderedItem.quantity * orderedItem.unitPrice }}</td></tr></tbody><tfoot><th></th><th></th><th></th><th><label class="label capitalize-text">Has Vat(12%)</label><input type="checkbox" class="form-control -border" ng-change="$ctrl.addVat()" ng-model="$ctrl.po.vat"></th><th>Total Amount</th><th>{{$ctrl.po.totalAmount.toFixed(2)}}</th></tfoot></table><div class="request-action"><button type="button" data-toggle="modal" data-target="#findRequestedItemsModal" class="btn btn-create btn-md">Select PRF</button></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><find-requested-items-modal ordereditems="$ctrl.po.orderedItems" message="{{ $ctrl.error }}"></find-requested-items-modal><find-vendor-modal vendor="$ctrl.po.vendor" message="{{ $ctrl.error }}" button="Select Vendor"></find-vendor-modal>');
+$templateCache.put('./purchase-order-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Order Form</h3></div></div><header class="header-form"><a href="/admin/purchasing" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Purchase Order Form</h3></header><purchase-order-form po="$ctrl.po" message="{{ $ctrl.error }}" button="Create Purchase Order" on-submit="$ctrl.createPurchaseOrder($event);"></purchase-order-form>');
+$templateCache.put('./purchase-orders.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Purchase Order</h4><div class="action-link"><a href="/admin/purchasing/new">Create PO</a></div></div><hr class="devider"><company-nav></company-nav><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PO No" type="text" name="search" ng-model="$ctrl.searchPoNumber"> <input class="form-control -borderless search" placeholder="Due Date" type="text" name="search" ng-model="$ctrl.searchDueDate"></div><table datatable="ng" ng-if="$ctrl.purchaseOrders" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">P.O No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'vendor.name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Vendor <span ng-show="$ctrl.sortType == \'vendor.name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'vendor.name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'department.name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Department <span ng-show="$ctrl.sortType == \'department.name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'department.name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'dueDate\';$ctrl.sortReverse = !$ctrl.sortReverse;">Due Date <span ng-show="$ctrl.sortType == \'dueDate\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'dueDate\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'totalAmount\';$ctrl.sortReverse = !$ctrl.sortReverse;">Total Amount <span ng-show="$ctrl.sortType == \'totalAmount\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'totalAmount\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="po in $ctrl.purchaseOrders | filter: {number: $ctrl.searchPoNumber, dueDate: $ctrl.searchDueDate} | orderBy:$ctrl.sortType:$ctrl.sortReverse" data-target="#poInfoModal" data-toggle="modal" ng-click="$ctrl.openModal(po)"><td>{{po.number}}</td><td>{{po.vendor.name}}</td><td>{{po.department.name}}</td><td>{{po.dueDate | date}}</td><td>{{po.totalAmount.toFixed(2)}}</td><td>{{po.status}}</td><td><i class="ion-ios-compose-outline"></i> <i class="ion-ios-box-outline"></i></td></tr></tbody></table><div class="modal fade" id="poInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Purchase Order {{ $ctrl.po.number }}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">P.O No: <span class="content">{{ $ctrl.po.number }} {{ $ctrl.po.date | date }}</span></p><p class="title">Due Date: <span class="content">{{ $ctrl.po.dueDate | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Vendor: <span class="content">{{$ctrl.po.vendor.code}} {{$ctrl.po.vendor.name}}</span></p><p class="title">Deliver To: <span class="content">{{$ctrl.po.deliverTo}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Department: <span class="content">{{$ctrl.po.department.code}} {{$ctrl.po.department.name}}</span></p><p class="title">Area: <span class="content">{{$ctrl.po.area.code}} {{$ctrl.po.area.name}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Curr: <span class="content">{{$ctrl.po.currency}}</span></p><p class="title">Job Order: <span class="content">{{$ctrl.po.jobOrderNo}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.po.remarks}}</span></p></div><a href="#" class="btn btn-info">View Ordered Items</a><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>PRF #</th><th>Item</th><th>Quantity</th><th>Unit Cost</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr ng-repeat="orderedItem in $ctrl.po.orderedItems"><td>{{orderedItem.prfNumber}}</td><td>{{orderedItem.item.code}} {{orderedItem.item.name}}</td><td>{{orderedItem.quantity}}</td><td>{{orderedItem.unitPrice}}</td><td>{{orderedItem.amount}}</td><td>{{orderedItem.status}}</td></tr></tbody></table></div><a href="#receivingReceiptsDiv" class="btn btn-info">View Receiving Receipts</a><div id="receivingReceiptsDiv"><table class="table table-hover"><thead><tr><th>R.R #</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="rr in $ctrl.receivingReceipts"><td>{{rr.number}}</td><td>{{rr.date|date}}</td><td>{{rr.status}}</td><td><a href="#" class="btn btn-primary" data-target="#rrModal" data-toggle="modal" ng-click="$ctrl.viewRr(rr)">View</a></td></tr></tbody></table></div><div class="modal-footer"><button class="btn btn-create">{{$ctrl.po.totalAmount.toFixed(2)}}</button><p class="date">Created at {{$ctrl.po.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div></div><view-prf-modal prf="$ctrl.prf"></view-prf-modal><view-rr-modal rr="$ctrl.rr"></view-rr-modal></div>');
+$templateCache.put('./mo-manufacture.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Manufacturing Order</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Pre MO Number</label><div><label class="label capitalize-text">{{$ctrl.mo.id}}</label></div></div><div class="form-group field"><label class="label capitalize-text">MO Name</label><div><label class="label capitalize-text">{{$ctrl.mo.moName}}</label></div></div><div class="form-group field"><label class="label capitalize-text">Name</label><div><label class="label capitalize-text">{{$ctrl.mo.finishedGood.name}}</label></div></div><div class="form-group field"><label class="label capitalize-text">Code</label><div><label class="label capitalize-text">{{$ctrl.mo.finishedGood.code}}</label></div></div><div class="form-group field"><label class="label capitalize-text">Batch Size</label><div><label class="label capitalize-text">{{$ctrl.mo.batchSize}}</label></div></div></div></div></div></div></div><div ng-if="$ctrl.mo.inventoryList.length > 0" class="form-group field"><label class="label capitalize-text">Result</label><div>{{$ctrl.isPassed()}}</div></div><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Needed Qty. per pc</td><td>Control Number</td><td>MO Quantity Reserved</td><td>MO Quantity Dispensed</td><td>Status</td></tr></thead><tbody><tr ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{$ctrl.findIngredientQuantity(inv.item.code)}}</td><td>{{inv.controlNumber}}</td><td>{{inv.moqReserved }}</td><td>{{$ctrl.mo.batchSize * $ctrl.findIngredientQuantity(inv.item.code)}}</td><td>Good</td></tr></tbody></table><button ng-if="!$ctrl.mo.moNumber" type="button" class="btn btn-create btn-md" ng-click="$ctrl.createMo()">Create MO</button></div></div></form>');
+$templateCache.put('./mo-multi-test.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Manufacturing Order - Multi test</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.code" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.name" readonly="readonly" class="form-control -border"></div></div></div></div><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">MO Type</label><select type="text" class="form-control -border" ng-model="$ctrl.mo.type"><option value="">ALL</option><option value="RM">RM</option><option value="PM">PM</option></select></div><div class="form-group field"><label class="label capitalize-text">Batch Size</label><input type="text" class="form-control -border" ng-model="$ctrl.mo.batchSize"></div></div></div></div></div></div><div class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.testRun()">Add to Test Run</button> <button type="button" class="btn btn-warning btn-md" ng-click="$ctrl.reset()">Reset</button></div><!-- <pre>{{$ctrl.tests | json}}</pre> --><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Control Number</td><td>Inventory Quantity</td><td>Quantity Needed</td><td>Quantity Lacking</td></tr></thead><tbody><tr style="{{(inv.result > 0) ? \'background-color: yellow\' : \'background-color: white\'}}" ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{inv.controlNumber}}</td><td>{{inv.quantity}}</td><td>{{inv.moQuantity}}</td><td>{{inv.result = $ctrl.processLacking(inv.quantity, inv.moQuantity)}}</td></tr></tbody></table></div></div></form><find-fg-modal fg="$ctrl.mo.finishedGood"></find-fg-modal>');
+$templateCache.put('./mo-new.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Pre-Manufacturing Order</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.code" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.name" readonly="readonly" class="form-control -border"></div></div></div></div><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">MO Type</label><select type="text" class="form-control -border" ng-model="$ctrl.mo.type"><option value="">ALL</option><option value="RM">RM</option><!-- <option value="PM">PM</option> --></select></div><div class="form-group field"><label class="label capitalize-text">Batch Size</label><input type="text" class="form-control -border" ng-model="$ctrl.mo.batchSize"></div></div></div></div></div></div><div class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.testRun()">Test Run</button></div><div class="horizontal-align -between"><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Ingredient Quantity</td><td>Control Number</td><td>Inventory Quantity</td><td>Quantity Needed</td><td>Quantity Lacking</td><td>Expiry</td><td>Re-eval</td><td>Re-test</td><td>Best Before</td></tr></thead><tbody><tr style="{{(inv.result > 0) ? \'background-color: yellow\' : \'background-color: white\'}}" ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{inv.ingredientQuantity}}</td><td>{{inv.controlNumber}}</td><td>{{inv.quantity}}</td><td>{{$ctrl.getRecipeItemQuantity(inv.item.code, $ctrl.mo.recipe) }}</td><td>{{inv.result = $ctrl.processLacking(inv.quantity, inv.item.code, $ctrl.mo.recipe)}}</td><td>{{inv.expiration | date}}</td><td>{{inv.reevaluation | date}}</td><td>{{inv.retest | date}}</td><td>{{inv.bestBefore | date}}</td></tr></tbody></table></div><div ng-if="$ctrl.mo.inventoryList.length > 0" class="form-group field"><label class="label capitalize-text">Result</label><div>{{$ctrl.isPassed()}}</div><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.createMo()">Create MO</button></div></div></div></form><find-fg-modal fg="$ctrl.mo.finishedGood"></find-fg-modal>');
+$templateCache.put('./recipe-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.recipe.finishedGood.code" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.recipe.finishedGood.name" readonly="readonly" class="form-control -border"></div></div></div><button type="button" ng-click="$ctrl.addIngredientGroup();">+ Add Ingredient Group</button><div ng-repeat="ingredientGroup in $ctrl.recipe.ingredientGroups"><!-- Ingredient Groups --><div class="horizontal-align -start rmpm-content"><div>Group Name <input type="text" ng-model="ingredientGroup.name"></div><table class="table table-list"><thead><tr><td>Item</td><td>Ingredient Quantity</td><td><button type="button" style="background-color:aqua" ng-click="$ctrl.addIngredient(ingredientGroup)">+ Add Ingredient</button></td></tr></thead><tbody><tr ng-repeat="ingredient in ingredientGroup.ingredients"><td><select class="form-control select -borderless" ng-model="ingredient.item" ng-options="d.name + \'-\' + d.code + \' \' + d.type.code  for d in $ctrl.items" name="finishedGood"></select></td><td><input type="text" ng-model="ingredient.quantity"></td><td></td></tr></tbody></table></div></div></div><div class="request-action" ng-if="$ctrl.recipe.ingredientGroups && ($ctrl.recipe.ingredientGroups.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients && $ctrl.recipe.ingredientGroups[0].ingredients.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients[0].item.name)"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div><div class="request-action" ng-if="$ctrl.recipe.ingredientGroups && !($ctrl.recipe.ingredientGroups.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients && $ctrl.recipe.ingredientGroups[0].ingredients.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients[0].item.name )"><button type="submit" disabled="disabled" class="btn btn-create btn-md">{{$ctrl.button}}</button></div><find-fg-modal fg="$ctrl.recipe.finishedGood"></find-fg-modal></div></form>');
+$templateCache.put('./recipe-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Recipe Form</h3></div></div><header class="header-form"><a href="/admin/rnd" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">Recipe Form</h3></header><recipe-form recipe="$ctrl.recipe" message="{{ $ctrl.error }}" button="Create Recipe" on-submit="$ctrl.createRecipe($event);"></recipe-form>');
+$templateCache.put('./recipes.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Recipes</h4><div class="action-link"><a href="/admin/rnd/recipe/new">Create Recipe</a></div></div><hr class="devider"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="description" type="text" name="search" ng-model="$ctrl.searchName"></div></div><table class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Mat\'l Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Mat\u2019l Description <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Last Recipe Modification <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th></tr></thead><tbody><tr ng-repeat="recipe in $ctrl.recipes | filter: {finishedGood: { code: $ctrl.searchCode, name: $ctrl.searchName }}| orderBy:$ctrl.sortType:$ctrl.sortReverse" data-target="#recipeModal" data-toggle="modal" ng-click="$ctrl.openModal(recipe.finishedGood)"><td>{{recipe.finishedGood.code}}</td><td>{{recipe.finishedGood.name}}</td><td>{{recipe.date | date}}</td></tr></tbody></table><div class="modal fade" id="recipeModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">{{$ctrl.finishedgood.name}}</h4><button class="close"><span data-dismiss="modal" ng-click="$ctrl.closeModal()" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="rd-side"><div class="horizontal-align -start rd-content"><p>Recipe</p><p>Recipe No</p><p>Remarks</p><p>ActiveGroup</p></div></div><div id="accordion"><div ng-repeat="recipe in $ctrl.recipesOfFinishedGood" class="card accordion-panel" data-toggle="collapse" data-target="#collapse{{$index}}"><div class="card-header rd-header" id="heading{{$index}}"><h5 class="mb-0"><a><div class="horizontal-align -start block-content"><p>{{recipe.finishedGood.name}}</p><p>{{recipe.finishedGood.code}}</p><p>{{recipe.remarks}}</p><p>{{recipe.activeIngredientGroup.name}}</p></div></a></h5></div><div class="collapse" id="collapse{{$index}}"><div class="card-block rd-block" ng-repeat="ingredientGroup in recipe.ingredientGroups" style="{{(ingredientGroup.id == recipe.activeIngredientGroup.id) ? \'background-color: #F1C40F\' : \'\'}}"><div>{{ingredientGroup.name}} - {{ingredientGroup.dateCreated | date}} <button ng-if="recipe.activeIngredientGroup.id != ingredientGroup.id" type="button" ng-click="recipe.activeIngredientGroup = ingredientGroup; $ctrl.updateRecipe(recipe);">Set Active</button></div><div ng-repeat="ingredient in ingredientGroup.ingredients" ng-class="{\'rd-list -orangish\': ingredient.item.type.code == \'RM\', \'rd-list -apple\': ingredient.item.type.code == \'PM\'}"><div class="horizontal-align -between list-content"><p>{{ingredient.item.code}} {{ingredient.item.name}}</p><p>{{ingredient.quantity}} {{ingredient.item.unit.code}}</p></div></div><div class="clear-float"></div></div></div></div></div></div><div class="modal-footer"><p class="date">Created at 9/7/2017</p><button ng-click="$ctrl.closeModal()" data-dismiss="modal" class="btn btn-cancel">Close</button></div></div></div></div></div>');
+$templateCache.put('./pp-new.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Packaging Process</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">SELECT MO</label><select class="form-control select -borderless" ng-model="$ctrl.mo" ng-change="$ctrl.selectMo();" ng-options="\'MO#\' + d.moNumber + \':\' + d.moName + \' \' + d.ingredientGroup.name + \' x \' + d.remainingBatchSize for d in $ctrl.moList" name="mo"></select></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Name</label><input type="text" disabled="disabled" class="form-control -border" ng-model="$ctrl.mo.finishedGood.name"></div><div class="form-group field"><label class="label capitalize-text">Code</label><input type="text" disabled="disabled" class="form-control -border" ng-model="$ctrl.mo.finishedGood.code"></div></div></div></div></div></div><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Mo Number</td><td>Control Number</td><td>Batch Size Available</td><td>MO Quantity Reserved</td></tr></thead><tbody><tr><td></td><td>{{$ctrl.mo.type}}</td><td>#{{$ctrl.mo.moNumber}}</td><td></td><td>{{$ctrl.mo.remainingBatchSize}}</td><td></td></tr><tr ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td></td><td>{{inv.controlNumber}}</td><td></td><td>{{inv.moqReserved}}</td></tr></tbody></table><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="form-group field"><label class="label capitalize-text">Batch Size</label><input type="text" class="form-control -border" ng-model="$ctrl.batchSize"><div ng-if="(!$ctrl.batchSize || $ctrl.batchSize <= 0 || $ctrl.batchSize > $ctrl.mo.remainingBatchSize)"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.createPP()" disabled="disabled">Process Packaging</button></div><div ng-if="!(!$ctrl.batchSize || $ctrl.batchSize <= 0 || $ctrl.batchSize > $ctrl.mo.remainingBatchSize)"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.createPP()">Process Packaging</button></div></div></div></div></div></div></form>');
 $templateCache.put('./bank-account-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.bankaccount.id"><div class="form-group col-md-6"><label for="code">Code</label><input ng-model="$ctrl.bankaccount.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-6"><label for="name">Name</label><input ng-model="$ctrl.bankaccount.name" class="form-control -border" placeholder="Name" type="text" name="name"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
 $templateCache.put('./bank-accounts.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Bank Account <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddBankAccount(true)">+ Add Bank Account</a></h4><button class="close" data-dismiss="modal" type="button"><span class="ion-android-close close-modal" ng-click="$ctrl.showAddBankAccount(false)"></span></button></div><div class="modal-body"><div class="searchbox-modal"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div><bank-account-form ng-show="$ctrl.addBankAccount" bankaccount="$ctrl.bankaccount" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveBankAccount($event);"></bank-account-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Address</th><th></th></tr></thead><tbody><tr dir-paginate="bankAccount in $ctrl.bankAccounts | itemsPerPage: $ctrl.itemsPerPage" total-items="$ctrl.totalCount"><td>{{bankAccount.id}}</td><td>{{bankAccount.code}}</td><td>{{bankAccount.name}}</td><td>{{bankAccount.address}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editBankAccount(bankAccount.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteBankAccount(bankAccount.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table><dir-pagination-controls max-size="$ctrl.totalCount" direction-links="false" boundary-links="false" on-page-change="$ctrl.getData(newPageNumber)" style="float:right; padding-right:10px"></dir-pagination-controls></div></div></div></div>');
+$templateCache.put('./account-title-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.accounttitle.id"><div class="form-group"><label for="code">Title</label><input ng-model="$ctrl.accounttitle.title" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group"><label for="name">Type</label><select ng-model="$ctrl.accounttitle.type" class="form-control -border"><option value="Credit">Credit</option><option value="Debit">Debit</option></select></div><div class="form-group"><label for="tin">Parent</label><input ng-value="$ctrl.accounttitle.parent.title" readonly="readonly" class="form-control -border" type="text"></div><div class="form-group"><label for="tin">Level</label><input ng-model="$ctrl.accounttitle.level" readonly="readonly" class="form-control -border" type="text"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
+$templateCache.put('./account-titles.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Account Title <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddAccountTitle(true)">+ Add AccountTitle</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddAccountTitle(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="title" type="text" name="search" ng-model="$ctrl.searchTitle"></div></div></form></div><account-title-form ng-show="$ctrl.addAccountTitle" accounttitle="$ctrl.accountTitle" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveAccountTitle($event);"></account-title-form><div><h4>Level {{$ctrl.level}}</h4><ul class="breadcrumb"><li ng-repeat="history in $ctrl.accountTitleHistory"><a ng-click="$ctrl.digAccountTitle(history.id, history.title, history.level, -1)">{{history.title}}</a></li></ul></div><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'title\';$ctrl.sortReverse = !$ctrl.sortReverse;">Title <span ng-show="$ctrl.sortType == \'title\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'title\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'type\';$ctrl.sortReverse = !$ctrl.sortReverse;">Type <span ng-show="$ctrl.sortType == \'type\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'type\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="accountTitle in $ctrl.accountTitles | filter: {title: $ctrl.searchTitle } | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{accountTitle.id}}</td><td>{{accountTitle.title}}</td><td>{{accountTitle.type}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.digAccountTitle(accountTitle.id, accountTitle.title, accountTitle.level + 1, accountTitle.parent != null ? accountTitle.parent.id : -1)" class="btn btn-compose"><i class="ion-ios-download"></i></button> <button ng-click="$ctrl.editAccountTitle(accountTitle.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteAccountTitle(accountTitle.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./classification-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.classification.id"><div class="form-group"><label for="code">Code</label><input ng-model="$ctrl.classification.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group"><label for="name">Name</label><input ng-model="$ctrl.classification.name" class="form-control -border" placeholder="Name" type="text" name="name"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
 $templateCache.put('./classifications.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Classification <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddClassification(true)">+ Add Classification</a></h4><button class="close" data-dismiss="modal" type="button"><span class="ion-android-close close-modal" ng-click="$ctrl.showAddClassification(false)"></span></button></div><div class="modal-body"><div class="searchbox-modal"><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></div><classification-form ng-show="$ctrl.addClassification" classification="$ctrl.classification" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveClassification($event);"></classification-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="classification in $ctrl.classifications | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{classification.id}}</td><td>{{classification.code}}</td><td>{{classification.name}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editClassification(classification.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteClassification(classification.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./client-information-edit.html','<div class="action-link"><a class="link" href="/admin/maintenance/client-information">Client Informations</a> <span class="devider">/</span> <a class="link" href="/admin/maintenance/client-information/edit">EDIT Client Information</a></div><div class="user-panel"><div class="content horizontal-align -between"><label class="caption">EDIT Client Information</label><header><a class="btn btn-back back" id="btn-back-action" href="/admin/users"><i class="ion-ios-arrow-thin-left"></i> <span>Cancel</span></a></header></div><hr class="devider"><client-information-form client="$ctrl.client" message="{{ $ctrl.error }}" button="Edit user" on-submit="$ctrl.edit($event);"></client-information-form></div>');
@@ -19248,14 +19270,14 @@ $templateCache.put('./finished-good-form.html','<form novalidate ng-submit="$ctr
 $templateCache.put('./finished-goods.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Finished Good <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddFinishedGood(true)">+ Add Finished Good</a></h4><button class="close" data-dismiss="modal" type="button"><span class="ion-android-close close-modal" ng-click="$ctrl.showAddFinishedGood(false)"></span></button></div><div class="modal-body"><div class="searchbox-modal"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div><finished-good-form ng-show="$ctrl.addFinishedGood" finishedgood="$ctrl.finishedgood" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveFinishedGood($event);"></finished-good-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr dir-paginate="finishedGood in $ctrl.finishedGoods | itemsPerPage: $ctrl.itemsPerPage" total-items="$ctrl.totalCount"><td>{{finishedGood.id}}</td><td>{{finishedGood.code}}</td><td>{{finishedGood.name}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editFinishedGood(finishedGood.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteFinishedGood(finishedGood.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table><dir-pagination-controls max-size="$ctrl.totalCount" direction-links="false" boundary-links="false" on-page-change="$ctrl.getData(newPageNumber)" style="float:right; padding-right:10px"></dir-pagination-controls></div></div></div></div>');
 $templateCache.put('./item-type-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.itemtype.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.itemtype.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Name</label><input ng-model="$ctrl.itemtype.name" class="form-control -border" placeholder="Name" type="text" name="name"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
 $templateCache.put('./item-types.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Item Type <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddItemType(true)">+ Add Item Type</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddItemType(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><item-type-form ng-show="$ctrl.addItemType" itemtype="$ctrl.itemtype" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveItemType($event);"></item-type-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="itemType in $ctrl.itemTypes | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{itemType.id}}</td><td>{{itemType.code}}</td><td>{{itemType.name}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editItemType(itemType.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteItemType(itemType.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
-$templateCache.put('./items.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Item <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddItem(true)">+ Add Item</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddItem(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><item-form ng-show="$ctrl.addItem" item="$ctrl.item" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveItem($event);"></item-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'type.code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Type <span ng-show="$ctrl.sortType == \'type.code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'type.code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'unit\';$ctrl.sortReverse = !$ctrl.sortReverse;">Unit <span ng-show="$ctrl.sortType == \'unit\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'unit\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="item in $ctrl.items | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{item.id}}</td><td>{{item.code}}</td><td>{{item.name}}</td><td>{{item.type.code}}</td><td>{{item.unit.code}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editItem(item.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteItem(item.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./item-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.item.id"><div class="form-group col-md-2"><label for="code">Code</label><input ng-model="$ctrl.item.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-6"><label for="name">Description</label><input ng-model="$ctrl.item.name" class="form-control -border" placeholder="Name" type="text" name="name"></div><div class="form-group col"><label for="type">Type</label><select class="form-control select -border" ng-model="$ctrl.item.type.id" ng-options="i.id as i.code for i in $ctrl.itemTypes" name="itemTypes"></select></div><div class="form-group col"><label for="type">Unit</label><select class="form-control select -border" ng-model="$ctrl.item.unit.id" ng-options="i.id as i.code for i in $ctrl.units" name="units"></select></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
+$templateCache.put('./items.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Item <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddItem(true)">+ Add Item</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddItem(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><item-form ng-show="$ctrl.addItem" item="$ctrl.item" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveItem($event);"></item-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'type.code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Type <span ng-show="$ctrl.sortType == \'type.code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'type.code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'unit\';$ctrl.sortReverse = !$ctrl.sortReverse;">Unit <span ng-show="$ctrl.sortType == \'unit\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'unit\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="item in $ctrl.items | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{item.id}}</td><td>{{item.code}}</td><td>{{item.name}}</td><td>{{item.type.code}}</td><td>{{item.unit.code}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editItem(item.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteItem(item.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./memo-type-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.memotype.id"><div class="form-group col-md-4"><label for="code">Code</label><input ng-model="$ctrl.memotype.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-4"><label for="name">Name</label><input ng-model="$ctrl.memotype.name" class="form-control -border" placeholder="Name" type="text" name="name"></div><div class="form-group col-md-4"><label for="name">Type</label><select ng-model="$ctrl.memotype.type" class="form-control -border"><option value="CM">CM</option><option value="DM">DM</option></select></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
 $templateCache.put('./memo-types.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Memo Type <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddMemoType(true)">+ Add Memo Type</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddMemoType(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><memo-type-form ng-show="$ctrl.addMemoType" memotype="$ctrl.memotype" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveMemoType($event);"></memo-type-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Type <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="memoType in $ctrl.memoTypes | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{memoType.id}}</td><td>{{memoType.code}}</td><td>{{memoType.name}}</td><td>{{memoType.type}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editMemoType(memoType.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteMemoType(memoType.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
-$templateCache.put('./procedure-area-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.procedurearea.id"><div class="form-group col-md-6"><label for="code">Code</label><input ng-model="$ctrl.procedurearea.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-6"><label for="name">Name</label><input ng-model="$ctrl.procedurearea.name" class="form-control -border" placeholder="Name" type="text" name="name"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
-$templateCache.put('./procedure-areas.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Procedure Area <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProcedureArea(true)">+ Add Procedure Area</a></h4><button class="close" data-dismiss="modal" type="button"><span class="ion-android-close close-modal" ng-click="$ctrl.showAddProcedureArea(false)"></span></button></div><div class="modal-body"><div class="searchbox-modal"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div><procedure-area-form ng-show="$ctrl.addProcedureArea" procedurearea="$ctrl.procedurearea" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveProcedureArea($event);"></procedure-area-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="procedureArea in $ctrl.procedureAreas | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{procedureArea.id}}</td><td>{{procedureArea.code}}</td><td>{{procedureArea.name}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editProcedureArea(procedureArea.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteProcedureArea(procedureArea.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./procedure-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.procedure.id"><div class="form-group col-md-2"><label for="code">Code</label><input ng-model="$ctrl.procedure.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-6"><label for="name">Description</label><input ng-model="$ctrl.procedure.name" class="form-control -border" placeholder="Name" type="text" name="name"></div><div class="form-group col"><label for="type">Procedure Area</label><select class="form-control select -border" ng-model="$ctrl.procedure.procedureArea.id" ng-options="i.id as i.code for i in $ctrl.procedureAreas" name="procedureTypes"></select></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
 $templateCache.put('./procedures.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Procedure <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProcedure(true)">+ Add Procedure</a></h4><button class="close" data-dismiss="modal" type="button"><span ng-click="$ctrl.showAddProcedure(false)" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="searchbox-modal"><form><div class="searchbox-content"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div></form></div><procedure-form ng-show="$ctrl.addProcedure" procedure="$ctrl.procedure" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveProcedure($event);"></procedure-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i></span> <span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'procedureArea.code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Procedure Area <span ng-show="$ctrl.sortType == \'procedureArea.code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'procedureArea.code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="procedure in $ctrl.procedures | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{procedure.id}}</td><td>{{procedure.code}}</td><td>{{procedure.name}}</td><td>{{procedure.procedureArea.code}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editProcedure(procedure.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteProcedure(procedure.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
+$templateCache.put('./procedure-area-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -between" id="add-group"><input type="hidden" ng-model="$ctrl.procedurearea.id"><div class="form-group col-md-6"><label for="code">Code</label><input ng-model="$ctrl.procedurearea.code" class="form-control -border" autofocus="autofocus" placeholder="Code" type="text" name="code"></div><div class="form-group col-md-6"><label for="name">Name</label><input ng-model="$ctrl.procedurearea.name" class="form-control -border" placeholder="Name" type="text" name="name"></div></div><div class="action-button horizontal-align -end"><input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save"></div></form>');
+$templateCache.put('./procedure-areas.html','<div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Procedure Area <a class="button-link btn btn-create btn-sm float-lg-right" ng-click="$ctrl.showAddProcedureArea(true)">+ Add Procedure Area</a></h4><button class="close" data-dismiss="modal" type="button"><span class="ion-android-close close-modal" ng-click="$ctrl.showAddProcedureArea(false)"></span></button></div><div class="modal-body"><div class="searchbox-modal"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="name" type="text" name="search" ng-model="$ctrl.searchName"></div></div><procedure-area-form ng-show="$ctrl.addProcedureArea" procedurearea="$ctrl.procedurearea" message="{{ $ctrl.error }}" button="Save" on-submit="$ctrl.saveProcedureArea($event);"></procedure-area-form><div class="wrapper scroll-section"><table class="table find-vendor"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'id\';$ctrl.sortReverse = !$ctrl.sortReverse;">ID <span ng-show="$ctrl.sortType == \'id\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'id\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="procedureArea in $ctrl.procedureAreas | filter: {code: $ctrl.searchCode, name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{procedureArea.id}}</td><td>{{procedureArea.code}}</td><td>{{procedureArea.name}}</td><td class="tablebutton-form"><div class="holder"><button ng-click="$ctrl.editProcedureArea(procedureArea.id)" class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button ng-click="$ctrl.deleteProcedureArea(procedureArea.id)" class="btn btn-archive"><i class="ion-android-close"></i></button></div></td></tr></tbody></table></div></div></div></div>');
 $templateCache.put('./product-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.product.finishedGood.code" ng-change="$ctrl.populateApprovedItems()" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.product.finishedGood.name" ng-change="$ctrl.populateApprovedItems()" readonly="readonly" class="form-control -border"></div></div></div><div class="form-content" ng-if="$ctrl.product.finishedGood"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Depot</label><select class="form-control select -border" ng-model="$ctrl.product.depot.id" ng-options="d.id as d.code for d in $ctrl.depots" name="depot"></select></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Lot #</label><input type="text" class="form-control -border" ng-model="$ctrl.product.lotNumber"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Expiration</label><input type="date" class="form-control -border" ng-model="$ctrl.product.expiration"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Classification</label><select class="form-control select -border" ng-model="$ctrl.product.classification.id" ng-options="c.id as c.code for c in $ctrl.classifications" name="classification"></select></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Category</label><select class="form-control select -border" ng-model="$ctrl.product.category.id" ng-options="c.id as c.title for c in $ctrl.categories" name="category"></select></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Division</label><select class="form-control select -border" ng-model="$ctrl.product.division.id" ng-options="c.id as c.title for c in $ctrl.divisions" name="division"></select></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Unit Price</label><input type="text" ng-model="$ctrl.product.unitPrice" class="form-control -border"></div><div class="form-group field"><label for="department">SMALL UOM</label><select class="form-control select -border" ng-model="$ctrl.product.smallUnit.id" ng-options="s.id as s.code for s in $ctrl.units" name="smallUnit"></select></div><div class="form-group field"><label for="department">BIG UOM</label><select class="form-control select -border" ng-model="$ctrl.product.bigUnit.id" ng-options="b.id as b.code for b in $ctrl.units" name="bigUnit"></select></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Quantity/Box</label><input type="text" class="form-control -border" ng-model="$ctrl.product.quantityPerBox"></div><div class="form-group field"><label class="label capitalize-text">Reorder Level</label><input type="text" ng-model="$ctrl.product.reorderLevel" class="form-control -border"></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></div></form><find-fg-modal fg="$ctrl.product.finishedGood"></find-fg-modal>');
 $templateCache.put('./product-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Products</h3></div></div><header class="header-form"><a href="/admin/maintenance/products" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Product Form</h3></header><product-form product="$ctrl.product" message="{{ $ctrl.error }}" button="Create Product" on-submit="$ctrl.createProduct($event);"></product-form>');
 $templateCache.put('./products.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Products</h3></div><a href="#" ng-click="$ctrl.createNewProduct($event);" class="btn btn-create btn-md button-link">Create New Request</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Lot No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><table ng-if="$ctrl.products" class="table table-list"><thead><tr><th>Lot #</th><th>FG CODE</th><th>FG NAME</th><th>Expiry</th><th></th></tr></thead><tbody><tr ng-repeat="product in $ctrl.products | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{product.lotNumber}}</td><td>{{product.finishedGood.code}}</td><td>{{product.finishedGood.name}}</td><td>{{product.expiration | date}}</td><td class="tablebutton-form"><div class="holder"><button data-toggle="modal" ng-click="$ctrl.openModal(product)" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button> <button class="btn btn-archive" ng-click="$ctrl.deleteProduct(product.id)"><i class="ion-ios-box-outline"></i></button></div></td></tr></tbody></table><view-product-modal product="$ctrl.product"></view-product-modal>');
@@ -19265,16 +19287,6 @@ $templateCache.put('./vendor-edit.html','<div class="action-link"><a class="link
 $templateCache.put('./vendor-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">name</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.name"></div></div></div><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">code</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.code"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Full Name</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.fullName"></div></div></div><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Address</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.address"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Contact Person</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.contactPerson"></div></div></div><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Phone Number</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.phoneNumber"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Terms</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.terms"></div></div></div><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Vat</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.vat"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Tin</label><input type="text" class="form-control -border" ng-model="$ctrl.vendor.tin"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Area</label><select class="form-control select -border" ng-model="$ctrl.vendor.area.id" ng-options="i.id as i.name for i in $ctrl.areas"></select></div></div></div><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Group</label><select class="form-control select -border" ng-model="$ctrl.vendor.group.id" ng-options="i.id as i.name for i in $ctrl.groups"></select></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Department</label><select class="form-control select -border" ng-model="$ctrl.vendor.department.id" ng-options="i.id as i.code for i in $ctrl.departments"></select></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form>');
 $templateCache.put('./vendor-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Vendor Form</h3></div></div><header class="header-form"><a href="/admin/maintenance/vendor" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Vendor Form</h3></header><vendor-form vendor="$ctrl.vendor" message="{{ $ctrl.error }}" button="Create Vendor" on-submit="$ctrl.createVendor($event);"></vendor-form>');
 $templateCache.put('./vendors.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Vendor Information</h3></div><a href="/admin/maintenance/vendor/new" ng-click="" class="btn btn-create btn-md button-link">Add Vendor</a></div><div class="vendor-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Business name" type="text" name="search" ng-model="$ctrl.searchName"></div></div><table class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Name <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'tin\';$ctrl.sortReverse = !$ctrl.sortReverse;">tin <span ng-show="$ctrl.sortType == \'tin\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'tin\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'proprietor\';$ctrl.sortReverse = !$ctrl.sortReverse;">Phone Number <span ng-show="$ctrl.sortType == \'proprietor\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'proprietor\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'businessAddress\';$ctrl.sortReverse = !$ctrl.sortReverse;">Address <span ng-show="$ctrl.sortType == \'businessAddress\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'businessAddress\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'lineOfBusiness\';$ctrl.sortReverse = !$ctrl.sortReverse;">Active <span ng-show="$ctrl.sortType == \'lineOfBusiness\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'lineOfBusiness\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="c in $ctrl.vendors | filter: {name: $ctrl.searchName} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{c.code}}</td><td>{{c.name}}</td><td>{{c.tin}}</td><td>{{c.phoneNumber}}</td><td>{{c.address}}</td><td>{{c.isActive}}</td><td class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" data-toggle="modal" ng-click="$ctrl.goToEdit(c.id)"></i></button></div></td></tr></tbody></table>');
-$templateCache.put('./purchase-order-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">PO Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.po.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findVendorModal" data-toggle="modal">Select Vendor</a></div><div class="form-group rmpm"><input type="hidden" ng-model="$ctrl.po.vendor.id"><label class="label capitalize-text">Code</label><input type="text" ng-model="$ctrl.po.vendor.code" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.po.vendor.name" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">Department</label><select class="form-control select -borderless" ng-model="$ctrl.po.department.id" ng-options="d.id as d.name for d in $ctrl.departments" name="department"></select></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">Area</label><select class="form-control select -borderless" ng-model="$ctrl.po.area.id" ng-options="a.id as a.name for a in $ctrl.areas" name="area"></select></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Curr.</label><input type="text" class="form-control -border" ng-model="$ctrl.po.currency"></div></div><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Job Order No.</label><input type="text" class="form-control -border" ng-model="$ctrl.po.jobOrderNo"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Terms</label><input type="text" class="form-control -border" ng-model="$ctrl.po.terms"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Due Date</label><input type="date" class="form-control -border" ng-model="$ctrl.po.dueDate"></div></div></div><div class="side-two"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Deliver To</label><input type="text" class="form-control -border" ng-model="$ctrl.po.deliverTo"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.po.remarks"></textarea></div></div></div></div></div><table class="table table-list"><thead><tr><th>PRF #</th><th>Code</th><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="orderedItem in $ctrl.po.orderedItems"><td>{{orderedItem.prfNumber}}</td><td>{{orderedItem.item.code}}</td><td>{{orderedItem.item.name}}</td><td>{{orderedItem.quantity}}</td><td><input ng-change="$ctrl.computeTotalAmount(orderedItem.quantity * orderedItem.unitPrice, $index)" type="text" ng-model="orderedItem.unitPrice" required></td><td>{{ orderedItem.quantity * orderedItem.unitPrice }}</td></tr></tbody><tfoot><th></th><th></th><th></th><th><label class="label capitalize-text">Has Vat(12%)</label><input type="checkbox" class="form-control -border" ng-change="$ctrl.addVat()" ng-model="$ctrl.po.vat"></th><th>Total Amount</th><th>{{$ctrl.po.totalAmount.toFixed(2)}}</th></tfoot></table><div class="request-action"><button type="button" data-toggle="modal" data-target="#findRequestedItemsModal" class="btn btn-create btn-md">Select PRF</button></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><find-requested-items-modal ordereditems="$ctrl.po.orderedItems" message="{{ $ctrl.error }}"></find-requested-items-modal><find-vendor-modal vendor="$ctrl.po.vendor" message="{{ $ctrl.error }}" button="Select Vendor"></find-vendor-modal>');
-$templateCache.put('./purchase-order-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Purchase Order Form</h3></div></div><header class="header-form"><a href="/admin/purchasing" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Purchase Order Form</h3></header><purchase-order-form po="$ctrl.po" message="{{ $ctrl.error }}" button="Create Purchase Order" on-submit="$ctrl.createPurchaseOrder($event);"></purchase-order-form>');
-$templateCache.put('./purchase-orders.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Purchase Order</h4><div class="action-link"><a href="/admin/purchasing/new">Create PO</a></div></div><hr class="devider"><company-nav></company-nav><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PO No" type="text" name="search" ng-model="$ctrl.searchPoNumber"> <input class="form-control -borderless search" placeholder="Due Date" type="text" name="search" ng-model="$ctrl.searchDueDate"></div><table datatable="ng" ng-if="$ctrl.purchaseOrders" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">P.O No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'vendor.name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Vendor <span ng-show="$ctrl.sortType == \'vendor.name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'vendor.name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'department.name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Department <span ng-show="$ctrl.sortType == \'department.name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'department.name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'dueDate\';$ctrl.sortReverse = !$ctrl.sortReverse;">Due Date <span ng-show="$ctrl.sortType == \'dueDate\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'dueDate\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'totalAmount\';$ctrl.sortReverse = !$ctrl.sortReverse;">Total Amount <span ng-show="$ctrl.sortType == \'totalAmount\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'totalAmount\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="po in $ctrl.purchaseOrders | filter: {number: $ctrl.searchPoNumber, dueDate: $ctrl.searchDueDate} | orderBy:$ctrl.sortType:$ctrl.sortReverse" data-target="#poInfoModal" data-toggle="modal" ng-click="$ctrl.openModal(po)"><td>{{po.number}}</td><td>{{po.vendor.name}}</td><td>{{po.department.name}}</td><td>{{po.dueDate | date}}</td><td>{{po.totalAmount.toFixed(2)}}</td><td>{{po.status}}</td><td><i class="ion-ios-compose-outline"></i> <i class="ion-ios-box-outline"></i></td></tr></tbody></table><div class="modal fade" id="poInfoModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Purchase Order {{ $ctrl.po.number }}</h4><button class="close"><span class="ion-android-close close-modal" data-dismiss="modal"></span></button></div><div class="modal-body"><div class="horizontal-align -between modal-information"><p class="title">P.O No: <span class="content">{{ $ctrl.po.number }} {{ $ctrl.po.date | date }}</span></p><p class="title">Due Date: <span class="content">{{ $ctrl.po.dueDate | date }}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Vendor: <span class="content">{{$ctrl.po.vendor.code}} {{$ctrl.po.vendor.name}}</span></p><p class="title">Deliver To: <span class="content">{{$ctrl.po.deliverTo}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Department: <span class="content">{{$ctrl.po.department.code}} {{$ctrl.po.department.name}}</span></p><p class="title">Area: <span class="content">{{$ctrl.po.area.code}} {{$ctrl.po.area.name}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Curr: <span class="content">{{$ctrl.po.currency}}</span></p><p class="title">Job Order: <span class="content">{{$ctrl.po.jobOrderNo}}</span></p></div><div class="horizontal-align -between modal-information"><p class="title">Remarks: <span class="content">{{$ctrl.po.remarks}}</span></p></div><a href="#" class="btn btn-info">View Ordered Items</a><div id="purchaseRequestsDiv"><table class="table table-hover"><thead><tr><th>PRF #</th><th>Item</th><th>Quantity</th><th>Unit Cost</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr ng-repeat="orderedItem in $ctrl.po.orderedItems"><td>{{orderedItem.prfNumber}}</td><td>{{orderedItem.item.code}} {{orderedItem.item.name}}</td><td>{{orderedItem.quantity}}</td><td>{{orderedItem.unitPrice}}</td><td>{{orderedItem.amount}}</td><td>{{orderedItem.status}}</td></tr></tbody></table></div><a href="#receivingReceiptsDiv" class="btn btn-info">View Receiving Receipts</a><div id="receivingReceiptsDiv"><table class="table table-hover"><thead><tr><th>R.R #</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody><tr ng-repeat="rr in $ctrl.receivingReceipts"><td>{{rr.number}}</td><td>{{rr.date|date}}</td><td>{{rr.status}}</td><td><a href="#" class="btn btn-primary" data-target="#rrModal" data-toggle="modal" ng-click="$ctrl.viewRr(rr)">View</a></td></tr></tbody></table></div><div class="modal-footer"><button class="btn btn-create">{{$ctrl.po.totalAmount.toFixed(2)}}</button><p class="date">Created at {{$ctrl.po.date | date}}</p><button class="btn btn-cancel" data-dismiss="modal">Close</button></div></div></div></div></div><view-prf-modal prf="$ctrl.prf"></view-prf-modal><view-rr-modal rr="$ctrl.rr"></view-rr-modal></div>');
-$templateCache.put('./mo-manufacture.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Manufacturing Order</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Pre MO Number</label><div><label class="label capitalize-text">{{$ctrl.mo.id}}</label></div></div><div class="form-group field"><label class="label capitalize-text">MO Name</label><div><label class="label capitalize-text">{{$ctrl.mo.moName}}</label></div></div><div class="form-group field"><label class="label capitalize-text">Name</label><div><label class="label capitalize-text">{{$ctrl.mo.finishedGood.name}}</label></div></div><div class="form-group field"><label class="label capitalize-text">Code</label><div><label class="label capitalize-text">{{$ctrl.mo.finishedGood.code}}</label></div></div><div class="form-group field"><label class="label capitalize-text">Batch Size</label><div><label class="label capitalize-text">{{$ctrl.mo.batchSize}}</label></div></div></div></div></div></div></div><div ng-if="$ctrl.mo.inventoryList.length > 0" class="form-group field"><label class="label capitalize-text">Result</label><div>{{$ctrl.isPassed()}}</div></div><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Needed Qty. per pc</td><td>Control Number</td><td>MO Quantity Reserved</td><td>MO Quantity Dispensed</td><td>Status</td></tr></thead><tbody><tr ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{$ctrl.findIngredientQuantity(inv.item.code)}}</td><td>{{inv.controlNumber}}</td><td>{{inv.moqReserved }}</td><td>{{$ctrl.mo.batchSize * $ctrl.findIngredientQuantity(inv.item.code)}}</td><td>Good</td></tr></tbody></table><button ng-if="!$ctrl.mo.moNumber" type="button" class="btn btn-create btn-md" ng-click="$ctrl.createMo()">Create MO</button></div></div></form>');
-$templateCache.put('./mo-multi-test.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Manufacturing Order - Multi test</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.code" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.name" readonly="readonly" class="form-control -border"></div></div></div></div><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">MO Type</label><select type="text" class="form-control -border" ng-model="$ctrl.mo.type"><option value="">ALL</option><option value="RM">RM</option><option value="PM">PM</option></select></div><div class="form-group field"><label class="label capitalize-text">Batch Size</label><input type="text" class="form-control -border" ng-model="$ctrl.mo.batchSize"></div></div></div></div></div></div><div class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.testRun()">Add to Test Run</button> <button type="button" class="btn btn-warning btn-md" ng-click="$ctrl.reset()">Reset</button></div><!-- <pre>{{$ctrl.tests | json}}</pre> --><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Control Number</td><td>Inventory Quantity</td><td>Quantity Needed</td><td>Quantity Lacking</td></tr></thead><tbody><tr style="{{(inv.result > 0) ? \'background-color: yellow\' : \'background-color: white\'}}" ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{inv.controlNumber}}</td><td>{{inv.quantity}}</td><td>{{inv.moQuantity}}</td><td>{{inv.result = $ctrl.processLacking(inv.quantity, inv.moQuantity)}}</td></tr></tbody></table></div></div></form><find-fg-modal fg="$ctrl.mo.finishedGood"></find-fg-modal>');
-$templateCache.put('./mo-new.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Pre-Manufacturing Order</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.code" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.mo.finishedGood.name" readonly="readonly" class="form-control -border"></div></div></div></div><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">MO Type</label><select type="text" class="form-control -border" ng-model="$ctrl.mo.type"><option value="">ALL</option><option value="RM">RM</option><!-- <option value="PM">PM</option> --></select></div><div class="form-group field"><label class="label capitalize-text">Batch Size</label><input type="text" class="form-control -border" ng-model="$ctrl.mo.batchSize"></div></div></div></div></div></div><div class="request-action"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.testRun()">Test Run</button></div><div class="horizontal-align -between"><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Ingredient Quantity</td><td>Control Number</td><td>Inventory Quantity</td><td>Quantity Needed</td><td>Quantity Lacking</td><td>Expiry</td><td>Re-eval</td><td>Re-test</td><td>Best Before</td></tr></thead><tbody><tr style="{{(inv.result > 0) ? \'background-color: yellow\' : \'background-color: white\'}}" ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td>{{inv.ingredientQuantity}}</td><td>{{inv.controlNumber}}</td><td>{{inv.quantity}}</td><td>{{$ctrl.getRecipeItemQuantity(inv.item.code, $ctrl.mo.recipe) }}</td><td>{{inv.result = $ctrl.processLacking(inv.quantity, inv.item.code, $ctrl.mo.recipe)}}</td><td>{{inv.expiration | date}}</td><td>{{inv.reevaluation | date}}</td><td>{{inv.retest | date}}</td><td>{{inv.bestBefore | date}}</td></tr></tbody></table></div><div ng-if="$ctrl.mo.inventoryList.length > 0" class="form-group field"><label class="label capitalize-text">Result</label><div>{{$ctrl.isPassed()}}</div><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.createMo()">Create MO</button></div></div></div></form><find-fg-modal fg="$ctrl.mo.finishedGood"></find-fg-modal>');
-$templateCache.put('./pp-new.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Packaging Process</h4></div><hr class="devider"></div><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">SELECT MO</label><select class="form-control select -borderless" ng-model="$ctrl.mo" ng-change="$ctrl.selectMo();" ng-options="\'MO#\' + d.moNumber + \':\' + d.moName + \' \' + d.ingredientGroup.name + \' x \' + d.remainingBatchSize for d in $ctrl.moList" name="mo"></select></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Name</label><input type="text" disabled="disabled" class="form-control -border" ng-model="$ctrl.mo.finishedGood.name"></div><div class="form-group field"><label class="label capitalize-text">Code</label><input type="text" disabled="disabled" class="form-control -border" ng-model="$ctrl.mo.finishedGood.code"></div></div></div></div></div></div><table ng-if="$ctrl.mo.inventoryList.length > 0" class="table table-list"><thead><tr><td>Item</td><td>Type</td><td>Mo Number</td><td>Control Number</td><td>Batch Size Available</td><td>MO Quantity Reserved</td></tr></thead><tbody><tr><td></td><td>{{$ctrl.mo.type}}</td><td>#{{$ctrl.mo.moNumber}}</td><td></td><td>{{$ctrl.mo.remainingBatchSize}}</td><td></td></tr><tr ng-repeat="inv in $ctrl.mo.inventoryList"><td>{{inv.item.name}} {{inv.item.code}}</td><td>{{inv.item.type.code}}</td><td></td><td>{{inv.controlNumber}}</td><td></td><td>{{inv.moqReserved}}</td></tr></tbody></table><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="form-group field"><label class="label capitalize-text">Batch Size</label><input type="text" class="form-control -border" ng-model="$ctrl.batchSize"><div ng-if="(!$ctrl.batchSize || $ctrl.batchSize <= 0 || $ctrl.batchSize > $ctrl.mo.remainingBatchSize)"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.createPP()" disabled="disabled">Process Packaging</button></div><div ng-if="!(!$ctrl.batchSize || $ctrl.batchSize <= 0 || $ctrl.batchSize > $ctrl.mo.remainingBatchSize)"><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.createPP()">Process Packaging</button></div></div></div></div></div></div></form>');
-$templateCache.put('./recipe-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findFgModal" data-toggle="modal">Select Finished Good</a></div><div class="form-group rmpm"><label class="label capitalize-text">FG Code</label><input disabled="disabled" type="text" ng-model="$ctrl.recipe.finishedGood.code" readonly="readonly" class="form-control -border"><label class="label capitalize-text">FG Name</label><input disabled="disabled" type="text" ng-model="$ctrl.recipe.finishedGood.name" readonly="readonly" class="form-control -border"></div></div></div><button type="button" ng-click="$ctrl.addIngredientGroup();">+ Add Ingredient Group</button><div ng-repeat="ingredientGroup in $ctrl.recipe.ingredientGroups"><!-- Ingredient Groups --><div class="horizontal-align -start rmpm-content"><div>Group Name <input type="text" ng-model="ingredientGroup.name"></div><table class="table table-list"><thead><tr><td>Item</td><td>Ingredient Quantity</td><td><button type="button" style="background-color:aqua" ng-click="$ctrl.addIngredient(ingredientGroup)">+ Add Ingredient</button></td></tr></thead><tbody><tr ng-repeat="ingredient in ingredientGroup.ingredients"><td><select class="form-control select -borderless" ng-model="ingredient.item" ng-options="d.name + \'-\' + d.code + \' \' + d.type.code  for d in $ctrl.items" name="finishedGood"></select></td><td><input type="text" ng-model="ingredient.quantity"></td><td></td></tr></tbody></table></div></div></div><div class="request-action" ng-if="$ctrl.recipe.ingredientGroups && ($ctrl.recipe.ingredientGroups.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients && $ctrl.recipe.ingredientGroups[0].ingredients.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients[0].item.name)"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div><div class="request-action" ng-if="$ctrl.recipe.ingredientGroups && !($ctrl.recipe.ingredientGroups.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients && $ctrl.recipe.ingredientGroups[0].ingredients.length > 0 && $ctrl.recipe.ingredientGroups[0].ingredients[0].item.name )"><button type="submit" disabled="disabled" class="btn btn-create btn-md">{{$ctrl.button}}</button></div><find-fg-modal fg="$ctrl.recipe.finishedGood"></find-fg-modal></div></form>');
-$templateCache.put('./recipe-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Recipe Form</h3></div></div><header class="header-form"><a href="/admin/rnd" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">Recipe Form</h3></header><recipe-form recipe="$ctrl.recipe" message="{{ $ctrl.error }}" button="Create Recipe" on-submit="$ctrl.createRecipe($event);"></recipe-form>');
-$templateCache.put('./recipes.html','<div class="admin-header"><div class="title horizontal-align -between"><h4 class="bg">Recipes</h4><div class="action-link"><a href="/admin/rnd/recipe/new">Create Recipe</a></div></div><hr class="devider"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="code" type="text" name="search" ng-model="$ctrl.searchCode"> <input class="form-control -borderless search" placeholder="description" type="text" name="search" ng-model="$ctrl.searchName"></div></div><table class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'code\';$ctrl.sortReverse = !$ctrl.sortReverse;">Mat\'l Code <span ng-show="$ctrl.sortType == \'code\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'code\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'name\';$ctrl.sortReverse = !$ctrl.sortReverse;">Mat\u2019l Description <span ng-show="$ctrl.sortType == \'name\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'name\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Last Recipe Modification <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th></tr></thead><tbody><tr ng-repeat="recipe in $ctrl.recipes | filter: {finishedGood: { code: $ctrl.searchCode, name: $ctrl.searchName }}| orderBy:$ctrl.sortType:$ctrl.sortReverse" data-target="#recipeModal" data-toggle="modal" ng-click="$ctrl.openModal(recipe.finishedGood)"><td>{{recipe.finishedGood.code}}</td><td>{{recipe.finishedGood.name}}</td><td>{{recipe.date | date}}</td></tr></tbody></table><div class="modal fade" id="recipeModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">{{$ctrl.finishedgood.name}}</h4><button class="close"><span data-dismiss="modal" ng-click="$ctrl.closeModal()" class="ion-android-close close-modal"></span></button></div><div class="modal-body"><div class="rd-side"><div class="horizontal-align -start rd-content"><p>Recipe</p><p>Recipe No</p><p>Remarks</p><p>ActiveGroup</p></div></div><div id="accordion"><div ng-repeat="recipe in $ctrl.recipesOfFinishedGood" class="card accordion-panel" data-toggle="collapse" data-target="#collapse{{$index}}"><div class="card-header rd-header" id="heading{{$index}}"><h5 class="mb-0"><a><div class="horizontal-align -start block-content"><p>{{recipe.finishedGood.name}}</p><p>{{recipe.finishedGood.code}}</p><p>{{recipe.remarks}}</p><p>{{recipe.activeIngredientGroup.name}}</p></div></a></h5></div><div class="collapse" id="collapse{{$index}}"><div class="card-block rd-block" ng-repeat="ingredientGroup in recipe.ingredientGroups" style="{{(ingredientGroup.id == recipe.activeIngredientGroup.id) ? \'background-color: #F1C40F\' : \'\'}}"><div>{{ingredientGroup.name}} - {{ingredientGroup.dateCreated | date}} <button ng-if="recipe.activeIngredientGroup.id != ingredientGroup.id" type="button" ng-click="recipe.activeIngredientGroup = ingredientGroup; $ctrl.updateRecipe(recipe);">Set Active</button></div><div ng-repeat="ingredient in ingredientGroup.ingredients" ng-class="{\'rd-list -orangish\': ingredient.item.type.code == \'RM\', \'rd-list -apple\': ingredient.item.type.code == \'PM\'}"><div class="horizontal-align -between list-content"><p>{{ingredient.item.code}} {{ingredient.item.name}}</p><p>{{ingredient.quantity}} {{ingredient.item.unit.code}}</p></div></div><div class="clear-float"></div></div></div></div></div></div><div class="modal-footer"><p class="date">Created at 9/7/2017</p><button ng-click="$ctrl.closeModal()" data-dismiss="modal" class="btn btn-cancel">Close</button></div></div></div></div></div>');
 $templateCache.put('./acknowledgement-receipt-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}\r\n\t.highlight{\r\n\t\tbackground-color:#7ed321;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">AR Number</label><input type="text" class="form-control -border" ng-model="$ctrl.ar.number"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.ar.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="form-group rmpm"><label class="label capitalize-text">Depot</label><select class="form-control select -border" ng-change="$ctrl.clearPayments()" ng-model="$ctrl.ar.depot.id" ng-options="d.id as d.code for d in $ctrl.depots" name="depot"></select></div></div><div ng-if="$ctrl.ar.depot"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findClientModal" data-toggle="modal">Select Client</a></div><div class="form-group rmpm"><label class="label capitalize-text">Code</label><input type="text" ng-model="$ctrl.ar.client.code" ng-change="$ctrl.clearPayments()" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.ar.client.name" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Prepared By</label><input type="hidden" ng-model="$ctrl.ar.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.ar.preparedBy.firstName}} {{$ctrl.ar.preparedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Requested By</label><input type="hidden" ng-model="$ctrl.ar.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.ar.requestedBy.firstName}} {{$ctrl.ar.requestedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Checked By</label><input type="hidden" ng-model="$ctrl.ar.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.ar.checkedBy.firstName}} {{$ctrl.ar.checkedBy.lastName}}"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><h5>Terms Of Payment</h5><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Cash</label><input type="radio" ng-model="$ctrl.ar.terms" value="CASH"><label class="label capitalize-text">Cheque</label><input type="radio" ng-model="$ctrl.ar.terms" value="CHEQUE"></div></div></div></div></div><div class="step-form" ng-if="$ctrl.ar.terms == \'CHEQUE\'"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Cheque #</label><input type="text" class="form-control -border" ng-model="$ctrl.ar.chequeNumber"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date Of Cheque</label><input type="date" class="form-control -border" ng-model="$ctrl.ar.chequeDate"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Amount Paid</label><input type="number" class="form-control -border" ng-change="$ctrl.clearPayments()" ng-model="$ctrl.ar.amountPaid"></div></div></div><div class="side-two" ng-if="$ctrl.ar.terms == \'CHEQUE\'"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Cut Off Date</label><input type="date" class="form-control -border" ng-model="$ctrl.ar.cutOffDate"></div></div></div></div></div></div><table class="table table-list"><thead><tr><th>Type</th><th>No</th><th>Total Amount</th><th>Remaining Balance</th><th>Payment</th><th>Remaining</th></tr></thead><tbody><tr ng-repeat="i in $ctrl.ar.payments" ng-class="{highlightred: i.quantity < 0 }"><td>{{i.reference.salesOrder.type}}</td><td>{{i.reference.number}}</td><td>{{i.reference.totalAmount}}</td><td>{{i.reference.remainingBalance}}</td><td><input type="number" ng-change="$ctrl.computeTotalPayment()" ng-model="i.appliedAmount" required></td><td>{{i.reference.remainingBalance - i.appliedAmount}}</td></tr></tbody><tfoot><tr><th></th><th></th><th>Total Applied Amount:</th><th>{{$ctrl.totalAmount.toFixed(2)}}</th></tr><tr><th></th><th></th><th>Total SI Amount:</th><th>{{$ctrl.siAmount.toFixed(2)}}</th></tr></tfoot></table><div class="request-action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findSalesSlip()">Select DR_SI/OS</a></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.ar.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></div></form><find-client-modal client="$ctrl.ar.client" message="{{ $ctrl.error }}" button="Select Client"></find-client-modal><div class="modal fade" id="salesSlipsModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find OS, DR_SI</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !imsortant"><i class="fa fa-search"></i></div></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">OS/DR_SI # <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Total Amount</th><th>Remaining Balance</th></tr></thead><tbody><tr ng-repeat="os in $ctrl.salesSlips  | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectSalesSlip(os)" ng-class="{highlight: $ctrl.customizedIndexOf($ctrl.selectedSalesSlips, os) !== -1}"><td>{{os.number}}</td><td>{{os.date | date}}</td><td>{{os.totalAmount.toFixed(2)}}</td><td>{{os.remainingBalance.toFixed(2)}}</td></tr></tbody></table></div></div></div></div></div>');
 $templateCache.put('./acknowledgement-receipt-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Acknowledgement Receipt Form</h3></div></div><header class="header-form"><a href="/admin/sales/acknowledgement-receipt" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Acknowledgement Receipt Form</h3></header><acknowledgement-receipt-form ar="$ctrl.ar" message="{{ $ctrl.error }}" button="Create Acknowledgement Receipt" on-submit="$ctrl.createAcknowledgementReceipt($event);"></acknowledgement-receipt-form>');
 $templateCache.put('./acknowledgement-receipts.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Acknowledgement Receipts Forms</h3></div><a href="#" ng-click="$ctrl.createNewAcknowledgementReceipt($event);" class="btn btn-create btn-md button-link">Create New AR</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><div class="search-box horizontal-align -between"><select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots"></select></div><table ng-if="$ctrl.acknowledgementReceipts" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">AR No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'preparedBy\';$ctrl.sortReverse = !$ctrl.sortReverse;">Prepared By <span ng-show="$ctrl.sortType == \'preparedBy\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'preparedBy\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Amount Paid <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="acknowledgementReceipt in $ctrl.acknowledgementReceipts | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{acknowledgementReceipt.date | date}}</td><td>{{acknowledgementReceipt.number}}</td><td>{{acknowledgementReceipt.preparedBy.firstName}} {{acknowledgementReceipt.preparedBy.lastName}}</td><td>{{acknowledgementReceipt.amountPaid.toFixed(2)}}</td><td class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(acknowledgementReceipt)" data-toggle="modal" data-target="#ackReceiptInfoModal"></i></button></div></td></tr></tbody></table><view-ackreceipt-modal ar="$ctrl.ar"></view-ackreceipt-modal>');
@@ -19287,10 +19299,15 @@ $templateCache.put('./order-slips.html','<div class="main-header"><div class="ho
 $templateCache.put('./return-slip-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">RS Number</label><input type="text" class="form-control -border" ng-model="$ctrl.rs.number"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.rs.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="form-group rmpm"><label class="label capitalize-text">Depot</label><select class="form-control select -border" ng-model="$ctrl.rs.depot.id" ng-options="d.id as d.code for d in $ctrl.depots" name="depot"></select></div></div><div ng-if="$ctrl.rs.depot"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findSalesSlip()">Select DR/OS</a></div><div class="form-group rmpm"><label class="label capitalize-text">DR#</label><input type="text" ng-model="$ctrl.rs.salesNumber" class="form-control -border"></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findClientModal" data-toggle="modal">Select Client</a></div><div class="form-group rmpm"><input type="hidden" ng-model="$ctrl.po.vendor.id"><label class="label capitalize-text">Code</label><input type="text" ng-model="$ctrl.rs.client.code" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.rs.client.name" class="form-control -border"></div></div></div><table class="table table-list"><thead><tr><th>Product</th><th>Lot #</th><th>Good Qty</th><th>Bad Qty</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody><tr ng-repeat="i in $ctrl.rs.returnSlipProducts"><td>{{i.product.finishedGood.name}}</td><td>{{i.product.lotNumber}}</td><td><input ng-change="$ctrl.computeTotalAmount(i.goodQuantity* i.unitPrice, $index)" type="number" ng-model="i.goodQuantity" required></td><td><input type="number" ng-model="i.badQuantity" required></td><td><input ng-change="$ctrl.computeTotalAmount(i.goodQuantity * i.unitPrice, $index)" type="number" ng-model="i.unitPrice" required></td><td>{{i.goodQuantity * i.unitPrice}}</td></tr></tbody><tfoot><tr><th></th><th></th><th></th><th></th><th>Total Amount</th><th>{{$ctrl.rs.totalAmount.toFixed(2)}}</th></tr></tfoot></table><div class="request-action"><a href="#" class="button-link btn btn-action btn-md" ng-if="$ctrl.rs.salesNumber == null" ng-click="$ctrl.findProduct()">Select Item</a></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.rs.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></div></form><div class="modal fade" id="salesSlipsModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find OS, DR_SI</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !imsortant"><i class="fa fa-search"></i></div></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">OS/DR_SI # <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Total Amount</th><th>Remaining Balance</th></tr></thead><tbody><tr ng-repeat="os in $ctrl.salesSlips  | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.selectSalesSlip(os)" ng-class="{highlight: $ctrl.customizedIndexOf($ctrl.selectedSalesSlips, os) !== -1}"><td>{{os.number}}</td><td>{{os.date | date}}</td><td>{{os.totalAmount.toFixed(2)}}</td><td>{{os.remainingBalance.toFixed(2)}}</td></tr></tbody></table></div></div></div></div></div><find-product-modal productlist="$ctrl.productsInDepot" issuedlist="$ctrl.rs.returnSlipProducts" stockonhand="$ctrl.stockOnHandList"></find-product-modal><find-client-modal client="$ctrl.rs.client" message="{{ $ctrl.error }}" button="Select Client"></find-client-modal>');
 $templateCache.put('./return-slip-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Return Slip Forms</h3></div></div><header class="header-form"><a href="/admin/sales/return-slip" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Return Slip Form</h3></header><return-slip-form rs="$ctrl.rs" message="{{ $ctrl.error }}" button="Create Return Slip" on-submit="$ctrl.createReturnSlip($event);"></return-slip-form>');
 $templateCache.put('./return-slips.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Return Slip Forms</h3></div><a href="/admin/shared/print-rs-report/depot/{{$ctrl.userAssignedDepot.id}}/start/{{$ctrl.startDate}}/end/{{$ctrl.endDate}}" class="btn btn-primary btn-md button-link">Generate Report</a> <a href="#" ng-click="$ctrl.createNewReturnSlip($event);" class="btn btn-create btn-md button-link">Create New SO</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div><div class="search-box horizontal-align -between"><input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.startDate"> <input class="form-control -borderless search" type="date" name="search" ng-model="$ctrl.endDate"></div></div><div class="search-box horizontal-align -between"><select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots"></select></div><table ng-if="$ctrl.returnSlips" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'preparedBy\';$ctrl.sortReverse = !$ctrl.sortReverse;">DR# <span ng-show="$ctrl.sortType == \'preparedBy\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'preparedBy\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Client <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Amount <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th></tr></thead><tbody><tr ng-repeat="returnSlip in $ctrl.returnSlips | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{returnSlip.date | date}}</td><td>{{returnSlip.number}}</td><td>{{returnSlip.salesNumber}}</td><td>{{returnSlip.client.name}}</td><td>{{returnSlip.totalAmount}}</td></tr></tbody></table>');
+$templateCache.put('./sales-invoice-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">SI Number</label><input type="text" class="form-control -border" ng-model="$ctrl.si.number"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.si.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="form-group rmpm"><label class="label capitalize-text">Depot</label><select class="form-control select -border" ng-model="$ctrl.si.depot.id" ng-options="d.id as d.code for d in $ctrl.depots" name="depot"></select></div></div><div ng-if="$ctrl.si.depot"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findSoModal()">Select SO</a></div><div class="form-group rmpm"><label class="label capitalize-text">SO No</label><input type="text" ng-model="$ctrl.si.salesOrder.number" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Tax</label><input type="number" ng-model="$ctrl.si.taxPercentage" class="form-control -border"></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="label capitalize-text">Client Code</label><input type="text" ng-model="$ctrl.si.salesOrder.client.code" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.si.salesOrder.client.name" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Prepared By</label><input type="hidden" ng-model="$ctrl.si.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.si.preparedBy.firstName}} {{$ctrl.si.preparedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Released By</label><input type="hidden" ng-model="$ctrl.si.releasedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.si.releasedBy.firstName}} {{$ctrl.si.releasedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Checked By</label><input type="hidden" ng-model="$ctrl.si.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.si.checkedBy.firstName}} {{$ctrl.si.checkedBy.lastName}}"></div></div></div></div></div></div><table class="table table-list"><thead class="thead-dark"><tr><th></th><th>Lot #</th><th>Expiration</th><th>Stock On Hand</th><th>Quantity</th><th></th></tr><tr style="background-color:yellow"><th>FG</th><th>Quantity</th><th>Remaining</th><th>Unit Price</th><th>Amount</th><th></th></tr></thead><tbody ng-repeat="i in $ctrl.si.salesOrder.products"><tr style="background-color:yellow"><td>{{i.finishedGood.name}}</td><td>{{i.quantity}}</td><td>{{i.quantityRemaining}}</td><td>{{i.unitPrice}}</td><td>{{i.quantity * i.unitPrice}}</td><td><button type="button" ng-click="$ctrl.showSoProductModal(i.finishedGood)" class="btn btn-create btn-md">Select</button></td></tr><tr ng-repeat="p in $ctrl.getProductsOfFg(i)" ng-init="$ctrl.stockOnHand = p.quantity" ng-class="{highlightred: i.quantityRemaining < $ctrl.getTotalQuantity(i)}"><td></td><td>{{p.product.lotNumber}}</td><td>{{p.product.expiration | date}}</td><td>{{$ctrl.stockOnHand}}</td><td><input type="text" required ng-model="p.quantity"></td><td></td></tr></tbody><tfoot></tfoot></table><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.si.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></div></form><find-so-modal so="$ctrl.si.salesOrder" salesorders="$ctrl.salesOrders" message="{{ $ctrl.error }}" button="Select SO"></find-so-modal><find-so-product-modal products="$ctrl.si.orderedProducts" inventorylist="$ctrl.inventorylist" message="{{ $ctrl.error }}" button="Select"></find-so-product-modal>');
+$templateCache.put('./sales-invoices.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Sales Invoices Forms</h3></div><a href="#" ng-click="$ctrl.createNewSalesInvoice($event);" class="btn btn-create btn-md button-link">Create New OS</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><div class="search-box horizontal-align -between"><select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots"></select></div><table ng-if="$ctrl.salesInvoices" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">SI No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'preparedBy\';$ctrl.sortReverse = !$ctrl.sortReverse;">Prepared By <span ng-show="$ctrl.sortType == \'preparedBy\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'preparedBy\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Status <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="salesInvoice in $ctrl.salesInvoices | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{salesInvoice.date | date}}</td><td>{{salesInvoice.number}}</td><td>{{salesInvoice.preparedBy.firstName}} {{salesInvoice.preparedBy.lastName}}</td><td>{{salesInvoice.status}}</td><td ng-if="salesInvoice.status != \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(salesInvoice)" data-toggle="modal" data-target="#osInfoModal"></i></button></div></td><td ng-if="salesInvoice.status == \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(salesInvoice)"></i></button> <button class="btn btn-info" ng-if="salesInvoice.status == \'Cancelled\'" ng-click="$ctrl.edit(salesInvoice)">Edit</button></div></td></tr></tbody></table><view-os-modal os="$ctrl.si"></view-os-modal>');
 $templateCache.put('./sales-order-form.html','<style>.highlightred {\r\n\t\tbackground-color: red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" ng-keypress="$ctrl.enterdown($event);" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">SO Number</label><input type="text" class="form-control -border" ng-model="$ctrl.so.number"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.so.date"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Type</label><select class="form-control -border" ng-model="$ctrl.so.type"><option>Please Select</option><option value="DR_SI">DR/SI</option><option value="OS">OS</option><option value="PS">PS</option></select></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="form-group rmpm"><label class="label capitalize-text">Depot</label><select class="form-control select -border" ng-model="$ctrl.so.depot.id" ng-options="d.id as d.code for d in $ctrl.depots" name="depot"></select></div></div><div ng-if="$ctrl.so.depot"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findClientModal" data-toggle="modal">Select Client</a></div><div class="form-group rmpm"><input type="hidden" ng-model="$ctrl.po.vendor.id"><label class="label capitalize-text">Code</label><input type="text" ng-model="$ctrl.so.client.code" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.so.client.name" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Prepared By</label><input type="hidden" ng-model="$ctrl.so.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.so.preparedBy.firstName}} {{$ctrl.so.preparedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Requested By</label><input type="hidden" ng-model="$ctrl.so.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.so.requestedBy.firstName}} {{$ctrl.so.requestedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Checked By</label><input type="hidden" ng-model="$ctrl.so.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.so.checkedBy.firstName}} {{$ctrl.so.checkedBy.lastName}}"></div></div></div></div></div></div><table class="table table-list"><thead><tr><th>Code</th><th>FG</th><th>Stock on Hand</th><th>Quantity</th><th>Remaining</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody><tr ng-repeat="i in $ctrl.so.products" ng-class="{highlightred: i.quantity < 0 }"><td>{{i.finishedGood.code}}</td><td>{{i.finishedGood.name}}</td><td>{{i.sum}}</td><td><input ng-change="$ctrl.computeTotalAmount(i.quantity * i.unitPrice, $index)" type="number" ng-model="i.quantity" required></td><td>{{i.sum - i.quantity}}</td><td><input ng-change="$ctrl.computeTotalAmount(i.quantity * i.unitPrice, $index)" type="number" ng-model="i.unitPrice" required></td><td>{{i.quantity * i.unitPrice}}</td></tr></tbody><tfoot><tr><th></th><th></th><th></th><th></th><th>Total Amount</th><th>{{$ctrl.so.totalAmount.toFixed(2)}}</th></tr></tfoot></table><div class="request-action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findProduct()">Select Item</a></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.so.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></div></form><find-fg-inventory-modal fglist="$ctrl.so.products" fglistview="$ctrl.fglistview" message="{{ $ctrl.error }}"></find-fg-inventory-modal><find-client-modal client="$ctrl.so.client" message="{{ $ctrl.error }}" button="Select Client"></find-client-modal>');
 $templateCache.put('./sales-order-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Sales Order Forms</h3></div></div><header class="header-form"><a href="/admin/sales/sales-order" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Sales Order Form</h3></header><sales-order-form so="$ctrl.so" message="{{ $ctrl.error }}" button="Create Sales Order" on-submit="$ctrl.createSalesOrder($event);"></sales-order-form>');
 $templateCache.put('./sales-orders.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Sales Order Forms</h3></div><a href="#" ng-click="$ctrl.createNewSalesOrder($event);" class="btn btn-create btn-md button-link">Create New SO</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><div class="search-box horizontal-align -between"><select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots"></select></div><table ng-if="$ctrl.salesOrders" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">SO Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">SO No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'preparedBy\';$ctrl.sortReverse = !$ctrl.sortReverse;">Prepared By <span ng-show="$ctrl.sortType == \'preparedBy\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'preparedBy\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Status <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="salesOrder in $ctrl.salesOrders | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{salesOrder.date | date}}</td><td>{{salesOrder.number}}</td><td>{{salesOrder.preparedBy.firstName}} {{salesOrder.preparedBy.lastName}}</td><td>{{salesOrder.status}}</td><td ng-if="salesOrder.status != \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(salesOrder)"></i></button></div></td><td ng-if="salesOrder.status == \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(salesOrder)"></i></button></div></td></tr></tbody></table><view-so-modal so="$ctrl.so" cancelreqs="$ctrl.cancelreqs"></view-so-modal>');
-$templateCache.put('./sales-invoice-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">SI Number</label><input type="text" class="form-control -border" ng-model="$ctrl.si.number"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.si.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="form-group rmpm"><label class="label capitalize-text">Depot</label><select class="form-control select -border" ng-model="$ctrl.si.depot.id" ng-options="d.id as d.code for d in $ctrl.depots" name="depot"></select></div></div><div ng-if="$ctrl.si.depot"><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" ng-click="$ctrl.findSoModal()">Select SO</a></div><div class="form-group rmpm"><label class="label capitalize-text">SO No</label><input type="text" ng-model="$ctrl.si.salesOrder.number" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Tax</label><input type="number" ng-model="$ctrl.si.taxPercentage" class="form-control -border"></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm"><label class="label capitalize-text">Client Code</label><input type="text" ng-model="$ctrl.si.salesOrder.client.code" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.si.salesOrder.client.name" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Prepared By</label><input type="hidden" ng-model="$ctrl.si.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.si.preparedBy.firstName}} {{$ctrl.si.preparedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Released By</label><input type="hidden" ng-model="$ctrl.si.releasedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.si.releasedBy.firstName}} {{$ctrl.si.releasedBy.lastName}}"></div></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Checked By</label><input type="hidden" ng-model="$ctrl.si.requestedBy"> <input type="text" class="form-control -border" readonly="readonly" value="{{$ctrl.si.checkedBy.firstName}} {{$ctrl.si.checkedBy.lastName}}"></div></div></div></div></div></div><table class="table table-list"><thead class="thead-dark"><tr><th></th><th>Lot #</th><th>Expiration</th><th>Stock On Hand</th><th>Quantity</th><th></th></tr><tr style="background-color:yellow"><th>FG</th><th>Quantity</th><th>Remaining</th><th>Unit Price</th><th>Amount</th><th></th></tr></thead><tbody ng-repeat="i in $ctrl.si.salesOrder.products"><tr style="background-color:yellow"><td>{{i.finishedGood.name}}</td><td>{{i.quantity}}</td><td>{{i.quantityRemaining}}</td><td>{{i.unitPrice}}</td><td>{{i.quantity * i.unitPrice}}</td><td><button type="button" ng-click="$ctrl.showSoProductModal(i.finishedGood)" class="btn btn-create btn-md">Select</button></td></tr><tr ng-repeat="p in $ctrl.getProductsOfFg(i)" ng-init="$ctrl.stockOnHand = p.quantity" ng-class="{highlightred: i.quantityRemaining < $ctrl.getTotalQuantity(i)}"><td></td><td>{{p.product.lotNumber}}</td><td>{{p.product.expiration | date}}</td><td>{{$ctrl.stockOnHand}}</td><td><input type="text" required ng-model="p.quantity"></td><td></td></tr></tbody><tfoot></tfoot></table><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.si.remarks"></textarea></div></div></div></div></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></div></div></form><find-so-modal so="$ctrl.si.salesOrder" salesorders="$ctrl.salesOrders" message="{{ $ctrl.error }}" button="Select SO"></find-so-modal><find-so-product-modal products="$ctrl.si.orderedProducts" inventorylist="$ctrl.inventorylist" message="{{ $ctrl.error }}" button="Select"></find-so-product-modal>');
 $templateCache.put('./sales-invoice-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Sales Invoice Form</h3></div></div><header class="header-form"><a href="/admin/sales/sales-invoice" class="btn btn-back back"><i class="ion-isi-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Sales Invoice Form</h3></header><sales-invoice-form si="$ctrl.si" message="{{ $ctrl.error }}" button="Create Sales Invoice" on-submit="$ctrl.createSalesInvoice($event);"></sales-invoice-form>');
-$templateCache.put('./sales-invoices.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Sales Invoices Forms</h3></div><a href="#" ng-click="$ctrl.createNewSalesInvoice($event);" class="btn btn-create btn-md button-link">Create New OS</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="PRIS No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><div class="search-box horizontal-align -between"><select class="form-control select" ng-model="$ctrl.userAssignedDepot.id" ng-change="$ctrl.selectDepot()" ng-options="d.id as d.name for d in $ctrl.userAssignedDepots" name="fromDepots"></select></div><table ng-if="$ctrl.salesInvoices" class="table table-list"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'date\';$ctrl.sortReverse = !$ctrl.sortReverse;">Date <span ng-show="$ctrl.sortType == \'date\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'date\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'number\';$ctrl.sortReverse = !$ctrl.sortReverse;">SI No <span ng-show="$ctrl.sortType == \'number\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'number\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'preparedBy\';$ctrl.sortReverse = !$ctrl.sortReverse;">Prepared By <span ng-show="$ctrl.sortType == \'preparedBy\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'preparedBy\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th><a href="#" ng-click="$ctrl.sortType = \'status\';$ctrl.sortReverse = !$ctrl.sortReverse;">Status <span ng-show="$ctrl.sortType == \'status\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'status\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th></th></tr></thead><tbody><tr ng-repeat="salesInvoice in $ctrl.salesInvoices | filter: {date: $ctrl.searchDate, number: $ctrl.searchNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse"><td>{{salesInvoice.date | date}}</td><td>{{salesInvoice.number}}</td><td>{{salesInvoice.preparedBy.firstName}} {{salesInvoice.preparedBy.lastName}}</td><td>{{salesInvoice.status}}</td><td ng-if="salesInvoice.status != \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(salesInvoice)" data-toggle="modal" data-target="#osInfoModal"></i></button></div></td><td ng-if="salesInvoice.status == \'Cancelled\'" class="tablebutton-form"><div class="holder"><button class="btn btn-compose"><i class="ion-ios-compose-outline" ng-click="$ctrl.openModal(salesInvoice)"></i></button> <button class="btn btn-info" ng-if="salesInvoice.status == \'Cancelled\'" ng-click="$ctrl.edit(salesInvoice)">Edit</button></div></td></tr></tbody></table><view-os-modal os="$ctrl.si"></view-os-modal>');
-$templateCache.put('./find-approved-item-modal.html','<div class="modal fade" id="findApprovedItemModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Control Number</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Control #" type="text" name="search" ng-model="$ctrl.searchControlNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'controlNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Control Number <span ng-show="$ctrl.sortType == \'controlNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'controlNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Name</th><th>Code</th><th>Type</th></tr></thead><tbody><tr ng-repeat="approvedItem in $ctrl.approvedItems | filter: {controlNumber: $ctrl.searchControlNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.getApprovedItem(approvedItem)" data-dismiss="modal"><td>{{approvedItem.controlNumber}}</td><td>{{approvedItem.item.name}}</td><td>{{approvedItem.item.code}}</td><td>{{approvedItem.item.type.name}}</td></tr></tbody></table></div></div></div></div></div>');}]);})(window.angular);
+$templateCache.put('./find-approved-item-modal.html','<div class="modal fade" id="findApprovedItemModal"><div class="modal-dialog -bg"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Find Control Number</h4><button class="close" data-dismiss="modal" type="button"></button></div><div class="modal-body"><div class="search-box horizontal-align -between"><div class="search-modal horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="Control #" type="text" name="search" ng-model="$ctrl.searchControlNumber"></div></div><div class="wrapper scroll-section"><table class="table table-hover"><thead><tr><th><a href="#" ng-click="$ctrl.sortType = \'controlNumber\';$ctrl.sortReverse = !$ctrl.sortReverse;">Control Number <span ng-show="$ctrl.sortType == \'controlNumber\' && !$ctrl.sortReverse"><i class="fa fa-caret-down"></i> </span><span ng-show="$ctrl.sortType == \'controlNumber\' && $ctrl.sortReverse"><i class="fa fa-caret-up"></i></span></a></th><th>Name</th><th>Code</th><th>Type</th></tr></thead><tbody><tr ng-repeat="approvedItem in $ctrl.approvedItems | filter: {controlNumber: $ctrl.searchControlNumber} | orderBy:$ctrl.sortType:$ctrl.sortReverse" ng-click="$ctrl.getApprovedItem(approvedItem)" data-dismiss="modal"><td>{{approvedItem.controlNumber}}</td><td>{{approvedItem.item.name}}</td><td>{{approvedItem.item.code}}</td><td>{{approvedItem.item.type.name}}</td></tr></tbody></table></div></div></div></div></div>');
+$templateCache.put('./receiving-receipt-form.html','<style>.highlightred{\r\n\t\tbackground-color:red;\r\n\t}</style><form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">RR Number</label><input type="text" readonly="readonly" class="form-control -border" value="AUTOGENERATED UPON CREATION"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.rr.date"></div></div></div></div></div></div><div class="horizontal-align -start rmpm-content"><div class="horizontal-align -start rmpm-code"><div class="form-group rmpm action"><a href="#" class="button-link btn btn-action btn-md" data-target="#findPurchaseOrderModal" data-toggle="modal">Select PO</a></div><div class="form-group rmpm"><label class="label capitalize-text">P.O. #</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.number" readonly="readonly" class="form-control -border"></div><div class="form-group rmpm"><input type="hidden" ng-model="$ctrl.rr.purchaseOrder.id"><label class="label capitalize-text">Code</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.code" ng-change="$ctrl.loadToReceivedItems()" readonly="readonly" class="form-control -border"></div></div><div class="side-two"><div class="form-group"><label class="label capitalize-text">Name</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.name" readonly="readonly" class="form-control -border"></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Received By</label><input type="text" ng-value="$ctrl.rr.receivedBy.department.name" class="form-control -border"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">DR</label><input type="text" ng-model="$ctrl.rr.drNumber" class="form-control -border"></div><div class="form-group field"><label for="department">SI</label><input type="text" ng-model="$ctrl.rr.siNumber" class="form-control -border"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Origin</label><input type="text" class="form-control -border" ng-model="$ctrl.rr.origin"></div><div class="form-group field"><label class="label capitalize-text">P.O. Number</label><input type="text" ng-model="$ctrl.rr.purchaseOrder.number" class="form-control -border" readonly="readonly"></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.rr.remarks"></textarea></div></div></div></div></div><table class="table table-list"><thead><tr><th>PRF #</th><th>Code</th><th>Item</th><th>Quantity</th><th>Previous RR</th><th>Lacking</th><th>Quantity Received</th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="receivedItem in $ctrl.receivedItemsView" ng-class="{highlightred: $ctrl.rr.receivedItems[$index].quantity > receivedItem.quantityOrdered - receivedItem.pendingRr }"><td>{{receivedItem.prfNumber}}</td><td>{{receivedItem.item.code}}</td><td>{{receivedItem.item.name}}</td><td>{{receivedItem.quantityOrdered}}</td><td>{{receivedItem.pendingRr}}</td><td>{{receivedItem.quantityOrdered - receivedItem.pendingRr}}</td><td><input ng-model="$ctrl.rr.receivedItems[$index].quantity"></td></tr></tbody></table></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><find-purchase-order-modal po="$ctrl.rr.purchaseOrder" receiveditems="$ctrl.rr.receivedItems" receiveditemsview="$ctrl.receivedItemsView" message="{{ $ctrl.error }}" button="Select PO"></find-purchase-order-modal><find-vendor-modal vendor="$ctrl.po.vendor" message="{{ $ctrl.error }}" button="Select Vendor"></find-vendor-modal>');
+$templateCache.put('./receiving-receipt-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Receiving Receipt Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/receiving-receipt" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Receiving Receipt Form</h3></header><receiving-receipt-form rr="$ctrl.rr" message="{{ $ctrl.error }}" button="Create Receiving Receipt" on-submit="$ctrl.createReceivingReceipt($event);"></receiving-receipt-form>');
+$templateCache.put('./receiving-receipts.html','<div class="client-rmpm"><div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Receiving Receipt Slips</h3></div><a href="#" ng-click="$ctrl.createNewReceivingReceipt($event);" class="btn btn-create btn-md button-link">Create New Request</a> <a href="#" ng-click="$ctrl.createNewReceivingReceiptTolling($event);" style="background-color:blueviolet" class="btn btn-create btn-md button-link">Create New RR Tolling Request</a></div><div class="client-pris"><div class="search-box horizontal-align -between"><div class="input-group-addon" style="border: 0\t !important"><i class="fa fa-search"></i></div><input class="form-control -borderless search" placeholder="RR No" type="text" name="search" ng-model="$ctrl.searchNumber"> <input class="form-control -borderless search" placeholder="Date" type="text" name="search" ng-model="$ctrl.searchDate"></div></div><nav class="nav nav-pills nav-fill nav-form"><a ng-click="$ctrl.listByStatus(\'Pending\')" class="nav-item nav-link item" ng-class="{active: $ctrl.status === \'Pending\'}">Pending</a> <a ng-click="$ctrl.listByStatus(\'Incomplete\')" class="nav-item nav-link item" ng-class="{active: $ctrl.status === \'Incomplete\'}">Incomplete</a> <a ng-click="$ctrl.listByStatus(\'Completed\')" class="nav-item nav-link item" ng-class="{active: $ctrl.status === \'Completed\'}">Completed</a></nav><div class="tab-content"><div class="tab-pane fade show active" id="quarantined"><table class="table table-list"><thead><tr><th>R.R No</th><th>Date</th><th>DR / SI</th><th>Received By</th><th></th></tr></thead><tbody><tr ng-repeat="rr in $ctrl.receivingReceipts"><td>{{rr.number}}</td><td>{{rr.date | date}}</td><td>DR:{{rr.drNumber}}<br>SI:{{rr.siNumber}}</td><td>{{rr.receivedBy.department.name}}</td><td class="tablebutton-form"><div class="holder"><button data-toggle="modal" ng-click="$ctrl.openModal(rr)" data-target="#rrModal" class="btn btn-show"><i class="ion-ios-eye-outline"></i></button> <button class="btn btn-compose"><i class="ion-ios-compose-outline"></i></button> <button class="btn btn-archive"><i class="ion-ios-box-outline"></i></button></div></td></tr></tbody></table></div></div></div><view-rr-modal rr="$ctrl.rr"></view-rr-modal>');
+$templateCache.put('./receiving-receipt-tolling-form.html','<form novalidate ng-submit="$ctrl.submitForm();" method="post"><div class="form-content"><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">RR Number</label><input type="text" class="form-control -border" ng-model="$ctrl.rr.number"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Date</label><input type="date" class="form-control -border" ng-model="$ctrl.rr.date"></div></div></div></div></div></div><!-- <div class="horizontal-align -start rmpm-content">\r\n\t\t\t  <div class="horizontal-align -start rmpm-code">\r\n\t\t\t    <div class="form-group rmpm action">\r\n\t\t\t    \t\t<a href="#" class="button-link btn btn-action btn-md" data-target="#findPurchaseOrderModal" data-toggle="modal">Select PO</a>\r\n\t\t\t    </div>\r\n\t\t\t    <div class="form-group rmpm">\r\n\t\t\t    \t\t<label class="label capitalize-text">P.O. #</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.number" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t    <div class="form-group rmpm">\r\n\t\t\t    \t\t<input type="hidden"  ng-model="$ctrl.rr.purchaseOrder.id"/>\r\n\t\t\t    \t\t<label class="label capitalize-text">Code</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.code" ng-change="$ctrl.loadToReceivedItems()" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t  </div>\r\n\t\t\t  <div class="side-two">\r\n\t\t\t    <div class="form-group">\r\n\t\t\t      \t<label class="label capitalize-text">Name</label>\r\n\t\t\t    \t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.vendor.name" readonly class="form-control -border"/>\r\n\t\t\t    </div>\r\n\t\t\t  </div>\r\n\t\t</div> --><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Received By</label><input type="text" ng-value="$ctrl.rr.receivedBy.department.name" class="form-control -border"></div></div></div><div class="side-two"><div class="form-group"><div class="horizontal-align -between content"><div class="form-group field"><label for="department">DR</label><input type="text" ng-model="$ctrl.rr.drNumber" class="form-control -border"></div><div class="form-group field"><label for="department">SI</label><input type="text" ng-model="$ctrl.rr.siNumber" class="form-control -border"></div></div></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Origin</label><input type="text" class="form-control -border" ng-model="$ctrl.rr.origin"></div><!-- <div class="form-group field">\r\n\t\t\t\t\t\t\t<label class="label capitalize-text">P.O. Number</label>\r\n\t\t\t    \t\t\t<input type="text" ng-model="$ctrl.rr.purchaseOrder.number" class="form-control -border" readonly/>\r\n            \t\t\t</div> --></div></div></div></div><div class="step-form"><div class="horizontal-align -between"><div class="side-one"><div class="horizontal-align -between content"><div class="form-group field"><label class="label capitalize-text">Remarks</label><textarea type="text" class="form-control -border" ng-model="$ctrl.rr.remarks"></textarea></div></div></div></div></div><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.addItemHere();">+ Add Item</button><table class="table table-list"><thead><tr><!-- <th>PRF # </th> --><th>Item Code</th><th>Unit Code</th><th>Quantity</th><th></th></tr></thead><tbody id="table-less-padding"><tr ng-repeat="receivedItem in $ctrl.rr.receivedItems"><!-- <td>{{prf.number}}</td> --><td><select class="form-control select -borderless" ng-model="receivedItem.item.id" ng-options="d.id as d.code for d in $ctrl.items" name="item"></select></td><td><select class="form-control select -borderless" ng-model="receivedItem.unit.id" ng-options="d.id as d.code for d in $ctrl.units" name="unit"></select></td><td><input type="text" model="receivedItem.quantity"></td><td><button type="button" class="btn btn-create btn-md" ng-click="$ctrl.removeItem($index);">x</button></td></tr></tbody></table></div><div class="request-action"><button type="submit" class="btn btn-create btn-md">{{$ctrl.button}}</button></div></form><!-- <find-purchase-order-modal\r\n\t\tpo="$ctrl.rr.purchaseOrder"\r\n\t\tmessage="{{ $ctrl.error }}"\r\n            button="Select PO"\r\n            >\r\n    </find-purchase-order-modal>\r\n\t<find-vendor-modal\r\n\t\t\tvendor="$ctrl.po.vendor"\r\n            message="{{ $ctrl.error }}"\r\n            button="Select Vendor"\r\n            >\r\n    </find-vendor-modal> -->');
+$templateCache.put('./receiving-receipt-tolling-new.html','<div class="main-header"><div class="horizontal-align -between content"><h3 class="title">Receiving Receipt Tolling Form</h3></div></div><header class="header-form"><a href="/admin/dashboard/receiving-receipt" class="btn btn-back back"><i class="ion-ios-arrow-thin-left"></i> <span>Back</span> </a><span class="divider"></span><h3 class="heading">New Receiving Receipt Tolling Form</h3></header><receiving-receipt-tolling-form rr="$ctrl.rr" message="{{ $ctrl.error }}" button="Create Receiving Receipt" on-submit="$ctrl.createReceivingReceipt($event);"></receiving-receipt-tolling-form>');}]);})(window.angular);

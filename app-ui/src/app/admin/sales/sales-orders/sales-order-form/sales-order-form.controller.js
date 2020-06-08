@@ -9,12 +9,29 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
     ctrl.so.number = "0001";
     ctrl.user = JSON.parse(window.localStorage.getItem("currentUser"));
 
+    SalesOrdersService.list().then(function (response) {
+      console.log("list response: {}", response.data);
+      ctrl.so.number = pad(parseInt(response.data[response.data.length - 1].number) + 1, 4);
+
+
+    });
     UsersService.get(ctrl.user.id).then(function (response) {
       ctrl.depots = response.data.depots;
     });
 
     ctrl.so.date = new Date();
   };
+
+  function pad(number, length) {
+    var str = '' + number;
+    while (str.length < length) {
+      str = '0' + str;
+
+    }
+    return str;
+
+  }
+
   ctrl.$onChanges = function (changes) {
     if (changes.so) {
       ctrl.so = angular.copy(ctrl.so);
