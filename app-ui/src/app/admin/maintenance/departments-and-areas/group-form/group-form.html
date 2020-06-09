@@ -1,0 +1,34 @@
+<form novalidate ng-submit="$ctrl.submitForm();" method="post">
+  <div class="horizontal-align -between">
+    <div class="form-group">
+      <label for="code">Code</label>
+      <input
+        ng-model="$ctrl.group.code"
+        class="form-control -border"
+        autofocus="autofocus"
+        placeholder="Code"
+        type="text"
+        name="code"
+      />
+    </div>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input
+        ng-model="$ctrl.group.name"
+        class="form-control -border"
+        placeholder="Name"
+        type="text"
+        name="name"
+      />
+    </div>
+  </div>
+  <div class="horizontal-align -end">
+    <input
+      type="submit"
+      name="commit"
+      value="{{ $ctrl.button }}"
+      class="btn btn-create btn-md"
+      data-disable-with="Save"
+    />
+  </div>
+</form>

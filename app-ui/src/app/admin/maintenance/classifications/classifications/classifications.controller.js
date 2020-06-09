@@ -10,7 +10,7 @@ function ClassificationController(
 
   ctrl.searchCode = '';
   ctrl.searchName = '';
-
+  ctrl.sortType = 'code';
   ctrl.sortReverse = false;
 
   ctrl.$onInit = function () {

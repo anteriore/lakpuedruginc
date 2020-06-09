@@ -1,17 +1,62 @@
 <form novalidate ng-submit="$ctrl.submitForm();" method="post">
-<div class="horizontal-align -between">
-	<div class="form-group">
-		<label for="code">Code</label> <input ng-model="$ctrl.department.code"
-			class="form-control -border" autofocus="autofocus" placeholder="Code"
-			type="text" name="code">
-	</div>
-	<div class="form-group">
-		<label for="name">Name</label> <input ng-model="$ctrl.department.name"
-			class="form-control -border" placeholder="Name" type="text"
-			name="name">
-	</div>
-</div>
-<div class="action-button horizontal-align -end">
-        <input type="submit" name="commit" value="{{ $ctrl.button }}" class="btn btn-create btn-md" data-disable-with="Save">
+  <div class="horizontal-align -between">
+    <div class="form-group">
+      <label for="code">Code</label>
+      <input
+        ng-model="$ctrl.department.code"
+        class="form-control -border"
+        autofocus="autofocus"
+        placeholder="Code"
+        type="text"
+        name="code"
+      />
     </div>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input
+        ng-model="$ctrl.department.name"
+        class="form-control -border"
+        placeholder="Name"
+        type="text"
+        name="name"
+      />
+    </div>
+  </div>
+  <div class="horizontal-align -end">
+    <input
+      type="submit"
+      name="commit"
+      value="{{ $ctrl.button }}"
+      class="btn btn-create btn-md"
+      data-disable-with="Save"
+    />
+  </div>
 </form>
+
+<div class="modal fade" id="confirmSaveAction">
+  <div class="modal-dialog -bg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Confirm Action
+        </h4>
+        <button class="close" data-dismiss="modal" type="button"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{$ctrl.itemName}}</p>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.saveFinishedGood($ctrl.event);"
+        >
+          Confirm
+        </button>
+        <button
+          class="button-link btn btn-create btn-sm"
+          ng-click="$ctrl.cancelEdit();"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -4,12 +4,10 @@ var areaForm = {
     company: '<',
     button: '@',
     message: '@',
-    onSubmit: '&'
+    onSubmit: '&',
   },
   templateUrl: './area-form.html',
-  controller: 'AreaFormController'
+  controller: 'AreaFormController',
 };
 
-angular
-  .module('admin.maintenance')
-  .component('areaForm', areaForm);
+angular.module('admin.maintenance').component('areaForm', areaForm);

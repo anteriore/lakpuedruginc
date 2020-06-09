@@ -1,5 +1,9 @@
-
-function ProductReceivingsController($state, ProductReceivingsService, $rootScope, _) {
+function ProductReceivingsController(
+  $state,
+  ProductReceivingsService,
+  $rootScope,
+  _
+) {
   var ctrl = this;
   ctrl.productReceivingSlips = [];
 
@@ -7,30 +11,31 @@ function ProductReceivingsController($state, ProductReceivingsService, $rootScop
   ctrl.searchDate = '';
   ctrl.sortType = 'date';
   ctrl.sortReverse = false;
-  
+
   ctrl.$onInit = function () {
-	  ctrl.addProductReceivings = false;
-	  ctrl.error = null;
-	  loadProductReceivings();
+    ctrl.addProductReceivings = false;
+    ctrl.error = null;
+    loadProductReceivings();
   };
-  
-  function loadProductReceivings(){
-	  ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
-	  ctrl.company = $rootScope.selectedCompany;
-	  ProductReceivingsService.listByCompany(ctrl.company.id).then(function(response){
-	  	  console.log("list response: " + JSON.stringify(response.data));
-		  ctrl.productReceivingSlips = response.data;
-	  });
+
+  function loadProductReceivings() {
+    ctrl.user = JSON.parse(window.localStorage.getItem('currentUser'));
+    ctrl.company = $rootScope.selectedCompany;
+    ProductReceivingsService.listByCompany(ctrl.company.id).then(function (
+      response
+    ) {
+      console.log('list response: ' + JSON.stringify(response.data));
+      ctrl.productReceivingSlips = response.data;
+    });
   }
-  
-  ctrl.openModal = function(inventory){
-	  ctrl.prs = inventory;
-	  
+
+  ctrl.openModal = function (inventory) {
+    ctrl.prs = inventory;
   };
-  
+
   ctrl.createNewPRS = function (event) {
-	  console.log("new mis");
-	    $state.go('product-receiving-new');
+    console.log('new mis');
+    $state.go('product-receiving-new');
   };
 }
 
