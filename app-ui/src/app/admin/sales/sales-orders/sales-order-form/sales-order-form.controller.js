@@ -40,6 +40,21 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
 
 
   ctrl.submitForm = function () {
+    //check muna kung may negative dun sa inventory
+    console.log("checking inventory");
+    console.log(ctrl.so.products);
+    var showerrormodal = false;
+    for (var i = 0; i < ctrl.so.products.length; i++) {
+      if (ctrl.so.products[i].sum < ctrl.so.products[i].quantity) {
+        showerrormodal = true;
+      }
+
+    }
+    if (showerrormodal) {
+      $("#errormodal").modal('show');
+      return;
+    }
+
     console.log('submitForm: POTANGINA ' + JSON.stringify(ctrl.so));
     for (var i = 0; i < ctrl.so.products.length; i++) {
       ctrl.so.products[i].depot = ctrl.so.depot;
@@ -59,11 +74,15 @@ function SalesOrderFormController($state, SalesOrdersService, ItemsService, Prod
 
 
     if ($event.keyCode === 13) {
+      // console.log("calling showerror modal");
+      // $("#errormodal").modal('show');
+
 
       var form = $event.target.form;
       var index = Array.prototype.indexOf.call(form, $event.target);
       form.elements[index + 1].focus();
       console.log(index);
+
       $event.preventDefault();
     }
   };

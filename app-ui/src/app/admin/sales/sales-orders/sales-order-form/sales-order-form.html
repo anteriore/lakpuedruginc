@@ -172,5 +172,16 @@
 
 <find-fg-inventory-modal fglist="$ctrl.so.products" fglistview="$ctrl.fglistview" message="{{ $ctrl.error }}">
 </find-fg-inventory-modal>
+<div class='modal fade' id='errormodal'>
+	<div class="modal-dialog -bg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					insufficient inventory for the selected item.
+				</h4>
+			</div>
+		</div>
+	</div>
+</div>
 <find-client-modal client="$ctrl.so.client" message="{{ $ctrl.error }}" button="Select Client">
 </find-client-modal>
