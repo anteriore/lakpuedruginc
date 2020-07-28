@@ -25,3 +25,4 @@ nbdist/
 /bin
 superadmin/src/main/resources/application.yml
 app-ui/dist
+app-ui/anteriore.pem
