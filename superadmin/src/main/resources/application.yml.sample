@@ -17,7 +17,3 @@ spring:
     hibernate:
       ddl-auto: create
 
-ssh -i "anteriore.pem" ec2-user@ec2-3-14-80-255.us-east-2.compute.amazonaws.com
-ssh -i "anteriore.pem" ec2-user@ec2-13-58-35-141.us-east-2.compute.amazonaws.com
-
-
