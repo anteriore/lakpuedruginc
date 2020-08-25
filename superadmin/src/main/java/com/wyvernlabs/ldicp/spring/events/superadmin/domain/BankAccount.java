@@ -19,13 +19,15 @@ public class BankAccount {
 	private String name;
 	private String address;
 
-
-	public BankAccount(long id, String code, String name) {
-		this.id = id;
-		this.code = code;
-		this.name = name;
-	
+        public BankAccount() {
 	}
+
+	public BankAccount(String name, String code, String address) {
+		this.name = name;
+		this.code = code;
+		this.address = address;
+	}
+
 	public Long getId() {
 		return id;
 	}
