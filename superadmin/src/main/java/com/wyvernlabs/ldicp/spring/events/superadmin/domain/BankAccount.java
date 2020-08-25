@@ -19,6 +19,13 @@ public class BankAccount {
 	private String name;
 	private String address;
 
+
+	public BankAccount(long id, String code, String name) {
+		this.id = id;
+		this.code = code;
+		this.name = name;
+	
+	}
 	public Long getId() {
 		return id;
 	}
