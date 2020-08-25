@@ -23,5 +23,11 @@ public class BankAccountData {
 		bdo.setAddress("BDO Corporate Center, 7899 Makati Avenue, Makati City.");
 		bdo.setCode("BDO");
 		bankAccountRepository.save(bdo);
+
+		BankAccount BPIMAXII3185384461 = new BankAccount( "3185384461","DB0006","BPI MAXI I");
+BankAccount BPIMAXI23185384488 = new BankAccount( "3185384488","DB0007","BPI MAXI 2");
+BankAccount EPCIB1230001487 = new BankAccount( "1230001487","DB0008","EPCIB");
+
+
 	}
 }
