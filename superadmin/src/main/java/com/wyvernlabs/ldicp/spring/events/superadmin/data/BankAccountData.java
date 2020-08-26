@@ -24,7 +24,8 @@ public class BankAccountData {
 		bdo.setCode("BDO");
 		bankAccountRepository.save(bdo);
 
-		BankAccount BPI3371000142 = new BankAccount( "3371000142","DB0000","BPI");
+		BankAccount BPI3371000142 = new BankAccount( "3371000142","DB0000","BPI");bankAccountRepository.save(BPI3371000142);
+
 BankAccount BPI3371000134 = new BankAccount( "3371000134","DB0001","BPI");
 BankAccount BDO1358001027 = new BankAccount( "1358001027","DB0002","BDO");
 BankAccount PCIB5172014011 = new BankAccount( "5172014011","DB0003","PCIB");
