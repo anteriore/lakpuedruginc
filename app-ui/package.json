@@ -10,7 +10,8 @@
     "start": "gulp",
     "test": "karma start",
     "build": "gulp build",
-    "deploy": "gulp production"
+    "deploy": "gulp production",
+    "aws-deploy": "aws s3 sync dist/ s3://lakpue"
   },
   "license": "MIT",
   "repository": "https://github.com/toddmotto/angular-1-5-components-app",
