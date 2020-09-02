@@ -24,8 +24,8 @@ public class BankAccountData {
 		bdo.setCode("BDO");
 		bankAccountRepository.save(bdo);
 
-		BankAccount BPI3371000142 = new BankAccount( "3371000142","DB0000","BPI");bankAccountRepository.save(BPI3371000142);
 
+		BankAccount BPI3371000142 = new BankAccount( "3371000142","DB0000","BPI");
 BankAccount BPI3371000134 = new BankAccount( "3371000134","DB0001","BPI");
 BankAccount BDO1358001027 = new BankAccount( "1358001027","DB0002","BDO");
 BankAccount PCIB5172014011 = new BankAccount( "5172014011","DB0003","PCIB");
@@ -42,7 +42,7 @@ BankAccount MBTC32508058622 = new BankAccount( "32508058622","DB0013","MBTC");
 BankAccount ISB173009804 = new BankAccount( "173009804","DB0014","ISB");
 BankAccount DBP58264059 = new BankAccount( "58264059","DB0015","DBP");
 BankAccount DBP5418344051 = new BankAccount( "5418344051","DB0016","DBP");
-BankAccount DBP5418344052 = new BankAccount( "5418344051","DB0017","DBP");
+BankAccount DBP5418344051 = new BankAccount( "5418344051","DB0017","DBP");
 BankAccount BDO1350000025 = new BankAccount( "1350000025","DB0018","BDO");
 BankAccount BDO168015001 = new BankAccount( "168015001","DB0019","BDO");
 BankAccount MBTC7250804039 = new BankAccount( "7250804039","DB0020","MBTC");
@@ -91,5 +91,73 @@ BankAccount CHINASA100300016558 = new BankAccount( "100300016558","00000058","CH
 BankAccount CBCCA100300016558 = new BankAccount( "100300016558","00000072","CBC-CA");
 
 
+bankAccountRepository.save( BPI3371000142);
+bankAccountRepository.save( BPI3371000134);
+bankAccountRepository.save( BDO1358001027);
+bankAccountRepository.save( PCIB5172014011);
+bankAccountRepository.save( BPI3373003149);
+bankAccountRepository.save( BPI3373003157);
+bankAccountRepository.save( BPIMAXII3185384461);
+bankAccountRepository.save( BPIMAXI23185384488);
+bankAccountRepository.save( EPCIB1230001487);
+bankAccountRepository.save( EPCIB1280014830);
+bankAccountRepository.save( MBTC72508058682);
+bankAccountRepository.save( MBTC72508058501);
+bankAccountRepository.save( MBTC72508058641);
+bankAccountRepository.save( MBTC32508058622);
+bankAccountRepository.save( ISB173009804);
+bankAccountRepository.save( DBP58264059);
+bankAccountRepository.save( DBP5418344051);
+bankAccountRepository.save( DBP5418344051);
+bankAccountRepository.save( BDO1350000025);
+bankAccountRepository.save( BDO168015001);
+bankAccountRepository.save( MBTC7250804039);
+bankAccountRepository.save( BDO160398282);
+bankAccountRepository.save( MBTC3250805854);
+bankAccountRepository.save( EPCIB1239007658);
+bankAccountRepository.save( PSB18112001245);
+bankAccountRepository.save( DBP52334559);
+bankAccountRepository.save( BDO160459222);
+bankAccountRepository.save( BDO168016938);
+bankAccountRepository.save( BPI3184032626);
+bankAccountRepository.save( BDO168016997);
+bankAccountRepository.save( BDO160459230);
+bankAccountRepository.save( MBTC2503250805);
+bankAccountRepository.save( MBTC2507250805);
+bankAccountRepository.save( MBTC25022500029);
+bankAccountRepository.save( BPI3180004709);
+bankAccountRepository.save( BPI3180004717);
+bankAccountRepository.save( MBTC7250805876);
+bankAccountRepository.save( BPI3374001441);
+bankAccountRepository.save( WPB101001646);
+bankAccountRepository.save( ALLIEDBNK1551006817);
+bankAccountRepository.save( ALLIEDBNK1551006825);
+bankAccountRepository.save( BPISA3180013597);
+bankAccountRepository.save( BPI3373003327);
+bankAccountRepository.save( BPICA3180015654);
+bankAccountRepository.save( BPI3378196573);
+bankAccountRepository.save( BPI3378196476);
+bankAccountRepository.save( BPI3375181173);
+bankAccountRepository.save( UB590071221);
+bankAccountRepository.save( USDPNB21558001499);
+bankAccountRepository.save( PNBUSDTD21558001499);
+bankAccountRepository.save( PNBUSD21552002747);
+bankAccountRepository.save( PNBALB21152002747);
+bankAccountRepository.save( USDACCT100160945305);
+bankAccountRepository.save( CA602900001060);
+bankAccountRepository.save( CA602900001061);
+bankAccountRepository.save( CBCCHINA602900001061);
+bankAccountRepository.save( MBTC2507250513166);
+bankAccountRepository.save( PNBUSD128660037294);
+bankAccountRepository.save( MBTCUSD2502250004138);
+bankAccountRepository.save( USDTDBPI3378201941);
+bankAccountRepository.save( MAXI3373196079);
+bankAccountRepository.save( BPIMAXIS3183630503);
+bankAccountRepository.save( CHINASA100300016558);
+bankAccountRepository.save( CBCCA100300016558);
+
+
+
+		
 	}
 }
