@@ -14,10 +14,14 @@ public class BankAccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false, unique = true)
-	private string id;
+	private String id;
 	private String code;
 	private String name;
 	private String address;
+
+	public BankAccount(){
+		
+	}
 
 	public BankAccount(String id, String code, String name) {
 		this.id = id;
@@ -25,11 +29,11 @@ public class BankAccount {
 		this.name = name;
 
 }
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(final Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

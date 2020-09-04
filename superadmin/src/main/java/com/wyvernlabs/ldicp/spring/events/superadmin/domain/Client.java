@@ -39,6 +39,21 @@ public class Client {
 	private Double maxCreditLimit;
 	private Double discount;
 	private int yearsInBusiness;
+public Client(){
+	
+}
+	public Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
+	{
+		this.code=code;
+		this.name=name;
+		this.businessAddress=Address;
+		this.deliveryAddress=Address;
+		this.proprietor=proprietor;
+		this.telephoneNumbers=telephoneNumbers;
+		this.terms=terms;
+		this.tin=tin;
+		
+	}
 
 	public String getProprietor() {
 		return proprietor;
