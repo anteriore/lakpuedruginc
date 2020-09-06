@@ -14,26 +14,27 @@ public class BankAccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false, unique = true)
-	private String id;
+	private Long id;
 	private String code;
 	private String name;
 	private String address;
+	private String accountNumber;
 
 	public BankAccount(){
 		
 	}
 
 	public BankAccount(String id, String code, String name) {
-		this.id = id;
+		this.accountNumber =id;
 		this.code = code;
 		this.name = name;
 
-}
-	public String getId() {
+	}
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
