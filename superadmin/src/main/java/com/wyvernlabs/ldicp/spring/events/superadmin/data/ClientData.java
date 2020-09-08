@@ -101,11 +101,11 @@ public class ClientData {
 
 
 		//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
-
-		Client clientN= new Client("CM1","shollibee","Shmadress","SHmoprietor","teliphone1010101",30,"tin1020","vat1010");
-		clientRepository.save(clientN);
+	
+		//Client clientN = new Client("CM1","shollibee","Shmadress","SHmoprietor","teliphone1010101",30,"tin1020","vat1010");
+		//clientRepository.save(clientN);
 		
-
+	
 
 
 
