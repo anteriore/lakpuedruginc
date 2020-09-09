@@ -18,6 +18,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesRepReposito
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 
 
@@ -139,11 +140,12 @@ public class ClientData {
 
 
 	public void readCSV(String pathToCsv){
-        String csvFile = "C:/Users/miguel/Desktop/lakpuedruginc/superadmin/src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/data/APECSV";
+		String csvFile = "src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/data/APECSV.csv";
         BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
-
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		
         try {
 				
             br = new BufferedReader(new FileReader(csvFile));
@@ -152,7 +154,7 @@ public class ClientData {
                 // use comma as separator
                 String[] data = line.split(cvsSplitBy);
 
-                System.out.println(" [data= " + data[0] + " , data1=" + data[5] + "]");
+                System.out.println(" [data= " + line + "]");
 
             }
 
