@@ -14,6 +14,13 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ClientRepository
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesRepRepository;
 
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+
 @Component
 public class ClientData {
 	private CompanyRepository companyRepository;
@@ -108,6 +115,7 @@ public class ClientData {
 	
 
 
+		readCSV("APECSV.csv");
 
 
 
@@ -123,6 +131,45 @@ public class ClientData {
 
 
 
+	}
+
+
+
+
+
+
+	public void readCSV(String pathToCsv){
+        String csvFile = "C:/Users/miguel/Desktop/lakpuedruginc/superadmin/src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/data/APECSV";
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
+
+        try {
+				
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
+
+                // use comma as separator
+                String[] data = line.split(cvsSplitBy);
+
+                System.out.println(" [data= " + data[0] + " , data1=" + data[5] + "]");
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+	
 
 	}
 	
