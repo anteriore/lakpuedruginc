@@ -140,22 +140,39 @@ public class ClientData {
 
 
 	public void readCSV(String pathToCsv){
-		String csvFile = "src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/data/APECSV.csv";
+		String csvFile = "src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/clientData.csv";
         BufferedReader br = null;
         String line = "";
-        String cvsSplitBy = ",";
-		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
 		
-        try {
-				
+        try {				
             br = new BufferedReader(new FileReader(csvFile));
             while ((line = br.readLine()) != null) {
 
-                // use comma as separator
-                String[] data = line.split(cvsSplitBy);
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+				//for (int i = 0; i < data.length; i++) {
+					//System.out.print(i+")["+ data[i].replace("\"", "")+"]" );
+					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
 
-                System.out.println(" [data= " + line + "]");
+					Client tempclient = new Client();
 
+
+					tempclient.setCode(data[0].replace("\"", ""));
+					tempclient.setName(data[1].replace("\"", ""));
+					tempclient.setBusinessAddress(data[2].replace("\"", ""));tempclient.setDeliveryAddress(data[2].replace("\"", ""));
+					tempclient.setProprietor(data[3].replace("\"", ""));
+					tempclient.setTelephoneNumbers(data[4].replace("\"", ""));
+					tempclient.setTerms(Integer.parseInt( data[5].replace("\"", "")));
+					tempclient.setTin(data[6].replace("\"", ""));
+					tempclient.setVat(data[7].replace("\"", ""));
+					clientRepository.save(tempclient);
+
+
+
+
+				 // }
+				 // System.out.println("");
+              
             }
 
         } catch (FileNotFoundException e) {
@@ -174,6 +191,9 @@ public class ClientData {
 	
 
 	}
+
+
+
 	
 	
 }

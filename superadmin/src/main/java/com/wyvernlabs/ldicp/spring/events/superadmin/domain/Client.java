@@ -24,6 +24,7 @@ public class Client {
 	private String code;
 	private String name;
 	private String tin;
+	private String vat;
 	private String proprietor;
 	private String businessAddress;
 	private String lineOfBusiness;
@@ -52,7 +53,7 @@ public Client(){
 		this.telephoneNumbers=telephoneNumbers;
 		this.terms=terms;
 		this.tin=tin;
-		
+		this.vat=vat;
 	}
 
 	public String getProprietor() {
@@ -140,6 +141,15 @@ public Client(){
 
 	public void setTin(String tin) {
 		this.tin = tin;
+	}
+
+
+	public String getVat() {
+		return vat;
+	}
+
+	public void setVat(String vat) {
+		this.vat = vat;
 	}
 
 	public Company getCompany() {
