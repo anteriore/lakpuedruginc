@@ -140,10 +140,10 @@ public class ClientData {
 
 
 	public void readCSV(String pathToCsv){
-		String csvFile = "src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/clientData.csv";
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/clientData.csv";
         BufferedReader br = null;
         String line = "";
-
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
         try {				
             br = new BufferedReader(new FileReader(csvFile));
