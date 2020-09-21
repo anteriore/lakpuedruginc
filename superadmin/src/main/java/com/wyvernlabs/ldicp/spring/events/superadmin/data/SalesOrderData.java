@@ -49,7 +49,7 @@ public class SalesOrderData {
 		salesOrder.setClient(client);
 		salesOrder.setCompany(company);
 		salesOrder.setDate(new Date());
-		salesOrder.setNumber("0001");
+		salesOrder.setNumber("SO12345");
 		salesOrder.setPreparedBy(user);
 		List<SalesOrderProduct> products = new ArrayList<SalesOrderProduct>();
 		SalesOrderProduct salesProduct = new SalesOrderProduct();

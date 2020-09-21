@@ -3,16 +3,14 @@
     "globalConfig": {
       "environment": "local",
       "version": "dev-1.0.18",
-      //"baseUrl": "http://3.133.94.170:9000"
-      "baseUrl": "http://localhost:9000"
+      "baseUrl": "http://3.133.94.170:9000"
     }
   },
   "production": {
     "globalConfig": {
       "environment": "production",
       "version": "prod-v1.0.18",
-      // "baseUrl": "http://3.133.94.170:9000"
-      "baseUrl": "http://localhost:9000"
+      "baseUrl": "http://3.133.94.170:9000"
     }
   }
 }
