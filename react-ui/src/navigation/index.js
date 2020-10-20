@@ -17,12 +17,13 @@ const Main = (props) => {
     )
 }
 
-const isAuthenticated = false
+//hard coded for now
+const signedIn = false
 
 function PrivateRoute({ children, ...rest }) {
     return (
       <Route {...rest} render={({ location }) =>
-      isAuthenticated ? (
+      signedIn ? (
             children
           ) : (
             <Redirect to={{ pathname: "/login" }}/>
