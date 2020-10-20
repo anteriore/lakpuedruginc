@@ -3,6 +3,7 @@ import * as actionTypes from '../actions/actionTypes';
 const initialState = {
     signedIn: false,
     user: null,
+    current: "dashboard"
 }
 
 const data = (state = initialState, action) => {

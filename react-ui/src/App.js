@@ -4,12 +4,13 @@ import { BrowserRouter } from "react-router-dom";
 
 import Main from './navigation/';
 import { store } from './redux/store'
+import './App.css';
 
 function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <div>
+        <div className="App">
           <Main/>
         </div>
       </BrowserRouter>

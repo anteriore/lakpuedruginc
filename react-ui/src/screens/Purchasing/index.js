@@ -2,12 +2,12 @@ import React from 'react';
 
 import Container from '../../components/container/';
 
-const Users = (props) => {
+const Purchasing = (props) => {
     return (
         <Container location={props.location}>
-            Users
+            Purchasing
         </Container>
     )
 }
 
-export default Users
+export default Purchasing

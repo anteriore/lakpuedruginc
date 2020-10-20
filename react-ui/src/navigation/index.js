@@ -9,7 +9,7 @@ const Main = (props) => {
         <div>
             <Switch>
                 <Route path="/login" component={Login} />
-                <PrivateRoute path="">
+                <PrivateRoute path="/">
                     <AdminRoutes/>
                 </PrivateRoute>
             </Switch>
@@ -18,7 +18,7 @@ const Main = (props) => {
 }
 
 //hard coded for now
-const signedIn = false
+const signedIn = true
 
 function PrivateRoute({ children, ...rest }) {
     return (

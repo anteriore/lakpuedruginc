@@ -2,12 +2,12 @@ import React from 'react';
 
 import Container from '../../components/container/';
 
-const Users = (props) => {
+const RND = (props) => {
     return (
         <Container location={props.location}>
-            Users
+            RND
         </Container>
     )
 }
 
-export default Users
+export default RND

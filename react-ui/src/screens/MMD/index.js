@@ -2,12 +2,12 @@ import React from 'react';
 
 import Container from '../../components/container/';
 
-const Users = (props) => {
+const MMD = (props) => {
     return (
         <Container location={props.location}>
-            Users
+            MMD
         </Container>
     )
 }
 
-export default Users
+export default MMD

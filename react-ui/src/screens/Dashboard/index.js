@@ -1,13 +1,18 @@
 import React from 'react';
+import { Row, Col } from 'antd';
 
-import SideNav from '../../components/SideNav'
+import Container from '../../components/container/';
 
 const Dashboard = (props) => {
     return (
-        <div>
-            Dashboard
-            <SideNav/>
-        </div>
+        <Container location={props.location}>
+            <Row>
+                Dashboard
+            </Row>
+            <Row>
+                Tabs
+            </Row>
+        </Container>
     )
 }
 
