@@ -1,11 +1,15 @@
 import { combineReducers } from 'redux';
 
-import login from './auth/reducers/';
+import auth from './auth/reducers/';
+import login from '../screens/Login/redux/reducers/';
 import dashboard from '../screens/Dashboard/redux/reducers/';
+import users from '../screens/Users/redux/reducers/';
 
 const rootReducer = combineReducers({
+    auth,
     login,
-    dashboard
+    dashboard,
+    users
 })
 
 export default rootReducer
