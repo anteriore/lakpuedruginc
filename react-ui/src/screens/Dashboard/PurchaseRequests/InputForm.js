@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Form, Input, Button, DatePicker } from 'antd';
+import { Row, Col, Typography, Form, Input, Button, DatePicker, message, Modal, Table } from 'antd';
 import { useParams, useHistory } from "react-router-dom";
 import moment from 'moment';
 
@@ -13,8 +13,65 @@ const InputForm = (props) => {
     const [department, setDepartment] = useState(null);
     const [remarks, setRemarks] = useState(null);
 
+    //dummy data
+    const [columns, setColumns] = useState([
+        {
+            title: 'Type',
+            dataIndex: 'type',
+            key: 'type',   
+        },
+        {
+            title: 'Code',
+            dataIndex: 'code',
+            key: 'code',   
+        },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',   
+        },
+        {
+            title: 'Unit',
+            dataIndex: 'unit',
+            key: 'unit',   
+        },
+        {
+            title: 'Current Stocks',
+            dataIndex: 'stocks',
+            key: 'stocks',   
+        },
+        {
+            title: 'Pending PR',
+            dataIndex: 'purchase_request',
+            key: 'purchase_request',   
+        },
+        {
+            title: 'Pending PO',
+            dataIndex: 'purchase_order',
+            key: 'purchase_order',   
+        },
+        {
+            title: 'Quarantined',
+            dataIndex: 'quarantined',
+            key: 'quarantined',   
+        }
+    ])
+    
+    const [data, setData] = useState([])
+
+    const dummyData = [
+        {
+            'id':'1',
+            'number': 'aaaaa',
+            'date':'aaaaaa',
+            'dateNeeded':'aaaaaa',
+            'department':'aaaaaa',
+            'status':'aaaaaa'
+        },
+    ]
+
     const { id } = useParams();
-    const history = useHistory(); 
+    const history = useHistory();
 
     useEffect(() => {
         if(typeof(id) !== 'undefined' && id != null){
@@ -28,11 +85,34 @@ const InputForm = (props) => {
 
     const onFinish = (values) => {
         console.log('Success:', values);
+
+        //save data to database
+
+        message.success('Successfully saved')
+        history.goBack()
     };
     
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
+
+    const renderColumns = () => {
+        var filteredColumn = columns.slice()
+        const inputColumn = [
+            {
+                title: 'Requested',
+                key: 'requested',
+                render: row => {
+                    return (
+                        <Form.Item>
+                            <Input></Input>
+                        </Form.Item>
+                    )
+                }
+
+            }
+        ]
+    }
 
     return (
         <div>
@@ -78,7 +158,28 @@ const InputForm = (props) => {
                         >
                             <Input/>
                         </Form.Item>
-
+                        {/*
+                        <Form.List
+                            label="Items"
+                            name="items"
+                            rules={[{ required: true }]}
+                        >
+                            <Table
+                                dataSource={data}
+                                columns={columns} 
+                            />
+                        </Form.List>
+                        <Form.Item  style={styles.tailLayout}>
+                            <Button
+                            onClick={() => {
+                                console.log(setData(dummyData))
+                            }}
+                            style={{ width: "40%", float: "right" }}
+                            >
+                                Select item(s)
+                            </Button>
+                        </Form.Item>
+                        */}
                         <Form.Item
                             label="Remarks"
                             name="remarks"
@@ -107,15 +208,16 @@ export default InputForm
 const styles = {
     layout: {
         labelCol: { 
-            span: 8 
+            span: 6 
         },
         wrapperCol: { 
-            span: 16 
+            span: 15 
         },
     },
     tailLayout: {
         display: "flex",
         flexDirection: "row-reverse",
+        width: "87.5%"
         
     },
     datePicker: {

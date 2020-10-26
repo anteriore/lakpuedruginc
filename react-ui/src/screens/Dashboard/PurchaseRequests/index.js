@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Tabs, Table, Typography, Button } from 'antd';
+import { Row, Col, Popconfirm, message, Modal, Table, Typography, Button } from 'antd';
 import { 
     EditOutlined,
     DeleteOutlined,
@@ -22,6 +22,8 @@ const PurchaseRequests = (props) => {
     const [sorter, setSorter] = useState(null)
     const [filters, setFilters] = useState(null)
     const [searchText, setSearchText] = useState(null)
+    const [displayModal, setDisplayModal] = useState(false)
+    const [displayData, setDisplayData] = useState(null)
 
     //dummy data
     const [columns, setColumns] = useState([
@@ -80,11 +82,16 @@ const PurchaseRequests = (props) => {
     ])
 
     const { path } = useRouteMatch();
-    const history = useHistory();    
+    const history = useHistory();
+    
+    const confirm = (e) => {
+        e.stopPropagation();
+        message.warning("Successfully deleted")
+    }
 
-    const columnfilter = () => {
+    const renderColumns = () => {
         var filteredColumn = columns.slice()
-        const editpart = [
+        const editColumn = [
             {
                 title:'',                   
                 render: row => {
@@ -102,6 +109,15 @@ const PurchaseRequests = (props) => {
                             >
                                 Edit
                             </Button>
+                            <Popconfirm
+                                title="Would you like to delete this?"
+                                onConfirm={confirm}
+                                onCancel={(e) => {
+                                    e.stopPropagation();
+                                }}
+                                okText="Yes"
+                                cancelText="No"
+                            >
                             <Button 
                                 icon={<DeleteOutlined />} 
                                 type="text" 
@@ -113,13 +129,14 @@ const PurchaseRequests = (props) => {
                             >
                                 Delete
                             </Button>
+                            </Popconfirm>
                         </div>
                     );                                      
                 }
             }
         ]
        
-          filteredColumn = filteredColumn.concat(editpart)
+          filteredColumn = filteredColumn.concat(editColumn)
         
         return(filteredColumn)
     }
@@ -176,9 +193,6 @@ const PurchaseRequests = (props) => {
         handleSorter(newSorter)     
     };
   
-  
-  
-  
     const handleSorter = (newSorter) => {
   
         if(sorter !== newSorter && sorter !== null){
@@ -196,59 +210,83 @@ const PurchaseRequests = (props) => {
   
     }
 
+    const renderModal = (record, rowIndex) => {
+        console.log("Row " + rowIndex + record)
+        setDisplayData(record)
+        setDisplayModal(true)
+    }
+
+    const closeModal = () => {
+        setDisplayModal(false)
+        setDisplayData(null)
+    }
+
     return (
-            <Switch>
-                <Route path={path + "/new"}>
-                    <InputForm title={"New Purchase Request"}/>
-                </Route>
-                <Route path={path + "/:id"}>
-                    <InputForm title={"Edit Purchase Request"}/>
-                </Route>
-                <Route path={path}>
-                    <Row>
-                        <Col span={20}>
-                            <Title level={3}  style={{ "float": "left" }}>{props.title}</Title>
-                            <Button 
-                                style={{ "float": "right" , marginRight: "1%"}} 
-                                icon={<PlusOutlined />}
-                                onClick={(e) => { 
-                                    console.log(history)
-                                    history.push(path + "/new")
-                                }}
-                            >
-                                Add
-                            </Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={20}>
-                        <Table
-                            loading={loading}
-                            dataSource={data}
-                            columns={columnfilter()} 
-                            sorter={true}
-                            pagination={ {
-                                onChange: (page, pageSize) => { onChangePage(page, pageSize) },
-                                showTotal: (total, range)	=> { onChangeRange(total, range) },   
-                                onShowSizeChange:(current, size)=>{ onChangePageSize(current, size) },  
-                                current: currentPage,                               
-                                showQuickJumper:true,                              
-                                defaultPageSize: defaultpageSize,
-                                pageSizeOptions:[defaultpageSize, '20', '50', '100'],
-                                showSizeChanger:true,
-                                total:dataCount }
-                            }
-                            onRow={(record, rowIndex) => {
-                                    return {                             
-                                        onClick: () => {console.log("Row")}, // click row
-                                    };
+        <Switch>
+            <Route path={path + "/new"}>
+                <InputForm title={"New Purchase Request"}/>
+            </Route>
+            <Route path={path + "/:id"}>
+                <InputForm title={"Edit Purchase Request"}/>
+            </Route>
+            <Route path={path}>
+                <Row>
+                    <Col span={20}>
+                        <Title level={3}  style={{ "float": "left" }}>{props.title}</Title>
+                        <Button 
+                            style={{ "float": "right" , marginRight: "1%"}} 
+                            icon={<PlusOutlined />}
+                            onClick={(e) => { 
+                                console.log(history)
+                                history.push(path + "/new")
                             }}
-                            onChange={handleTableChange}
-                        />
-                        </Col>
-                    </Row>
-                </Route>
-            </Switch>
+                        >
+                            Add
+                        </Button>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={20}>
+                    <Table
+                        loading={loading}
+                        dataSource={data}
+                        columns={renderColumns()} 
+                        sorter={true}
+                        pagination={ {
+                            onChange: (page, pageSize) => { onChangePage(page, pageSize) },
+                            showTotal: (total, range)	=> { onChangeRange(total, range) },   
+                            onShowSizeChange:(current, size)=>{ onChangePageSize(current, size) },  
+                            current: currentPage,                               
+                            showQuickJumper:true,                              
+                            defaultPageSize: defaultpageSize,
+                            pageSizeOptions:[defaultpageSize, '20', '50', '100'],
+                            showSizeChanger:true,
+                            total:dataCount }
+                        }
+                        onRow={(record, rowIndex) => {
+                                return {                             
+                                    onClick: () => {
+                                        renderModal(record, rowIndex)
+                                    },
+                                };
+                        }}
+                        onChange={handleTableChange}
+                    />
+                    </Col>
+                </Row>
+                <Modal
+                    title={ displayData !== null ? ("PRF Number " + displayData.number) : ("Data") }
+                    visible={displayModal}
+                    onOk={closeModal}
+                    onCancel={closeModal}
+                    width={1000}
+                    >
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                </Modal>
+            </Route>
+        </Switch>
     )
 }
 
