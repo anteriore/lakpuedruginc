@@ -23,11 +23,11 @@ export class Header extends Component {
                 <Col span={4}>
                     Lakpue Drug Inc.
                 </Col>
-                <Col span={12}>
+                <Col span={16}>
                 </Col>
-                <Col span={8}>
-                    <Dropdown.Button overlay={menu} placement="bottomCenter" icon={<UserOutlined />} style={{"float":"right", "padding": "1%"}}>
-                        First Name Last Name
+                <Col span={4}>
+                    <Dropdown.Button overlay={menu} placement="bottomCenter" icon={<UserOutlined />}>
+                        First Name Last Name <br/>
                     </Dropdown.Button>
                 </Col>
             </Row>
