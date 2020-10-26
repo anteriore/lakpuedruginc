@@ -27,7 +27,7 @@ const Container = props => {
                     <SideNav location={props.location}/>
                 </Col>
                 
-                <Col span={20}>
+                <Col span={20} style={{"padding":"1%"}}>
                     {props.children}
                 </Col>
             </Row>
