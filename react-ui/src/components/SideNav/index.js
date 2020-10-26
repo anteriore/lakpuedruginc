@@ -12,10 +12,11 @@ import {
 export class SideNav extends Component {
 
     render() {
-        console.log(this.props.location)
+        const current = "/" + this.props.location.pathname.split("/")[1]
+        console.log(current)
         return (
             <Menu
-                selectedKeys={[this.props.location.pathname]}
+                selectedKeys={[current]}
             >
                 <Menu.Item key="/dashboard" icon={<ProfileOutlined />}>
                     <Link to="/dashboard">Dashboard</Link>
