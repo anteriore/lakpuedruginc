@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Row, Col, Tabs, Table, Typography } from 'antd';
+import { Row, Col, Tabs, Table, Typography, Button } from 'antd';
 import { 
     EditOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
+import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
+
+import InputForm from './InputForm'
 
 const { Title } = Typography;
 
@@ -18,6 +22,8 @@ const PurchaseRequests = (props) => {
     const [sorter, setSorter] = useState(null)
     const [filters, setFilters] = useState(null)
     const [searchText, setSearchText] = useState(null)
+
+    //dummy data
     const [columns, setColumns] = useState([
         {
             title: 'PRF Number',
@@ -48,6 +54,7 @@ const PurchaseRequests = (props) => {
     
     const [data, setData] = useState([
         {
+            'id':'1',
             'number': 'aaaaa',
             'date':'aaaaaa',
             'dateNeeded':'aaaaaa',
@@ -55,6 +62,7 @@ const PurchaseRequests = (props) => {
             'status':'aaaaaa'
         },
         {
+            'id':'2',
             'number': 'aaaaa',
             'date':'aaaaaa',
             'dateNeeded':'aaaaaa',
@@ -62,6 +70,7 @@ const PurchaseRequests = (props) => {
             'status':'aaaaaa'
         },
         {
+            'id':'3',
             'number': 'aaaaa',
             'date':'aaaaaa',
             'dateNeeded':'aaaaaa',
@@ -69,6 +78,9 @@ const PurchaseRequests = (props) => {
             'status':'aaaaaa'
         }
     ])
+
+    const { path } = useRouteMatch();
+    const history = useHistory();    
 
     const columnfilter = () => {
         var filteredColumn = columns.slice()
@@ -78,12 +90,29 @@ const PurchaseRequests = (props) => {
                 render: row => {
                     return (
                         <div style={styles.crudColumn}>
-                            <div onClick={(e)=>{ console.log("Edit") }} style={styles.crudButton}>
-                                <EditOutlined />
-                            </div>
-                            <div onClick={(e)=>{ console.log("Delete") }} style={styles.crudButton}>
-                                <DeleteOutlined />
-                            </div>
+                            <Button 
+                                icon={<EditOutlined />} 
+                                type="text" 
+                                onClick={(e)=>{ 
+                                    e.stopPropagation(); 
+                                    console.log("Edit") 
+                                    console.log(row)
+                                    history.push(path + "/" + row.id)
+                                }}
+                            >
+                                Edit
+                            </Button>
+                            <Button 
+                                icon={<DeleteOutlined />} 
+                                type="text" 
+                                onClick={(e)=>{ 
+                                    e.stopPropagation(); 
+                                    console.log("Delete") 
+                                    console.log(row)
+                                }} 
+                            >
+                                Delete
+                            </Button>
                         </div>
                     );                                      
                 }
@@ -168,36 +197,58 @@ const PurchaseRequests = (props) => {
     }
 
     return (
-        <div>
-            <Row><Title level={3}>{props.title}</Title></Row>
-            <Row>
-                <Col span={20}>
-                <Table
-                    loading={loading}
-                    dataSource={data}
-                    columns={columnfilter()} 
-                    sorter={true}
-                    pagination={ {
-                        onChange: (page, pageSize) => { onChangePage(page, pageSize) },
-                        showTotal: (total, range)	=> { onChangeRange(total, range) },   
-                        onShowSizeChange:(current, size)=>{ onChangePageSize(current, size) },  
-                        current: currentPage,                               
-                        showQuickJumper:true,                              
-                        defaultPageSize: defaultpageSize,
-                        pageSizeOptions:[defaultpageSize, '20', '50', '100'],
-                        showSizeChanger:true,
-                        total:dataCount }
-                    }
-                    onRow={(record, rowIndex) => {
-                            return {                             
-                                onClick: () => {console.log("CLICK")}, // click row
-                            };
-                    }}
-                    onChange={handleTableChange}
-                />
-                </Col>
-            </Row>
-        </div>
+            <Switch>
+                <Route path={path + "/new"}>
+                    <InputForm title={"New Purchase Request"}/>
+                </Route>
+                <Route path={path + "/:id"}>
+                    <InputForm title={"Edit Purchase Request"}/>
+                </Route>
+                <Route path={path}>
+                    <Row>
+                        <Col span={20}>
+                            <Title level={3}  style={{ "float": "left" }}>{props.title}</Title>
+                            <Button 
+                                style={{ "float": "right" , marginRight: "1%"}} 
+                                icon={<PlusOutlined />}
+                                onClick={(e) => { 
+                                    console.log(history)
+                                    history.push(path + "/new")
+                                }}
+                            >
+                                Add
+                            </Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={20}>
+                        <Table
+                            loading={loading}
+                            dataSource={data}
+                            columns={columnfilter()} 
+                            sorter={true}
+                            pagination={ {
+                                onChange: (page, pageSize) => { onChangePage(page, pageSize) },
+                                showTotal: (total, range)	=> { onChangeRange(total, range) },   
+                                onShowSizeChange:(current, size)=>{ onChangePageSize(current, size) },  
+                                current: currentPage,                               
+                                showQuickJumper:true,                              
+                                defaultPageSize: defaultpageSize,
+                                pageSizeOptions:[defaultpageSize, '20', '50', '100'],
+                                showSizeChanger:true,
+                                total:dataCount }
+                            }
+                            onRow={(record, rowIndex) => {
+                                    return {                             
+                                        onClick: () => {console.log("Row")}, // click row
+                                    };
+                            }}
+                            onChange={handleTableChange}
+                        />
+                        </Col>
+                    </Row>
+                </Route>
+            </Switch>
     )
 }
 
@@ -207,9 +258,6 @@ const styles = {
     crudColumn: {
         display: "flex",
         flexDirection: "row"
-    },
-    crudButton: {
-        marginLeft: "15%",
     }
 
 }
