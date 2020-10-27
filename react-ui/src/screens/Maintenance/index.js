@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Row, Col, Tabs } from 'antd';
+import { Row, Col, Tabs, Typography } from 'antd';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
-
+import { routes as MaintenanceRoutes } from '../../navigation/maintenance';
 import Container from '../../components/container/';
 import ModulesGrid from '../../components/ModulesGrid';
 
 const { TabPane } = Tabs;
+const { Title } = Typography
 
 function callback(key) {
     console.log(key);
@@ -14,33 +15,31 @@ function callback(key) {
 const Maintenance = (props) => {
     const { path } = useRouteMatch();
     const [title, setTitle] = useState("Maintenance");
-    const [modules, setModules] = useState([]);
+    const [modules, setModules] = useState(MaintenanceRoutes);
 
     const renderRoutes = () => {
         var routes = []
-
-        for(var i = 0; i < modules.length; i++){
-            var ComponentTag = modules[i].component
-            routes.push(
-                <Route path={path + modules[i].path}>
-                    <Container location={{pathname: path + modules[i].path}}>
-                        <ComponentTag title={modules[i].title}/>
-                    </Container>
-                </Route>
-            )
-            
-        }
+        
+        modules.forEach((module, i) => {
+			let ComponentTag = module.component;
+			routes.push(
+				<Route key={i} path={path + module.path}>
+					<Container location={{pathname: path + module.path}}>
+						<ComponentTag title={module.title}/>
+					</Container>
+				</Route>
+			)
+        })
 
         return routes
     }
 
     return (
-            
         <Switch>
             <Route exact path={path}>
                 <Container location={{pathname: path}}>
                     <Row>
-                        {title}
+                        <Title level={3}>{title}</Title>
                     </Row>
                     <Row>
                         <Col span={24}>
