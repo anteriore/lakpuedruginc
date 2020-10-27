@@ -1,36 +1,46 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { useDispatch } from 'react-redux'
+
 import axiosInstance from '../../../utils/axios-instance';
-import * as actionTypes from '../actions/actionTypes';
-import authActionTypes from '../../../../redux/auth/actions/actionTypes'
+import { updateAuthState } from '../../../../redux/auth/'
 
-export const login = (payload) => {
-    return dispatch => {
-        dispatch({ type: actionTypes.LOGIN_START })
+const initialState = {}
 
-        const data = {
-            username: payload.username,
-            password: payload.password
-        }
-
-        console.log(data)
-        /*
-        axiosInstance.post('/api/login', data)
-            .then(response => {
-                if(response.status == 200){
-
-                    const authData = {
-                        signedIn: true,
-                        user = response.data.user
-                    }
-
-                    dispatch({
-                        type: authActionTypes.UPDATE_AUTH_STATE,
-                        payload: authData
-                    })
-
-                    dispatch({ type: actionTypes.LOGIN_SUCCESS })
-                }
-            })
-
-        */
+export const login = createAsyncThunk('login', async (payload) => {
+    const data = {
+        username: payload.username,
+        password: payload.password
     }
-}
+    
+    const response = await axiosInstance.post('api/login', data)
+    return response
+
+})
+
+const loginSlice = createSlice({
+    name: 'login',
+    initialState,
+    reducers: {},
+    extraReducers: {
+        [login.pending]: (state, action) => {
+            state.status = 'loading'
+        },
+        [login.fulfilled]: (state, action) => {
+            state.status = 'succeeded'
+            var authData = {
+                signedIn: true,
+                token: action.payload.data.token,
+                expired: action.payload.data.expired
+            }
+            const dispatch = useDispatch()
+
+            dispatch(updateAuthState(authData))
+        },
+        [login.rejected]: (state, action) => {
+            state.status = 'failed'
+            state.error = action.error.message
+        }
+    },
+})
+
+export default loginSlice.reducer
