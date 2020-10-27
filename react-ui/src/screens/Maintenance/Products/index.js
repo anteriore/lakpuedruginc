@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import InputForm from './InputForm';
 import { 
   Row, 
   Col, 
@@ -7,7 +8,7 @@ import {
   Input,
   DatePicker,
   Space,
-  Table
+  Table,
 } from 'antd';
 import {Switch, Route, useRouteMatch, useHistory} from 'react-router-dom';
 import { 
@@ -82,7 +83,7 @@ const Product = (props) => {
                   icon={<EditOutlined />} 
                   type="text" 
                   onClick={(e)=>{
-                    history.push(path + "/" + row.id)
+                    history.push(`${path}/${row.id}/edit`)
                   }}
                 >
                   Edit
@@ -110,6 +111,12 @@ const Product = (props) => {
 
   return (
     <Switch>
+      <Route path={`${path}/new`}>
+        <InputForm title="New Product"/>
+      </Route>
+      <Route path={`${path}/:id/edit`}>
+        <InputForm title="Edit Product"/>
+      </Route>
       <Route path={path}>
         <Row gutter={[8,24]}>
           <Col style={styles.headerPage} span={20}>
@@ -118,6 +125,7 @@ const Product = (props) => {
             </Title>
             <Button
               icon={ <PlusOutlined/> }
+              onClick={() => history.push(path + "/new") }
             >
               Add
             </Button>

@@ -258,6 +258,11 @@ const styles = {
     crudColumn: {
         display: "flex",
         flexDirection: "row"
+    },
+    tailLayout: {
+        display: "flex",
+        flexDirection: "row-reverse",
+        width: "87.5%"
+        
     }
-
 }

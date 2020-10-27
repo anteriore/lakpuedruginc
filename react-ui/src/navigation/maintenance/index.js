@@ -1,4 +1,4 @@
-import Product from '../../screens/Maintenance/SubMaintenance/Products';
+import Product from '../../screens/Maintenance/Products';
 
 export const routes = [
   {
