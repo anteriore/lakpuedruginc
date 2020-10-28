@@ -1,13 +1,11 @@
 import { combineReducers } from 'redux';
 
 import auth from './auth';
-import login from '../screens/Login/redux/reducers/';
-import dashboard from '../screens/Dashboard/redux/reducers/';
-import users from '../screens/Users/redux/reducers/';
+import dashboard from '../screens/Dashboard/redux';
+import users from '../screens/Users/redux';
 
 const rootReducer = combineReducers({
     auth,
-    login,
     dashboard,
     users
 })

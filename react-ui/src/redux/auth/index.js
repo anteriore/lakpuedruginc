@@ -19,6 +19,15 @@ export const login = createAsyncThunk('login', async (payload) => {
 
 })
 
+/*export const logout = createAsyncThunk('logout', async (payload) => {
+    
+    const response = await axiosInstance.post('api/logout')
+    return response
+
+})
+*/
+
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -42,7 +51,7 @@ const authSlice = createSlice({
         },
         [login.rejected]: (state, action) => {
             state.status = 'failed'
-            state.error = action.error.message
+            state.error = "Wrong username and/or password"
         }
     },
 })
