@@ -4,8 +4,9 @@ import axiosInstance from '../../utils/axios-instance';
 
 const initialState = {
     signedIn: false,
-    token: null,
-    expired: false
+    token: "",
+    expired: false,
+    user: ""
 }
 
 export const login = createAsyncThunk('login', async (payload) => {
@@ -36,7 +37,6 @@ const authSlice = createSlice({
             state.signedIn = action.payload.signedIn
             state.token = action.payload.token
             state.expired = action.payload.expired
-            console.log(state)
         }
     },
     extraReducers: {
@@ -45,9 +45,9 @@ const authSlice = createSlice({
         },
         [login.fulfilled]: (state, action) => {
             state.status = 'succeeded'
-            state.signedIn = true
             state.token = action.payload.data.token
             state.expired = action.payload.data.expired
+            state.signedIn = true
         },
         [login.rejected]: (state, action) => {
             state.status = 'failed'
