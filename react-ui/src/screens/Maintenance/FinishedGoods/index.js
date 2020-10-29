@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Row, 
   Col, 
@@ -23,20 +23,20 @@ const { RangePicker } = DatePicker;
 const FinishedGoods = (props) => {
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
-  const [formValues, setFormValues] = useState(null);
+  const [formValues, setFormValues] = useState('');
   const [mode, setMode] = useState('')
 
   const handleAddButton = () => {
-    setIsOpenForm(!isOpenForm);
     setModalTitle("Add Finished Good");
     setMode('add');
+    setIsOpenForm(!isOpenForm);
   }
 
   const handleEditButton = (row) => {
-    setIsOpenForm(!isOpenForm);
     setModalTitle("Edit Finished Good");
     setMode('edit');
     setFormValues(row);
+    setIsOpenForm(!isOpenForm);
   }
 
   const handleDeleteButton = (row) => {
@@ -45,20 +45,19 @@ const FinishedGoods = (props) => {
 
   const handleCancelButton = () => {
     setIsOpenForm(!isOpenForm);
-    setFormValues(null)
+    setFormValues('')
   }
 
   const onSubmit = (values) => {
     if(mode === 'edit'){
       // insert dispatch
       console.log('Updating Finished goods', values);
-      setFormValues(null);
-      setIsOpenForm(!isOpenForm);
     }else if( mode === 'add' ){
       // insert dispatch
-      setIsOpenForm(!isOpenForm);
       console.log('Adding Finished goods', values);
     }
+    setFormValues('');
+    setIsOpenForm(!isOpenForm);
   }
 
   return (

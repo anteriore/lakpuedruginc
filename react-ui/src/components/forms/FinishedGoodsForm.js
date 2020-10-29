@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Form,
   Modal,
-  Input
+  Input,
 } from 'antd';
+
 
 const FinishedGoodsForm = (props) => {
   const {
@@ -13,52 +14,56 @@ const FinishedGoodsForm = (props) => {
     onSubmit,
     values
   } = props;
-  const [form] = Form.useForm()
-  const [formValues, setFormValues] = useState('');
+
+  const [form] = Form.useForm();
+  
   useEffect(() => {
-    console.log("Values changed");
-    console.log(values);
-    setFormValues(values);
-    console.log(formValues);
-  },[values])
+    form.setFieldsValue(values);
+  },[values, form])
+
   return (
     <Modal
-        visible={visible}
-        cancelText="Cancel"
-        okText="Submit"
-        title={title}
-        onCancel={onCancel}
-        onOk={() => {
-          form
-            .validateFields()
-            .then(values => {
-              onSubmit(values);
-              form.resetFields();
-            })
-        }}
+      visible={visible}
+      cancelText="Cancel"
+      okText="Submit"
+      title={title}
+      onCancel={onCancel}
+      onOk={() => {
+        form
+          .validateFields()
+          .then(values => {
+            console.log(values);
+            onSubmit(values);
+            form.resetFields();
+          })
+          
+      }}
+      afterClose={() => {
+        form.resetFields();
+      }}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={values}
+        name="finished_goods"
       >
-        <Form
-          layout="vertical"
-          form={form}
-          name="finished_goods"
-          initialValues={formValues}
+        <Form.Item
+          label="Code"
+          name="fg_code"
+          rules={[{ required: true, message: 'Please provide a proper code!' }]}
         >
-          <Form.Item
-            label="Code"
-            name="fg_code"
-            rules={[{ required: true, message: 'Please provide a proper code!' }]}
-          >
-            <Input placeholder="Finished Goods Code" />
-          </Form.Item>
-          <Form.Item
-            label="Name"
-            name="fg_name"
-            rules={[{ required: true, message: 'Please provide a proper name!' }]}
-          >
-            <Input placeholder="Finished Goods Name"/>
-          </Form.Item>
-        </Form>
-      </Modal>
+          <Input placeholder="Please input code" />
+        </Form.Item> 
+        <Form.Item
+          label="Name"
+          name="fg_name"
+          rules={[{ required: true, message: 'Please provide a proper name!' }]}
+        >
+          <Input placeholder="Please input name"/>
+        </Form.Item>
+      </Form>
+    </Modal>
   )
 }
 

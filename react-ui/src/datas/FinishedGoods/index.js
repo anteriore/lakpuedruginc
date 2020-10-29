@@ -26,20 +26,23 @@ export const tableHeader = [
 
 export const dataFG = [
   {
+    key: '1',
     id: 1,
     fg_code: '12151',
     fg_name: "tuna",
     created_date: '12-12-20'
   },
   {
+    key: '2',
     id: 2,
-    fg_code: '12151',
+    fg_code: '1',
     fg_name: "cola",
     created_date: '12-12-20'
   },
   {
+    key: '3',
     id: 3,
-    fg_code: '12151',
+    fg_code: '3',
     fg_name: "beer",
     created_date: '12-12-20'
   }
