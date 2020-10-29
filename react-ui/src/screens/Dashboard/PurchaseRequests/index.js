@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Tabs, Table, Typography, Button } from 'antd';
 import { 
     EditOutlined,
@@ -6,7 +6,9 @@ import {
     PlusOutlined
 } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
 
+import { get, list, resetItemData } from './redux'
 import InputForm from './InputForm'
 
 const { Title } = Typography;
@@ -52,35 +54,16 @@ const PurchaseRequests = (props) => {
         }
     ])
     
-    const [data, setData] = useState([
-        {
-            'id':'1',
-            'number': 'aaaaa',
-            'date':'aaaaaa',
-            'dateNeeded':'aaaaaa',
-            'department':'aaaaaa',
-            'status':'aaaaaa'
-        },
-        {
-            'id':'2',
-            'number': 'aaaaa',
-            'date':'aaaaaa',
-            'dateNeeded':'aaaaaa',
-            'department':'aaaaaa',
-            'status':'aaaaaa'
-        },
-        {
-            'id':'3',
-            'number': 'aaaaa',
-            'date':'aaaaaa',
-            'dateNeeded':'aaaaaa',
-            'department':'aaaaaa',
-            'status':'aaaaaa'
-        }
-    ])
+    const data = useSelector(state => state.dashboard.purchaseRequests.listData)
 
+    const company = props.company
     const { path } = useRouteMatch();
-    const history = useHistory();    
+    const history = useHistory();
+    const dispatch = useDispatch(); 
+    
+    useEffect(() => {
+        dispatch(list({company: company}))
+    }, [])
 
     const columnfilter = () => {
         var filteredColumn = columns.slice()
@@ -199,10 +182,10 @@ const PurchaseRequests = (props) => {
     return (
             <Switch>
                 <Route path={path + "/new"}>
-                    <InputForm title={"New Purchase Request"}/>
+                    <InputForm title={"New Purchase Request"} resetItemData={resetItemData}/>
                 </Route>
                 <Route path={path + "/:id"}>
-                    <InputForm title={"Edit Purchase Request"}/>
+                    <InputForm title={"Edit Purchase Request"} get={get} resetItemData={resetItemData}/>
                 </Route>
                 <Route path={path}>
                     <Row>
