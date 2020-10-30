@@ -43,8 +43,8 @@ const processData = (data, action) => {
             var item = {
                 id: value.id,
                 number: value.number,
-                date: moment(new Date(value.date)).format("DD/MM/YYYY"),
-                dateNeeded: moment(new Date(value.date)).format("DD/MM/YYYY"),
+                date: value.date,
+                dateNeeded: value.dateNeeded,
                 department: value.department,
                 remarks: value.remarks,
                 requestedBy: value.requestedBy.email,
@@ -73,8 +73,8 @@ const processData = (data, action) => {
         processedData = {
             id: data.id,
             number: data.number,
-            date: moment(new Date(data.date)).format("DD/MM/YYYY"),
-            dateNeeded: moment(new Date(data.date)).format("DD/MM/YYYY"),
+            date: data.date,
+            dateNeeded: data.dateNeeded,
             department: data.department,
             remarks: data.remarks,
             requestedBy: data.requestedBy.email,
@@ -106,12 +106,10 @@ const purchaseRequestSlice = createSlice({
             }
             else{
                 state.status = 'failed'
-                state.error = action.error.message
             }
         },
         [list.rejected]: (state, action) => {
             state.status = 'failed'
-            state.error = action.error.message
         },
         [get.pending]: (state, action) => {
             state.status = 'loading'
@@ -123,7 +121,6 @@ const purchaseRequestSlice = createSlice({
             }
             else{
                 state.status = 'failed'
-                state.error = action.error.message
             }
         },
         [get.rejected]: (state, action) => {

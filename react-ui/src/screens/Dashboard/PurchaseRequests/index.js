@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { get, list, resetItemData } from './redux'
 import InputForm from './InputForm'
+import moment from 'moment';
 
 const { Title } = Typography;
 
@@ -35,12 +36,14 @@ const PurchaseRequests = (props) => {
         {
             title: 'PRF Date',
             dataIndex: 'date',
-            key: 'date',   
+            key: 'date',
+            render: (text) => moment(new Date(text)).format("DD/MM/YYYY")   
         },
         {
             title: 'Date Needed',
             dataIndex: 'dateNeeded',
-            key: 'dateNeeded',   
+            key: 'dateNeeded',
+            render: (text) => moment(new Date(text)).format("DD/MM/YYYY")    
         },
         {
             title: 'Department',
