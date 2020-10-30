@@ -6,7 +6,8 @@ const initialState = {
     signedIn: false,
     token: "",
     expired: false,
-    user: ""
+    user: "",
+    error: null
 }
 
 export const login = createAsyncThunk('login', async (payload) => {
@@ -37,6 +38,9 @@ const authSlice = createSlice({
             state.signedIn = action.payload.signedIn
             state.token = action.payload.token
             state.expired = action.payload.expired
+        },
+        resetErrorMsg(state, action) {
+            state.error = null
         }
     },
     extraReducers: {
@@ -44,18 +48,28 @@ const authSlice = createSlice({
             state.status = 'loading'
         },
         [login.fulfilled]: (state, action) => {
-            state.status = 'succeeded'
-            state.token = action.payload.data.token
-            state.expired = action.payload.data.expired
-            state.signedIn = true
+            if(action.payload !== undefined && action.payload.status == 200){
+                state.status = 'succeeded'
+                state.token = action.payload.data.token
+                state.expired = action.payload.data.expired
+                state.signedIn = true
+            }
+            else if(typeof(action.payload) == 'undefined'){
+                state.status = 'failed'
+                state.error = "Unable to connect to server"
+            }
+            else {
+                state.status = 'failed'
+                state.error = "Invalid username and/or password"
+            }
         },
         [login.rejected]: (state, action) => {
             state.status = 'failed'
-            state.error = "Wrong username and/or password"
+            state.error = "Invalid username and/or password"
         }
     },
 })
 
-export const { updateAuthState } = authSlice.actions
+export const { updateAuthState, resetErrorMsg } = authSlice.actions
 
 export default authSlice.reducer

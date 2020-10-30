@@ -100,8 +100,14 @@ const purchaseRequestSlice = createSlice({
             state.status = 'loading'
         },
         [list.fulfilled]: (state, action) => {
-            state.status = 'succeeded'
-            state.listData = processData(action.payload.data, action.type)
+            if(action.payload !== undefined && action.payload.status == 200){
+                state.status = 'succeeded'
+                state.listData = processData(action.payload.data, action.type)
+            }
+            else{
+                state.status = 'failed'
+                state.error = action.error.message
+            }
         },
         [list.rejected]: (state, action) => {
             state.status = 'failed'
@@ -111,8 +117,14 @@ const purchaseRequestSlice = createSlice({
             state.status = 'loading'
         },
         [get.fulfilled]: (state, action) => {
-            state.status = 'succeeded'
-            state.itemData = processData(action.payload.data, action.type)
+            if(action.payload !== undefined && action.payload.status == 200){
+                state.status = 'succeeded'
+                state.itemData = processData(action.payload.data, action.type)
+            }
+            else{
+                state.status = 'failed'
+                state.error = action.error.message
+            }
         },
         [get.rejected]: (state, action) => {
             state.status = 'failed'
