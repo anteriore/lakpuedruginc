@@ -12,7 +12,6 @@ const InputForm = (props) => {
     const [displayData, setDisplayData] = useState(null);
     const [isLoading, setLoading] = useState(true)
 
-    //dummy data
     const [columns, setColumns] = useState([
         {
             title: 'Type',
@@ -107,7 +106,6 @@ const InputForm = (props) => {
                         </Form.Item>
                     );
                 }
-
             }
         ]
 
