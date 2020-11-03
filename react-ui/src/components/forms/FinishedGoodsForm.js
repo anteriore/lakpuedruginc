@@ -5,7 +5,6 @@ import {
   Input,
 } from 'antd';
 
-
 const FinishedGoodsForm = (props) => {
   const {
     visible,
@@ -50,14 +49,14 @@ const FinishedGoodsForm = (props) => {
       >
         <Form.Item
           label="Code"
-          name="fg_code"
+          name="code"
           rules={[{ required: true, message: 'Please provide a proper code!' }]}
         >
           <Input placeholder="Please input code" />
         </Form.Item> 
         <Form.Item
           label="Name"
-          name="fg_name"
+          name="name"
           rules={[{ required: true, message: 'Please provide a proper name!' }]}
         >
           <Input placeholder="Please input name"/>

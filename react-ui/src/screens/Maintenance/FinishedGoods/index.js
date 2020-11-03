@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Row, 
   Col, 
@@ -8,23 +8,40 @@ import {
   DatePicker,
   Space,
   Table,
+  Modal,
+  message
 } from 'antd';
 import { 
   PlusOutlined,
 } from '@ant-design/icons';
-import { tableHeader, dataFG } from '../../../datas/FinishedGoods'
+import { tableHeader } from '../../../datas/FinishedGoods'
 import FilteredColumns from '../../../components/FilteredColumns';
 import FinishedGoodsForm from '../../../components/forms/FinishedGoodsForm';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFGList, createFG, deleteFG, updateFG } from './redux';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Search } = Input;
 const { RangePicker } = DatePicker;
+const { confirm } = Modal;
 
 const FinishedGoods = (props) => {
+  const { company } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
+  const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [formValues, setFormValues] = useState('');
-  const [mode, setMode] = useState('')
+  const [mode, setMode] = useState('');
+  const [currentID, setCurrentID] = useState('');
+  const dispatch = useDispatch();
+  const {
+    list
+  } = useSelector(state => state.maintenance.finishedGoods )
+
+  useEffect(() => {
+    dispatch(getFGList({company}));
+  }, [dispatch])
 
   const handleAddButton = () => {
     setModalTitle("Add Finished Good");
@@ -33,6 +50,7 @@ const FinishedGoods = (props) => {
   }
 
   const handleEditButton = (row) => {
+    setCurrentID(row.id)
     setModalTitle("Edit Finished Good");
     setMode('edit');
     setFormValues(row);
@@ -40,7 +58,23 @@ const FinishedGoods = (props) => {
   }
 
   const handleDeleteButton = (row) => {
-    console.log("Deleting Row",row);
+    confirm({
+      title: 'Do you want to delete this item?',
+      icon: <ExclamationCircleOutlined />,
+      content: `Item with id of (${row.id}) and name of (${row.name})  will be deleted.`,
+      onOk() {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            dispatch(deleteFG(row)).then(() => {
+              dispatch(getFGList());
+              message.success("Item successfully deleted!");
+              resolve();
+            });
+          }, 1000);
+        }).catch(() => message.error("Oops! something went wrong."));
+      },
+      onCancel() {},
+    });
   }
 
   const handleCancelButton = () => {
@@ -50,11 +84,18 @@ const FinishedGoods = (props) => {
 
   const onSubmit = (values) => {
     if(mode === 'edit'){
-      // insert dispatch
-      console.log('Updating Finished goods', values);
+      let newValues = values;
+      newValues.id = currentID;
+
+      dispatch(updateFG(newValues)).then(() => {
+        dispatch(getFGList());
+        message.info("Item successfully updated!");
+      })
     }else if( mode === 'add' ){
-      // insert dispatch
-      console.log('Adding Finished goods', values);
+      dispatch(createFG(values)).then(() => {
+        dispatch(getFGList({company}));
+        message.info("Item successfully added");
+      });
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
@@ -81,7 +122,7 @@ const FinishedGoods = (props) => {
       </Col>
       <Col span={20}>
         <Table
-          dataSource={dataFG}
+          dataSource={list}
           columns={FilteredColumns(tableHeader, handleEditButton, handleDeleteButton)}
         />
       </Col>

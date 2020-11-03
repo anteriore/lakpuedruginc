@@ -5,22 +5,22 @@ export const tableHeader = [
       key: 'id',  
   },
   {
-      title: 'Code',
-      dataIndex: 'fg_code',
-      key: 'fg_code',
-      align: 'center'   
-  },
-  {
       title: 'Name',
-      dataIndex: 'fg_name',
-      key: 'fg_name',
+      dataIndex: 'name',
+      key: 'name',
       align: 'center'  
   },
   {
-      title: 'Date Created',
-      dataIndex: 'created_date',
-      key: 'created_date',
-      align: 'center'
+      title: 'Code',
+      dataIndex: 'code',
+      key: 'code',
+      align: 'center'   
+  },
+  {
+    title: 'Unit',
+    dataIndex: 'unit',
+    key: 'unit',
+    align: 'center'  
   }
 ]
 
