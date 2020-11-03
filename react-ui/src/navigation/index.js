@@ -1,26 +1,24 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Switch, Route, Redirect } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouteMatch, useHistory } from "react-router-dom";
 
 import AdminRoutes from './routes/AdminRoutes';
 import Login from '../screens/Login'
 
 const Main = (props) => {
-    return (
-        <div>
-            <Switch>
-                <Route path="/login" component={Login} />
-                <PrivateRoute path="/">
-                    <AdminRoutes/>
-                </PrivateRoute>
-            </Switch>
-        </div>
-    )
-}
+  const signedIn = useSelector(state => state.auth.signedIn)
+  const { path } = useRouteMatch();
+  const history = useHistory();
 
-//hard coded for now
-const signedIn = true
+  useEffect(() => {
+    if(signedIn === true){
+      history.push("/")
+    }
+  }, [signedIn])
 
-function PrivateRoute({ children, ...rest }) {
+  const PrivateRoute = ({ children, ...rest }) => {
+    const signedIn = useSelector(state => state.auth.signedIn)
     return (
       <Route {...rest} render={({ location }) =>
       signedIn ? (
@@ -32,5 +30,21 @@ function PrivateRoute({ children, ...rest }) {
       />
     );
   }
+
+  return (
+      <div>
+          <Switch>
+              <Route path="/login" component={Login} />
+              <PrivateRoute path="/" signedIn={signedIn}>
+                  <AdminRoutes/>
+              </PrivateRoute>
+          </Switch>
+      </div>
+  )
+
+
+
+  
+}
 
 export default Main
