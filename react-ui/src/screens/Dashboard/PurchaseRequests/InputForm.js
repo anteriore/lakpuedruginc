@@ -79,7 +79,7 @@ const InputForm = (props) => {
         console.log('Success:', values);
 
         //save data to database
-
+        
         message.success('Successfully saved')
         history.goBack()
     };
