@@ -1,10 +1,11 @@
 import Product from '../../screens/Maintenance/Products';
+import FinishedGoods from '../../screens/Maintenance/FinishedGoods';
 
 export const routes = [
   {
     title: "Finished Goods",
     path: "/finished_goods",
-    component: ''
+    component: FinishedGoods
   },
   {
     title: "Client",

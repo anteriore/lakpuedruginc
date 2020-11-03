@@ -1,45 +1,38 @@
 import React, { Component } from 'react';
 import { Row, Col, Dropdown, Menu } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
 
-import { updateAuthState } from '../../redux/auth'
+export class Header extends Component {
 
-const Header = (props) => {
-    const dispatch = useDispatch()
-
-    const handleMenuClick = (e) => {
-        if(e.key === "logout"){
-            dispatch(updateAuthState({
-                signedIn: false,
-                token: "",
-                expired: false
-            }))
-        }
+    handleMenuClick(e) {
+        console.log('click', e);
     }
 
-    const menu = (
-        <Menu onClick={handleMenuClick}>
-            <Menu.Item key="logout">
-            Logout
-            </Menu.Item>
-        </Menu>
-    );
+    render() {
 
-    return (
-        <Row>
-            <Col span={4}>
-                Lakpue Drug Inc.
-            </Col>
-            <Col span={12}>
-            </Col>
-            <Col span={8}>
-                <Dropdown.Button overlay={menu} placement="bottomCenter" icon={<UserOutlined />} style={{"float":"right", "padding": "1%"}}>
-                    First Name Last Name
-                </Dropdown.Button>
-            </Col>
-        </Row>
-    )
+        const menu = (
+            <Menu onClick={this.handleMenuClick}>
+              <Menu.Item key="1">
+                Logout
+              </Menu.Item>
+            </Menu>
+          );
+
+        return (
+            <Row>
+                <Col span={4}>
+                    Lakpue Drug Inc.
+                </Col>
+                <Col span={12}>
+                </Col>
+                <Col span={8}>
+                    <Dropdown.Button overlay={menu} placement="bottomCenter" icon={<UserOutlined />} style={{"float":"right", "padding": "1%"}}>
+                        First Name Last Name
+                    </Dropdown.Button>
+                </Col>
+            </Row>
+        )
+    }
 }
 
 export default Header

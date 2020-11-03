@@ -18,7 +18,7 @@ const Maintenance = (props) => {
     const [modules, setModules] = useState(MaintenanceRoutes);
 
     const renderRoutes = () => {
-        var routes = []
+        let routes = []
         
         modules.forEach((module, i) => {
 			let ComponentTag = module.component;
@@ -35,6 +35,7 @@ const Maintenance = (props) => {
     }
 
     return (
+        <>
         <Switch>
             <Route exact path={path}>
                 <Container location={{pathname: path}}>
@@ -60,6 +61,7 @@ const Maintenance = (props) => {
             </Route>
             {renderRoutes()}
         </Switch>
+        </>
     )
 }
 
