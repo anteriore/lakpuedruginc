@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { Row, Col, Tabs, Table, Typography, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Tabs, Table, Typography, Button, Modal, Skeleton, Empty } from 'antd';
 import { 
     EditOutlined,
     DeleteOutlined,
     PlusOutlined
 } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
 
+import { get, list, resetItemData } from './redux'
 import InputForm from './InputForm'
+import moment from 'moment';
 
 const { Title } = Typography;
 
 const PurchaseRequests = (props) => {
     const [loading, setLoading] = useState(false)
+    const [loadingItem, setLoadingItem] = useState(false)
     const [defaultpageSize, setDefaultPageSize] = useState(6)
     const [pageSize, setPageSize] = useState(6)
     const [currentPage, setCurrentPage] = useState(1)
@@ -23,7 +27,9 @@ const PurchaseRequests = (props) => {
     const [filters, setFilters] = useState(null)
     const [searchText, setSearchText] = useState(null)
 
-    //dummy data
+    const [displayModal, setDisplayModal] = useState(false);
+    const [displayData, setDisplayData] = useState(null);
+
     const [columns, setColumns] = useState([
         {
             title: 'PRF Number',
@@ -33,12 +39,14 @@ const PurchaseRequests = (props) => {
         {
             title: 'PRF Date',
             dataIndex: 'date',
-            key: 'date',   
+            key: 'date',
+            render: (text) => moment(new Date(text)).format("DD/MM/YYYY")   
         },
         {
             title: 'Date Needed',
             dataIndex: 'dateNeeded',
-            key: 'dateNeeded',   
+            key: 'dateNeeded',
+            render: (text) => moment(new Date(text)).format("DD/MM/YYYY")    
         },
         {
             title: 'Department',
@@ -51,36 +59,54 @@ const PurchaseRequests = (props) => {
             key: 'status',   
         }
     ])
-    
-    const [data, setData] = useState([
+
+    const [itemColumns, setItemColumns] = useState([
         {
-            'id':'1',
-            'number': 'aaaaa',
-            'date':'aaaaaa',
-            'dateNeeded':'aaaaaa',
-            'department':'aaaaaa',
-            'status':'aaaaaa'
+            title: 'Type',
+            dataIndex: 'type',
+            key: 'type',   
         },
         {
-            'id':'2',
-            'number': 'aaaaa',
-            'date':'aaaaaa',
-            'dateNeeded':'aaaaaa',
-            'department':'aaaaaa',
-            'status':'aaaaaa'
+            title: 'Code',
+            dataIndex: 'code',
+            key: 'code',   
         },
         {
-            'id':'3',
-            'number': 'aaaaa',
-            'date':'aaaaaa',
-            'dateNeeded':'aaaaaa',
-            'department':'aaaaaa',
-            'status':'aaaaaa'
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',   
+        },
+        {
+            title: 'Unit',
+            dataIndex: 'unit',
+            key: 'unit',   
+        },
+        {
+            title: 'Current Stocks',
+            dataIndex: 'stocks',
+            key: 'stocks',   
         }
     ])
+    
+    const data = useSelector(state => state.dashboard.purchaseRequests.listData)
+    const itemData = useSelector(state => state.dashboard.purchaseRequests.itemData)
 
+    const company = props.company
     const { path } = useRouteMatch();
-    const history = useHistory();    
+    const history = useHistory();
+    const dispatch = useDispatch(); 
+    
+    useEffect(() => {
+        dispatch(list({company: company}))
+        return function cleanup() {
+            dispatch(resetItemData())
+        };
+    }, [])
+
+    useEffect(() => {
+        setDisplayData(itemData)
+        setLoadingItem(false)
+    }, [itemData])
 
     const columnfilter = () => {
         var filteredColumn = columns.slice()
@@ -176,9 +202,6 @@ const PurchaseRequests = (props) => {
         handleSorter(newSorter)     
     };
   
-  
-  
-  
     const handleSorter = (newSorter) => {
   
         if(sorter !== newSorter && sorter !== null){
@@ -196,13 +219,24 @@ const PurchaseRequests = (props) => {
   
     }
 
+    const viewPurchaseRequest = (key) => {
+        setLoadingItem(true)
+        dispatch(get({id: key}))
+        setDisplayModal(true)
+    }
+
+    const closeModal = () => {
+        setDisplayModal(false)
+        setDisplayData(null)
+    }
+
     return (
             <Switch>
                 <Route path={path + "/new"}>
-                    <InputForm title={"New Purchase Request"}/>
+                    <InputForm title={"New Purchase Request"} resetItemData={resetItemData}/>
                 </Route>
                 <Route path={path + "/:id"}>
-                    <InputForm title={"Edit Purchase Request"}/>
+                    <InputForm title={"Edit Purchase Request"} get={get} resetItemData={resetItemData}/>
                 </Route>
                 <Route path={path}>
                     <Row>
@@ -240,13 +274,40 @@ const PurchaseRequests = (props) => {
                             }
                             onRow={(record, rowIndex) => {
                                     return {                             
-                                        onClick: () => {console.log("Row")}, // click row
+                                        onClick: () => {viewPurchaseRequest(record.id)}, // click row
                                     };
                             }}
                             onChange={handleTableChange}
                         />
                         </Col>
                     </Row>
+                    <Modal
+                        title={ "Purchase Request" }
+                        visible={displayModal}
+                        onOk={closeModal}
+                        onCancel={closeModal}
+                        width={1000}
+                        >
+                        {loadingItem ? (
+                            <Skeleton />
+                        )
+                        : (
+                            <>
+                            <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
+                            <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
+                            <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
+                            <p>Department: {displayData !== null ? (displayData.department) : ("")}</p>
+                            <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
+                            <Table
+                                dataSource={displayData !== null ? (displayData.requestedItems) : ([])}
+                                columns={itemColumns}
+                                pagination={false}
+                                locale={{emptyText: <Empty description={"No Item Seleted."}/>}} 
+                            />
+                            <p>Remarks: {displayData !== null ? (displayData.remarks) : ("")}</p>
+                            </>
+                        )}
+                    </Modal>
                 </Route>
             </Switch>
     )

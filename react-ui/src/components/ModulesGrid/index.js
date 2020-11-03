@@ -13,7 +13,6 @@ const Modules = (props) => {
         const moduleCards = []
         for (var i = 0; i < props.modules.length; i += cardsPerRow){
             var moduleRow = []
-            console.log("Row")
             for(var j = i; j < i + cardsPerRow; j++){
                 if(j < props.modules.length){
                     moduleRow.push(

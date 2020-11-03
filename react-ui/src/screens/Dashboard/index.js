@@ -14,6 +14,7 @@ const { Title } = Typography;
 const Dashboard = (props) => {
     const { path } = useRouteMatch();
     const [title, setTitle] = useState("Dashboard");
+    const [company, setCompany] = useState(1);
     const [modules, setModules] = useState([
         {
             title: "Purchase Requests",
@@ -120,7 +121,7 @@ const Dashboard = (props) => {
             routes.push(
                 <Route path={path + modules[i].path}>
                     <Container location={{pathname: path + modules[i].path}}>
-                        <ComponentTag title={modules[i].title}/>
+                        <ComponentTag title={modules[i].title} company={company}/>
                     </Container>
                 </Route>
             )
@@ -128,6 +129,11 @@ const Dashboard = (props) => {
         }
 
         return routes
+    }
+
+    const handleTabChange = (key) => {
+        setCompany(key)
+        console.log(key)
     }
 
     return (
@@ -140,15 +146,15 @@ const Dashboard = (props) => {
                         </Row>
                         <Row>
                             <Col span={24}>
-                                <Tabs defaultActiveKey="1" onChange={console.log("Change Tab")}>
+                                <Tabs defaultActiveKey="1" onChange={handleTabChange}>
                                     <TabPane tab="Lakpue Drug Inc." key="1">
-                                        <ModulesGrid company="LDI" modules={modules}/>
+                                        <ModulesGrid modules={modules}/>
                                     </TabPane>
                                     <TabPane tab="La Croesus Pharma Inc." key="2">
-                                        <ModulesGrid company="LCP" modules={modules}/>
+                                        <ModulesGrid modules={modules}/>
                                     </TabPane>
                                     <TabPane tab="Fanfreluche Enterprises Inc." key="3">
-                                        <ModulesGrid company="FEI" modules={modules}/>
+                                        <ModulesGrid modules={modules}/>
                                     </TabPane>
                                 </Tabs>
                             </Col>
