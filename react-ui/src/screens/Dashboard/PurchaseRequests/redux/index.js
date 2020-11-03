@@ -11,26 +11,16 @@ const initialState = {
 
 export const list = createAsyncThunk('list', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
-    const config = {
-        headers: {
-          'Authorization': accessToken
-        }
-    }
 
-    const response = await axiosInstance.get('rest/purchase-requests/company/' + payload.company, config)
+    const response = await axiosInstance.get('rest/purchase-requests/company/' + payload.company + "?token=" + accessToken)
     return response
 
 })
 
 export const get = createAsyncThunk('get', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
-    const config = {
-        headers: {
-          'Authorization': accessToken
-        }
-    }
 
-    const response = await axiosInstance.get('rest/purchase-requests/' + payload.id, config)
+    const response = await axiosInstance.get('rest/purchase-requests/' + payload.id + "?token=" + accessToken)
     return response
 
 })
