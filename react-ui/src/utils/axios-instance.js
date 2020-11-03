@@ -1,7 +1,12 @@
 import axios from 'axios'
 
+<<<<<<< Updated upstream
 const baseURL = 'http://localhost:9000/'
 //const baseURL = 'http://3.133.94.170:9000/'
+=======
+//const baseURL = 'http://localhost:9000/'
+const baseURL = 'http://18.222.158.28:9000/'
+>>>>>>> Stashed changes
 
 const instance = axios.create({
     baseURL: baseURL,
@@ -9,7 +14,7 @@ const instance = axios.create({
 })
 
 instance.defaults.headers.post['Content-Type'] = 'application/json'
-instance.defaults.headers.get['Content-Type'] = 'application/json'
+//instance.defaults.headers.get['Content-Type'] = 'application/json'
 instance.defaults.withCredentials = true
 
 instance.interceptors.request.use(request => {
