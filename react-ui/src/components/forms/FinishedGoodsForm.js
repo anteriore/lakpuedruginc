@@ -31,7 +31,6 @@ const FinishedGoodsForm = (props) => {
         form
           .validateFields()
           .then(values => {
-            console.log(values);
             onSubmit(values);
             form.resetFields();
           })

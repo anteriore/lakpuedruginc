@@ -23,25 +23,32 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Search } = Input;
-const { RangePicker } = DatePicker;
 const { confirm } = Modal;
 
 const FinishedGoods = (props) => {
   const { company } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
-  const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [formValues, setFormValues] = useState('');
   const [mode, setMode] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
   const {
-    list
+    list,
+    statusMessage,
+    action
   } = useSelector(state => state.maintenance.finishedGoods )
 
   useEffect(() => {
     dispatch(getFGList({company}));
-  }, [dispatch])
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (action !== 'get' && action !== ''){
+      console.log(action)
+      message.success(statusMessage);
+    }
+  }, [statusMessage])
 
   const handleAddButton = () => {
     setModalTitle("Add Finished Good");
@@ -67,7 +74,6 @@ const FinishedGoods = (props) => {
           setTimeout(() => {
             dispatch(deleteFG(row)).then(() => {
               dispatch(getFGList());
-              message.success("Item successfully deleted!");
               resolve();
             });
           }, 1000);
@@ -89,13 +95,12 @@ const FinishedGoods = (props) => {
 
       dispatch(updateFG(newValues)).then(() => {
         dispatch(getFGList());
-        message.info("Item successfully updated!");
       })
     }else if( mode === 'add' ){
       dispatch(createFG(values)).then(() => {
-        dispatch(getFGList({company}));
-        message.info("Item successfully added");
+        dispatch(getFGList());
       });
+
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
@@ -116,8 +121,7 @@ const FinishedGoods = (props) => {
       </Col>
       <Col style={styles.filterArea} span={10}>
         <Space size="large">
-          <Search  placeholder="Search FG Name"/>
-          <RangePicker/>
+          <Search  placeholder="Search FG Name or FG Code"/>
         </Space>
       </Col>
       <Col span={20}>

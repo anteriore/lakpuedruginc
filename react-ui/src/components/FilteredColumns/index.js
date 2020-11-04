@@ -36,7 +36,7 @@ const FilteredColumns = (rawColumns, onEdit, onDelete) => {
           </div>
         );                                      
       },
-      align: 'center'
+      align: 'center',
     }
   ]
 
