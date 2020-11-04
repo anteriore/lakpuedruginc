@@ -6,7 +6,17 @@ import axiosInstance from '../../../../utils/axios-instance';
 
 const initialState = {
     listData: [],
-    itemData: null
+    itemData: {
+        id: null,
+        number: null,
+        date: null,
+        dateNeeded: null,
+        department: null,
+        remarks: null,
+        requestedBy: null,
+        status: null,
+        requestedItems: [],
+    }
 }
 
 export const list = createAsyncThunk('list', async (payload, thunkAPI) => {
@@ -17,10 +27,34 @@ export const list = createAsyncThunk('list', async (payload, thunkAPI) => {
 
 })
 
+export const listItems = createAsyncThunk('listItems', async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token
+
+    const response = await axiosInstance.get("rest/items?token=" + accessToken)
+    return response
+
+})
+
 export const get = createAsyncThunk('get', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
 
     const response = await axiosInstance.get('rest/purchase-requests/' + payload.id + "?token=" + accessToken)
+    return response
+
+})
+
+export const performAdd = createAsyncThunk('add', async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token
+    
+    const response = await axiosInstance.post('rest/purchase-requests/?token=' + accessToken, payload)
+    return response
+
+})
+
+export const performDelete = createAsyncThunk('delete', async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token
+    
+    const response = await axiosInstance.post('rest/purchase-requests/delete?token=' + accessToken, payload)
     return response
 
 })
@@ -47,12 +81,20 @@ const processData = (data, action) => {
         var requestedItems = []
         for(const [index, value] of data.requestedItems.entries()){
             var item = {
-                id: value.id,
-                type: value.item.type.name,
+                id: value.item.id,
                 code: value.item.code,
                 name: value.item.name,
-                unit: value.item.unit.code,
+                unit: {
+                    id: value.item.unit.id,
+                    name: value.item.unit.name,
+                },
+                type: {
+                    id: value.item.type.id,
+                    code: value.item.type.code,
+                    name: value.item.type.name,
+                },
                 stocks: value.quantityRemaining,
+                quantityRequested: value.quantityRequested,
                 purchase_request: null,
                 purchase_order: null,
                 quarantined: null,
@@ -72,6 +114,28 @@ const processData = (data, action) => {
             requestedItems: requestedItems,
         }
     }
+    else if(action === "listItems/fulfilled"){
+        var processedData = []
+        for(const [index, value] of data.entries()){
+            var item = {
+                id: value.id,
+                name: value.name,
+                code: value.code,
+                type: value.type,
+                unit: {
+                    id: value.unit.id,
+                    name: value.unit.name,
+                },
+                type: {
+                    id: value.type.id,
+                    code: value.type.code,
+                    name: value.type.name,
+                }
+            }
+
+            processedData.push(item)
+        }
+    }
 
     
     return processedData
@@ -82,7 +146,17 @@ const purchaseRequestSlice = createSlice({
     initialState,
     reducers: {
         resetItemData(state, action) {
-            state.itemData = null
+            state.itemData = {
+                id: null,
+                number: null,
+                date: null,
+                dateNeeded: null,
+                department: null,
+                remarks: null,
+                requestedBy: null,
+                status: null,
+                requestedItems: [],
+            }
         }
     },
     extraReducers: {
@@ -101,6 +175,8 @@ const purchaseRequestSlice = createSlice({
         [list.rejected]: (state, action) => {
             state.status = 'failed'
         },
+
+
         [get.pending]: (state, action) => {
             state.status = 'loading'
         },
@@ -116,7 +192,24 @@ const purchaseRequestSlice = createSlice({
         [get.rejected]: (state, action) => {
             state.status = 'failed'
             state.error = action.error.message
-        }
+        },
+
+
+        [listItems.pending]: (state, action) => {
+            state.status = 'loading'
+        },
+        [listItems.fulfilled]: (state, action) => {
+            if(action.payload !== undefined && action.payload.status == 200){
+                state.status = 'succeeded'
+                state.listData = processData(action.payload.data, action.type)
+            }
+            else{
+                state.status = 'failed'
+            }
+        },
+        [listItems.rejected]: (state, action) => {
+            state.status = 'failed'
+        },
     },
 })
 export const { resetItemData } = purchaseRequestSlice.actions
