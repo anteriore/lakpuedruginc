@@ -130,9 +130,7 @@ const PurchaseRequests = (props) => {
                                 icon={<EditOutlined />} 
                                 type="text" 
                                 onClick={(e)=>{ 
-                                    e.stopPropagation(); 
-                                    console.log("Edit") 
-                                    console.log(row)
+                                    e.stopPropagation();
                                     history.push(path + "/" + row.id)
                                 }}
                             >
@@ -218,9 +216,7 @@ const PurchaseRequests = (props) => {
         }     
         
         props.getData(API_URL, controllerText) 
-        */
-
-       console.log("Getting Data from backend")    
+        */    
 
     }
 
@@ -271,8 +267,7 @@ const PurchaseRequests = (props) => {
                             <Button 
                                 style={{ "float": "right" , marginRight: "1%"}} 
                                 icon={<PlusOutlined />}
-                                onClick={(e) => { 
-                                    console.log(history)
+                                onClick={(e) => {
                                     history.push(path + "/new")
                                 }}
                             >
