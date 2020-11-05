@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import { tableHeader } from '../../../datas/FinishedGoods'
 import FilteredColumns from '../../../components/FilteredColumns';
+import TableSearch from '../../../components/TableSearch';
 import FinishedGoodsForm from '../../../components/forms/FinishedGoodsForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFGList, createFG, deleteFG, updateFG } from './redux';
@@ -88,6 +89,10 @@ const FinishedGoods = (props) => {
     setFormValues('')
   }
 
+  const onSearch = (value) => {
+    console.log(value)
+  }
+
   const onSubmit = (values) => {
     if(mode === 'edit'){
       let newValues = values;
@@ -104,7 +109,9 @@ const FinishedGoods = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-  }
+  } 
+
+  console.log();
 
   return (
     <Row gutter={[8,24]}>
@@ -119,15 +126,10 @@ const FinishedGoods = (props) => {
           Add
         </Button>
       </Col>
-      <Col style={styles.filterArea} span={10}>
-        <Space size="large">
-          <Search  placeholder="Search FG Name or FG Code"/>
-        </Space>
-      </Col>
       <Col span={20}>
         <Table
           dataSource={list}
-          columns={FilteredColumns(tableHeader, handleEditButton, handleDeleteButton)}
+          columns={FilteredColumns(TableSearch(tableHeader), handleEditButton, handleDeleteButton)}
         />
       </Col>
       <FinishedGoodsForm 
@@ -149,9 +151,5 @@ const styles = {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
-  },
-  filterArea: {
-    display: 'flex',
-    flexDirection: 'row',
   }
 }
