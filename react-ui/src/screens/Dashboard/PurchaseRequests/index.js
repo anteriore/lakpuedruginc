@@ -105,7 +105,9 @@ const PurchaseRequests = (props) => {
     const dispatch = useDispatch(); 
     
     useEffect(() => {
+
         dispatch(listPR({company: company}))
+
         return function cleanup() {
             dispatch(resetItemData())
         };

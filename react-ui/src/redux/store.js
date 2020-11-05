@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, compose } from 'redux'
 import { createLogger } from 'redux-logger'
 import { persistStore, persistReducer } from 'redux-persist'
 import thunk from 'redux-thunk'
@@ -20,7 +20,9 @@ const persistConfig = {
   stateReconciler: autoMergeLevel1
 }
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const pReducer = persistReducer(persistConfig, rootReducer)
 
-export const store = createStore(pReducer, applyMiddleware(thunk, logger));
+export const store = createStore(pReducer, composeEnhancers(applyMiddleware(thunk, logger)));
 export const persistor = persistStore(store)

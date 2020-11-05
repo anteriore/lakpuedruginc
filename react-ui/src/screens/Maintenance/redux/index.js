@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
 
 import departmentArea from '../DepartmentArea/redux';
+import finishedGoods from '../FinishedGoods/redux'; 
 
 const maintenance = combineReducers({
-    departmentArea,
+  departmentArea,
+  finishedGoods,
 })
 
 export default maintenance

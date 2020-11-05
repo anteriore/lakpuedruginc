@@ -2,25 +2,33 @@ export const tableHeader = [
   {
       title: 'ID',
       dataIndex: 'id',
-      key: 'id',  
-  },
-  {
-      title: 'Code',
-      dataIndex: 'fg_code',
-      key: 'fg_code',
-      align: 'center'   
+      key: 'id',
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.id - b.id
   },
   {
       title: 'Name',
-      dataIndex: 'fg_name',
-      key: 'fg_name',
-      align: 'center'  
+      dataIndex: 'name',
+      key: 'name',
+      align: 'center',  
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.name.length - b.name.length
   },
   {
-      title: 'Date Created',
-      dataIndex: 'created_date',
-      key: 'created_date',
-      align: 'center'
+      title: 'Code',
+      dataIndex: 'code',
+      key: 'code',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.code.length - b.code.length   
+  },
+  {
+    title: 'Unit',
+    dataIndex: 'unit',
+    key: 'unit',
+    align: 'center',
+    defaultSortOrder: 'ascend',
+    sorter: (a, b) => a.unit - b.unit  
   }
 ]
 
