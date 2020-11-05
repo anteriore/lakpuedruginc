@@ -1,10 +1,27 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Row, Col, Typography, Form, Input, InputNumber, Button, DatePicker, message, Modal, Table, Empty, Skeleton, Checkbox } from 'antd';
+import { 
+    Row, 
+    Col, 
+    Typography, 
+    Form, 
+    Input, 
+    InputNumber, 
+    Button, 
+    DatePicker, 
+    message, 
+    Modal, 
+    Table, 
+    Empty, 
+    Skeleton, 
+    Checkbox, 
+    Select 
+} from 'antd';
 import { useParams, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { get, listItems, performAdd, resetItemData } from './redux'
+import { getPR, listItems, addPR, resetItemData } from './redux'
+import { listD } from '../../Maintenance/DepartmentArea/redux'
 
 const { Title } = Typography;
 const dateFormat = 'YYYY/MM/DD';
@@ -24,12 +41,6 @@ const InputForm = (props) => {
         status: null,
         requestedItems: [],
     })
-    const [departments, setDepartments] = useState([
-        {
-            id: 1,
-            name: "Admin"
-        }
-    ])
 
     const [columns, setColumns] = useState([
         {
@@ -79,6 +90,7 @@ const InputForm = (props) => {
     ])
 
     const data = useSelector(state => state.dashboard.purchaseRequests.itemData)
+    const departments = useSelector(state => state.maintenance.departmentArea.deptList)
     const itemsList = useSelector(state => state.dashboard.purchaseRequests.listData)
 
     const { id } = useParams();
@@ -86,14 +98,19 @@ const InputForm = (props) => {
     const history = useHistory();
 
     useEffect(() => {
-        if(typeof(id) !== 'undefined' && id != null){
-            dispatch(get({id: id})).then((response) => {
-                setLoading(false)
+        dispatch(listD({company: props.company}))
+            .then((response) => {
+                if(typeof(id) !== 'undefined' && id != null){
+                    dispatch(getPR({id: id}))
+                        .then((response) => {
+                            setLoading(false)
+                        })
+                }
+                else {
+                    setLoading(false)
+                }
             })
-        }
-        else {
-            setLoading(false)
-        }
+        
 
         return function cleanup() {
             dispatch(resetItemData())
@@ -103,7 +120,7 @@ const InputForm = (props) => {
     useEffect(() => {
         setFormData(data)
     }, [data])
-    
+
     const onItemSelect = (data, isSelected) => {
         console.log('Selected:', data);
         if(isSelected){
@@ -147,7 +164,9 @@ const InputForm = (props) => {
             ...values,
             id: formData.id,
             number: null,
-            department: null,
+            department: {
+                id: values.department
+            },
             date: values.date.format("YYYY-MM-DD") + 'T' + values.date.format("HH:mm:ss"),
             dateNeeded: values.dateNeeded.format("YYYY-MM-DD") + 'T' + values.dateNeeded.format("HH:mm:ss"),
             requestedBy: {
@@ -162,7 +181,7 @@ const InputForm = (props) => {
 
         console.log(data)
         console.log(id)
-        dispatch(performAdd(data))
+        dispatch(addPR(data))
             .then((response) => {
                 if(response.payload.status === 200){
                     message.success('Successfully saved')
@@ -302,9 +321,13 @@ const InputForm = (props) => {
                                 label="Department"
                                 name="department"
                                 rules={[{ required: true }]}
-                                {...formData && { initialValue: formData.department }}
+                                { ...formData.department != null && { initialValue: formData.department.id }}
                             >
-                                <Input/>
+                                <Select>
+                                    {departments.map((department) =>
+                                        <Select.Option value={department.id}>{department.name}</Select.Option>
+                                    )}
+                                </Select>
                             </Form.Item>
                             
                             <Form.List

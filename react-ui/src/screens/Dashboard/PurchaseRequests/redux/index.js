@@ -19,7 +19,7 @@ const initialState = {
     }
 }
 
-export const list = createAsyncThunk('list', async (payload, thunkAPI) => {
+export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
 
     const response = await axiosInstance.get('rest/purchase-requests/company/' + payload.company + "?token=" + accessToken)
@@ -35,7 +35,7 @@ export const listItems = createAsyncThunk('listItems', async (payload, thunkAPI)
 
 })
 
-export const get = createAsyncThunk('get', async (payload, thunkAPI) => {
+export const getPR = createAsyncThunk('getPR', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
 
     const response = await axiosInstance.get('rest/purchase-requests/' + payload.id + "?token=" + accessToken)
@@ -43,7 +43,7 @@ export const get = createAsyncThunk('get', async (payload, thunkAPI) => {
 
 })
 
-export const performAdd = createAsyncThunk('add', async (payload, thunkAPI) => {
+export const addPR = createAsyncThunk('addPR', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
     
     const response = await axiosInstance.post('rest/purchase-requests/?token=' + accessToken, payload)
@@ -51,7 +51,7 @@ export const performAdd = createAsyncThunk('add', async (payload, thunkAPI) => {
 
 })
 
-export const performDelete = createAsyncThunk('delete', async (payload, thunkAPI) => {
+export const deletePR = createAsyncThunk('deletePR', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
     
     const response = await axiosInstance.post('rest/purchase-requests/delete?token=' + accessToken, payload)
@@ -61,7 +61,7 @@ export const performDelete = createAsyncThunk('delete', async (payload, thunkAPI
 
 const processData = (data, action) => {
 
-    if(action === "list/fulfilled"){
+    if(action === "listPR/fulfilled"){
         var processedData = []
         for(const [index, value] of data.entries()){
             var item = {
@@ -77,7 +77,7 @@ const processData = (data, action) => {
             processedData.push(item)
         }
     }
-    else if(action === "get/fulfilled"){
+    else if(action === "getPR/fulfilled"){
         var requestedItems = []
         for(const [index, value] of data.requestedItems.entries()){
             var item = {
@@ -160,10 +160,10 @@ const purchaseRequestSlice = createSlice({
         }
     },
     extraReducers: {
-        [list.pending]: (state, action) => {
+        [listPR.pending]: (state, action) => {
             state.status = 'loading'
         },
-        [list.fulfilled]: (state, action) => {
+        [listPR.fulfilled]: (state, action) => {
             if(action.payload !== undefined && action.payload.status == 200){
                 state.status = 'succeeded'
                 state.listData = processData(action.payload.data, action.type)
@@ -172,15 +172,15 @@ const purchaseRequestSlice = createSlice({
                 state.status = 'failed'
             }
         },
-        [list.rejected]: (state, action) => {
+        [listPR.rejected]: (state, action) => {
             state.status = 'failed'
         },
 
 
-        [get.pending]: (state, action) => {
+        [getPR.pending]: (state, action) => {
             state.status = 'loading'
         },
-        [get.fulfilled]: (state, action) => {
+        [getPR.fulfilled]: (state, action) => {
             if(action.payload !== undefined && action.payload.status == 200){
                 state.status = 'succeeded'
                 state.itemData = processData(action.payload.data, action.type)
@@ -189,7 +189,7 @@ const purchaseRequestSlice = createSlice({
                 state.status = 'failed'
             }
         },
-        [get.rejected]: (state, action) => {
+        [getPR.rejected]: (state, action) => {
             state.status = 'failed'
             state.error = action.error.message
         },

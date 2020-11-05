@@ -8,7 +8,7 @@ import {
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 
-import { get, list, performDelete, resetItemData } from './redux'
+import { getPR, listPR, deletePR, resetItemData } from './redux'
 import InputForm from './InputForm'
 import moment from 'moment';
 
@@ -52,6 +52,7 @@ const PurchaseRequests = (props) => {
             title: 'Department',
             dataIndex: 'department',
             key: 'department',   
+            render: (object) => object != null ? (object.name) : ('')
         },
         {
             title: 'Status',
@@ -104,7 +105,7 @@ const PurchaseRequests = (props) => {
     const dispatch = useDispatch(); 
     
     useEffect(() => {
-        dispatch(list({company: company}))
+        dispatch(listPR({company: company}))
         return function cleanup() {
             dispatch(resetItemData())
         };
@@ -139,17 +140,15 @@ const PurchaseRequests = (props) => {
                                 title="Are you sure delete this item?"
                                 onConfirm={(e) => {
                                     e.stopPropagation() 
-                                    console.log("delete " + row.id)
-                                    dispatch(performDelete(row.id))
+                                    dispatch(deletePR(row.id))
                                         .then((response) => {
-                                            dispatch(list({company: company}))
+                                            dispatch(listPR({company: company}))
                                             message.success("Successfully deleted Purchase Request " + row.number)
                                         })
 
                                 }}
                                 onCancel={(e) => {
-                                    e.stopPropagation() 
-                                    console.log("cancel delete")
+                                    e.stopPropagation()
                                 }}
                                 okText="Yes"
                                 cancelText="No"
@@ -246,7 +245,7 @@ const PurchaseRequests = (props) => {
 
     const viewPurchaseRequest = (key) => {
         setLoadingItem(true)
-        dispatch(get({id: key}))
+        dispatch(getPR({id: key}))
         setDisplayModal(true)
     }
 
@@ -322,7 +321,7 @@ const PurchaseRequests = (props) => {
                                 <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
                                 <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
                                 <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
-                                <p>Department: {displayData !== null ? (displayData.department) : ("")}</p>
+                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department.id) : ("")}</p>
                                 <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
                                 <Table
                                     dataSource={displayData !== null ? (displayData.requestedItems) : ([])}

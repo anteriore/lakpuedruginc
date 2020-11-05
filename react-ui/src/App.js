@@ -12,7 +12,7 @@ function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
-          <div className="App">
+          <div className="App" style={{overflowY: "scroll"}}>
             <Main/>
           </div>
         </BrowserRouter>
