@@ -97,6 +97,8 @@ const PurchaseRequests = (props) => {
     const dispatch = useDispatch(); 
     
     useEffect(() => {
+        console.log("Showing Company", company);
+        
         dispatch(list({company: company}))
         return function cleanup() {
             dispatch(resetItemData())

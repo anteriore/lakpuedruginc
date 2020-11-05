@@ -16,6 +16,7 @@ const Maintenance = (props) => {
     const { path } = useRouteMatch();
     const [title, setTitle] = useState("Maintenance");
     const [modules, setModules] = useState(MaintenanceRoutes);
+    const [company, setCompany] = useState(1);
 
     const renderRoutes = () => {
         let routes = []
@@ -25,13 +26,17 @@ const Maintenance = (props) => {
 			routes.push(
 				<Route key={i} path={path + module.path}>
 					<Container location={{pathname: path + module.path}}>
-						<ComponentTag title={module.title}/>
+						<ComponentTag title={module.title} company={company}/>
 					</Container>
 				</Route>
 			)
         })
 
         return routes
+    }
+
+    const handleChangeTab = (id) => {
+        setCompany(id);
     }
 
     return (
@@ -44,7 +49,7 @@ const Maintenance = (props) => {
                     </Row>
                     <Row>
                         <Col span={24}>
-                            <Tabs defaultActiveKey="1" onChange={console.log("Change Tab")}>
+                            <Tabs defaultActiveKey="1" onChange={handleChangeTab}>
                                 <TabPane tab="Lakpue Drug Inc." key="1">
                                     <ModulesGrid company="LDI" modules={modules}/>
                                 </TabPane>
