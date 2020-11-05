@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Table, Typography, Button, Modal, Skeleton, Empty } from 'antd';
+import { Row, Col, Tabs, Table, Typography, Button, Modal, Skeleton, Empty, Popconfirm, message } from 'antd';
 import { 
     EditOutlined,
     DeleteOutlined,
@@ -8,7 +8,7 @@ import {
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 
-import { get, list, resetItemData } from './redux'
+import { getPR, listPR, deletePR, resetItemData } from './redux'
 import InputForm from './InputForm'
 import moment from 'moment';
 
@@ -52,6 +52,7 @@ const PurchaseRequests = (props) => {
             title: 'Department',
             dataIndex: 'department',
             key: 'department',   
+            render: (object) => object != null ? (object.name) : ('')
         },
         {
             title: 'Status',
@@ -64,7 +65,8 @@ const PurchaseRequests = (props) => {
         {
             title: 'Type',
             dataIndex: 'type',
-            key: 'type',   
+            key: 'type',
+            render: (object) => object.name    
         },
         {
             title: 'Code',
@@ -79,12 +81,18 @@ const PurchaseRequests = (props) => {
         {
             title: 'Unit',
             dataIndex: 'unit',
-            key: 'unit',   
+            key: 'unit',
+            render: (object) => object.name    
         },
         {
             title: 'Current Stocks',
             dataIndex: 'stocks',
             key: 'stocks',   
+        },
+        {
+            title: 'Quantity Requested',
+            dataIndex: 'quantityRequested',
+            key: 'quantityRequested',   
         }
     ])
     
@@ -97,9 +105,9 @@ const PurchaseRequests = (props) => {
     const dispatch = useDispatch(); 
     
     useEffect(() => {
-        console.log("Showing Company", company);
-        
-        dispatch(list({company: company}))
+
+        dispatch(listPR({company: company}))
+
         return function cleanup() {
             dispatch(resetItemData())
         };
@@ -130,17 +138,33 @@ const PurchaseRequests = (props) => {
                             >
                                 Edit
                             </Button>
-                            <Button 
-                                icon={<DeleteOutlined />} 
-                                type="text" 
-                                onClick={(e)=>{ 
-                                    e.stopPropagation(); 
-                                    console.log("Delete") 
-                                    console.log(row)
-                                }} 
+                            <Popconfirm
+                                title="Are you sure delete this item?"
+                                onConfirm={(e) => {
+                                    e.stopPropagation() 
+                                    dispatch(deletePR(row.id))
+                                        .then((response) => {
+                                            dispatch(listPR({company: company}))
+                                            message.success("Successfully deleted Purchase Request " + row.number)
+                                        })
+
+                                }}
+                                onCancel={(e) => {
+                                    e.stopPropagation()
+                                }}
+                                okText="Yes"
+                                cancelText="No"
                             >
-                                Delete
-                            </Button>
+                                <Button 
+                                    icon={<DeleteOutlined />} 
+                                    type="text" 
+                                    onClick={(e)=>{ 
+                                        e.stopPropagation()
+                                    }} 
+                                >
+                                    Delete
+                                </Button>
+                            </Popconfirm>
                         </div>
                     );                                      
                 }
@@ -223,7 +247,7 @@ const PurchaseRequests = (props) => {
 
     const viewPurchaseRequest = (key) => {
         setLoadingItem(true)
-        dispatch(get({id: key}))
+        dispatch(getPR({id: key}))
         setDisplayModal(true)
     }
 
@@ -235,10 +259,10 @@ const PurchaseRequests = (props) => {
     return (
             <Switch>
                 <Route path={path + "/new"}>
-                    <InputForm title={"New Purchase Request"} resetItemData={resetItemData}/>
+                    <InputForm title={"New Purchase Request"} company={company}/>
                 </Route>
                 <Route path={path + "/:id"}>
-                    <InputForm title={"Edit Purchase Request"} get={get} resetItemData={resetItemData}/>
+                    <InputForm title={"Edit Purchase Request"} company={company}/>
                 </Route>
                 <Route path={path}>
                     <Row>
@@ -290,25 +314,27 @@ const PurchaseRequests = (props) => {
                         onCancel={closeModal}
                         width={1000}
                         >
-                        {loadingItem ? (
-                            <Skeleton />
-                        )
-                        : (
-                            <>
-                            <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
-                            <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
-                            <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
-                            <p>Department: {displayData !== null ? (displayData.department) : ("")}</p>
-                            <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
-                            <Table
-                                dataSource={displayData !== null ? (displayData.requestedItems) : ([])}
-                                columns={itemColumns}
-                                pagination={false}
-                                locale={{emptyText: <Empty description={"No Item Seleted."}/>}} 
-                            />
-                            <p>Remarks: {displayData !== null ? (displayData.remarks) : ("")}</p>
-                            </>
-                        )}
+                        {
+                            loadingItem ? (
+                                <Skeleton />
+                            )
+                            : (
+                                <>
+                                <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
+                                <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
+                                <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
+                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department.id) : ("")}</p>
+                                <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
+                                <Table
+                                    dataSource={displayData !== null ? (displayData.requestedItems) : ([])}
+                                    columns={itemColumns}
+                                    pagination={false}
+                                    locale={{emptyText: <Empty description={"No Item Seleted."}/>}} 
+                                />
+                                <p>Remarks: {displayData !== null ? (displayData.remarks) : ("")}</p>
+                                </>
+                            )
+                        }
                     </Modal>
                 </Route>
             </Switch>

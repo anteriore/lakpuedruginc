@@ -1,22 +1,52 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Row, Col, Typography, Form, Input, Button, DatePicker, message, Modal, Table, Empty, Skeleton } from 'antd';
+import { 
+    Row, 
+    Col, 
+    Typography, 
+    Form, 
+    Input, 
+    InputNumber, 
+    Button, 
+    DatePicker, 
+    message, 
+    Modal, 
+    Table, 
+    Empty, 
+    Skeleton, 
+    Checkbox, 
+    Select 
+} from 'antd';
 import { useParams, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+
+import { getPR, listItems, addPR, resetItemData } from './redux'
+import { listD } from '../../Maintenance/DepartmentArea/redux'
 
 const { Title } = Typography;
 const dateFormat = 'YYYY/MM/DD';
 
 const InputForm = (props) => {
-    const [displayModal, setDisplayModal] = useState(false);
-    const [displayData, setDisplayData] = useState(null);
+    const [displayModal, setDisplayModal] = useState(false)
     const [isLoading, setLoading] = useState(true)
+    const [isLoadingItems, setLoadingItems] = useState(false)
+    const [formData, setFormData] = useState({
+        id: null,
+        number: null,
+        date: null,
+        dateNeeded: null,
+        department: null,
+        remarks: null,
+        requestedBy: null,
+        status: null,
+        requestedItems: [],
+    })
 
     const [columns, setColumns] = useState([
         {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type',   
+            title: 'Item Name',
+            dataIndex: 'name',
+            key: 'name',   
         },
         {
             title: 'Code',
@@ -24,15 +54,18 @@ const InputForm = (props) => {
             key: 'code',   
         },
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',   
+            title: 'Type',
+            dataIndex: 'type',
+            key: 'type',   
+            render: (object) => object.name 
         },
         {
-            title: 'Unit',
+            title: 'Unit of Measurement',
             dataIndex: 'unit',
             key: 'unit',   
+            render: (object) => object.name 
         },
+        /*
         {
             title: 'Current Stocks',
             dataIndex: 'stocks',
@@ -53,56 +86,136 @@ const InputForm = (props) => {
             dataIndex: 'quarantined',
             key: 'quarantined',   
         }
+        */
     ])
 
     const data = useSelector(state => state.dashboard.purchaseRequests.itemData)
+    const departments = useSelector(state => state.maintenance.departmentArea.deptList)
+    const itemsList = useSelector(state => state.dashboard.purchaseRequests.listData)
 
     const { id } = useParams();
     const dispatch = useDispatch()
     const history = useHistory();
 
     useEffect(() => {
-        if(typeof(id) !== 'undefined' && id != null){
-            dispatch(props.get({id: id})).then((response) => {
-                setLoading(false)
+        dispatch(listD({company: props.company}))
+            .then((response) => {
+                if(typeof(id) !== 'undefined' && id != null){
+                    dispatch(getPR({id: id}))
+                        .then((response) => {
+                            setLoading(false)
+                        })
+                }
+                else {
+                    setLoading(false)
+                }
             })
-        }
-        else{
-            setLoading(false)
-        }
+        
+
         return function cleanup() {
-            dispatch(props.resetItemData())
+            dispatch(resetItemData())
         };
     }, []);
-    
+
+    useEffect(() => {
+        setFormData(data)
+    }, [data])
+
+    const onItemSelect = (data, isSelected) => {
+        console.log('Selected:', data);
+        if(isSelected){
+            console.log("Select " + data.id)
+            var selectedItems = formData.requestedItems.slice()
+            selectedItems.push(data)
+            setFormData({
+                ...formData,
+                requestedItems: selectedItems
+            })
+        }
+        else {
+            console.log("Unselect " + data.id)
+            var selectedItems = formData.requestedItems.slice()
+            selectedItems.pop(data)
+            setFormData({
+                ...formData,
+                requestedItems: selectedItems
+            })
+                
+        }
+        //
+    };
+
     const onFinish = (values) => {
         console.log('Success:', values);
+        console.log(formData)
 
         //save data to database
+        var requestedItems = formData.requestedItems.slice()
+
+        for(const [index, value] of requestedItems.entries()){
+            requestedItems[index] = {
+                item: requestedItems[index],
+                quantityRequested: values.requestedItems.undefined[value.id],
+                unit: value.unit
+            }
+        }
+
+        var data = {
+            ...values,
+            id: formData.id,
+            number: null,
+            department: {
+                id: values.department
+            },
+            date: values.date.format("YYYY-MM-DD") + 'T' + values.date.format("HH:mm:ss"),
+            dateNeeded: values.dateNeeded.format("YYYY-MM-DD") + 'T' + values.dateNeeded.format("HH:mm:ss"),
+            requestedBy: {
+                id:1
+            },
+            company: {
+                id: props.company
+            },
+            requestedItems: requestedItems
+
+        }
+
+        console.log(data)
+        console.log(id)
+        dispatch(addPR(data))
+            .then((response) => {
+                if(response.payload.status === 200){
+                    message.success('Successfully saved')
+                    history.goBack()
+                }
+                else {
+                    message.error("Something went wrong. Unable to add item.")
+                }
+            })
         
-        message.success('Successfully saved')
-        history.goBack()
+        
     };
     
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
+        //message.error(errorInfo)
     };
 
     const renderColumns = (field) => {
         var filteredColumn = columns.slice()
         const inputColumn = [
             {
-                title: 'Requested',
-                key: 'requested',
+                title: 'Quantity Requested',
+                key: 'quantityRequested',
                 render: row => {
                     return (
                         <Form.Item
                             {...field}
-                            name={[field.name, 'requested']}
-                            fieldKey={[field.fieldKey, 'requested']}
+                            name={[field.name, row.id]}
+                            fieldKey={[field.fieldKey, row.id]}
                             rules={[{ required: true }]}
+                            initialValue={1}
                         >
-                            <Input/>
+                            <InputNumber min={1}/>
                         </Form.Item>
                     );
                 }
@@ -114,13 +227,44 @@ const InputForm = (props) => {
         return (filteredColumn)
     }
 
+    const renderItemColumns = () => {
+        var filteredColumn = [
+            {
+                key: 'select',
+                render: row => {
+                    return (
+                        <Checkbox 
+                            onChange={(e) => {
+                                onItemSelect(row, e.target.checked)
+                            }}
+                            checked={formData.requestedItems.some((item) => item.id === row.id) ? (true) : (false)}
+                        />
+                    );
+                }
+            }
+        ]
+
+        const inputColumn = columns.slice()
+
+        filteredColumn = filteredColumn.concat(inputColumn)
+
+        return (filteredColumn)
+    }
+
     const selectItems = () => {
         setDisplayModal(true)
+        setLoadingItems(true)
+        dispatch(listItems())
+            .then((response) => {
+                setLoadingItems(false)
+            }
+        )
+
+
     }
 
     const closeModal = () => {
         setDisplayModal(false)
-        setDisplayData(null)
     }
 
     return (
@@ -142,7 +286,7 @@ const InputForm = (props) => {
                             <Form.Item
                                 label="PRF Number"
                                 name="number"
-                                initialValue={data === null ? ("AUTOGENERATED UPON CREATION.") : (data.number)}
+                                initialValue={formData.number === null ? ("AUTOGENERATED UPON CREATION.") : (formData.number)}
                             >
                                 <Input 
                                     disabled={true}
@@ -153,7 +297,7 @@ const InputForm = (props) => {
                                 label="PRF Date"
                                 name="date"
                                 rules={[{ required: true }]}
-                                initialValue={ data === null ? (moment()) : (moment(new Date(data.date)))} 
+                                initialValue={ formData.date === null ? (moment()) : (moment(new Date(formData.date)))} 
                             >
                                 <DatePicker 
                                     format={dateFormat} 
@@ -165,7 +309,7 @@ const InputForm = (props) => {
                                 label="Date Needed"
                                 name="dateNeeded"
                                 rules={[{ required: true }]}
-                                initialValue={ data === null ? (moment()) : (moment(new Date(data.dateNeeded)))}
+                                initialValue={ formData.dateNeeded === null ? (moment()) : (moment(new Date(formData.dateNeeded)))}
                             >
                                 <DatePicker  
                                     format={dateFormat} 
@@ -177,20 +321,24 @@ const InputForm = (props) => {
                                 label="Department"
                                 name="department"
                                 rules={[{ required: true }]}
-                                {...data && { initialValue: data.department }}
+                                { ...formData.department != null && { initialValue: formData.department.id }}
                             >
-                                <Input/>
+                                <Select>
+                                    {departments.map((department) =>
+                                        <Select.Option value={department.id}>{department.name}</Select.Option>
+                                    )}
+                                </Select>
                             </Form.Item>
                             
                             <Form.List
-                                label="Items"
-                                name="items"
+                                label="Requested Items"
+                                name="requestedItems"
                                 rules={[{ required: true }]}
                             >
                                 {(fields, { add, remove }, { errors }) => (
                                     <Col span={20} offset={1}>
                                         <Table
-                                            dataSource={data !== null ? (data.requestedItems) : ([])}
+                                            dataSource={formData.requestedItems}
                                             columns={renderColumns(fields)}
                                             pagination={false}
                                             locale={{emptyText: <Empty description={"No Item Seleted."}/>}} 
@@ -206,15 +354,14 @@ const InputForm = (props) => {
                                 }}
                                 style={{ width: "40%", float: "right" }}
                                 >
-                                    Select item(s)
+                                    Select/Remove item(s)
                                 </Button>
                             </Form.Item>
                             
                             <Form.Item
                                 label="Remarks"
                                 name="remarks"
-                                rules={[{ required: true }]}
-                                {...data && { initialValue: data.remarks }}
+                                {...formData && { initialValue: formData.remarks }}
                             >
                                 <Input.TextArea/>
                             </Form.Item>
@@ -235,13 +382,23 @@ const InputForm = (props) => {
             <Modal
                 title={ "Select Items" }
                 visible={displayModal}
+                cancelButtonProps={{ style: { display: 'none' } }}
                 onOk={closeModal}
                 onCancel={closeModal}
                 width={1000}
                 >
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                {
+                    isLoadingItems ? (
+                        <Skeleton />
+                    )
+                    : (
+                        <Table
+                            dataSource={itemsList !== null ? (itemsList) : ([])}
+                            columns={renderItemColumns()}
+                            pagination={false}
+                        />
+                    )
+                }
             </Modal>
 
         </>
