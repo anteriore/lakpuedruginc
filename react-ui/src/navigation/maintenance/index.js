@@ -1,5 +1,6 @@
 import Product from '../../screens/Maintenance/Products';
 import FinishedGoods from '../../screens/Maintenance/FinishedGoods';
+import DepartmentArea from '../../screens/Maintenance/DepartmentArea';
 
 export const routes = [
   {
@@ -30,7 +31,7 @@ export const routes = [
   {
     title: "Department Area & Codes",
     path: "/department_area",
-    component: ''
+    component: DepartmentArea
   },
   {
     title: "Items",

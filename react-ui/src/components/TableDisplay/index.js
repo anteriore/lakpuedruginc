@@ -46,7 +46,7 @@ const TableDisplay = (props) => {
         var filteredColumn = columns.slice()
         const editpart = [
             {
-                title:'',                   
+                title:'Actions',                   
                 render: row => {
                     return (
                         <div style={styles.crudColumn}>

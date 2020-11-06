@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Table, Typography, Button, Modal, Skeleton, Empty, Popconfirm, message } from 'antd';
-import { 
-    EditOutlined,
-    DeleteOutlined,
-    PlusOutlined,
-    QuestionCircleOutlined
+import { Row, Col, Table, Typography, Button, Modal, Skeleton, Empty, message } from 'antd';
+import {
+    PlusOutlined
 } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
@@ -206,16 +203,3 @@ const PurchaseRequests = (props) => {
 }
 
 export default PurchaseRequests
-
-const styles = {
-    crudColumn: {
-        display: "flex",
-        flexDirection: "row"
-    },
-    tailLayout: {
-        display: "flex",
-        flexDirection: "row-reverse",
-        width: "87.5%"
-        
-    }
-}
