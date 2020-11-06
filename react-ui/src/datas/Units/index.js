@@ -22,4 +22,22 @@ export const tableHeader = [
       defaultSortOrder: 'ascend',
       sorter: (a, b) => a.code.length - b.code.length   
   },
-]
+];
+
+export const formDetails = {
+    form_name: "units",
+    form_items: [
+        {
+        label: "Name",
+        name: "name",
+        rules: [[{ required: true, message: 'Please provide a proper unit name' }]],
+        placeholder: "Unit name"
+        },
+        {
+        label: "Code",
+        name: "code",
+        rules: [[{ required: true, message: 'Please provide a proper unit code' }]],
+        placeholder: "Unit code"
+        },
+    ]
+}

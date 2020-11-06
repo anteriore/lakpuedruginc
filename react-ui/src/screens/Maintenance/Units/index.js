@@ -10,7 +10,7 @@ import {
   message
 } from 'antd';
 import GeneralStyles from '../../../datas/styles/styles.general';
-import { tableHeader } from '../../../datas/Units';
+import { tableHeader, formDetails } from '../../../datas/Units';
 import FilteredColumns from '../../../components/FilteredColumns';
 import TableSearch from '../../../components/TableSearch';
 import SimpleForm from '../../../components/forms/SimpleForm';
@@ -99,24 +99,6 @@ const Units = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-  }
-
-  const formDetails = {
-    form_name: "units",
-    form_items: [
-      {
-        label: "Name",
-        name: "name",
-        rules: [[{ required: true, message: 'Please provide a proper unit name' }]],
-        placeholder: "Unit name"
-      },
-      {
-        label: "Code",
-        name: "code",
-        rules: [[{ required: true, message: 'Please provide a proper unit code' }]],
-        placeholder: "Unit code"
-      },
-    ]
   }
 
   return (
