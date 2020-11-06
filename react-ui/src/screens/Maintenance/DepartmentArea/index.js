@@ -7,7 +7,7 @@ import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay'
-import { listD, listA } from './redux'
+import { listD, addD, deleteD, listA, addA, deleteA } from './redux'
 
 const { Title } = Typography;
 
@@ -60,15 +60,30 @@ const DepartmentArea = (props) => {
         dispatch(listA({company: company}))
     }, [])
 
-    const handleUpdate = (data) => {
+    const handleUpdateD = (data) => {
 
     }
 
-    const handleDelete = (data) => {
+    const handleDeleteD = (data) => {
+        dispatch(deleteD(data.id))
+        .then((response) => {
+            dispatch(listD({company: company}))
+            message.success("Successfully deleted Department " + data.name)
+        })
+    }
+
+    const handleUpdateA = (data) => {
 
     }
-    const handleRetrieve = (data) => {
+
+    const handleDeleteA = (data) => {
+        dispatch(deleteA(data.id))
+            .then((response) => {
+                dispatch(listA({company: company}))
+                message.success("Successfully deleted Area " + data.name)
+            })
     }
+    const handleRetrieve = (data) => {}
 
     return (
         <>
@@ -93,8 +108,8 @@ const DepartmentArea = (props) => {
                     columns={deptColumns} 
                     data={deptData} 
                     handleRetrieve={handleRetrieve}
-                    handleUpdate={handleUpdate}
-                    handleDelete={handleDelete}
+                    handleUpdate={handleUpdateD}
+                    handleDelete={handleDeleteD}
                 />
                 </Col>
                 <Col span={10}>
@@ -111,8 +126,8 @@ const DepartmentArea = (props) => {
                     columns={areaColumns} 
                     data={areaData} 
                     handleRetrieve={handleRetrieve}
-                    handleUpdate={handleUpdate}
-                    handleDelete={handleDelete}
+                    handleUpdate={handleUpdateA}
+                    handleDelete={handleDeleteA}
                 />
                 </Col>
             </Row>

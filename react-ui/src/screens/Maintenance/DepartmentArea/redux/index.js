@@ -17,10 +17,42 @@ export const listD = createAsyncThunk('listD', async (payload, thunkAPI) => {
 
 })
 
+export const addD = createAsyncThunk('addD', async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token
+    
+    const response = await axiosInstance.post('rest/departments/?token=' + accessToken, payload)
+    return response
+
+})
+
+export const deleteD = createAsyncThunk('deleteD', async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token
+    
+    const response = await axiosInstance.post('rest/departments/delete?token=' + accessToken, payload)
+    return response
+
+})
+
 export const listA = createAsyncThunk('listA', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
 
     const response = await axiosInstance.get('rest/areas/company/' + payload.company + "?token=" + accessToken)
+    return response
+
+})
+
+export const addA = createAsyncThunk('addA', async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token
+    
+    const response = await axiosInstance.post('rest/areas/?token=' + accessToken, payload)
+    return response
+
+})
+
+export const deleteA = createAsyncThunk('deleteA', async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token
+    
+    const response = await axiosInstance.post('rest/areas/delete?token=' + accessToken, payload)
     return response
 
 })
