@@ -18,14 +18,19 @@ const TableDisplay = (props) => {
     /*
     columns must have an id
     
-    Sample column:
+    Sample columns:
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.id - b.id
-    }
+        title: 'PRF Number',
+        dataIndex: 'number',
+        key: 'number',
+        sorter: (a, b) => a.id - b.id //custom sorter
+    },
+    {
+        title: 'PRF Date',
+        dataIndex: 'date',
+        key: 'date',
+        datatype: "date" //adds the render, sorter and filter/search bar based on datatype 
+    },
 
     */
     

@@ -69,7 +69,7 @@ const processData = (data, action) => {
                 number: value.number,
                 date: value.date,
                 dateNeeded: value.dateNeeded,
-                department: value.department,
+                department: value.department !== null ? (value.department.name) : (""),
                 remarks: value.remarks,
                 requestedBy: value.requestedBy.email,
                 status: value.status,

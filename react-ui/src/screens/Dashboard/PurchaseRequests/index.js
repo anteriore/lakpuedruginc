@@ -28,39 +28,31 @@ const PurchaseRequests = (props) => {
             title: 'PRF Number',
             dataIndex: 'number',
             key: 'number',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.number - b.number 
+            sorter: (a, b) => a.id - b.id
         },
         {
             title: 'PRF Date',
             dataIndex: 'date',
             key: 'date',
-            render: (text) => moment(new Date(text)).format("DD/MM/YYYY"),
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.date - b.date    
+            datatype: "date"  
         },
         {
             title: 'Date Needed',
             dataIndex: 'dateNeeded',
             key: 'dateNeeded',
-            render: (text) => moment(new Date(text)).format("DD/MM/YYYY"),
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.dateNeeded - b.dateNeeded       
+            datatype: "date"        
         },
         {
             title: 'Department',
             dataIndex: 'department',
             key: 'department',   
-            render: (object) => object != null ? (object.name) : (''),
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.department - b.department    
+            datatype: "string"  
         },
         {
             title: 'Status',
             dataIndex: 'status',
-            key: 'status',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.status - b.status       
+            key: 'status',     
+            datatype: "string" 
         }
     ])
 
@@ -120,66 +112,6 @@ const PurchaseRequests = (props) => {
         setDisplayData(itemData)
         setLoadingItem(false)
     }, [itemData])
-
-    const columnfilter = () => {
-        var filteredColumn = columns.slice()
-        const editpart = [
-            {
-                title:'',                   
-                render: row => {
-                    return (
-                        <div style={styles.crudColumn}>
-                            <Button 
-                                icon={<EditOutlined />} 
-                                type="text" 
-                                onClick={(e)=>{ 
-                                    e.stopPropagation();
-                                    history.push(path + "/" + row.id)
-                                }}
-                            >
-                                Edit
-                            </Button>
-                            <Popconfirm
-                                title="Would you like to delete this item?"
-                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                                onConfirm={(e) => {
-                                    e.stopPropagation() 
-                                    dispatch(deletePR(row.id))
-                                        .then((response) => {
-                                            dispatch(listPR({company: company}))
-                                            message.success("Successfully deleted Purchase Request " + row.number)
-                                        })
-
-                                }}
-                                onCancel={(e) => {
-                                    e.stopPropagation()
-                                }}
-                                okText="Yes"
-                                cancelText="No"
-                            >
-                                <Button 
-                                    icon={<DeleteOutlined />} 
-                                    type="text" 
-                                    onClick={(e)=>{ 
-                                        e.stopPropagation()
-                                    }} 
-                                >
-                                    Delete
-                                </Button>
-                            </Popconfirm>
-                        </div>
-                    );                                      
-                }
-            }
-        ]
-       
-          filteredColumn = filteredColumn.concat(editpart)
-        
-        return(filteredColumn)
-    }
-
-    const viewPurchaseRequest = (key) => {
-    }
 
     const closeModal = () => {
         setDisplayModal(false)
@@ -255,7 +187,7 @@ const PurchaseRequests = (props) => {
                                 <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
                                 <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
                                 <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
-                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department.id) : ("")}</p>
+                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department) : ("")}</p>
                                 <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
                                 <Table
                                     dataSource={displayData !== null ? (displayData.requestedItems) : ([])}
