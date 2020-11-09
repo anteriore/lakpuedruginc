@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Table, Typography, Button, Modal, Skeleton, Empty, message } from 'antd';
+import { Row, Col, Typography, Button, message } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
-import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay'
@@ -13,8 +12,6 @@ import SimpleForm from '../../../components/forms/SimpleForm';
 const { Title } = Typography;
 
 const DepartmentArea = (props) => {
-    const [loading, setLoading] = useState(false)
-
     const [displayFormD, setDisplayFormD] = useState(false);
     const [displayFormA, setDisplayFormA] = useState(false);
     const [formTitle, setFormTitle] = useState('');
@@ -22,7 +19,7 @@ const DepartmentArea = (props) => {
     const [formDataA, setFormDataA] = useState(null);
     const [formDataD, setFormDataD] = useState(null);
 
-    const [deptColumns, setDeptColumns] = useState([
+    const deptColumns = [
         {
             title: 'Dept. Code',
             dataIndex: 'code',
@@ -35,9 +32,9 @@ const DepartmentArea = (props) => {
             key: 'name',
             datatype: "string"  
         }
-    ])
+    ];
 
-    const [areaColumns, setAreaColumns] = useState([
+    const areaColumns = [
         {
             title: 'Area Code',
             dataIndex: 'code',
@@ -50,7 +47,7 @@ const DepartmentArea = (props) => {
             key: 'name',
             datatype: "string"  
         }
-    ])
+    ];
 
     const formDetailD = {
         form_name: "departments",
@@ -96,7 +93,7 @@ const DepartmentArea = (props) => {
     useEffect(() => {
         dispatch(listD({company: company}))
         dispatch(listA({company: company}))
-    }, [])
+    }, [dispatch, company])
 
     const handleAddD = () => {
         setFormTitle("Add Department");

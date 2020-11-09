@@ -14,13 +14,12 @@ import TableDisplay from '../../../components/TableDisplay'
 const { Title } = Typography;
 
 const PurchaseRequests = (props) => {
-    const [loading, setLoading] = useState(false)
     const [loadingItem, setLoadingItem] = useState(false)
 
     const [displayModal, setDisplayModal] = useState(false);
     const [displayData, setDisplayData] = useState(null);
 
-    const [columns, setColumns] = useState([
+    const columns = [
         {
             title: 'PRF Number',
             dataIndex: 'number',
@@ -51,9 +50,9 @@ const PurchaseRequests = (props) => {
             key: 'status',     
             datatype: "string" 
         }
-    ])
+    ];
 
-    const [itemColumns, setItemColumns] = useState([
+    const itemColumns = [
         {
             title: 'Type',
             dataIndex: 'type',
@@ -86,7 +85,7 @@ const PurchaseRequests = (props) => {
             dataIndex: 'quantityRequested',
             key: 'quantityRequested',   
         }
-    ])
+    ];
     
     const data = useSelector(state => state.dashboard.purchaseRequests.listData)
     const itemData = useSelector(state => state.dashboard.purchaseRequests.itemData)
@@ -103,7 +102,7 @@ const PurchaseRequests = (props) => {
         return function cleanup() {
             dispatch(resetItemData())
         };
-    }, [])
+    }, [dispatch,company])
 
     useEffect(() => {
         setDisplayData(itemData)

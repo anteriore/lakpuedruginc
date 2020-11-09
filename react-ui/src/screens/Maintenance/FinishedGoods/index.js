@@ -3,10 +3,7 @@ import {
   Row, 
   Col, 
   Typography, 
-  Button, 
-  Input,
-  DatePicker,
-  Space,
+  Button,
   Table,
   Modal,
   message
@@ -41,14 +38,13 @@ const FinishedGoods = (props) => {
 
   useEffect(() => {
     dispatch(getFGList({company}));
-  }, [dispatch]);
+  }, [dispatch, company]);
 
   useEffect(() => {
     if (action !== 'get' && action !== ''){
-      console.log(action)
       message.success(statusMessage);
     }
-  }, [statusMessage])
+  }, [statusMessage, action])
 
   const handleAddButton = () => {
     setModalTitle("Add Finished Good");

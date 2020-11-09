@@ -1,21 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route, Redirect } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { useRouteMatch, useHistory } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { useHistory } from "react-router-dom";
 
 import AdminRoutes from './routes/AdminRoutes';
 import Login from '../screens/Login'
 
 const Main = (props) => {
   const signedIn = useSelector(state => state.auth.signedIn)
-  const { path } = useRouteMatch();
   const history = useHistory();
 
   useEffect(() => {
     if(signedIn === true){
       history.push("/")
     }
-  }, [signedIn])
+  }, [signedIn, history])
 
   const PrivateRoute = ({ children, ...rest }) => {
     const signedIn = useSelector(state => state.auth.signedIn)

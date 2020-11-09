@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+/* eslint-disable no-redeclare */
+import React, { useState, useEffect } from 'react';
 import { 
     Row, 
     Col, 
@@ -42,7 +43,7 @@ const InputForm = (props) => {
         requestedItems: [],
     })
 
-    const [columns, setColumns] = useState([
+    const columns = [
         {
             title: 'Item Name',
             dataIndex: 'name',
@@ -87,7 +88,7 @@ const InputForm = (props) => {
             key: 'quarantined',   
         }
         */
-    ])
+    ];
 
     const data = useSelector(state => state.dashboard.purchaseRequests.itemData)
     const departments = useSelector(state => state.maintenance.departmentArea.deptList)
@@ -115,7 +116,7 @@ const InputForm = (props) => {
         return function cleanup() {
             dispatch(resetItemData())
         };
-    }, []);
+    }, [dispatch, id, props.company]);
 
     useEffect(() => {
         setFormData(data)
