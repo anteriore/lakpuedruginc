@@ -10,4 +10,4 @@ const maintenance = combineReducers({
   units
 })
 
-export default maintenance
+export default maintenance;
