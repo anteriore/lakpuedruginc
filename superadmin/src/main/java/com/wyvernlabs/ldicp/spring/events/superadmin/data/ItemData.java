@@ -94,6 +94,7 @@ public class ItemData {
 		screw.setCode("ENG1");
 		screw.setName("Screw");
 		screw.setType(engineeringMaterial);
+		screw.setUnit(grams);
 		itemRepository.save(screw);
 	}
 }
