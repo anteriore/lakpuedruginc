@@ -1,67 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Table, Typography, Button, Modal, Skeleton, Empty, Popconfirm, message } from 'antd';
-import { 
-    EditOutlined,
-    DeleteOutlined,
+import { Row, Col, Table, Typography, Button, Modal, Skeleton, Empty, message } from 'antd';
+import {
     PlusOutlined
 } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 
 import { getPR, listPR, deletePR, resetItemData } from './redux'
 import InputForm from './InputForm'
-import moment from 'moment';
+import TableDisplay from '../../../components/TableDisplay'
 
 const { Title } = Typography;
 
 const PurchaseRequests = (props) => {
-    const [loading, setLoading] = useState(false)
     const [loadingItem, setLoadingItem] = useState(false)
-    const [defaultpageSize, setDefaultPageSize] = useState(6)
-    const [pageSize, setPageSize] = useState(6)
-    const [currentPage, setCurrentPage] = useState(1)
-    const [dataCount, setDataCount] = useState(0)
-    const [range, setRange] = useState([1,6])
-    const [offset, setOffset] = useState(0)
-    const [sorter, setSorter] = useState(null)
-    const [filters, setFilters] = useState(null)
-    const [searchText, setSearchText] = useState(null)
 
     const [displayModal, setDisplayModal] = useState(false);
     const [displayData, setDisplayData] = useState(null);
 
-    const [columns, setColumns] = useState([
+    const columns = [
         {
             title: 'PRF Number',
             dataIndex: 'number',
-            key: 'number',   
+            key: 'number',
+            sorter: (a, b) => a.id - b.id
         },
         {
             title: 'PRF Date',
             dataIndex: 'date',
             key: 'date',
-            render: (text) => moment(new Date(text)).format("DD/MM/YYYY")   
+            datatype: "date"  
         },
         {
             title: 'Date Needed',
             dataIndex: 'dateNeeded',
             key: 'dateNeeded',
-            render: (text) => moment(new Date(text)).format("DD/MM/YYYY")    
+            datatype: "date"        
         },
         {
             title: 'Department',
             dataIndex: 'department',
             key: 'department',   
-            render: (object) => object != null ? (object.name) : ('')
+            datatype: "string"  
         },
         {
             title: 'Status',
             dataIndex: 'status',
-            key: 'status',   
+            key: 'status',     
+            datatype: "string" 
         }
-    ])
+    ];
 
-    const [itemColumns, setItemColumns] = useState([
+    const itemColumns = [
         {
             title: 'Type',
             dataIndex: 'type',
@@ -94,7 +85,7 @@ const PurchaseRequests = (props) => {
             dataIndex: 'quantityRequested',
             key: 'quantityRequested',   
         }
-    ])
+    ];
     
     const data = useSelector(state => state.dashboard.purchaseRequests.listData)
     const itemData = useSelector(state => state.dashboard.purchaseRequests.itemData)
@@ -111,149 +102,35 @@ const PurchaseRequests = (props) => {
         return function cleanup() {
             dispatch(resetItemData())
         };
-    }, [])
+    }, [dispatch,company])
 
     useEffect(() => {
         setDisplayData(itemData)
         setLoadingItem(false)
     }, [itemData])
 
-    const columnfilter = () => {
-        var filteredColumn = columns.slice()
-        const editpart = [
-            {
-                title:'',                   
-                render: row => {
-                    return (
-                        <div style={styles.crudColumn}>
-                            <Button 
-                                icon={<EditOutlined />} 
-                                type="text" 
-                                onClick={(e)=>{ 
-                                    e.stopPropagation(); 
-                                    console.log("Edit") 
-                                    console.log(row)
-                                    history.push(path + "/" + row.id)
-                                }}
-                            >
-                                Edit
-                            </Button>
-                            <Popconfirm
-                                title="Are you sure delete this item?"
-                                onConfirm={(e) => {
-                                    e.stopPropagation() 
-                                    dispatch(deletePR(row.id))
-                                        .then((response) => {
-                                            dispatch(listPR({company: company}))
-                                            message.success("Successfully deleted Purchase Request " + row.number)
-                                        })
-
-                                }}
-                                onCancel={(e) => {
-                                    e.stopPropagation()
-                                }}
-                                okText="Yes"
-                                cancelText="No"
-                            >
-                                <Button 
-                                    icon={<DeleteOutlined />} 
-                                    type="text" 
-                                    onClick={(e)=>{ 
-                                        e.stopPropagation()
-                                    }} 
-                                >
-                                    Delete
-                                </Button>
-                            </Popconfirm>
-                        </div>
-                    );                                      
-                }
-            }
-        ]
-       
-          filteredColumn = filteredColumn.concat(editpart)
-        
-        return(filteredColumn)
-    }
-
-    const onChangePage = (page, pageSize) => {
-        if(loading == false){
-            setCurrentPage(page)
-        }    
-    }
-
-    const onChangePageSize = (currentPage, newPageSize) => {
-        if(pageSize !== newPageSize && loading == false){
-            setPageSize(newPageSize)
-            setCurrentPage(1)
-            setOffset(0)               
-            getTableData()
-        }   
-    }
-
-    const onChangeRange = (total, newRange) => {  
-
-        if(range[0] !== newRange[0] || range[1] !== newRange[1] ){
-            var offset = newRange[0]-1        
-            setRange(newRange)                      
-            getTableData()
-        }
-    }
-
-    const getTableData = () => {
-        /*
-        setLoading(true)
-        var controllerText = `?limit=${pageSize}&offset=${offset}`
-
-        if(searchText !== null){         
-            controllerText = controllerText + `&search=${searchText}`
-        }
-
-        if(filters !== null){
-            controllerText = controllerText + filters
-        }
-
-        if(sorter !== null){
-            controllerText = controllerText + sorter
-        }     
-        
-        props.getData(API_URL, controllerText) 
-        */
-
-       console.log("Getting Data from backend")    
-
-    }
-
-    const handleTableChange = (pagination, filters, newSorter) => {
-        handleSorter(newSorter)     
-    };
-  
-    const handleSorter = (newSorter) => {
-  
-        if(sorter !== newSorter && sorter !== null){
-          if(newSorter.order === 'ascend'){
-              setSorter(`&ordering=${newSorter.columnKey}`)
-              getTableData()
-          }else if(newSorter.order === 'descend'){
-              setSorter(`&ordering=-${newSorter.columnKey}`)
-              getTableData()
-          }
-          else if(sorter.order === undefined){
-              setSorter(null)
-          }      
-        }
-  
-    }
-
-    const viewPurchaseRequest = (key) => {
-        setLoadingItem(true)
-        dispatch(getPR({id: key}))
-        setDisplayModal(true)
-    }
-
     const closeModal = () => {
         setDisplayModal(false)
         setDisplayData(null)
+    }
+
+    const handleUpdate = (data) => {
+        history.push(path + "/" + data.id)
+
+    }
+
+    const handleDelete = (data) => {
+        dispatch(deletePR(data.id))
+            .then((response) => {
+                dispatch(listPR({company: company}))
+                message.success("Successfully deleted Purchase Request " + data.number)
+            })
+
+    }
+    const handleRetrieve = (data) => {
+        setLoadingItem(true)
+        dispatch(getPR({id: data.id}))
+        setDisplayModal(true)
     }
 
     return (
@@ -271,8 +148,7 @@ const PurchaseRequests = (props) => {
                             <Button 
                                 style={{ "float": "right" , marginRight: "1%"}} 
                                 icon={<PlusOutlined />}
-                                onClick={(e) => { 
-                                    console.log(history)
+                                onClick={(e) => {
                                     history.push(path + "/new")
                                 }}
                             >
@@ -282,28 +158,12 @@ const PurchaseRequests = (props) => {
                     </Row>
                     <Row>
                         <Col span={20}>
-                        <Table
-                            loading={loading}
-                            dataSource={data}
-                            columns={columnfilter()} 
-                            sorter={true}
-                            pagination={ {
-                                onChange: (page, pageSize) => { onChangePage(page, pageSize) },
-                                showTotal: (total, range)	=> { onChangeRange(total, range) },   
-                                onShowSizeChange:(current, size)=>{ onChangePageSize(current, size) },  
-                                current: currentPage,                               
-                                showQuickJumper:true,                              
-                                defaultPageSize: defaultpageSize,
-                                pageSizeOptions:[defaultpageSize, '20', '50', '100'],
-                                showSizeChanger:true,
-                                total:dataCount }
-                            }
-                            onRow={(record, rowIndex) => {
-                                    return {                             
-                                        onClick: () => {viewPurchaseRequest(record.id)}, // click row
-                                    };
-                            }}
-                            onChange={handleTableChange}
+                        <TableDisplay
+                            columns={columns} 
+                            data={data} 
+                            handleRetrieve={handleRetrieve}
+                            handleUpdate={handleUpdate}
+                            handleDelete={handleDelete}
                         />
                         </Col>
                     </Row>
@@ -323,7 +183,7 @@ const PurchaseRequests = (props) => {
                                 <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
                                 <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
                                 <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
-                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department.id) : ("")}</p>
+                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department) : ("")}</p>
                                 <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
                                 <Table
                                     dataSource={displayData !== null ? (displayData.requestedItems) : ([])}
@@ -342,16 +202,3 @@ const PurchaseRequests = (props) => {
 }
 
 export default PurchaseRequests
-
-const styles = {
-    crudColumn: {
-        display: "flex",
-        flexDirection: "row"
-    },
-    tailLayout: {
-        display: "flex",
-        flexDirection: "row-reverse",
-        width: "87.5%"
-        
-    }
-}

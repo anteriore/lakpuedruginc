@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import InputForm from './InputForm';
 import { 
   Row, 
@@ -24,7 +24,7 @@ const { RangePicker } = DatePicker;
 const Product = (props) => {
   const { path } = useRouteMatch();
   const history = useHistory();
-  const [columns, setColumns] = useState([
+  const columns = [
       {
           title: 'Lot #',
           dataIndex: 'id',
@@ -48,9 +48,9 @@ const Product = (props) => {
           key: 'expiration_date',
           align: 'center'
       }
-  ]);
+  ];
 
-  const [data, setData] = useState([
+  const data = [
     {
         'id':'1',
         'fg_code': "12313123",
@@ -69,7 +69,7 @@ const Product = (props) => {
       'fg_name': 'cola',
       'expiration_date':'1-19-2020'
     }
-  ])
+  ];
 
   const columnFilter = () => {
     var filteredColumn = columns.slice();

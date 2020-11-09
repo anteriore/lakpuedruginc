@@ -1,6 +1,5 @@
+/* eslint-disable no-redeclare, no-unused-vars, no-dupe-keys*/
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
 
 import axiosInstance from '../../../../utils/axios-instance';
 
@@ -69,7 +68,7 @@ const processData = (data, action) => {
                 number: value.number,
                 date: value.date,
                 dateNeeded: value.dateNeeded,
-                department: value.department,
+                department: value.department !== null ? (value.department.name) : (""),
                 remarks: value.remarks,
                 requestedBy: value.requestedBy.email,
                 status: value.status,
@@ -107,7 +106,7 @@ const processData = (data, action) => {
             number: data.number,
             date: data.date,
             dateNeeded: data.dateNeeded,
-            department: data.department,
+            department: data.department.name,
             remarks: data.remarks,
             requestedBy: data.requestedBy.email,
             status: data.status,
@@ -164,7 +163,7 @@ const purchaseRequestSlice = createSlice({
             state.status = 'loading'
         },
         [listPR.fulfilled]: (state, action) => {
-            if(action.payload !== undefined && action.payload.status == 200){
+            if(action.payload !== undefined && action.payload.status === 200){
                 state.status = 'succeeded'
                 state.listData = processData(action.payload.data, action.type)
             }
@@ -181,7 +180,7 @@ const purchaseRequestSlice = createSlice({
             state.status = 'loading'
         },
         [getPR.fulfilled]: (state, action) => {
-            if(action.payload !== undefined && action.payload.status == 200){
+            if(action.payload !== undefined && action.payload.status === 200){
                 state.status = 'succeeded'
                 state.itemData = processData(action.payload.data, action.type)
             }
@@ -199,7 +198,7 @@ const purchaseRequestSlice = createSlice({
             state.status = 'loading'
         },
         [listItems.fulfilled]: (state, action) => {
-            if(action.payload !== undefined && action.payload.status == 200){
+            if(action.payload !== undefined && action.payload.status === 200){
                 state.status = 'succeeded'
                 state.listData = processData(action.payload.data, action.type)
             }

@@ -26,6 +26,7 @@ public class PurchaseRequest {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
+	@Column(name = "number", nullable = false, unique = true)
 	private String number;
 	private Date date;
 	private Date dateNeeded;

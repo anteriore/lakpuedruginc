@@ -1,17 +1,14 @@
-import React, {useState} from 'react';
-import { Col, Card, Typography } from 'antd';
+import React from 'react';
+import { Col, Card } from 'antd';
 import { 
     ProfileOutlined
 } from '@ant-design/icons';
 import { Link} from 'react-router-dom';
 
 const { Meta } = Card;
-const { Title } = Typography;
 
 const Modules = (props) => {
-    const [path, setPath] = useState(props.path)
-    const [title, setTitle] = useState(props.title)
-
+    
     return (
         <Col span={styles.span}>
             <Card bordered={true} style={styles.Card}>

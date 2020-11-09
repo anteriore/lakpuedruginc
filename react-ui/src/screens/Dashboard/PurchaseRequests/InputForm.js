@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+/* eslint-disable no-redeclare */
+import React, { useState, useEffect } from 'react';
 import { 
     Row, 
     Col, 
@@ -42,7 +43,7 @@ const InputForm = (props) => {
         requestedItems: [],
     })
 
-    const [columns, setColumns] = useState([
+    const columns = [
         {
             title: 'Item Name',
             dataIndex: 'name',
@@ -87,7 +88,7 @@ const InputForm = (props) => {
             key: 'quarantined',   
         }
         */
-    ])
+    ];
 
     const data = useSelector(state => state.dashboard.purchaseRequests.itemData)
     const departments = useSelector(state => state.maintenance.departmentArea.deptList)
@@ -115,16 +116,14 @@ const InputForm = (props) => {
         return function cleanup() {
             dispatch(resetItemData())
         };
-    }, []);
+    }, [dispatch, id, props.company]);
 
     useEffect(() => {
         setFormData(data)
     }, [data])
 
     const onItemSelect = (data, isSelected) => {
-        console.log('Selected:', data);
         if(isSelected){
-            console.log("Select " + data.id)
             var selectedItems = formData.requestedItems.slice()
             selectedItems.push(data)
             setFormData({
@@ -133,7 +132,6 @@ const InputForm = (props) => {
             })
         }
         else {
-            console.log("Unselect " + data.id)
             var selectedItems = formData.requestedItems.slice()
             selectedItems.pop(data)
             setFormData({
@@ -146,8 +144,6 @@ const InputForm = (props) => {
     };
 
     const onFinish = (values) => {
-        console.log('Success:', values);
-        console.log(formData)
 
         //save data to database
         var requestedItems = formData.requestedItems.slice()
@@ -179,8 +175,6 @@ const InputForm = (props) => {
 
         }
 
-        console.log(data)
-        console.log(id)
         dispatch(addPR(data))
             .then((response) => {
                 if(response.payload.status === 200){
@@ -259,8 +253,6 @@ const InputForm = (props) => {
                 setLoadingItems(false)
             }
         )
-
-
     }
 
     const closeModal = () => {
@@ -350,7 +342,7 @@ const InputForm = (props) => {
                             <Form.Item  style={styles.tailLayout}>
                                 <Button
                                 onClick={() => {
-                                    console.log(selectItems())
+                                    selectItems()
                                 }}
                                 style={{ width: "40%", float: "right" }}
                                 >

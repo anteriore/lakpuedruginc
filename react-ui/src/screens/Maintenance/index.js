@@ -8,20 +8,14 @@ import ModulesGrid from '../../components/ModulesGrid';
 const { TabPane } = Tabs;
 const { Title } = Typography
 
-function callback(key) {
-    console.log(key);
-}
-
 const Maintenance = (props) => {
     const { path } = useRouteMatch();
-    const [title, setTitle] = useState("Maintenance");
-    const [modules, setModules] = useState(MaintenanceRoutes);
     const [company, setCompany] = useState(1);
 
     const renderRoutes = () => {
         let routes = []
         
-        modules.forEach((module, i) => {
+        MaintenanceRoutes.forEach((module, i) => {
 			let ComponentTag = module.component;
 			routes.push(
 				<Route key={i} path={path + module.path}>
@@ -45,19 +39,19 @@ const Maintenance = (props) => {
             <Route exact path={path}>
                 <Container location={{pathname: path}}>
                     <Row>
-                        <Title level={3}>{title}</Title>
+                        <Title level={3}>Maintenance</Title>
                     </Row>
                     <Row>
                         <Col span={24}>
                             <Tabs defaultActiveKey="1" onChange={handleChangeTab}>
                                 <TabPane tab="Lakpue Drug Inc." key="1">
-                                    <ModulesGrid company="LDI" modules={modules}/>
+                                    <ModulesGrid company="LDI" modules={MaintenanceRoutes}/>
                                 </TabPane>
                                 <TabPane tab="La Croesus Pharma Inc." key="2">
-                                    <ModulesGrid company="LCP" modules={modules}/>
+                                    <ModulesGrid company="LCP" modules={MaintenanceRoutes}/>
                                 </TabPane>
                                 <TabPane tab="Fanfreluche Enterprises Inc." key="3">
-                                    <ModulesGrid company="FEI" modules={modules}/>
+                                    <ModulesGrid company="FEI" modules={MaintenanceRoutes}/>
                                 </TabPane>
                             </Tabs>
                         </Col>

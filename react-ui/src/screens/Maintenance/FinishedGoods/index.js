@@ -3,27 +3,23 @@ import {
   Row, 
   Col, 
   Typography, 
-  Button, 
-  Input,
-  DatePicker,
-  Space,
+  Button,
   Table,
   Modal,
   message
 } from 'antd';
 import { 
   PlusOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
 import { tableHeader } from '../../../datas/FinishedGoods'
-import FilteredColumns from '../../../components/FilteredColumns';
-import TableSearch from '../../../components/TableSearch';
+import FilteredColumns from '../../../components/TableDisplay/FilteredColumns';
+import TableSearch from '../../../components/TableDisplay/TableSearch';
 import FinishedGoodsForm from '../../../components/forms/FinishedGoodsForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFGList, createFG, deleteFG, updateFG } from './redux';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
-const { Search } = Input;
 const { confirm } = Modal;
 
 const FinishedGoods = (props) => {
@@ -42,14 +38,13 @@ const FinishedGoods = (props) => {
 
   useEffect(() => {
     dispatch(getFGList({company}));
-  }, [dispatch]);
+  }, [dispatch, company]);
 
   useEffect(() => {
     if (action !== 'get' && action !== ''){
-      console.log(action)
       message.success(statusMessage);
     }
-  }, [statusMessage])
+  }, [statusMessage, action])
 
   const handleAddButton = () => {
     setModalTitle("Add Finished Good");
@@ -89,10 +84,6 @@ const FinishedGoods = (props) => {
     setFormValues('')
   }
 
-  const onSearch = (value) => {
-    console.log(value)
-  }
-
   const onSubmit = (values) => {
     if(mode === 'edit'){
       let newValues = values;
@@ -110,8 +101,6 @@ const FinishedGoods = (props) => {
     setFormValues('');
     setIsOpenForm(!isOpenForm);
   } 
-
-  console.log();
 
   return (
     <Row gutter={[8,24]}>
