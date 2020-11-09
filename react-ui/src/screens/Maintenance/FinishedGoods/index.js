@@ -16,8 +16,8 @@ import {
   ExclamationCircleOutlined
 } from '@ant-design/icons';
 import { tableHeader } from '../../../datas/FinishedGoods'
-import FilteredColumns from '../../../components/FilteredColumns';
-import TableSearch from '../../../components/TableSearch';
+import FilteredColumns from '../../../components/TableDisplay/FilteredColumns';
+import TableSearch from '../../../components/TableDisplay/TableSearch';
 import FinishedGoodsForm from '../../../components/forms/FinishedGoodsForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFGList, createFG, deleteFG, updateFG } from './redux';
