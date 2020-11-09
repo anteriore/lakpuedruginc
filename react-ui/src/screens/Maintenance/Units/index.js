@@ -11,8 +11,8 @@ import {
 } from 'antd';
 import GeneralStyles from '../../../datas/styles/styles.general';
 import { tableHeader, formDetails } from '../../../datas/Units';
-import FilteredColumns from '../../../components/FilteredColumns';
-import TableSearch from '../../../components/TableSearch';
+import FilteredColumns from '../../../components/TableDisplay/FilteredColumns';
+import TableSearch from '../../../components/TableDisplay/TableSearch';
 import SimpleForm from '../../../components/forms/SimpleForm';
 import { PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { listUnit, createUnit, updateUnit, deleteUnit } from './redux';

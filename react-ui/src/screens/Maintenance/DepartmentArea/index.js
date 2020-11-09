@@ -8,15 +8,19 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay'
 import { listD, addD, deleteD, listA, addA, deleteA } from './redux'
+import SimpleForm from '../../../components/forms/SimpleForm';
 
 const { Title } = Typography;
 
 const DepartmentArea = (props) => {
     const [loading, setLoading] = useState(false)
-    const [loadingItem, setLoadingItem] = useState(false)
 
-    const [displayModal, setDisplayModal] = useState(false);
-    const [displayData, setDisplayData] = useState(null);
+    const [displayFormD, setDisplayFormD] = useState(false);
+    const [displayFormA, setDisplayFormA] = useState(false);
+    const [formTitle, setFormTitle] = useState('');
+    const [formMode, setFormMode] = useState('');
+    const [formDataA, setFormDataA] = useState(null);
+    const [formDataD, setFormDataD] = useState(null);
 
     const [deptColumns, setDeptColumns] = useState([
         {
@@ -48,9 +52,43 @@ const DepartmentArea = (props) => {
         }
     ])
 
+    const formDetailD = {
+        form_name: "departments",
+        form_items: [
+            {
+            label: "Name",
+            name: "name",
+            rules: [[{ required: true, message: 'Please provide a proper department name' }]],
+            placeholder: "Department name"
+            },
+            {
+            label: "Code",
+            name: "code",
+            rules: [[{ required: true, message: 'Please provide a proper department code' }]],
+            placeholder: "Department code"
+            },
+        ]
+    }
+
+    const formDetailA = {
+        form_name: "areas",
+        form_items: [
+            {
+            label: "Name",
+            name: "name",
+            rules: [[{ required: true, message: 'Please provide a proper area name' }]],
+            placeholder: "Area name"
+            },
+            {
+            label: "Code",
+            name: "code",
+            rules: [[{ required: true, message: 'Please provide a proper area code' }]],
+            placeholder: "Area code"
+            },
+        ]
+    }
+
     const company = props.company
-    const { path } = useRouteMatch();
-    const history = useHistory();
     const dispatch = useDispatch();
     const deptData = useSelector(state => state.maintenance.departmentArea.deptList) 
     const areaData = useSelector(state => state.maintenance.departmentArea.areaList) 
@@ -60,8 +98,20 @@ const DepartmentArea = (props) => {
         dispatch(listA({company: company}))
     }, [])
 
+    const handleAddD = () => {
+        setFormTitle("Add Department");
+        setFormMode('add');
+        setFormDataD(null)
+        setDisplayFormD(true);
+        setDisplayFormA(false);
+    }
+    
     const handleUpdateD = (data) => {
-
+        setFormTitle("Edit Department");
+        setFormMode('edit');
+        setDisplayFormD(true);
+        setDisplayFormA(false);
+        setFormDataD(data)
     }
 
     const handleDeleteD = (data) => {
@@ -72,8 +122,20 @@ const DepartmentArea = (props) => {
         })
     }
 
+    const handleAddA = () => {
+        setFormTitle("Add Area");
+        setFormMode('add');
+        setFormDataA(null)
+        setDisplayFormD(false);
+        setDisplayFormA(true);
+    }
+    
     const handleUpdateA = (data) => {
-
+        setFormTitle("Edit Area");
+        setFormMode('edit');
+        setDisplayFormD(false);
+        setDisplayFormA(true);
+        setFormDataA(data)
     }
 
     const handleDeleteA = (data) => {
@@ -84,6 +146,79 @@ const DepartmentArea = (props) => {
             })
     }
     const handleRetrieve = (data) => {}
+
+    const handleCancelButton = () => {
+        setDisplayFormD(false);
+        setDisplayFormA(false);
+        setFormDataA(null)
+        setFormDataD(null)
+    }
+    
+    const onSubmitD = (values) => {
+        if( formMode === 'edit' ){
+            const payload = {
+                ...values,
+                id: formDataD.id,
+                company: {
+                    id: company
+                }
+            }
+            
+            dispatch(addD(payload)).then(() => {
+                dispatch(listD({company: company}))
+            });
+        }
+        else if( formMode === 'add' ){
+            const payload = {
+                ...values,
+                company: {
+                    id: company
+                }
+            }
+            dispatch(addD(payload)).then(() => {
+                dispatch(listD({company: company}))
+        });
+      
+        }
+
+        setDisplayFormD(false);
+        setDisplayFormA(false);
+        setFormDataA(null)
+        setFormDataD(null)
+    }
+
+    const onSubmitA = (values) => {
+        if( formMode === 'edit' ){
+            const payload = {
+                ...values,
+                id: formDataA.id,
+                company: {
+                    id: company
+                }
+            }
+            
+            dispatch(addA(payload)).then(() => {
+                dispatch(listA({company: company}))
+            });
+        }
+        else if( formMode === 'add' ){
+            const payload = {
+                ...values,
+                company: {
+                    id: company
+                }
+            }
+            dispatch(addA(payload)).then(() => {
+                dispatch(listA({company: company}))
+        });
+      
+        }
+
+        setDisplayFormD(false);
+        setDisplayFormA(false);
+        setFormDataA(null)
+        setFormDataD(null)
+    }
 
     return (
         <>
@@ -100,6 +235,7 @@ const DepartmentArea = (props) => {
                     style={{ "float": "right" , marginRight: "0.7%" , marginBottom: "1%"}} 
                     icon={<PlusOutlined />}
                     onClick={(e) => {
+                        handleAddD()
                     }}
                 >
                     Add
@@ -118,6 +254,7 @@ const DepartmentArea = (props) => {
                     style={{ "float": "right" , marginRight: "0.7%" , marginBottom: "1%"}} 
                     icon={<PlusOutlined />}
                     onClick={(e) => {
+                        handleAddA()
                     }}
                 >
                     Add
@@ -130,6 +267,22 @@ const DepartmentArea = (props) => {
                     handleDelete={handleDeleteA}
                 />
                 </Col>
+                <SimpleForm 
+                    visible={displayFormD} 
+                    title={formTitle} 
+                    onSubmit={onSubmitD} 
+                    values={formDataD} 
+                    onCancel={handleCancelButton}
+                    formDetails={formDetailD}
+                />
+                <SimpleForm 
+                    visible={displayFormA} 
+                    title={formTitle} 
+                    onSubmit={onSubmitA} 
+                    values={formDataA} 
+                    onCancel={handleCancelButton}
+                    formDetails={formDetailA}
+                />
             </Row>
         </>
     )
