@@ -30,7 +30,7 @@ public class PurchaseRequestService {
 		if (id == null) {
 			prf.setNumber("PRF-0");
 		} else {
-			prf.setNumber("PRF-" + ++id);
+			prf.setNumber("PRF-" + id);
 		}
 
 		for (RequestedItem item : prf.getRequestedItems()) {
