@@ -11,9 +11,7 @@ const { Title } = Typography;
 
 const Dashboard = (props) => {
     const { path } = useRouteMatch();
-    const [title, setTitle] = useState("Dashboard");
     const [company, setCompany] = useState(1);
-    
     
     const renderRoutes = () => {
         var routes = []
@@ -34,8 +32,7 @@ const Dashboard = (props) => {
     }
 
     const handleTabChange = (key) => {
-        setCompany(key)
-        console.log(key)
+        setCompany(key);
     }
 
     return (
@@ -44,7 +41,7 @@ const Dashboard = (props) => {
                 <Route exact path={path}>
                     <Container location={{pathname: path}}>
                         <Row>
-                            <Title level={3}>{title}</Title>
+                            <Title level={3}>Dashboard</Title>
                         </Row>
                         <Row>
                             <Col span={24}>

@@ -48,7 +48,7 @@ const authSlice = createSlice({
             state.status = 'loading'
         },
         [login.fulfilled]: (state, action) => {
-            if(action.payload !== undefined && action.payload.status == 200){
+            if(action.payload !== undefined && action.payload.status === 200){
                 state.status = 'succeeded'
                 state.token = action.payload.data.token
                 state.expired = action.payload.data.expired

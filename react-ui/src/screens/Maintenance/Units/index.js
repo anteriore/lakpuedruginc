@@ -36,13 +36,13 @@ const Units = (props) => {
 
   useEffect(() => {
     dispatch(listUnit({company}));
-  }, [dispatch]);
+  }, [dispatch, company]);
 
   useEffect(() => {
     if (action !== 'get' && action !== ''){
       message.success(statusMessage);
     }
-  }, [statusMessage]);
+  }, [statusMessage, action]);
 
   const handleAddButton = () => {
     setModalTitle("Add New Unit");

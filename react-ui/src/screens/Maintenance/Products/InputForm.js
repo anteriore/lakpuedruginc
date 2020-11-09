@@ -1,5 +1,5 @@
 import React from 'react';
-import {useParams, useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { 
   Row, 
   Col, 
@@ -18,7 +18,6 @@ const { Item } = Form;
 
 const InputForm = (props) => {
   const { title } = props;
-  const { id } = useParams();
   const history = useHistory();
 
   return (

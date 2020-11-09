@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Typography, Form, Input, Button, DatePicker, message, Modal, Table, Empty } from 'antd';
+import { Row, Col, Typography, Form, Input, Button } from 'antd';
 
 import { login, resetErrorMsg } from '../../redux/auth'
 
@@ -11,7 +11,7 @@ const Login = (props) => {
     
     useEffect(() => {
         dispatch(resetErrorMsg())
-    }, [])
+    }, [dispatch])
 
     const onFinish = (values) => {
         dispatch(login(values))

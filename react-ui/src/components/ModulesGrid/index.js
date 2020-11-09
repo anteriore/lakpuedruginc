@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Row } from 'antd';
 import { useRouteMatch } from 'react-router-dom';
 
 import ModuleCard from '../ModuleCard';
 
 const Modules = (props) => {
-    const [cardsPerRow, setCardsPerRow] = useState(4)
+    const cardsPerRow = 4;
     const { path } = useRouteMatch();
 
     const renderModules = () => {

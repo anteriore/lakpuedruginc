@@ -1,6 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
 
 import axiosInstance from '../../../../utils/axios-instance';
 
@@ -66,7 +64,7 @@ const departmentAreaSlice = createSlice({
             state.status = 'loading'
         },
         [listD.fulfilled]: (state, action) => {
-            if(action.payload !== undefined && action.payload.status == 200){
+            if(action.payload !== undefined && action.payload.status === 200){
                 state.status = 'succeeded'
                 state.deptList = action.payload.data
             }
@@ -83,7 +81,7 @@ const departmentAreaSlice = createSlice({
             state.status = 'loading'
         },
         [listA.fulfilled]: (state, action) => {
-            if(action.payload !== undefined && action.payload.status == 200){
+            if(action.payload !== undefined && action.payload.status === 200){
                 state.status = 'succeeded'
                 state.areaList = action.payload.data
             }

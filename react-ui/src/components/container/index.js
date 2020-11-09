@@ -7,18 +7,6 @@ import SideNav from '../SideNav'
 
 const Container = props => {
 
-    const renderHeader = () => {
-        if (props.noHeader) {
-            return null
-        }
-
-        if (props.customHeader) {
-            return props.customHeader
-        }
-
-        return <Header isLogo={props.isLogo} />
-    }
-
     return (
         <div>
             <Header/>

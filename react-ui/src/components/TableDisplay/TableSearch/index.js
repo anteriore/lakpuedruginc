@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   Input,
   Button,
-  Search,
   Space
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -10,8 +9,6 @@ import moment from 'moment';
 
 const TableSearch = (columnHeaders) => {
   let newColumnHeaders = [];
-  const [searchText, setSearchText] = useState('');
-  const [searchColumn, setSearchColumn] = useState('');
 
   const columnSearch = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -48,14 +45,10 @@ const TableSearch = (columnHeaders) => {
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-
-    setSearchText(selectedKeys[0]);
-    setSearchColumn(dataIndex);
   };
 
   const handleReset = clearFilters => {
     clearFilters();
-    setSearchText('')
   };
 
   columnHeaders.forEach(header => {
