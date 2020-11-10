@@ -1,4 +1,4 @@
-// Items actions 
+// Items actions
 // get list items message
 export const ITEMS_GET_PENDING = 'Searching for items';
 export const ITEMS_GET_FULFILLED = 'Successfully retrieved some items';

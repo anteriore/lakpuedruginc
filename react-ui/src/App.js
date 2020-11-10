@@ -1,10 +1,10 @@
 import React from 'react';
-import {Provider} from 'react-redux';
-import { BrowserRouter } from "react-router-dom";
-import { PersistGate } from 'redux-persist/integration/react'
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { PersistGate } from 'redux-persist/integration/react';
 
-import Main from './navigation/';
-import { store, persistor } from './redux/store'
+import Main from './navigation';
+import { store, persistor } from './redux/store';
 import './App.css';
 
 function App() {
@@ -12,13 +12,12 @@ function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
-          <div className="App" style={{overflowY: "scroll"}}>
-            <Main/>
+          <div className="App" style={{ overflowY: 'scroll' }}>
+            <Main />
           </div>
         </BrowserRouter>
       </PersistGate>
     </Provider>
-    
   );
 }
 

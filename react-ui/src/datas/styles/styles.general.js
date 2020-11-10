@@ -1,11 +1,10 @@
 const GeneralStyles = {
-  headerPage:{
+  headerPage: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
-  }
-}
-
+    alignItems: 'center',
+  },
+};
 
 export default GeneralStyles;

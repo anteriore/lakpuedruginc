@@ -6,10 +6,10 @@ import maintenance from '../screens/Maintenance/redux';
 import users from '../screens/Users/redux';
 
 const rootReducer = combineReducers({
-    auth,
-    dashboard,
-    maintenance,
-    users
-})
+  auth,
+  dashboard,
+  maintenance,
+  users,
+});
 
-export default rootReducer
+export default rootReducer;
