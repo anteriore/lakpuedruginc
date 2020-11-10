@@ -101,10 +101,6 @@ const processData = (data, action) => {
             requestedItems.push(item)
         }
 
-        var name = null
-        if(data.department !== null)
-            name = data.department.name
-
         processedData = {
             id: data.id,
             number: data.number,
