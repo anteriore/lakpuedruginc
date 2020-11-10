@@ -55,3 +55,21 @@ export const dataFG = [
     created_date: '12-12-20'
   }
 ]
+
+export const formDetails = {
+  form_name: "finished_goods",
+  form_items: [
+      {
+        label: "Name",
+        name: "name",
+        rules: [{ required: true, message: 'Please provide a proper finished goods name' }],
+        placeholder: "Finished goods name"
+      },
+      {
+        label: "Code",
+        name: "code",
+        rules: [{ required: true, message: 'Please provide a proper finished goods code' }],
+        placeholder: "Finished goods code"
+      },
+  ]
+}

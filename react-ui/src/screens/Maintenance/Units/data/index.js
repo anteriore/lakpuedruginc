@@ -30,13 +30,13 @@ export const formDetails = {
         {
         label: "Name",
         name: "name",
-        rules: [[{ required: true, message: 'Please provide a proper unit name' }]],
+        rules: [{ required: true, message: 'Please provide a proper unit name' }],
         placeholder: "Unit name"
         },
         {
         label: "Code",
         name: "code",
-        rules: [[{ required: true, message: 'Please provide a proper unit code' }]],
+        rules: [{ required: true, message: 'Please provide a proper unit code' }],
         placeholder: "Unit code"
         },
     ]
