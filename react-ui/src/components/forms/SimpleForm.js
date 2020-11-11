@@ -3,6 +3,7 @@ import {
   Form,
   Modal,
   Input,
+  Select
 } from 'antd';
 
 const SimpleForm = (props) => {
@@ -20,15 +21,37 @@ const SimpleForm = (props) => {
     form.setFieldsValue(values);
   },[values, form]);
 
-  const FormItem = ({item}) => (
-    <Form.Item
-      label={item.label}
-      name={item.name}
-      rules={item.rules}
-    >
-      <Input placeholder={item.placeholder} />
-    </Form.Item> 
-  )
+  const FormItem = ({item}) => {
+    
+    
+    if(item.type === "select"){
+      return (
+        <Form.Item
+          label={item.label}
+          name={item.name}
+          rules={[{ required: true }]}
+        >
+          <Select>
+            {item.choices.map((choice) =>
+              <Select.Option value={choice.id}>{choice.name}</Select.Option>
+            )}
+          </Select>
+        </Form.Item>
+      )
+
+    } 
+    else {
+      return (
+        <Form.Item
+          label={item.label}
+          name={item.name}
+          rules={item.rules}
+        >
+          <Input placeholder={item.placeholder} /> 
+        </Form.Item>
+      )
+    }
+  }
 
   return (
     <Modal
