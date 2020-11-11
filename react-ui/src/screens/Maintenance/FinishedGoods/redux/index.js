@@ -73,16 +73,16 @@ const finishedGoodsSlice = createSlice({
       return { ...state, status: 'Error', action: 'get', statusMessage: ITEMS_GET_REJECTED };
     },
     [createFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'post', statusMessage: ITEM_ADD_PENDING };
+      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_ADD_PENDING };
     },
     [createFG.fulfilled]: (state) => {
       return { ...state, status: 'Fulfilled', action: 'post', statusMessage: ITEM_ADD_FULFILLED };
     },
     [createFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'post', statusMessage: ITEM_ADD_REJECTED };
+      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_ADD_REJECTED };
     },
     [updateFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'post', statusMessage: ITEM_UPDATE_PENDING };
+      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_UPDATE_PENDING };
     },
     [updateFG.fulfilled]: (state) => {
       return {
@@ -93,10 +93,10 @@ const finishedGoodsSlice = createSlice({
       };
     },
     [updateFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'post', statusMessage: ITEM_UPDATE_REJECTED };
+      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_UPDATE_REJECTED };
     },
     [deleteFG.pending]: (state) => {
-      return { ...state, status: 'Loading', statusMessage: ITEM_DELETE_PENDING };
+      return { ...state, status: 'Loading', action: 'pending',statusMessage: ITEM_DELETE_PENDING };
     },
     [deleteFG.fulfilled]: (state) => {
       return {
@@ -107,7 +107,7 @@ const finishedGoodsSlice = createSlice({
       };
     },
     [deleteFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'post', statusMessage: ITEM_DELETE_REJECTED };
+      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_DELETE_REJECTED };
     },
   },
 });

@@ -5,6 +5,7 @@ import Units from '../../screens/Maintenance/Units';
 import ItemTypes from '../../screens/Maintenance/ItemTypes';
 import Items from '../../screens/Maintenance/Items';
 import RegionCodes from '../../screens/Maintenance/RegionCodes';
+import ProvinceCode from '../../screens/Maintenance/ProvinceCode';
 
 export const routes = [
   {
@@ -110,7 +111,7 @@ export const routes = [
   {
     title: 'Province Codes',
     path: '/codes/province',
-    component: '',
+    component: ProvinceCode,
   },
   {
     title: 'Sales Codes',

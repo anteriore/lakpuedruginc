@@ -73,7 +73,7 @@ const unitsSlice = createSlice({
       return {
         ...state,
         status: 'Loading',
-        action: 'post',
+        action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
     },
@@ -89,7 +89,7 @@ const unitsSlice = createSlice({
       return {
         ...state,
         status: 'Error',
-        action: 'post',
+        action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
     },
@@ -97,7 +97,7 @@ const unitsSlice = createSlice({
       return {
         ...state,
         status: 'Loading',
-        action: 'post',
+        action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
     },
@@ -113,7 +113,7 @@ const unitsSlice = createSlice({
       return {
         ...state,
         status: 'Error',
-        action: 'post',
+        action: 'error',
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
     },
@@ -121,7 +121,7 @@ const unitsSlice = createSlice({
       return {
         ...state,
         status: 'Loading',
-        action: 'post',
+        action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
     },
@@ -137,7 +137,7 @@ const unitsSlice = createSlice({
       return {
         ...state,
         status: 'Error',
-        action: 'post',
+        action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
     },
