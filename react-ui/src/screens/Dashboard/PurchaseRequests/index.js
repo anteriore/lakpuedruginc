@@ -41,8 +41,7 @@ const PurchaseRequests = (props) => {
         {
             title: 'Department',
             dataIndex: 'department',
-            key: 'department',   
-            datatype: "string"  
+            key: 'department'
         },
         {
             title: 'Status',
@@ -183,7 +182,7 @@ const PurchaseRequests = (props) => {
                                 <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
                                 <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
                                 <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
-                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department) : ("")}</p>
+                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department.name) : ("")}</p>
                                 <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
                                 <Table
                                     dataSource={displayData !== null ? (displayData.requestedItems) : ([])}

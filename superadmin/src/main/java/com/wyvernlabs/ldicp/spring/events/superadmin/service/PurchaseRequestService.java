@@ -28,9 +28,13 @@ public class PurchaseRequestService {
 		Long id = purchaseRequestRepository.getMaxId();
 		prf.setStatus("Pending");
 		if (id == null) {
-			prf.setNumber("PRF-0");
+			prf.setNumber("PRF-1");
 		} else {
 			prf.setNumber("PRF-" + ++id);
+		}
+
+		if(prf.getId()!=null){
+			prf.setNumber("PRF-"+prf.getId());
 		}
 
 		for (RequestedItem item : prf.getRequestedItems()) {

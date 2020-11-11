@@ -100,13 +100,13 @@ const processData = (data, action) => {
             }
             requestedItems.push(item)
         }
-        
+
         processedData = {
             id: data.id,
             number: data.number,
             date: data.date,
             dateNeeded: data.dateNeeded,
-            department: data.department.name,
+            department: data.department,
             remarks: data.remarks,
             requestedBy: data.requestedBy.email,
             status: data.status,
