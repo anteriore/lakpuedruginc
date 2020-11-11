@@ -35,8 +35,14 @@ const RegionCodes = (props) => {
   },[dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== ''){
-      message.success(statusMessage);
+    if (action !== 'get' && action !== '') {
+      if(action === 'pending'){
+        message.info(statusMessage);
+      }else if( action === 'error'){
+        message.error(statusMessage);
+      }else{
+        message.success(statusMessage);
+      }
     }
   }, [statusMessage, action]);
 
@@ -56,7 +62,6 @@ const RegionCodes = (props) => {
 
   const handleDeleteButton = (row) => {
     dispatch(deleteRegionCode(row)).then(() => {
-      message.success(statusMessage);
       dispatch(listRegionCode());
     }).catch( err => {
       message.error(`Something went wrong! details: ${err}`);
@@ -77,7 +82,6 @@ const RegionCodes = (props) => {
         dispatch(listRegionCode());
       });
     }else if( mode === 'add' ){
-      console.log("Creating",values);
       dispatch(createRegionCode(values)).then(() => {
         dispatch(listRegionCode());
       });

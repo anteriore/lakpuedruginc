@@ -25,7 +25,13 @@ const FinishedGoods = (props) => {
 
   useEffect(() => {
     if (action !== 'get' && action !== '') {
-      message.success(statusMessage);
+      if(action === 'pending'){
+        message.info(statusMessage);
+      }else if( action === 'error'){
+        message.error(statusMessage);
+      }else{
+        message.success(statusMessage);
+      }
     }
   }, [statusMessage, action]);
 
@@ -46,7 +52,6 @@ const FinishedGoods = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteFG(row))
       .then(() => {
-        message.success(statusMessage);
         dispatch(getFGList());
       })
       .catch((err) => {

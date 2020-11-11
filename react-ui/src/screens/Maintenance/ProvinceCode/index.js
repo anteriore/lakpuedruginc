@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useState, useEffect} from 'react';
+import GeneralStyles from '../../../datas/styles/styles.general';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import GeneralStyles from '../../../datas/styles/styles.general';
-import { tableHeader, formDetails } from './data';
 import SimpleForm from '../../../components/forms/SimpleForm';
-import { listUnit, createUnit, updateUnit, deleteUnit } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
+import { tableHeader, formDetails } from './data';
+import { listProvinceCode, createProvinceCode, updateProvinceCode, deleteProvinceCode } from './redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { Title } = Typography;
 
-const Units = (props) => {
+const ProvinceCode = (props) => {
   const { company, title } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
+  const { provinceCodeList, action, statusMessage } = useSelector((state) => state.maintenance.provinceCodes);
   const dispatch = useDispatch();
-  const { unitList, action, statusMessage } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
-    dispatch(listUnit({ company }));
+    dispatch(listProvinceCode({ company }));
   }, [dispatch, company]);
 
   useEffect(() => {
@@ -37,52 +37,52 @@ const Units = (props) => {
   }, [statusMessage, action]);
 
   const handleAddButton = () => {
-    setModalTitle('Add New Unit');
+    setModalTitle('Add New Province Code');
     setMode('add');
     setIsOpenForm(!isOpenForm);
-  };
+  }
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit Unit');
+    setModalTitle('Edit ProvinceCode');
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
-  };
+  }
 
-  const handleDeleteButton = (row) => {
-    dispatch(deleteUnit(row))
-      .then(() => {
-        dispatch(listUnit());
-      })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
-  };
+  const handleDeleteButton = (row) =>{
+    dispatch(deleteProvinceCode(row))
+    .then(() => {
+      dispatch(listProvinceCode());
+    })
+    .catch((err) => {
+      message.error(`Something went wrong! details: ${err}`);
+    });
+  }
 
   const handleCancelButton = () => {
     setIsOpenForm(!isOpenForm);
     setFormValues('');
-  };
+  }
 
   const onSubmit = (values) => {
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateUnit(newValues)).then(() => {
-        dispatch(listUnit());
+      dispatch(updateProvinceCode(newValues)).then(() => {
+        dispatch(listProvinceCode());
       });
     } else if (mode === 'add') {
-      dispatch(createUnit(values)).then(() => {
-        dispatch(listUnit());
+      dispatch(createProvinceCode(values)).then(() => {
+        dispatch(listProvinceCode());
       });
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-  };
+  }
 
-  return (
+  return(
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
@@ -93,7 +93,7 @@ const Units = (props) => {
       <Col span={20}>
         <TableDisplay
           columns={tableHeader}
-          data={unitList}
+          data={provinceCodeList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
         />
@@ -107,7 +107,7 @@ const Units = (props) => {
         formDetails={formDetails}
       />
     </Row>
-  );
-};
+  )
+}
 
-export default Units;
+export default ProvinceCode;
