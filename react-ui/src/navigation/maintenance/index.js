@@ -4,6 +4,7 @@ import DepartmentArea from '../../screens/Maintenance/DepartmentArea';
 import Units from '../../screens/Maintenance/Units';
 import ItemTypes from '../../screens/Maintenance/ItemTypes';
 import Items from '../../screens/Maintenance/Items';
+import RegionCodes from '../../screens/Maintenance/RegionCodes';
 
 export const routes = [
   {
@@ -87,9 +88,9 @@ export const routes = [
     component: '',
   },
   {
-    title: 'Region Codes',
-    path: '/codes/region',
-    component: '',
+    title: "Region Codes",
+    path: "/codes/region",
+    component: RegionCodes
   },
   {
     title: 'Cluster Codes',
