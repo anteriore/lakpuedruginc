@@ -5,13 +5,15 @@ import finishedGoods from '../FinishedGoods/redux';
 import itemTypes from '../ItemTypes/redux';
 import items from '../Items/redux';
 import units from '../Units/redux'; 
+import regionCodes from '../RegionCodes/redux'; 
 
 const maintenance = combineReducers({
   departmentArea,
   finishedGoods,
   itemTypes,
   items,
-  units
+  regionCodes,
+  units,
 })
 
 export default maintenance;
