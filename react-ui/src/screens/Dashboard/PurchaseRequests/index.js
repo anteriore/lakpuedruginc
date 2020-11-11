@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Table, Typography, Button, Modal, Skeleton, Empty, message } from 'antd';
-import {
-    PlusOutlined
-} from '@ant-design/icons';
-import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
+import { PlusOutlined } from '@ant-design/icons';
+import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { getPR, listPR, deletePR, resetItemData } from './redux'
-import InputForm from './InputForm'
-import TableDisplay from '../../../components/TableDisplay'
+import { getPR, listPR, deletePR, resetItemData } from './redux';
+import InputForm from './InputForm';
+import TableDisplay from '../../../components/TableDisplay';
 
 const { Title } = Typography;
 

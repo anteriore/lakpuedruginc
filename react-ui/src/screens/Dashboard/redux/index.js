@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import purchaseRequests from '../PurchaseRequests/redux';
 
 const dashboard = combineReducers({
-    purchaseRequests,
-})
+  purchaseRequests,
+});
 
-export default dashboard
+export default dashboard;
