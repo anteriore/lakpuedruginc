@@ -9,12 +9,6 @@ const Main = () => {
   const signedIn = useSelector((state) => state.auth.signedIn);
   const history = useHistory();
 
-  useEffect(() => {
-    if (signedIn === true) {
-      history.push('/');
-    }
-  }, [signedIn, history]);
-
   const PrivateRoute = ({ children, ...rest }) => {
     const signedInStatus = useSelector((state) => state.auth.signedIn);
     return (

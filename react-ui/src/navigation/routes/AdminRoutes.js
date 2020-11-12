@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, useHistory } from 'react-router-dom';
+import { Switch, Route, useHistory, Redirect } from 'react-router-dom';
 
 import Dashboard from '../../screens/Dashboard';
 import Maintenance from '../../screens/Maintenance';
@@ -25,9 +25,11 @@ const AdminRoutes = () => {
             {/* <Route path="/purchasing" component={Purchasing} /> */}
             {/* <Route path="/costing" component={Costing} /> */}
             <Route path="/dashboard" component={Dashboard} />
-            <Route exact path="/" render={() => {
-                history.push("/dashboard")
-            }}>
+            <Route exact path="/">
+                <Redirect to="/dashboard" />
+            </Route>
+            <Route path="*">
+            Page not found
             </Route>
         </Switch>
         </div>
