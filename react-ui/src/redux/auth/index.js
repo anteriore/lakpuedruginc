@@ -8,6 +8,8 @@ const initialState = {
   expired: false,
   user: '',
   error: null,
+  firstName: '',
+  lastName: ''
 };
 
 export const login = createAsyncThunk('login', async (payload) => {
