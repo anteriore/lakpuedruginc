@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
+import React from 'react';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import AdminRoutes from './routes/AdminRoutes';
@@ -7,13 +7,6 @@ import Login from '../screens/Login';
 
 const Main = () => {
   const signedIn = useSelector((state) => state.auth.signedIn);
-  const history = useHistory();
-
-  useEffect(() => {
-    if (signedIn === true) {
-      history.push('/');
-    }
-  }, [signedIn, history]);
 
   const PrivateRoute = ({ children, ...rest }) => {
     const signedInStatus = useSelector((state) => state.auth.signedIn);

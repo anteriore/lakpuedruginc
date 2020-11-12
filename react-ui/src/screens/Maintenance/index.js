@@ -12,23 +12,6 @@ const Maintenance = () => {
   const { path } = useRouteMatch();
   const [company, setCompany] = useState(1);
 
-  const renderRoutes = () => {
-    const routes = [];
-
-    MaintenanceRoutes.forEach((module) => {
-      const ComponentTag = module.component;
-      routes.push(
-        <Route key={module.title} path={path + module.path}>
-          <Container location={{ pathname: path + module.path }}>
-            <ComponentTag title={module.title} company={company} />
-          </Container>
-        </Route>
-      );
-    });
-
-    return routes;
-  };
-
   const handleChangeTab = (id) => {
     setCompany(id);
   };
@@ -58,7 +41,13 @@ const Maintenance = () => {
             </Row>
           </Container>
         </Route>
-        {renderRoutes()}
+        {MaintenanceRoutes.map((module) =>
+          <Route path={path + module.path}>
+            <Container location={{ pathname: path + module.path }}>
+              <module.component title={module.title} company={company} />
+            </Container>
+          </Route>
+        )}
       </Switch>
     </>
   );
