@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, useHistory, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import Dashboard from '../../screens/Dashboard';
 import Maintenance from '../../screens/Maintenance';
@@ -12,7 +12,6 @@ import Maintenance from '../../screens/Maintenance';
 // import Costing from '../../screens/Costing/';
 
 const AdminRoutes = () => {
-    const history = useHistory();
     return (
         <div>
         <Switch>
