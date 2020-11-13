@@ -1,12 +1,16 @@
 import React from 'react';
-import { Row, Col, Dropdown, Menu } from 'antd';
+import { Row, Col, Dropdown, Menu, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { updateAuthState } from '../../redux/auth';
 
+const { Text } = Typography
+
 const Header = () => {
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user)
+
 
   const handleMenuClick = (e) => {
     if (e.key === 'logout') {
@@ -27,8 +31,8 @@ const Header = () => {
   );
 
   return (
-    <Row>
-      <Col span={4}>Lakpue Drug Inc.</Col>
+    <Row style={styles.Header}>
+      <Col span={4}><Text style={styles.Title}>Lakpue Drug Inc.</Text></Col>
       <Col span={12} />
       <Col span={8}>
         <Dropdown.Button
@@ -37,7 +41,7 @@ const Header = () => {
           icon={<UserOutlined />}
           style={{ float: 'right', padding: '1%' }}
         >
-          First Name Last Name
+          Katharine Guzman
         </Dropdown.Button>
       </Col>
     </Row>
@@ -45,3 +49,17 @@ const Header = () => {
 };
 
 export default Header;
+
+const styles = {
+  Header: {
+    backgroundColor: '#3E4966',
+    height: '20%'
+  },
+  Title: {
+    fontSize: '1.6vw',
+    color: '#FFFFFF',
+    padding: "1%",
+    float: "left",
+    marginLeft: "5%"
+  },
+};
