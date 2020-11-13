@@ -6,10 +6,8 @@ const initialState = {
   signedIn: false,
   token: '',
   expired: false,
-  user: '',
+  user: null,
   error: null,
-  firstName: '',
-  lastName: ''
 };
 
 export const login = createAsyncThunk('login', async (payload) => {
@@ -22,6 +20,15 @@ export const login = createAsyncThunk('login', async (payload) => {
   return response;
 });
 
+export const getUser = createAsyncThunk('getUser', async (thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token
+  console.log(accessToken)
+
+  const response = await axiosInstance.get('rest/me/?token=' + accessToken)
+  return response
+
+})
+
 /* export const logout = createAsyncThunk('logout', async (payload) => {
     
     const response = await axiosInstance.post('api/logout')
@@ -29,6 +36,20 @@ export const login = createAsyncThunk('login', async (payload) => {
 
 })
 */
+
+const processUserData = (data, action) => {
+  var processedData = {
+    id: data.id,
+    email: data.email,
+    username: data.username,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    company: data.company.id,
+    department: data.department.id,
+  }
+  
+  return processedData
+}
 
 const authSlice = createSlice({
   name: 'auth',
@@ -64,6 +85,28 @@ const authSlice = createSlice({
     [login.rejected]: (state) => {
       state.status = 'failed';
       state.error = 'Invalid username and/or password';
+    },
+
+
+    [getUser.pending]: (state) => {
+      state.status = 'loading';
+    },
+    [getUser.fulfilled]: (state, action) => {
+      if (action.payload !== undefined && action.payload.status === 200) {
+        state.status = 'succeeded';
+        state.user = processUserData(action.payload.data, action.type)
+
+      } else if (typeof action.payload === 'undefined') {
+        state.status = 'failed';
+        state.error = 'Unable get user info';
+      } else {
+        state.status = 'failed';
+        state.error = 'Unable get user info';
+      }
+    },
+    [getUser.rejected]: (state) => {
+      state.status = 'failed';
+      state.error = 'Unable get user info';
     },
   },
 });

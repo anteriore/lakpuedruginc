@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col, Dropdown, Menu, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { updateAuthState } from '../../redux/auth';
 
@@ -9,6 +9,8 @@ const { Text } = Typography
 
 const Header = () => {
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user)
+
 
   const handleMenuClick = (e) => {
     if (e.key === 'logout') {
