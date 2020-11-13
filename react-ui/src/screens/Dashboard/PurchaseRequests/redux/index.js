@@ -26,14 +26,6 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
 
 })
 
-export const listItems = createAsyncThunk('listItems', async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token
-
-    const response = await axiosInstance.get("rest/items?token=" + accessToken)
-    return response
-
-})
-
 export const getPR = createAsyncThunk('getPR', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token
 
@@ -113,7 +105,7 @@ const processData = (data, action) => {
             requestedItems: requestedItems,
         }
     }
-    else if(action === "listItems/fulfilled"){
+    /*else if(action === "listItems/fulfilled"){
         var processedData = []
         for(const [index, value] of data.entries()){
             var item = {
@@ -134,7 +126,7 @@ const processData = (data, action) => {
 
             processedData.push(item)
         }
-    }
+    }*/
 
     
     return processedData
@@ -191,23 +183,6 @@ const purchaseRequestSlice = createSlice({
         [getPR.rejected]: (state, action) => {
             state.status = 'failed'
             state.error = action.error.message
-        },
-
-
-        [listItems.pending]: (state, action) => {
-            state.status = 'loading'
-        },
-        [listItems.fulfilled]: (state, action) => {
-            if(action.payload !== undefined && action.payload.status === 200){
-                state.status = 'succeeded'
-                state.listData = processData(action.payload.data, action.type)
-            }
-            else{
-                state.status = 'failed'
-            }
-        },
-        [listItems.rejected]: (state, action) => {
-            state.status = 'failed'
         },
     },
 })

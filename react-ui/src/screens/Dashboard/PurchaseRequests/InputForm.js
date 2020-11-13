@@ -21,8 +21,9 @@ import { useParams, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { getPR, listItems, listPR, addPR, resetItemData } from './redux'
+import { getPR, listPR, addPR, resetItemData } from './redux'
 import { listD } from '../../Maintenance/DepartmentArea/redux'
+import { listI } from '../../Maintenance/Items/redux'
 
 const { Title } = Typography;
 const dateFormat = 'YYYY/MM/DD';
@@ -92,7 +93,7 @@ const InputForm = (props) => {
 
     const data = useSelector(state => state.dashboard.purchaseRequests.itemData)
     const departments = useSelector(state => state.maintenance.departmentArea.deptList)
-    const itemsList = useSelector(state => state.dashboard.purchaseRequests.listData)
+    const itemsList = useSelector(state => state.maintenance.items.list)
 
     const { id } = useParams();
     const dispatch = useDispatch()
@@ -248,7 +249,7 @@ const InputForm = (props) => {
     const selectItems = () => {
         setDisplayModal(true)
         setLoadingItems(true)
-        dispatch(listItems())
+        dispatch(listI())
             .then((response) => {
                 setLoadingItems(false)
             }
