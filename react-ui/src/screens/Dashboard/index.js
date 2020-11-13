@@ -11,24 +11,8 @@ const { Title } = Typography;
 
 const Dashboard = () => {
   const { path } = useRouteMatch();
+  console.log("Path:", path)
   const [company, setCompany] = useState(1);
-
-  const renderRoutes = () => {
-    const routes = [];
-
-    modules.forEach((module) => {
-      const ComponentTag = module.component;
-      routes.push(
-        <Route path={path + module.path}>
-          <Container location={{ pathname: path + module.path }}>
-            <ComponentTag title={modules.title} company={company} />
-          </Container>
-        </Route>
-      );
-    });
-
-    return routes;
-  };
 
   const handleTabChange = (key) => {
     setCompany(key);
@@ -58,7 +42,13 @@ const Dashboard = () => {
           </Row>
         </Container>
       </Route>
-      {renderRoutes()}
+      {modules.map((module) =>
+        <Route path={path + module.path}>
+          <Container location={{ pathname: path + module.path }}>
+            <module.component title={module.title} company={company} />
+          </Container>
+        </Route>
+      )}
     </Switch>
   );
 };
