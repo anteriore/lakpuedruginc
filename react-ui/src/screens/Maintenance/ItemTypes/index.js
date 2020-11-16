@@ -71,10 +71,10 @@ const ItemTypes = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id } = val;
+    const { id, code } = val;
     dispatch(deleteIT(id)).then(() => {
       dispatch(listIT({ company }));
-      message.success(`Successfully deleted Item Type ${data.name}`);
+      message.success(`Successfully deleted Item Type ${code}`);
     });
   };
 

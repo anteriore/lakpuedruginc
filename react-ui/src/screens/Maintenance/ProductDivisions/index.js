@@ -83,10 +83,10 @@ const ProductDivisions = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id } = val;
+    const { id, code } = val;
     dispatch(deletePD(id)).then(() => {
       dispatch(listPD({ company }));
-      message.success(`Successfully deleted Product Division ${data.name}`);
+      message.success(`Successfully deleted Product Division ${code}`);
     });
   };
 
