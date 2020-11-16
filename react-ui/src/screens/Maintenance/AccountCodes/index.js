@@ -71,10 +71,10 @@ const AccountCodes = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id } = val;
+    const { id, code } = val;
     dispatch(deleteAC(id)).then(() => {
       dispatch(listAC({ company }));
-      message.success(`Successfully deleted Account Code ${data.code}`);
+      message.success(`Successfully deleted Account Code ${code}`);
     });
   };
 
