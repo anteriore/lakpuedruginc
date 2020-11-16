@@ -25,11 +25,11 @@ const FinishedGoods = (props) => {
 
   useEffect(() => {
     if (action !== 'get' && action !== '') {
-      if(action === 'pending'){
+      if (action === 'pending') {
         message.info(statusMessage);
-      }else if( action === 'error'){
+      } else if (action === 'error') {
         message.error(statusMessage);
-      }else{
+      } else {
         message.success(statusMessage);
       }
     }

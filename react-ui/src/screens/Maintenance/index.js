@@ -41,13 +41,13 @@ const Maintenance = () => {
             </Row>
           </Container>
         </Route>
-        {MaintenanceRoutes.map((module) =>
+        {MaintenanceRoutes.map((module) => (
           <Route path={path + module.path}>
             <Container location={{ pathname: path + module.path }}>
               <module.component title={module.title} company={company} />
             </Container>
           </Route>
-        )}
+        ))}
       </Switch>
     </>
   );

@@ -16,11 +16,10 @@ const Login = () => {
   }, [dispatch]);
 
   const onFinish = (values) => {
-    dispatch(login(values))
-      .then((response) => {
-        dispatch(getUser());
-        history.push("/")
-      })
+    dispatch(login(values)).then((response) => {
+      dispatch(getUser());
+      history.push('/');
+    });
   };
 
   return (

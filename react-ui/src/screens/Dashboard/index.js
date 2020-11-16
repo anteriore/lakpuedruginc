@@ -11,7 +11,7 @@ const { Title } = Typography;
 
 const Dashboard = () => {
   const { path } = useRouteMatch();
-  console.log("Path:", path)
+  console.log('Path:', path);
   const [company, setCompany] = useState(1);
 
   const handleTabChange = (key) => {
@@ -42,13 +42,13 @@ const Dashboard = () => {
           </Row>
         </Container>
       </Route>
-      {modules.map((module) =>
+      {modules.map((module) => (
         <Route path={path + module.path}>
           <Container location={{ pathname: path + module.path }}>
             <module.component title={module.title} company={company} />
           </Container>
         </Route>
-      )}
+      ))}
     </Switch>
   );
 };
