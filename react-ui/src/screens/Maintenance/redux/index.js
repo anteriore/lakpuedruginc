@@ -7,6 +7,7 @@ import items from '../Items/redux';
 import units from '../Units/redux'; 
 import regionCodes from '../RegionCodes/redux'; 
 import provinceCodes from '../ProvinceCode/redux';
+import accountCodes from '../AccountCodes/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -15,6 +16,7 @@ const maintenance = combineReducers({
   items,
   regionCodes,
   provinceCodes,
+  accountCodes,
   units,
 })
 

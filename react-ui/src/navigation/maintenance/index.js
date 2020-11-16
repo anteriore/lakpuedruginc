@@ -6,6 +6,7 @@ import ItemTypes from '../../screens/Maintenance/ItemTypes';
 import Items from '../../screens/Maintenance/Items';
 import RegionCodes from '../../screens/Maintenance/RegionCodes';
 import ProvinceCode from '../../screens/Maintenance/ProvinceCode';
+import AccountCodes from '../../screens/Maintenance/AccountCodes';
 
 export const routes = [
   {
@@ -106,7 +107,7 @@ export const routes = [
   {
     title: 'Account Codes',
     path: '/codes/account',
-    component: '',
+    component: AccountCodes,
   },
   {
     title: 'Province Codes',
