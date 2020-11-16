@@ -70,7 +70,7 @@ const processData = (data, action) => {
                 dateNeeded: value.dateNeeded,
                 department: value.department !== null ? (value.department.name) : (""),
                 remarks: value.remarks,
-                requestedBy: value.requestedBy.email,
+                requestedBy: value.requestedBy,
                 status: value.status,
             }
             processedData.push(item)
@@ -108,7 +108,7 @@ const processData = (data, action) => {
             dateNeeded: data.dateNeeded,
             department: data.department,
             remarks: data.remarks,
-            requestedBy: data.requestedBy.email,
+            requestedBy: data.requestedBy,
             status: data.status,
             requestedItems: requestedItems,
         }

@@ -15,7 +15,17 @@ const PurchaseRequests = (props) => {
     const [loadingItem, setLoadingItem] = useState(false)
 
     const [displayModal, setDisplayModal] = useState(false);
-    const [displayData, setDisplayData] = useState(null);
+    const [displayData, setDisplayData] = useState({
+        id: null,
+        number: null,
+        date: null,
+        dateNeeded: null,
+        department: null,
+        remarks: null,
+        requestedBy: null,
+        status: null,
+        requestedItems: [],
+    });
 
     const columns = [
         {
@@ -108,7 +118,17 @@ const PurchaseRequests = (props) => {
 
     const closeModal = () => {
         setDisplayModal(false)
-        setDisplayData(null)
+        setDisplayData({
+            id: null,
+            number: null,
+            date: null,
+            dateNeeded: null,
+            department: null,
+            remarks: null,
+            requestedBy: null,
+            status: null,
+            requestedItems: [],
+        })
     }
 
     const handleUpdate = (data) => {
@@ -177,18 +197,19 @@ const PurchaseRequests = (props) => {
                             )
                             : (
                                 <>
-                                <p>Number: {displayData !== null ? (displayData.number) : ("")}</p>
-                                <p>Date: {displayData !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
-                                <p>Date Needed: {displayData !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
-                                <p>Department: {displayData !== null && displayData.department !== null ? (displayData.department.name) : ("")}</p>
-                                <p>Status: {displayData !== null ? (displayData.status) : ("")}</p>
+                                <p>Number: {displayData.number}</p>
+                                <p>Date: {displayData.date !== null ? (moment(new Date(displayData.date)).format("DD/MM/YYYY") ) : ("")}</p>
+                                <p>Date Needed: {displayData.dateNeeded !== null ? (moment(new Date(displayData.dateNeeded)).format("DD/MM/YYYY") ) : ("")}</p>
+                                <p>Department: {displayData.department !== null && displayData.department !== null ? (displayData.department.name) : ("")}</p>
+                                <p>Status: {displayData.status}</p>
+                                <p>Requested by: {displayData.requestedBy !== null ? (displayData.requestedBy.firstName + ' ' + displayData.requestedBy.lastName) : ("")}</p>
                                 <Table
-                                    dataSource={displayData !== null ? (displayData.requestedItems) : ([])}
+                                    dataSource={displayData.requestedItems}
                                     columns={itemColumns}
                                     pagination={false}
                                     locale={{emptyText: <Empty description={"No Item Seleted."}/>}} 
                                 />
-                                <p>Remarks: {displayData !== null ? (displayData.remarks) : ("")}</p>
+                                <p>Remarks: {displayData.remarks}</p>
                                 </>
                             )
                         }
