@@ -42,19 +42,19 @@ const ProductDivisions = (props) => {
       {
         label: 'Code',
         name: 'code',
-        rules: [{ required: true, message: 'Please valid a valid product division code' }],
+        rules: [{ required: true, message: 'Please provide a valid product division code' }],
         placeholder: 'Product division code',
       },
       {
         label: 'Title',
         name: 'title',
-        rules: [{ required: true, message: 'Please valid a valid title' }],
+        rules: [{ required: true, message: 'Please provide a valid title' }],
         placeholder: 'title',
       },
       {
         label: 'Description',
         name: 'description',
-        rules: [{ required: true, message: 'Please valid a valid description' }],
+        rules: [{ required: true, message: 'Please provide a valid description' }],
         placeholder: 'Description',
       },
     ],
