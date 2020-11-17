@@ -9,6 +9,7 @@ import ProvinceCode from '../../screens/Maintenance/ProvinceCode';
 import ZipCodes from '../../screens/Maintenance/ZipCodes';
 import AccountCodes from '../../screens/Maintenance/AccountCodes';
 import ProductDivisions from '../../screens/Maintenance/ProductDivisions';
+import InstitutionalCodes from '../../screens/Maintenance/InstitutionalCodes';
 
 export const routes = [
   {
@@ -104,7 +105,7 @@ export const routes = [
   {
     title: 'Institutional Codes',
     path: '/codes/institutional',
-    component: '',
+    component: InstitutionalCodes,
   },
   {
     title: 'Account Codes',

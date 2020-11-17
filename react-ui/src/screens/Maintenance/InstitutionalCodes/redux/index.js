@@ -2,46 +2,64 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
 
-export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI) => {
+export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/units?token=${accessToken}`);
+  const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
 
   return response;
 });
 
-export const createUnit = createAsyncThunk('createUnit', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/units?token=${accessToken}`, payload);
+export const createInstitution = createAsyncThunk(
+  'createInstitution',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `/rest/institutional-codes?token=${accessToken}`,
+      payload
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
-export const updateUnit = createAsyncThunk('updateUnit', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/units?token=${accessToken}`, payload);
+export const updateInstitution = createAsyncThunk(
+  'updateInstitution',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `/rest/institutional-codes?token=${accessToken}`,
+      payload
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
-export const deleteUnit = createAsyncThunk('deleteUnit', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload;
-  const response = await axiosInstance.post(`/rest/units/delete?token=${accessToken}`, id);
+export const deleteInstitution = createAsyncThunk(
+  'deleteInstitution',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id } = payload;
+    const response = await axiosInstance.post(
+      `/rest/institutional-codes/delete?token=${accessToken}`,
+      id
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
-const unitsSlice = createSlice({
-  name: 'Units',
+const institutionalCodesSlice = createSlice({
+  name: 'institutionalCodes',
   initialState: {
-    unitList: [],
+    institutionList: [],
     status: '',
     statusMessage: '',
     action: '',
   },
   reducers: {},
   extraReducers: {
-    [listUnit.pending]: (state) => {
+    [listInstitution.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -49,27 +67,27 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
-    [listUnit.fulfilled]: (state, action) => {
+    [listInstitution.fulfilled]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        unitList: data,
+        institutionList: data,
         status: 'Fulfilled',
         action: 'get',
         statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listUnit.rejected]: (state, action) => {
+    [listInstitution.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        unitList: data,
+        institutionList: data,
         status: 'Error',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [createUnit.pending]: (state) => {
+    [createInstitution.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -77,7 +95,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_ADD_PENDING,
       };
     },
-    [createUnit.fulfilled]: (state) => {
+    [createInstitution.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -85,7 +103,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
     },
-    [createUnit.rejected]: (state) => {
+    [createInstitution.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -93,7 +111,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_ADD_REJECTED,
       };
     },
-    [updateUnit.pending]: (state) => {
+    [updateInstitution.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -101,7 +119,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
     },
-    [updateUnit.fulfilled]: (state) => {
+    [updateInstitution.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -109,7 +127,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
     },
-    [updateUnit.rejected]: (state) => {
+    [updateInstitution.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -117,7 +135,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
     },
-    [deleteUnit.pending]: (state) => {
+    [deleteInstitution.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -125,7 +143,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_DELETE_PENDING,
       };
     },
-    [deleteUnit.fulfilled]: (state) => {
+    [deleteInstitution.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -133,7 +151,7 @@ const unitsSlice = createSlice({
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
     },
-    [deleteUnit.rejected]: (state) => {
+    [deleteInstitution.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -144,4 +162,4 @@ const unitsSlice = createSlice({
   },
 });
 
-export default unitsSlice.reducer;
+export default institutionalCodesSlice.reducer;

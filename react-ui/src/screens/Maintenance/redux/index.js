@@ -10,6 +10,7 @@ import provinceCodes from '../ProvinceCode/redux';
 import zipCodes from '../ZipCodes/redux';
 import accountCodes from '../AccountCodes/redux';
 import productDivisions from '../ProductDivisions/redux';
+import institutionalCodes from '../InstitutionalCodes/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -22,6 +23,7 @@ const maintenance = combineReducers({
   units,
   zipCodes,
   productDivisions,
+  institutionalCodes,
 });
 
 export default maintenance;
