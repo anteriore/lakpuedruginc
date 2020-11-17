@@ -20,11 +20,10 @@ export const login = createAsyncThunk('login', async (payload) => {
   return response;
 });
 
-export const getUser = createAsyncThunk('getUser', async (thunkAPI) => {
+export const getUser = createAsyncThunk('getUser', async (args, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token
-  console.log(accessToken)
 
-  const response = await axiosInstance.get('rest/me/?token=' + accessToken)
+  const response = await axiosInstance.get('rest/me/?token=' + accessToken )
   return response
 
 })
