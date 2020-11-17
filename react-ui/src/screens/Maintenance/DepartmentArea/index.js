@@ -53,13 +53,13 @@ const DepartmentArea = (props) => {
       {
         label: 'Name',
         name: 'name',
-        rules: [[{ required: true, message: 'Please provide a proper department name' }]],
+        rules: [{ required: true, message: 'Please provide a valid department name' }],
         placeholder: 'Department name',
       },
       {
         label: 'Code',
         name: 'code',
-        rules: [[{ required: true, message: 'Please provide a proper department code' }]],
+        rules: [{ required: true, message: 'Please provide a valid department code' }],
         placeholder: 'Department code',
       },
     ],
@@ -71,13 +71,13 @@ const DepartmentArea = (props) => {
       {
         label: 'Name',
         name: 'name',
-        rules: [[{ required: true, message: 'Please provide a proper area name' }]],
+        rules: [{ required: true, message: 'Please provide a valid area name' }],
         placeholder: 'Area name',
       },
       {
         label: 'Code',
         name: 'code',
-        rules: [[{ required: true, message: 'Please provide a proper area code' }]],
+        rules: [{ required: true, message: 'Please provide a valid area code' }],
         placeholder: 'Area code',
       },
     ],
