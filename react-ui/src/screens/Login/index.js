@@ -16,10 +16,9 @@ const Login = () => {
   }, [dispatch]);
 
   const onFinish = (values) => {
-    dispatch(login(values))
-      .then((response) => {
-        history.push("/")
-      })
+    dispatch(login(values)).then((response) => {
+      history.push('/');
+    });
   };
 
   return (

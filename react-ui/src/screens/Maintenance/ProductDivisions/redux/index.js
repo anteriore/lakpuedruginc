@@ -16,14 +16,20 @@ export const listPD = createAsyncThunk('listPD', async (payload, thunkAPI) => {
 export const addPD = createAsyncThunk('addPD', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-division-codes/?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/product-division-codes/?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 
 export const deletePD = createAsyncThunk('deletePD', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-division-codes/delete?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/product-division-codes/delete?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 

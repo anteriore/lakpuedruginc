@@ -36,14 +36,16 @@ const TableSearch = (columnHeaders) => {
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      if(record[dataIndex].hasOwnProperty('name')){
-        return record[dataIndex].name ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase()) : ''
+      if (record[dataIndex].hasOwnProperty('name')) {
+        return record[dataIndex].name
+          ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
+          : '';
       }
-      else {
-        return record[dataIndex] ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : ''
-      }
-    }
-      
+
+      return record[dataIndex]
+        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+        : '';
+    },
   });
   // eslint-disable-next-line no-unused-vars
   const handleSearch = (selectedKeys, confirm, dataIndex) => {

@@ -6,6 +6,7 @@ import ItemTypes from '../../screens/Maintenance/ItemTypes';
 import Items from '../../screens/Maintenance/Items';
 import RegionCodes from '../../screens/Maintenance/RegionCodes';
 import ProvinceCode from '../../screens/Maintenance/ProvinceCode';
+import ZipCodes from '../../screens/Maintenance/ZipCodes';
 import AccountCodes from '../../screens/Maintenance/AccountCodes';
 import ProductDivisions from '../../screens/Maintenance/ProductDivisions';
 
@@ -41,9 +42,9 @@ export const routes = [
     component: DepartmentArea,
   },
   {
-    title: "Items",
-    path: "/items",
-    component: Items
+    title: 'Items',
+    path: '/items',
+    component: Items,
   },
   {
     title: 'Units',
@@ -91,9 +92,9 @@ export const routes = [
     component: ProductDivisions,
   },
   {
-    title: "Region Codes",
-    path: "/codes/region",
-    component: RegionCodes
+    title: 'Region Codes',
+    path: '/codes/region',
+    component: RegionCodes,
   },
   {
     title: 'Cluster Codes',
@@ -123,7 +124,7 @@ export const routes = [
   {
     title: 'Zip Codes',
     path: '/codes/zip',
-    component: '',
+    component: ZipCodes,
   },
   {
     title: 'Product Categories',

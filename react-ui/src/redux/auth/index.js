@@ -21,12 +21,11 @@ export const login = createAsyncThunk('login', async (payload) => {
 });
 
 export const getUser = createAsyncThunk('getUser', async (args, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token
+  const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get('rest/me/?token=' + accessToken )
-  return response
-
-})
+  const response = await axiosInstance.get(`rest/me/?token=${accessToken}`);
+  return response;
+});
 
 /* export const logout = createAsyncThunk('logout', async (payload) => {
     
@@ -37,7 +36,7 @@ export const getUser = createAsyncThunk('getUser', async (args, thunkAPI) => {
 */
 
 const processUserData = (data, action) => {
-  var processedData = {
+  const processedData = {
     id: data.id,
     email: data.email,
     username: data.username,
@@ -45,10 +44,10 @@ const processUserData = (data, action) => {
     lastName: data.lastName,
     company: data.company.id,
     department: data.department.id,
-  }
-  
-  return processedData
-}
+  };
+
+  return processedData;
+};
 
 const authSlice = createSlice({
   name: 'auth',
@@ -86,15 +85,13 @@ const authSlice = createSlice({
       state.error = 'Invalid username and/or password';
     },
 
-
     [getUser.pending]: (state) => {
       state.status = 'loading';
     },
     [getUser.fulfilled]: (state, action) => {
       if (action.payload !== undefined && action.payload.status === 200) {
         state.status = 'succeeded';
-        state.user = processUserData(action.payload.data, action.type)
-
+        state.user = processUserData(action.payload.data, action.type);
       } else if (typeof action.payload === 'undefined') {
         state.status = 'failed';
         state.error = 'Unable get user info';
