@@ -36,13 +36,13 @@ const AccountCodes = (props) => {
       {
         label: 'Code',
         name: 'code',
-        rules: [{ required: true, message: 'Please valid a valid account code' }],
+        rules: [{ required: true, message: 'Please provide a valid account code' }],
         placeholder: 'Account code',
       },
       {
         label: 'Description',
         name: 'description',
-        rules: [{ required: true, message: 'Please valid a valid description' }],
+        rules: [{ required: true, message: 'Please provide a valid description' }],
         placeholder: 'Description',
       },
     ],
@@ -71,10 +71,10 @@ const AccountCodes = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id } = val;
+    const { id, code } = val;
     dispatch(deleteAC(id)).then(() => {
       dispatch(listAC({ company }));
-      message.success(`Successfully deleted Account Code ${data.name}`);
+      message.success(`Successfully deleted Account Code ${code}`);
     });
   };
 

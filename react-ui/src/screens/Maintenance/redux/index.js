@@ -8,6 +8,7 @@ import units from '../Units/redux';
 import regionCodes from '../RegionCodes/redux'; 
 import provinceCodes from '../ProvinceCode/redux';
 import accountCodes from '../AccountCodes/redux';
+import productDivisions from '../ProductDivisions/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -18,6 +19,7 @@ const maintenance = combineReducers({
   provinceCodes,
   accountCodes,
   units,
+  productDivisions,
 })
 
 export default maintenance;
