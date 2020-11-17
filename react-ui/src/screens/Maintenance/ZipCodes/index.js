@@ -77,7 +77,7 @@ const ZipCodes = (props) => {
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit ProvinceCode');
+    setModalTitle('Edit Zip Code');
     setMode('edit');
     dispatch(listRegionCode()).then(() => {
       dispatch(listProvinceCode())

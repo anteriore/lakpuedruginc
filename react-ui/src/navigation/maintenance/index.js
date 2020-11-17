@@ -10,6 +10,8 @@ import ZipCodes from '../../screens/Maintenance/ZipCodes';
 import AccountCodes from '../../screens/Maintenance/AccountCodes';
 import ProductDivisions from '../../screens/Maintenance/ProductDivisions';
 
+import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
+
 export const routes = [
   {
     title: 'Finished Goods',
@@ -99,7 +101,7 @@ export const routes = [
   {
     title: 'Cluster Codes',
     path: '/codes/cluster',
-    component: '',
+    component: ClusterCodes,
   },
   {
     title: 'Institutional Codes',

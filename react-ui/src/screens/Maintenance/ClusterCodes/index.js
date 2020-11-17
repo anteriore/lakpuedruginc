@@ -1,35 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../datas/styles/styles.general';
-import SimpleForm from '../../../components/forms/SimpleForm';
 import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader, formDetails } from './data';
-import {
-  listProvinceCode,
-  createProvinceCode,
-  updateProvinceCode,
-  deleteProvinceCode,
-} from './redux';
+import SimpleForm from '../../../components/forms/SimpleForm';
+import { tableHeader, formDetails} from './data'
+import { listCluster, createCluster, updateCluster, deleteCluster } from './redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-const { Title } = Typography;
+const {Title} = Typography;
 
-const ProvinceCode = (props) => {
-  const { company, title } = props;
+const ClusterCodes = (props) => {
+  const {title} = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const { provinceCodeList, action, statusMessage } = useSelector(
-    (state) => state.maintenance.provinceCodes
-  );
   const dispatch = useDispatch();
+  const { clusterList, action, statusMessage } = useSelector((state) => state.maintenance.clusterCode);
 
   useEffect(() => {
-    dispatch(listProvinceCode({ company }));
-  }, [dispatch, company]);
+    dispatch(listCluster())
+  },[dispatch]);
 
   useEffect(() => {
     if (action !== 'get' && action !== '') {
@@ -42,54 +35,54 @@ const ProvinceCode = (props) => {
       }
     }
   }, [statusMessage, action]);
-
+  
   const handleAddButton = () => {
-    setModalTitle('Add New Province Code');
+    setModalTitle('Add New Cluster');
     setMode('add');
     setIsOpenForm(!isOpenForm);
-  };
+  }
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit Province Code');
+    setModalTitle('Edit Cluster');
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
-  };
+  }
 
   const handleDeleteButton = (row) => {
-    dispatch(deleteProvinceCode(row))
+    dispatch(deleteCluster(row))
       .then(() => {
-        dispatch(listProvinceCode());
+        dispatch(listCluster());
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
       });
-  };
+  }
 
   const handleCancelButton = () => {
     setIsOpenForm(!isOpenForm);
     setFormValues('');
-  };
+  }
 
   const onSubmit = (values) => {
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateProvinceCode(newValues)).then(() => {
-        dispatch(listProvinceCode());
+      dispatch(updateCluster(newValues)).then(() => {
+        dispatch(listCluster());
       });
     } else if (mode === 'add') {
-      dispatch(createProvinceCode(values)).then(() => {
-        dispatch(listProvinceCode());
+      dispatch(createCluster(values)).then(() => {
+        dispatch(listCluster());
       });
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-  };
+  }
 
-  return (
+  return(
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
@@ -100,7 +93,7 @@ const ProvinceCode = (props) => {
       <Col span={20}>
         <TableDisplay
           columns={tableHeader}
-          data={provinceCodeList}
+          data={clusterList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
         />
@@ -114,7 +107,7 @@ const ProvinceCode = (props) => {
         formDetails={formDetails}
       />
     </Row>
-  );
-};
+  )
+}
 
-export default ProvinceCode;
+export default ClusterCodes;
