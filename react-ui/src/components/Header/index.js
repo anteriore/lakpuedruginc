@@ -42,7 +42,7 @@ const Header = () => {
           icon={<UserOutlined />}
           style={{ float: 'right', padding: '1%' }}
         >
-          Katharine Guzman
+          {user !== null && `${user.firstName} ${user.lastName}`}
         </Dropdown.Button>
       </Col>
     </Row>

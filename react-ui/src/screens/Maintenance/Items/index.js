@@ -60,26 +60,24 @@ const ItemTypes = (props) => {
       {
         label: 'Name',
         name: 'name',
-        rules: [{ required: true, message: 'Please provide a proper item name' }],
+        rules: [{ required: true, message: 'Please provide a valid item name' }],
         placeholder: 'Item name',
       },
       {
         label: 'Code',
         name: 'code',
-        rules: [{ required: true, message: 'Please provide a proper item code' }],
+        rules: [{ required: true, message: 'Please provide a valid item code' }],
         placeholder: 'Item code',
       },
       {
         label: 'Type',
         name: 'type',
-        rules: [{ required: true, message: 'Please select an item type' }],
         type: 'select',
         choices: types,
       },
       {
         label: 'Unit',
         name: 'unit',
-        rules: [{ required: true, message: 'Please select unit' }],
         type: 'select',
         choices: units,
       },

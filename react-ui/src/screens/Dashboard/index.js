@@ -11,7 +11,6 @@ const { Title } = Typography;
 
 const Dashboard = () => {
   const { path } = useRouteMatch();
-  console.log('Path:', path);
   const [company, setCompany] = useState(1);
 
   const handleTabChange = (key) => {

@@ -94,6 +94,7 @@ const InputForm = (props) => {
   const data = useSelector((state) => state.dashboard.purchaseRequests.itemData);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const itemsList = useSelector((state) => state.maintenance.items.list);
+  const user = useSelector((state) => state.auth.user);
 
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -162,7 +163,7 @@ const InputForm = (props) => {
         'HH:mm:ss'
       )}`,
       requestedBy: {
-        id: 1,
+        id: user.id,
       },
       company: {
         id: props.company,

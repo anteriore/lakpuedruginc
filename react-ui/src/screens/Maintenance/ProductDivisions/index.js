@@ -4,12 +4,12 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listIT, addIT, deleteIT } from './redux';
+import { listPD, addPD, deletePD } from './redux';
 import SimpleForm from '../../../components/forms/SimpleForm';
 
 const { Title } = Typography;
 
-const ItemTypes = (props) => {
+const ProductDivisions = (props) => {
   const [displayForm, setDisplayForm] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -23,48 +23,60 @@ const ItemTypes = (props) => {
       datatype: 'string',
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+      datatype: 'string',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
       datatype: 'string',
     },
   ];
 
   const formDetail = {
-    form_name: 'itemtypes',
+    form_name: 'productdivision',
     form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid item type name' }],
-        placeholder: 'Item type name',
-      },
       {
         label: 'Code',
         name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid item type code' }],
-        placeholder: 'Item type code',
+        rules: [{ required: true, message: 'Please provide a valid product division code' }],
+        placeholder: 'Product division code',
+      },
+      {
+        label: 'Title',
+        name: 'title',
+        rules: [{ required: true, message: 'Please provide a valid title' }],
+        placeholder: 'title',
+      },
+      {
+        label: 'Description',
+        name: 'description',
+        rules: [{ required: true, message: 'Please provide a valid description' }],
+        placeholder: 'Description',
       },
     ],
   };
 
   const { company, title } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.itemTypes.list);
+  const data = useSelector((state) => state.maintenance.productDivisions.list);
 
   useEffect(() => {
-    dispatch(listIT({ company }));
+    dispatch(listPD({ company }));
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Add Item Type');
+    setFormTitle('Add Product Division');
     setFormMode('add');
     setFormData(null);
     setDisplayForm(true);
   };
 
   const handleUpdate = (val) => {
-    setFormTitle('Edit Item Type');
+    setFormTitle('Edit Product Division');
     setFormMode('edit');
     setDisplayForm(true);
     setFormData(val);
@@ -72,9 +84,9 @@ const ItemTypes = (props) => {
 
   const handleDelete = (val) => {
     const { id, code } = val;
-    dispatch(deleteIT(id)).then(() => {
-      dispatch(listIT({ company }));
-      message.success(`Successfully deleted Item Type ${code}`);
+    dispatch(deletePD(id)).then(() => {
+      dispatch(listPD({ company }));
+      message.success(`Successfully deleted Product Division ${code}`);
     });
   };
 
@@ -95,8 +107,8 @@ const ItemTypes = (props) => {
         },
       };
 
-      dispatch(addIT(payload)).then(() => {
-        dispatch(listIT({ company }));
+      dispatch(addPD(payload)).then(() => {
+        dispatch(listPD({ company }));
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -105,8 +117,8 @@ const ItemTypes = (props) => {
           id: company,
         },
       };
-      dispatch(addIT(payload)).then(() => {
-        dispatch(listIT({ company }));
+      dispatch(addPD(payload)).then(() => {
+        dispatch(listPD({ company }));
       });
     }
 
@@ -155,4 +167,4 @@ const ItemTypes = (props) => {
   );
 };
 
-export default ItemTypes;
+export default ProductDivisions;
