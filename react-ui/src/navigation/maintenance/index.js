@@ -10,6 +10,7 @@ import ZipCodes from '../../screens/Maintenance/ZipCodes';
 import AccountCodes from '../../screens/Maintenance/AccountCodes';
 import ProductDivisions from '../../screens/Maintenance/ProductDivisions';
 import InstitutionalCodes from '../../screens/Maintenance/InstitutionalCodes';
+import MemoTypes from '../../screens/Maintenance/MemoTypes';
 
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
 
@@ -82,7 +83,7 @@ export const routes = [
   {
     title: 'Memo Types',
     path: '/memo_types',
-    component: '',
+    component: MemoTypes,
   },
   {
     title: 'Bank Accounts',
