@@ -13,6 +13,7 @@ import productDivisions from '../ProductDivisions/redux';
 import clusterCode from '../ClusterCodes/redux';
 import institutionalCodes from '../InstitutionalCodes/redux';
 import memoTypes from '../MemoTypes/redux';
+import bankAccount from '../BankAccounts/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -27,7 +28,8 @@ const maintenance = combineReducers({
   clusterCode,
   productDivisions,
   institutionalCodes,
-  memoTypes
+  memoTypes,
+  bankAccount
 });
 
 export default maintenance;
