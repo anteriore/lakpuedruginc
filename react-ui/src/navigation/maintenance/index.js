@@ -11,7 +11,7 @@ import AccountCodes from '../../screens/Maintenance/AccountCodes';
 import ProductDivisions from '../../screens/Maintenance/ProductDivisions';
 import InstitutionalCodes from '../../screens/Maintenance/InstitutionalCodes';
 import MemoTypes from '../../screens/Maintenance/MemoTypes';
-
+import BankAccounts from '../../screens/Maintenance/BankAccounts';
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
 
 export const routes = [
@@ -88,7 +88,7 @@ export const routes = [
   {
     title: 'Bank Accounts',
     path: '/bank_accounts',
-    component: '',
+    component: BankAccounts,
   },
   {
     title: 'Product Divisions',
