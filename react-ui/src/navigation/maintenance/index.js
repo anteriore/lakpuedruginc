@@ -14,6 +14,7 @@ import MemoTypes from '../../screens/Maintenance/MemoTypes';
 import BankAccounts from '../../screens/Maintenance/BankAccounts';
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
 import ProductionArea from '../../screens/Maintenance/ProductionArea';
+import Classification from '../../screens/Maintenance/Classification';
 
 export const routes = [
   {
@@ -34,7 +35,7 @@ export const routes = [
   {
     title: 'Classification',
     path: '/classification',
-    component: '',
+    component: Classification,
   },
   {
     title: 'Group & Categories',
