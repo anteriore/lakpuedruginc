@@ -2,40 +2,49 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
 
-export const listBankAccount = createAsyncThunk('listBankAccount', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/bank-accounts?token=${accessToken}`);
-
-  return response;
-});
-
-export const createBankAccount = createAsyncThunk(
-  'createBankAccount',
+export const listProductionArea = createAsyncThunk(
+  'listProductionArea',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
+    const response = await axiosInstance.get(`/rest/procedure-areas?token=${accessToken}`);
 
     return response;
   }
 );
 
-export const updateBankAccount = createAsyncThunk(
-  'updateBankAccount',
+export const createProductionArea = createAsyncThunk(
+  'createProductionArea',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
+    const response = await axiosInstance.post(
+      `/rest/procedure-areas?token=${accessToken}`,
+      payload
+    );
 
     return response;
   }
 );
 
-export const deleteBankAccount = createAsyncThunk(
-  'deleteBankAccount',
+export const updateProductionArea = createAsyncThunk(
+  'updateProductionArea',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `/rest/procedure-areas?token=${accessToken}`,
+      payload
+    );
+
+    return response;
+  }
+);
+
+export const deleteProductionArea = createAsyncThunk(
+  'deleteProductionArea',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const { id } = payload;
     const response = await axiosInstance.post(
-      `/rest/bank-accounts/delete?token=${accessToken}`,
+      `/rest/procedure-areas/delete?token=${accessToken}`,
       id
     );
 
@@ -43,17 +52,17 @@ export const deleteBankAccount = createAsyncThunk(
   }
 );
 
-const bankAccountSlice = createSlice({
-  name: 'bankAccount',
+const productionAreaSlice = createSlice({
+  name: 'productionArea',
   initialState: {
-    bankAccountList: [],
+    productionAreaList: [],
     status: '',
     statusMessage: '',
     action: '',
   },
   reducers: {},
   extraReducers: {
-    [listBankAccount.pending]: (state) => {
+    [listProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -61,27 +70,27 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
-    [listBankAccount.fulfilled]: (state, action) => {
+    [listProductionArea.fulfilled]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        bankAccountList: data,
+        productionAreaList: data,
         status: 'Fulfilled',
         action: 'get',
         statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listBankAccount.rejected]: (state, action) => {
+    [listProductionArea.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        bankAccountList: data,
+        productionAreaList: data,
         status: 'Error',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [createBankAccount.pending]: (state) => {
+    [createProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -89,7 +98,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_ADD_PENDING,
       };
     },
-    [createBankAccount.fulfilled]: (state) => {
+    [createProductionArea.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -97,7 +106,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
     },
-    [createBankAccount.rejected]: (state) => {
+    [createProductionArea.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -105,7 +114,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_ADD_REJECTED,
       };
     },
-    [updateBankAccount.pending]: (state) => {
+    [updateProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -113,7 +122,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
     },
-    [updateBankAccount.fulfilled]: (state) => {
+    [updateProductionArea.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -121,7 +130,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
     },
-    [updateBankAccount.rejected]: (state) => {
+    [updateProductionArea.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -129,7 +138,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
     },
-    [deleteBankAccount.pending]: (state) => {
+    [deleteProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -137,7 +146,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_DELETE_PENDING,
       };
     },
-    [deleteBankAccount.fulfilled]: (state) => {
+    [deleteProductionArea.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -145,7 +154,7 @@ const bankAccountSlice = createSlice({
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
     },
-    [deleteBankAccount.rejected]: (state) => {
+    [deleteProductionArea.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -156,4 +165,4 @@ const bankAccountSlice = createSlice({
   },
 });
 
-export default bankAccountSlice.reducer;
+export default productionAreaSlice.reducer;

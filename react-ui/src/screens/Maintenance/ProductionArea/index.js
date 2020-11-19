@@ -3,14 +3,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import GeneralStyles from '../../../datas/styles/styles.general';
-import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/SimpleForm';
+import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listMemo, createMemo, updateMemo, deleteMemo } from './redux';
+import {
+  listProductionArea,
+  createProductionArea,
+  updateProductionArea,
+  deleteProductionArea,
+} from './redux';
 
 const { Title } = Typography;
 
-const MemoTypes = (props) => {
+const ProductionArea = (props) => {
   const { title } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
@@ -18,10 +23,12 @@ const MemoTypes = (props) => {
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { memoList, action, statusMessage } = useSelector((state) => state.maintenance.memoTypes);
+  const { productionAreaList, action, statusMessage } = useSelector(
+    (state) => state.maintenance.productionArea
+  );
 
   useEffect(() => {
-    dispatch(listMemo());
+    dispatch(listProductionArea());
   }, [dispatch]);
 
   useEffect(() => {
@@ -37,23 +44,23 @@ const MemoTypes = (props) => {
   }, [statusMessage, action]);
 
   const handleAddButton = () => {
-    setModalTitle('Add New Memo Type');
+    setModalTitle('Add New Production Area');
     setMode('add');
     setIsOpenForm(!isOpenForm);
   };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit Memo Type');
+    setModalTitle('Edit Production Area');
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
   };
 
   const handleDeleteButton = (row) => {
-    dispatch(deleteMemo(row))
+    dispatch(deleteProductionArea(row))
       .then(() => {
-        dispatch(listMemo());
+        dispatch(listProductionArea());
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -70,12 +77,12 @@ const MemoTypes = (props) => {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateMemo(newValues)).then(() => {
-        dispatch(listMemo());
+      dispatch(updateProductionArea(newValues)).then(() => {
+        dispatch(listProductionArea());
       });
     } else if (mode === 'add') {
-      dispatch(createMemo(values)).then(() => {
-        dispatch(listMemo());
+      dispatch(createProductionArea(values)).then(() => {
+        dispatch(listProductionArea());
       });
     }
     setFormValues('');
@@ -93,7 +100,7 @@ const MemoTypes = (props) => {
       <Col span={20}>
         <TableDisplay
           columns={tableHeader}
-          data={memoList}
+          data={productionAreaList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
         />
@@ -110,4 +117,4 @@ const MemoTypes = (props) => {
   );
 };
 
-export default MemoTypes;
+export default ProductionArea;

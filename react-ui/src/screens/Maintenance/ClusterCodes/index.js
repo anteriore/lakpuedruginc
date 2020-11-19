@@ -1,28 +1,30 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../datas/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/SimpleForm';
-import { tableHeader, formDetails} from './data'
+import { tableHeader, formDetails } from './data';
 import { listCluster, createCluster, updateCluster, deleteCluster } from './redux';
-import { useDispatch, useSelector } from 'react-redux';
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const ClusterCodes = (props) => {
-  const {title} = props;
+  const { title } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { clusterList, action, statusMessage } = useSelector((state) => state.maintenance.clusterCode);
+  const { clusterList, action, statusMessage } = useSelector(
+    (state) => state.maintenance.clusterCode
+  );
 
   useEffect(() => {
-    dispatch(listCluster())
-  },[dispatch]);
+    dispatch(listCluster());
+  }, [dispatch]);
 
   useEffect(() => {
     if (action !== 'get' && action !== '') {
@@ -35,12 +37,12 @@ const ClusterCodes = (props) => {
       }
     }
   }, [statusMessage, action]);
-  
+
   const handleAddButton = () => {
     setModalTitle('Add New Cluster');
     setMode('add');
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
@@ -48,7 +50,7 @@ const ClusterCodes = (props) => {
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
   const handleDeleteButton = (row) => {
     dispatch(deleteCluster(row))
@@ -58,12 +60,12 @@ const ClusterCodes = (props) => {
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
       });
-  }
+  };
 
   const handleCancelButton = () => {
     setIsOpenForm(!isOpenForm);
     setFormValues('');
-  }
+  };
 
   const onSubmit = (values) => {
     if (mode === 'edit') {
@@ -80,9 +82,9 @@ const ClusterCodes = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
-  return(
+  return (
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
@@ -107,7 +109,7 @@ const ClusterCodes = (props) => {
         formDetails={formDetails}
       />
     </Row>
-  )
-}
+  );
+};
 
 export default ClusterCodes;
