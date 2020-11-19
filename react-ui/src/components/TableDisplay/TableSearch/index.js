@@ -36,8 +36,10 @@ const TableSearch = (columnHeaders) => {
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      if(record[dataIndex].hasOwnProperty('name')){
-        return record[dataIndex].name ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase()) : ''
+      if (record[dataIndex].hasOwnProperty('name')) {
+        return record[dataIndex].name
+          ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
+          : '';
       }
       else if (record[dataIndex].hasOwnProperty('title')) {
         return record[dataIndex].title

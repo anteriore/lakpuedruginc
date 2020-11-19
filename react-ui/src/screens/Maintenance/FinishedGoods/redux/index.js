@@ -96,7 +96,7 @@ const finishedGoodsSlice = createSlice({
       return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_UPDATE_REJECTED };
     },
     [deleteFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'pending',statusMessage: ITEM_DELETE_PENDING };
+      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_DELETE_PENDING };
     },
     [deleteFG.fulfilled]: (state) => {
       return {

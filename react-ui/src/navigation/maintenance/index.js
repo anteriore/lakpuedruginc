@@ -48,9 +48,9 @@ export const routes = [
     component: DepartmentArea,
   },
   {
-    title: "Items",
-    path: "/items",
-    component: Items
+    title: 'Items',
+    path: '/items',
+    component: Items,
   },
   {
     title: 'Units',
@@ -80,42 +80,42 @@ export const routes = [
   {
     title: 'Production Area',
     path: '/production_area',
-    component: '',
+    component: ProductionArea,
   },
   {
     title: 'Memo Types',
     path: '/memo_types',
-    component: '',
+    component: MemoTypes,
   },
   {
     title: 'Bank Accounts',
     path: '/bank_accounts',
-    component: '',
+    component: BankAccounts,
   },
   {
     title: 'Product Divisions',
     path: '/product_divisions',
-    component: '',
+    component: ProductDivisions,
   },
   {
-    title: "Region Codes",
-    path: "/codes/region",
-    component: RegionCodes
+    title: 'Region Codes',
+    path: '/codes/region',
+    component: RegionCodes,
   },
   {
     title: 'Cluster Codes',
     path: '/codes/cluster',
-    component: '',
+    component: ClusterCodes,
   },
   {
     title: 'Institutional Codes',
     path: '/codes/institutional',
-    component: '',
+    component: InstitutionalCodes,
   },
   {
     title: 'Account Codes',
     path: '/codes/account',
-    component: '',
+    component: AccountCodes,
   },
   {
     title: 'Province Codes',
@@ -130,7 +130,7 @@ export const routes = [
   {
     title: 'Zip Codes',
     path: '/codes/zip',
-    component: '',
+    component: ZipCodes,
   },
   {
     title: 'Product Categories',

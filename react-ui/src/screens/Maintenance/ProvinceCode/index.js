@@ -1,12 +1,17 @@
-import React, {useState, useEffect} from 'react';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import React, { useState, useEffect } from 'react';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import GeneralStyles from '../../../datas/styles/styles.general';
 import SimpleForm from '../../../components/forms/SimpleForm';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listProvinceCode, createProvinceCode, updateProvinceCode, deleteProvinceCode } from './redux';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  listProvinceCode,
+  createProvinceCode,
+  updateProvinceCode,
+  deleteProvinceCode,
+} from './redux';
 
 const { Title } = Typography;
 
@@ -17,7 +22,9 @@ const ProvinceCode = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const { provinceCodeList, action, statusMessage } = useSelector((state) => state.maintenance.provinceCodes);
+  const { provinceCodeList, action, statusMessage } = useSelector(
+    (state) => state.maintenance.provinceCodes
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,11 +33,11 @@ const ProvinceCode = (props) => {
 
   useEffect(() => {
     if (action !== 'get' && action !== '') {
-      if(action === 'pending'){
+      if (action === 'pending') {
         message.info(statusMessage);
-      }else if( action === 'error'){
+      } else if (action === 'error') {
         message.error(statusMessage);
-      }else{
+      } else {
         message.success(statusMessage);
       }
     }
@@ -40,30 +47,30 @@ const ProvinceCode = (props) => {
     setModalTitle('Add New Province Code');
     setMode('add');
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit ProvinceCode');
+    setModalTitle('Edit Province Code');
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
-  const handleDeleteButton = (row) =>{
+  const handleDeleteButton = (row) => {
     dispatch(deleteProvinceCode(row))
-    .then(() => {
-      dispatch(listProvinceCode());
-    })
-    .catch((err) => {
-      message.error(`Something went wrong! details: ${err}`);
-    });
-  }
+      .then(() => {
+        dispatch(listProvinceCode());
+      })
+      .catch((err) => {
+        message.error(`Something went wrong! details: ${err}`);
+      });
+  };
 
   const handleCancelButton = () => {
     setIsOpenForm(!isOpenForm);
     setFormValues('');
-  }
+  };
 
   const onSubmit = (values) => {
     if (mode === 'edit') {
@@ -80,9 +87,9 @@ const ProvinceCode = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
-  return(
+  return (
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
@@ -107,7 +114,7 @@ const ProvinceCode = (props) => {
         formDetails={formDetails}
       />
     </Row>
-  )
-}
+  );
+};
 
 export default ProvinceCode;

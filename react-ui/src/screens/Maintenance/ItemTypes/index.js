@@ -36,13 +36,13 @@ const ItemTypes = (props) => {
       {
         label: 'Name',
         name: 'name',
-        rules: [[{ required: true, message: 'Please provide a proper item type name' }]],
+        rules: [{ required: true, message: 'Please provide a valid item type name' }],
         placeholder: 'Item type name',
       },
       {
         label: 'Code',
         name: 'code',
-        rules: [[{ required: true, message: 'Please provide a proper item type code' }]],
+        rules: [{ required: true, message: 'Please provide a valid item type code' }],
         placeholder: 'Item type code',
       },
     ],
@@ -71,10 +71,10 @@ const ItemTypes = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id } = val;
+    const { id, code } = val;
     dispatch(deleteIT(id)).then(() => {
       dispatch(listIT({ company }));
-      message.success(`Successfully deleted Item Type ${data.name}`);
+      message.success(`Successfully deleted Item Type ${code}`);
     });
   };
 

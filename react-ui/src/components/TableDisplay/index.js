@@ -113,7 +113,7 @@ const TableDisplay = (props) => {
       onRow={(record, rowIndex) => {
         return {
           onClick: () => {
-            handleRetrieve(record);
+            // handleRetrieve(record);
           }, // click row
         };
       }}
