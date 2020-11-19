@@ -31,7 +31,7 @@ const Classification = (props) => {
   ];
 
   const formDetail = {
-    form_name: 'itemtypes',
+    form_name: 'classification',
     form_items: [
       {
         label: 'Name',
