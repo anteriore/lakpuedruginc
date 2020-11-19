@@ -13,6 +13,7 @@ import InstitutionalCodes from '../../screens/Maintenance/InstitutionalCodes';
 import MemoTypes from '../../screens/Maintenance/MemoTypes';
 import BankAccounts from '../../screens/Maintenance/BankAccounts';
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
+import ProductionArea from '../../screens/Maintenance/ProductionArea';
 
 export const routes = [
   {
@@ -78,7 +79,7 @@ export const routes = [
   {
     title: 'Production Area',
     path: '/production_area',
-    component: '',
+    component: ProductionArea,
   },
   {
     title: 'Memo Types',

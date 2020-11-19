@@ -1,24 +1,26 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../datas/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/SimpleForm';
-import { tableHeader, formDetails} from './data';
-import { useDispatch, useSelector } from 'react-redux';
+import { tableHeader, formDetails } from './data';
 import { listBankAccount, createBankAccount, updateBankAccount, deleteBankAccount } from './redux';
 
 const { Title } = Typography;
 
 const BankAccounts = (props) => {
-  const {title} = props;
+  const { title } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { bankAccountList, action, statusMessage } = useSelector((state) => state.maintenance.bankAccount);
+  const { bankAccountList, action, statusMessage } = useSelector(
+    (state) => state.maintenance.bankAccount
+  );
 
   useEffect(() => {
     dispatch(listBankAccount());
@@ -35,12 +37,12 @@ const BankAccounts = (props) => {
       }
     }
   }, [statusMessage, action]);
-  
+
   const handleAddButton = () => {
     setModalTitle('Add New Bank Account');
     setMode('add');
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
@@ -48,22 +50,22 @@ const BankAccounts = (props) => {
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
   const handleDeleteButton = (row) => {
     dispatch(deleteBankAccount(row))
-    .then(() => {
-      dispatch(listBankAccount());
-    })
-    .catch((err) => {
-      message.error(`Something went wrong! details: ${err}`);
-    });
-  }
+      .then(() => {
+        dispatch(listBankAccount());
+      })
+      .catch((err) => {
+        message.error(`Something went wrong! details: ${err}`);
+      });
+  };
 
   const handleCancelButton = () => {
     setIsOpenForm(!isOpenForm);
     setFormValues('');
-  }
+  };
 
   const onSubmit = (values) => {
     if (mode === 'edit') {
@@ -80,7 +82,7 @@ const BankAccounts = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-  }
+  };
 
   return (
     <Row gutter={[8, 24]}>
@@ -107,7 +109,7 @@ const BankAccounts = (props) => {
         formDetails={formDetails}
       />
     </Row>
-  )
-}
+  );
+};
 
 export default BankAccounts;

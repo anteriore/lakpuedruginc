@@ -52,8 +52,11 @@ export const formDetails = {
       name: 'type',
       rules: [{ required: true, message: 'Please provide a proper memo type' }],
       placeholder: 'Memo Type',
-      type: "select",
-      choices: [{id: "CM", name: "CM"}, {id: "DM", name: "DM"}]
+      type: 'select',
+      choices: [
+        { id: 'CM', name: 'CM' },
+        { id: 'DM', name: 'DM' },
+      ],
     },
   ],
 };

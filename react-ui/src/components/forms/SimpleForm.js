@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Modal, Input, Select } from 'antd';
 
 const { TextArea } = Input;
- 
+
 const SimpleForm = (props) => {
   const { visible, title, onCancel, onSubmit, values, formDetails } = props;
   const [form] = Form.useForm();
@@ -29,7 +29,7 @@ const SimpleForm = (props) => {
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
           <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
         </Form.Item>
-      )
+      );
     }
 
     return (

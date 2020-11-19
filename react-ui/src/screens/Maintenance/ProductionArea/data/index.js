@@ -22,37 +22,22 @@ export const tableHeader = [
     defaultSortOrder: 'ascend',
     sorter: (a, b) => a.code.length - b.code.length,
   },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-    align: 'center',
-    defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.address.length - b.address.length,
-  },
 ];
 
 export const formDetails = {
-  form_name: 'accountNumber',
+  form_name: 'productionArea',
   form_items: [
     {
       label: 'Name',
       name: 'name',
-      rules: [{ required: true, message: 'Please provide a proper account name' }],
-      placeholder: 'Account name',
+      rules: [{ required: true, message: 'Please provide a proper production area name' }],
+      placeholder: 'Production area name',
     },
     {
       label: 'Code',
       name: 'code',
-      rules: [{ required: true, message: 'Please provide a proper account code' }],
-      placeholder: 'Account code',
-    },
-    {
-      label: 'Address',
-      name: 'address',
-      rules: [{ required: true, message: 'Please provide a proper account address' }],
-      placeholder: 'Account address',
-      type: 'textArea',
+      rules: [{ required: true, message: 'Please provide a proper production area code' }],
+      placeholder: 'Production area code',
     },
   ],
 };
