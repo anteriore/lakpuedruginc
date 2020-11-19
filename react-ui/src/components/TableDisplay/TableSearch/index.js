@@ -39,11 +39,18 @@ const TableSearch = (columnHeaders) => {
       if(record[dataIndex].hasOwnProperty('name')){
         return record[dataIndex].name ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase()) : ''
       }
-      else {
-        return record[dataIndex] ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : ''
+      else if (record[dataIndex].hasOwnProperty('title')) {
+        return record[dataIndex].title
+          ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
+          : '';
       }
-    }
-      
+      else {
+        return record[dataIndex]
+          ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+          : '';
+      }
+
+    },
   });
   // eslint-disable-next-line no-unused-vars
   const handleSearch = (selectedKeys, confirm, dataIndex) => {

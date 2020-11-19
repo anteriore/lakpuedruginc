@@ -6,6 +6,15 @@ import ItemTypes from '../../screens/Maintenance/ItemTypes';
 import Items from '../../screens/Maintenance/Items';
 import RegionCodes from '../../screens/Maintenance/RegionCodes';
 import ProvinceCode from '../../screens/Maintenance/ProvinceCode';
+import ZipCodes from '../../screens/Maintenance/ZipCodes';
+import AccountCodes from '../../screens/Maintenance/AccountCodes';
+import ProductDivisions from '../../screens/Maintenance/ProductDivisions';
+import InstitutionalCodes from '../../screens/Maintenance/InstitutionalCodes';
+import MemoTypes from '../../screens/Maintenance/MemoTypes';
+import BankAccounts from '../../screens/Maintenance/BankAccounts';
+import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
+import ProductionArea from '../../screens/Maintenance/ProductionArea';
+import ProductCategories from '../../screens/Maintenance/ProductCategories';
 
 export const routes = [
   {
@@ -126,6 +135,6 @@ export const routes = [
   {
     title: 'Product Categories',
     path: '/product_categories',
-    component: '',
+    component: ProductCategories,
   },
 ];
