@@ -15,6 +15,9 @@ import BankAccounts from '../../screens/Maintenance/BankAccounts';
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
 import ProductionArea from '../../screens/Maintenance/ProductionArea';
 import ProductCategories from '../../screens/Maintenance/ProductCategories';
+import Depots from '../../screens/Maintenance/Depots';
+import Classification from '../../screens/Maintenance/Classification';
+import Procedures from '../../screens/Maintenance/Procedures';
 
 export const routes = [
   {
@@ -35,7 +38,7 @@ export const routes = [
   {
     title: 'Classification',
     path: '/classification',
-    component: '',
+    component: Classification,
   },
   {
     title: 'Group & Categories',
@@ -65,7 +68,7 @@ export const routes = [
   {
     title: 'Depots',
     path: '/depots',
-    component: '',
+    component: Depots,
   },
   {
     title: 'Products',
@@ -75,7 +78,7 @@ export const routes = [
   {
     title: 'Procedure',
     path: '/procedure',
-    component: '',
+    component: Procedures,
   },
   {
     title: 'Production Area',

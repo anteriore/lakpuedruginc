@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listI, addI, deleteI } from './redux';
-import { listIT } from '../ItemTypes/redux';
-import { listUnit } from '../Units/redux';
+import { listDepot, addDepot, deleteDepot } from './redux';
+import { listA } from '../DepartmentArea/redux';
 import SimpleForm from '../../../components/forms/SimpleForm';
 
 const { Title } = Typography;
 
-const ItemTypes = (props) => {
+const Depots = (props) => {
   const [displayForm, setDisplayForm] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
 
   const { company } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.items.list);
-  const types = useSelector((state) => state.maintenance.itemTypes.list);
-  const units = useSelector((state) => state.maintenance.units.unitList);
+  const data = useSelector((state) => state.maintenance.depots.list);
+  const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
 
   const columns = [
     {
@@ -37,88 +36,74 @@ const ItemTypes = (props) => {
       datatype: 'string',
     },
     {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
+      title: 'Area',
+      dataIndex: 'area',
+      key: 'area',
       datatype: 'string',
       render: (object) => object.name,
-      sorter: (a, b) => a.type.name.localeCompare(b.type.name),
-    },
-    {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'unit',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.unit.name.localeCompare(b.unit.name),
+      sorter: (a, b) => a.area.name.localeCompare(b.area.name),
     },
   ];
 
   const formDetail = {
-    form_name: 'itemtypes',
+    form_name: 'depot',
     form_items: [
       {
         label: 'Name',
         name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid item name' }],
-        placeholder: 'Item name',
+        rules: [{ required: true, message: 'Please provide a valid name' }],
+        placeholder: 'Depot name',
       },
       {
         label: 'Code',
         name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid item code' }],
-        placeholder: 'Item code',
+        rules: [{ required: true, message: 'Please provide a valid code' }],
+        placeholder: 'Depot code',
       },
       {
-        label: 'Type',
-        name: 'type',
+        label: 'Area',
+        name: 'area',
         type: 'select',
-        choices: types,
-      },
-      {
-        label: 'Unit',
-        name: 'unit',
-        type: 'select',
-        choices: units,
+        choices: areas,
       },
     ],
   };
 
   useEffect(() => {
-    dispatch(listI({ company }));
+    dispatch(listDepot({ company })).then((response) => {
+      setLoading(false)
+    });
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Add Item');
+    setFormTitle('Add Depot');
     setFormMode('add');
     setFormData(null);
-    dispatch(listIT({ company })).then((response) => {
-      dispatch(listUnit()).then((response) => {
-        setDisplayForm(true);
-      });
+    dispatch(listA({ company })).then((response) => {
+      setDisplayForm(true);
     });
   };
 
   const handleUpdate = (data) => {
-    setFormTitle('Edit Item');
+    setFormTitle('Edit Depot');
     setFormMode('edit');
     const formData = {
       ...data,
-      unit: data.unit.id,
-      type: data.type.id,
+      area: data.area.id,
     };
     setFormData(formData);
-    dispatch(listIT({ company })).then((response) => {
-      dispatch(listUnit()).then((response) => {
-        setDisplayForm(true);
-      });
+    dispatch(listA({ company })).then((response) => {
+      setDisplayForm(true);
     });
   };
 
   const handleDelete = (data) => {
-    dispatch(deleteI(data.id)).then((response) => {
-      dispatch(listI({ company }));
-      message.success(`Successfully deleted Item ${data.name}`);
+    dispatch(deleteDepot(data.id)).then((response) => {
+      setLoading(true);
+      dispatch(listDepot({ company })).then(() => {
+        setLoading(false);
+      })
+      message.success(`Successfully deleted Depot ${data.name}`);
     });
   };
 
@@ -137,16 +122,16 @@ const ItemTypes = (props) => {
         company: {
           id: company,
         },
-        type: {
-          id: values.type,
-        },
-        unit: {
-          id: values.unit,
+        area: {
+          id: values.area,
         },
       };
 
-      dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company }));
+      dispatch(addDepot(payload)).then(() => {
+        setLoading(true);
+        dispatch(listDepot({ company })).then(() => {
+          setLoading(false);
+        })
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -154,15 +139,15 @@ const ItemTypes = (props) => {
         company: {
           id: company,
         },
-        type: {
-          id: values.type,
-        },
-        unit: {
-          id: values.unit,
+        area: {
+          id: values.area,
         },
       };
-      dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company }));
+      dispatch(addDepot(payload)).then(() => {
+        setLoading(true);
+        dispatch(listDepot({ company })).then(() => {
+          setLoading(false);
+        })
       });
     }
 
@@ -190,13 +175,17 @@ const ItemTypes = (props) => {
           >
             Add
           </Button>
-          <TableDisplay
-            columns={columns}
-            data={data}
-            handleRetrieve={handleRetrieve}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-          />
+          {loading ? (
+            <Skeleton />
+          ) : (
+            <TableDisplay
+              columns={columns}
+              data={data}
+              handleRetrieve={handleRetrieve}
+              handleUpdate={handleUpdate}
+              handleDelete={handleDelete}
+            />
+          )}
         </Col>
         {displayForm && (
           <SimpleForm
@@ -213,4 +202,4 @@ const ItemTypes = (props) => {
   );
 };
 
-export default ItemTypes;
+export default Depots;

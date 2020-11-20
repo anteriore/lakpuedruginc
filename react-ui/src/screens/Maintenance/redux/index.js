@@ -16,6 +16,9 @@ import memoTypes from '../MemoTypes/redux';
 import bankAccount from '../BankAccounts/redux';
 import productionArea from '../ProductionArea/redux';
 import productCategories from '../ProductCategories/redux';
+import depots from '../Depots/redux';
+import classification from '../Classification/redux';
+import procedures from '../Procedures/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -34,6 +37,9 @@ const maintenance = combineReducers({
   bankAccount,
   productionArea,
   productCategories,
+  depots,
+  classification,
+  procedures,
 });
 
 export default maintenance;
