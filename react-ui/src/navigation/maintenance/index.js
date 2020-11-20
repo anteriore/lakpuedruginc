@@ -14,8 +14,10 @@ import MemoTypes from '../../screens/Maintenance/MemoTypes';
 import BankAccounts from '../../screens/Maintenance/BankAccounts';
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
 import ProductionArea from '../../screens/Maintenance/ProductionArea';
+import Depots from '../../screens/Maintenance/Depots';
 import Classification from '../../screens/Maintenance/Classification';
 import Procedures from '../../screens/Maintenance/Procedures';
+
 
 
 export const routes = [
@@ -67,7 +69,7 @@ export const routes = [
   {
     title: 'Depots',
     path: '/depots',
-    component: '',
+    component: Depots,
   },
   {
     title: 'Products',

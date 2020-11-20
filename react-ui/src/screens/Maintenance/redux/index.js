@@ -15,6 +15,7 @@ import institutionalCodes from '../InstitutionalCodes/redux';
 import memoTypes from '../MemoTypes/redux';
 import bankAccount from '../BankAccounts/redux';
 import productionArea from '../ProductionArea/redux';
+import depots from '../Depots/redux';
 
 import classification from '../Classification/redux';
 
@@ -37,9 +38,8 @@ const maintenance = combineReducers({
   memoTypes,
   bankAccount,
   productionArea,
-
+  depots,
   classification,
-
   procedures,
 
 });
