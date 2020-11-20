@@ -15,6 +15,8 @@ import BankAccounts from '../../screens/Maintenance/BankAccounts';
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
 import ProductionArea from '../../screens/Maintenance/ProductionArea';
 import Classification from '../../screens/Maintenance/Classification';
+import Procedures from '../../screens/Maintenance/Procedures';
+
 
 export const routes = [
   {
@@ -75,7 +77,7 @@ export const routes = [
   {
     title: 'Procedure',
     path: '/procedure',
-    component: '',
+    component: Procedures,
   },
   {
     title: 'Production Area',
