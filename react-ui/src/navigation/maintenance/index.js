@@ -19,6 +19,7 @@ import Depots from '../../screens/Maintenance/Depots';
 import Classification from '../../screens/Maintenance/Classification';
 import Procedures from '../../screens/Maintenance/Procedures';
 import GroupsCategories from '../../screens/Maintenance/GroupsCategories';
+import SalesReps from '../../screens/Maintenance/SalesReps';
 
 export const routes = [
   {
@@ -127,9 +128,9 @@ export const routes = [
     component: ProvinceCode,
   },
   {
-    title: 'Sales Codes',
+    title: 'Sales Reps',
     path: '/codes/sales',
-    component: '',
+    component: SalesReps,
   },
   {
     title: 'Zip Codes',
