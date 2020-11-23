@@ -65,7 +65,7 @@ Unit unit = optinalEntity.get();
 
 		System.out.println(x.size());
 
-		if(x.size>0){
+		if(x.size()>0){
 			return ResponseEntity.unprocessableEntity().body("Failed to delete the specified organization due to dependencies");
 		}else
 		{
@@ -74,7 +74,7 @@ Unit unit = optinalEntity.get();
 		}
 
 
-		return ResponseEntity.unprocessableEntity().body("Failed to delete the specified organization due to dependencies");
+		//return ResponseEntity.unprocessableEntity().body("Failed to delete the specified organization due to dependencies");
 	/*
         if(unitRepository.findById(id).isPresent()) {
 
