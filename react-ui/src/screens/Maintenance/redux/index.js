@@ -19,6 +19,7 @@ import productCategories from '../ProductCategories/redux';
 import depots from '../Depots/redux';
 import classification from '../Classification/redux';
 import procedures from '../Procedures/redux';
+import groupsCategories from '../GroupsCategories/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -40,6 +41,7 @@ const maintenance = combineReducers({
   depots,
   classification,
   procedures,
+  groupsCategories,
 });
 
 export default maintenance;
