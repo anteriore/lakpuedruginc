@@ -18,6 +18,7 @@ import ProductCategories from '../../screens/Maintenance/ProductCategories';
 import Depots from '../../screens/Maintenance/Depots';
 import Classification from '../../screens/Maintenance/Classification';
 import Procedures from '../../screens/Maintenance/Procedures';
+import GroupsCategories from '../../screens/Maintenance/GroupsCategories';
 
 export const routes = [
   {
@@ -43,7 +44,7 @@ export const routes = [
   {
     title: 'Group & Categories',
     path: '/group_categories',
-    component: '',
+    component: GroupsCategories,
   },
   {
     title: 'Department Area & Codes',

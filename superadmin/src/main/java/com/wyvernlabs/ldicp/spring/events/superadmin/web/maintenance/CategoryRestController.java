@@ -38,6 +38,7 @@ public class CategoryRestController {
 		return categoryRepository.save(category);
 	}
 
+	@PostMapping("/delete")
 	public boolean delete(@RequestBody Long id) {
 		categoryRepository.deleteById(id);
 		return true;
