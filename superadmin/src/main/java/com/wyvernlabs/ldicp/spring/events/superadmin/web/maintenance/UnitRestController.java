@@ -61,9 +61,19 @@ Unit unit = optinalEntity.get();
 
 
 		//Unit u=unitRepository.findById(id);
-		Item x=itemRepository.findByUnitId(unit.getId());
+		List <Item> x=itemRepository.findByUnitId(unit.getId());
 
-		System.out.println(x.getName());
+		System.out.println(x.size());
+
+		if(x.size>0){
+			return ResponseEntity.unprocessableEntity().body("Failed to delete the specified organization due to dependencies");
+		}else
+		{
+			unitRepository.deleteById(id);
+			return ResponseEntity.ok("Successfully deleted the specified organization");
+		}
+
+
 		return ResponseEntity.unprocessableEntity().body("Failed to delete the specified organization due to dependencies");
 	/*
         if(unitRepository.findById(id).isPresent()) {
