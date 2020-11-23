@@ -188,11 +188,11 @@ const GroupsCategories = (props) => {
     setFormDataG(null);
   };
 
-  const onSubmitC = (values) => {
+  const onSubmitC = (data) => {
     setLoading(true)
     if (formMode === 'edit') {
       const payload = {
-        ...values,
+        ...data,
         id: formDataC.id,
         company: {
           id: company,
@@ -200,31 +200,52 @@ const GroupsCategories = (props) => {
       };
 
       dispatch(addC(payload)).then((response) => {
-        dispatch(listG({ company })).then((response) => {
-          const group = response.payload.data.find(group => group.id === selectedGroup.id)
-          const category = group.categories.find(category => category.id === selectedCategory.id)
-          setselectedGroup(group)
-          setselectedCategory(category)
+        if(response.payload.status === 200){
+          message.success(`Successfully updated ${data.name}`);
+          dispatch(listG({ company })).then((response) => {
+            const group = response.payload.data.find(group => group.id === selectedGroup.id)
+            const category = group.categories.find(category => category.id === selectedCategory.id)
+            setselectedGroup(group)
+            setselectedCategory(category)
+            setLoading(false)
+          })
+        }
+        else {
+          message.error(`Unable to update ${data.name}`);
           setLoading(false)
-        })
+        }
       })
     } else if (formMode === 'add') {
       const payload = {
-        ...values,
+        ...data,
         company: {
           id: company,
         },
       };
       dispatch(addC(payload)).then((response) => {
-        setselectedCategory(response.payload.data)
-        selectedGroup.categories.push(response.payload.data)
-        dispatch(addG(selectedGroup)).then(() => {
-          dispatch(listG({ company })).then((response) => {
-            const group = response.payload.data.find(group => group.id === selectedGroup.id)
-            setselectedGroup(group)
-            setLoading(false)
+        if(response.payload.status === 200){
+          message.success(`Successfully added ${data.name}`);
+          setselectedCategory(response.payload.data)
+          var categories = selectedGroup.categories.map(
+            i => ({...i})
+          ); 
+          var temp_workaround = {
+            ...selectedGroup,
+            categories: categories
+          }
+          temp_workaround.categories.push(response.payload.data)
+          dispatch(addG(temp_workaround)).then(() => {
+            dispatch(listG({ company })).then((response) => {
+              const group = response.payload.data.find(group => group.id === selectedGroup.id)
+              setselectedGroup(group)
+              setLoading(false)
+            })
           })
-        })
+        }
+        else {
+          message.error(`Unable to add ${data.name}`);
+          setLoading(false)
+        }
       });
     }
 
@@ -312,8 +333,8 @@ const GroupsCategories = (props) => {
               style={{  marginLeft: "auto", width: "30%", marginBottom: "2%"}}
               icon={<PlusOutlined />}
               onClick={() => {
-                message.error(`Add category is not yet implemented`);
-                //handleAddC();
+                //message.error(`Add category is not yet implemented`);
+                handleAddC();
               }}
             >
               Add Category
