@@ -46,6 +46,11 @@ const TableSearch = (columnHeaders) => {
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
+      else if (record[dataIndex].hasOwnProperty('code')) {
+        return record[dataIndex].code
+          ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
+          : '';
+      }
       else {
         return record[dataIndex]
           ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
