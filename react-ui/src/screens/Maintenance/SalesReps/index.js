@@ -7,7 +7,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import { listS, addS, deleteS } from './redux';
 import { listC } from '../GroupsCategories/redux';
 import { listRegionCode } from '../RegionCodes/redux';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 

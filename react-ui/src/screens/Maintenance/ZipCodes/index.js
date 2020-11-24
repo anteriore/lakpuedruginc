@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import GeneralStyles from '../../../datas/styles/styles.general';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import { listProvinceCode } from '../ProvinceCode/redux';

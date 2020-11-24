@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TableDisplay from '../../../components/TableDisplay';
 import { listDepot, addDepot, deleteDepot } from './redux';
 import { listA } from '../DepartmentArea/redux';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { tableHeader, formDetails } from './data';
 import { getFGList, createFG, deleteFG, updateFG } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 

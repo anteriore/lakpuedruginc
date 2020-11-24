@@ -5,7 +5,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import GeneralStyles from '../../../datas/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 import { listRegionCode, createRegionCode, updateRegionCode, deleteRegionCode } from './redux';
 
 const { Title } = Typography;
