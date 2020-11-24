@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { Form, Modal, Input, Select } from 'antd';
 
+const { TextArea } = Input;
+
 const SimpleForm = (props) => {
   const { visible, title, onCancel, onSubmit, values, formDetails } = props;
   const [form] = Form.useForm();
@@ -11,13 +13,24 @@ const SimpleForm = (props) => {
 
   const FormItem = ({ item }) => {
     if (item.type === 'select') {
+      if (typeof item.selectName === 'undefined') {
+        item.selectName = 'name'
+      }
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
           <Select>
             {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{choice.name}</Select.Option>
+              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
             ))}
           </Select>
+        </Form.Item>
+      );
+    }
+
+    if (item.type === 'textArea') {
+      return (
+        <Form.Item label={item.label} name={item.name} rules={item.rules}>
+          <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
         </Form.Item>
       );
     }

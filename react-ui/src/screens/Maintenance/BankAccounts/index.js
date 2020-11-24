@@ -6,11 +6,11 @@ import GeneralStyles from '../../../datas/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/SimpleForm';
 import { tableHeader, formDetails } from './data';
-import { listCluster, createCluster, updateCluster, deleteCluster } from './redux';
+import { listBankAccount, createBankAccount, updateBankAccount, deleteBankAccount } from './redux';
 
 const { Title } = Typography;
 
-const ClusterCodes = (props) => {
+const BankAccounts = (props) => {
   const { title } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
@@ -18,12 +18,12 @@ const ClusterCodes = (props) => {
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { clusterList, action, statusMessage } = useSelector(
-    (state) => state.maintenance.clusterCode
+  const { bankAccountList, action, statusMessage } = useSelector(
+    (state) => state.maintenance.bankAccount
   );
 
   useEffect(() => {
-    dispatch(listCluster());
+    dispatch(listBankAccount());
   }, [dispatch]);
 
   useEffect(() => {
@@ -39,23 +39,23 @@ const ClusterCodes = (props) => {
   }, [statusMessage, action]);
 
   const handleAddButton = () => {
-    setModalTitle('Add New Cluster');
+    setModalTitle('Add New Bank Account');
     setMode('add');
     setIsOpenForm(!isOpenForm);
   };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit Cluster');
+    setModalTitle('Edit Bank Account');
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
   };
 
   const handleDeleteButton = (row) => {
-    dispatch(deleteCluster(row))
+    dispatch(deleteBankAccount(row))
       .then(() => {
-        dispatch(listCluster());
+        dispatch(listBankAccount());
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -72,12 +72,12 @@ const ClusterCodes = (props) => {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateCluster(newValues)).then(() => {
-        dispatch(listCluster());
+      dispatch(updateBankAccount(newValues)).then(() => {
+        dispatch(listBankAccount());
       });
     } else if (mode === 'add') {
-      dispatch(createCluster(values)).then(() => {
-        dispatch(listCluster());
+      dispatch(createBankAccount(values)).then(() => {
+        dispatch(listBankAccount());
       });
     }
     setFormValues('');
@@ -95,7 +95,7 @@ const ClusterCodes = (props) => {
       <Col span={20}>
         <TableDisplay
           columns={tableHeader}
-          data={clusterList}
+          data={bankAccountList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
         />
@@ -112,4 +112,4 @@ const ClusterCodes = (props) => {
   );
 };
 
-export default ClusterCodes;
+export default BankAccounts;

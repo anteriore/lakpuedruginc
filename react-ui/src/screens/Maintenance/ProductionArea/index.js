@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../datas/styles/styles.general';
-import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/SimpleForm';
+import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listCluster, createCluster, updateCluster, deleteCluster } from './redux';
+import {
+  listProductionArea,
+  createProductionArea,
+  updateProductionArea,
+  deleteProductionArea,
+} from './redux';
 
 const { Title } = Typography;
 
-const ClusterCodes = (props) => {
+const ProductionArea = (props) => {
   const { title } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
@@ -18,12 +23,12 @@ const ClusterCodes = (props) => {
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { clusterList, action, statusMessage } = useSelector(
-    (state) => state.maintenance.clusterCode
+  const { productionAreaList, action, statusMessage } = useSelector(
+    (state) => state.maintenance.productionArea
   );
 
   useEffect(() => {
-    dispatch(listCluster());
+    dispatch(listProductionArea());
   }, [dispatch]);
 
   useEffect(() => {
@@ -39,23 +44,23 @@ const ClusterCodes = (props) => {
   }, [statusMessage, action]);
 
   const handleAddButton = () => {
-    setModalTitle('Add New Cluster');
+    setModalTitle('Add New Production Area');
     setMode('add');
     setIsOpenForm(!isOpenForm);
   };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit Cluster');
+    setModalTitle('Edit Production Area');
     setMode('edit');
     setFormValues(row);
     setIsOpenForm(!isOpenForm);
   };
 
   const handleDeleteButton = (row) => {
-    dispatch(deleteCluster(row))
+    dispatch(deleteProductionArea(row))
       .then(() => {
-        dispatch(listCluster());
+        dispatch(listProductionArea());
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -72,12 +77,12 @@ const ClusterCodes = (props) => {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateCluster(newValues)).then(() => {
-        dispatch(listCluster());
+      dispatch(updateProductionArea(newValues)).then(() => {
+        dispatch(listProductionArea());
       });
     } else if (mode === 'add') {
-      dispatch(createCluster(values)).then(() => {
-        dispatch(listCluster());
+      dispatch(createProductionArea(values)).then(() => {
+        dispatch(listProductionArea());
       });
     }
     setFormValues('');
@@ -95,7 +100,7 @@ const ClusterCodes = (props) => {
       <Col span={20}>
         <TableDisplay
           columns={tableHeader}
-          data={clusterList}
+          data={productionAreaList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
         />
@@ -112,4 +117,4 @@ const ClusterCodes = (props) => {
   );
 };
 
-export default ClusterCodes;
+export default ProductionArea;

@@ -2,46 +2,67 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
 
-export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/zip-codes?token=${accessToken}`);
+export const listProductionArea = createAsyncThunk(
+  'listProductionArea',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/procedure-areas?token=${accessToken}`);
 
-  return response;
-});
+    return response;
+  }
+);
 
-export const createZipCode = createAsyncThunk('createZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+export const createProductionArea = createAsyncThunk(
+  'createProductionArea',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `/rest/procedure-areas?token=${accessToken}`,
+      payload
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
-export const updateZipCode = createAsyncThunk('updateZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+export const updateProductionArea = createAsyncThunk(
+  'updateProductionArea',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `/rest/procedure-areas?token=${accessToken}`,
+      payload
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
-export const deleteZipCode = createAsyncThunk('deleteZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload;
-  const response = await axiosInstance.post(`/rest/zip-codes/delete?token=${accessToken}`, id);
+export const deleteProductionArea = createAsyncThunk(
+  'deleteProductionArea',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id } = payload;
+    const response = await axiosInstance.post(
+      `/rest/procedure-areas/delete?token=${accessToken}`,
+      id
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
-const zipCodeSlice = createSlice({
-  name: 'zipCodes',
+const productionAreaSlice = createSlice({
+  name: 'productionArea',
   initialState: {
-    zipCodeList: [],
+    productionAreaList: [],
     status: '',
     statusMessage: '',
     action: '',
   },
   reducers: {},
   extraReducers: {
-    [listZipCode.pending]: (state) => {
+    [listProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -49,27 +70,27 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
-    [listZipCode.fulfilled]: (state, action) => {
+    [listProductionArea.fulfilled]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        zipCodeList: data,
+        productionAreaList: data,
         status: 'Fulfilled',
         action: 'get',
         statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listZipCode.rejected]: (state, action) => {
+    [listProductionArea.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        zipCodeList: data,
+        productionAreaList: data,
         status: 'Error',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [createZipCode.pending]: (state) => {
+    [createProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -77,7 +98,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_PENDING,
       };
     },
-    [createZipCode.fulfilled]: (state) => {
+    [createProductionArea.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -85,7 +106,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
     },
-    [createZipCode.rejected]: (state) => {
+    [createProductionArea.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -93,7 +114,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_REJECTED,
       };
     },
-    [updateZipCode.pending]: (state) => {
+    [updateProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -101,7 +122,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
     },
-    [updateZipCode.fulfilled]: (state) => {
+    [updateProductionArea.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -109,7 +130,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
     },
-    [updateZipCode.rejected]: (state) => {
+    [updateProductionArea.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -117,7 +138,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
     },
-    [deleteZipCode.pending]: (state) => {
+    [deleteProductionArea.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -125,7 +146,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_DELETE_PENDING,
       };
     },
-    [deleteZipCode.fulfilled]: (state) => {
+    [deleteProductionArea.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -133,7 +154,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
     },
-    [deleteZipCode.rejected]: (state) => {
+    [deleteProductionArea.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -144,4 +165,4 @@ const zipCodeSlice = createSlice({
   },
 });
 
-export default zipCodeSlice.reducer;
+export default productionAreaSlice.reducer;

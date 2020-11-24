@@ -10,8 +10,15 @@ import ZipCodes from '../../screens/Maintenance/ZipCodes';
 import AccountCodes from '../../screens/Maintenance/AccountCodes';
 import ProductDivisions from '../../screens/Maintenance/ProductDivisions';
 import InstitutionalCodes from '../../screens/Maintenance/InstitutionalCodes';
-
+import MemoTypes from '../../screens/Maintenance/MemoTypes';
+import BankAccounts from '../../screens/Maintenance/BankAccounts';
 import ClusterCodes from '../../screens/Maintenance/ClusterCodes';
+import ProductionArea from '../../screens/Maintenance/ProductionArea';
+import ProductCategories from '../../screens/Maintenance/ProductCategories';
+import Depots from '../../screens/Maintenance/Depots';
+import Classification from '../../screens/Maintenance/Classification';
+import Procedures from '../../screens/Maintenance/Procedures';
+import GroupsCategories from '../../screens/Maintenance/GroupsCategories';
 
 export const routes = [
   {
@@ -32,12 +39,12 @@ export const routes = [
   {
     title: 'Classification',
     path: '/classification',
-    component: '',
+    component: Classification,
   },
   {
     title: 'Group & Categories',
     path: '/group_categories',
-    component: '',
+    component: GroupsCategories,
   },
   {
     title: 'Department Area & Codes',
@@ -62,7 +69,7 @@ export const routes = [
   {
     title: 'Depots',
     path: '/depots',
-    component: '',
+    component: Depots,
   },
   {
     title: 'Products',
@@ -72,22 +79,22 @@ export const routes = [
   {
     title: 'Procedure',
     path: '/procedure',
-    component: '',
+    component: Procedures,
   },
   {
     title: 'Production Area',
     path: '/production_area',
-    component: '',
+    component: ProductionArea,
   },
   {
     title: 'Memo Types',
     path: '/memo_types',
-    component: '',
+    component: MemoTypes,
   },
   {
     title: 'Bank Accounts',
     path: '/bank_accounts',
-    component: '',
+    component: BankAccounts,
   },
   {
     title: 'Product Divisions',
@@ -132,6 +139,6 @@ export const routes = [
   {
     title: 'Product Categories',
     path: '/product_categories',
-    component: '',
+    component: ProductCategories,
   },
 ];

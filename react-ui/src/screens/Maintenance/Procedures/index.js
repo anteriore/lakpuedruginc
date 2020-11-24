@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
 import GeneralStyles from '../../../datas/styles/styles.general';
-import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/SimpleForm';
+import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listCluster, createCluster, updateCluster, deleteCluster } from './redux';
+import { listProductionArea } from '../ProductionArea/redux';
+import { listProcedure, createProcedure, updateProcedure, deleteProcedure } from './redux';
+import { formatProcedurePayload } from './helper';
 
 const { Title } = Typography;
 
-const ClusterCodes = (props) => {
+const Procedures = (props) => {
   const { title } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
+  const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { clusterList, action, statusMessage } = useSelector(
-    (state) => state.maintenance.clusterCode
+  const { productionAreaList } = useSelector((state) => state.maintenance.productionArea);
+  const { procedureList, action, statusMessage } = useSelector(
+    (state) => state.maintenance.procedures
   );
 
   useEffect(() => {
-    dispatch(listCluster());
+    dispatch(listProcedure());
   }, [dispatch]);
 
   useEffect(() => {
@@ -38,24 +43,46 @@ const ClusterCodes = (props) => {
     }
   }, [statusMessage, action]);
 
+  useEffect(() => {
+    const newForm = tempFormDetails;
+    newForm.form_items.forEach((form) => {
+      if (form.name === 'procedureArea') {
+        productionAreaList.forEach((productionArea) => {
+          const { id, code } = productionArea;
+          form.choices.push({ id, name: code });
+        });
+      }
+
+      form.choices = _.uniqBy(form.choices, 'id');
+    });
+    setTempFormDetails(newForm);
+  }, [productionAreaList, tempFormDetails]);
+
   const handleAddButton = () => {
-    setModalTitle('Add New Cluster');
+    setModalTitle('Add New Zip Code');
     setMode('add');
-    setIsOpenForm(!isOpenForm);
+    dispatch(listProductionArea()).then(() => {
+      setIsOpenForm(!isOpenForm);
+    });
   };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
-    setModalTitle('Edit Cluster');
+    setModalTitle('Edit Zip Code');
     setMode('edit');
-    setFormValues(row);
-    setIsOpenForm(!isOpenForm);
+    dispatch(listProductionArea()).then(() => {
+      setFormValues({
+        ...row,
+        procedureArea: row.procedureArea.id,
+      });
+      setIsOpenForm(!isOpenForm);
+    });
   };
 
   const handleDeleteButton = (row) => {
-    dispatch(deleteCluster(row))
+    dispatch(deleteProcedure(row))
       .then(() => {
-        dispatch(listCluster());
+        dispatch(listProcedure());
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -69,15 +96,14 @@ const ClusterCodes = (props) => {
 
   const onSubmit = (values) => {
     if (mode === 'edit') {
-      const newValues = values;
+      const newValues = formatProcedurePayload(values, productionAreaList);
       newValues.id = currentID;
-
-      dispatch(updateCluster(newValues)).then(() => {
-        dispatch(listCluster());
+      dispatch(updateProcedure(newValues)).then(() => {
+        dispatch(listProcedure());
       });
     } else if (mode === 'add') {
-      dispatch(createCluster(values)).then(() => {
-        dispatch(listCluster());
+      dispatch(createProcedure(formatProcedurePayload(values, productionAreaList))).then(() => {
+        dispatch(listProcedure());
       });
     }
     setFormValues('');
@@ -95,7 +121,7 @@ const ClusterCodes = (props) => {
       <Col span={20}>
         <TableDisplay
           columns={tableHeader}
-          data={clusterList}
+          data={procedureList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
         />
@@ -112,4 +138,4 @@ const ClusterCodes = (props) => {
   );
 };
 
-export default ClusterCodes;
+export default Procedures;

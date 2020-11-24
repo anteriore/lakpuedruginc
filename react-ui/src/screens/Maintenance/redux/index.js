@@ -12,6 +12,14 @@ import accountCodes from '../AccountCodes/redux';
 import productDivisions from '../ProductDivisions/redux';
 import clusterCode from '../ClusterCodes/redux';
 import institutionalCodes from '../InstitutionalCodes/redux';
+import memoTypes from '../MemoTypes/redux';
+import bankAccount from '../BankAccounts/redux';
+import productionArea from '../ProductionArea/redux';
+import productCategories from '../ProductCategories/redux';
+import depots from '../Depots/redux';
+import classification from '../Classification/redux';
+import procedures from '../Procedures/redux';
+import groupsCategories from '../GroupsCategories/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -26,6 +34,14 @@ const maintenance = combineReducers({
   clusterCode,
   productDivisions,
   institutionalCodes,
+  memoTypes,
+  bankAccount,
+  productionArea,
+  productCategories,
+  depots,
+  classification,
+  procedures,
+  groupsCategories,
 });
 
 export default maintenance;

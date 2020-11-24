@@ -2,46 +2,46 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
 
-export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunkAPI) => {
+export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/zip-codes?token=${accessToken}`);
+  const response = await axiosInstance.get(`/rest/memo-types?token=${accessToken}`);
 
   return response;
 });
 
-export const createZipCode = createAsyncThunk('createZipCode', async (payload, thunkAPI) => {
+export const createMemo = createAsyncThunk('createMemo', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`/rest/memo-types?token=${accessToken}`, payload);
 
   return response;
 });
 
-export const updateZipCode = createAsyncThunk('updateZipCode', async (payload, thunkAPI) => {
+export const updateMemo = createAsyncThunk('updateMemo', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`/rest/memo-types?token=${accessToken}`, payload);
 
   return response;
 });
 
-export const deleteZipCode = createAsyncThunk('deleteZipCode', async (payload, thunkAPI) => {
+export const deleteMemo = createAsyncThunk('deleteMemo', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  const response = await axiosInstance.post(`/rest/zip-codes/delete?token=${accessToken}`, id);
+  const response = await axiosInstance.post(`/rest/memo-types/delete?token=${accessToken}`, id);
 
   return response;
 });
 
-const zipCodeSlice = createSlice({
-  name: 'zipCodes',
+const memoSlice = createSlice({
+  name: 'memoTypes',
   initialState: {
-    zipCodeList: [],
+    memoList: [],
     status: '',
     statusMessage: '',
     action: '',
   },
   reducers: {},
   extraReducers: {
-    [listZipCode.pending]: (state) => {
+    [listMemo.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -49,27 +49,27 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
-    [listZipCode.fulfilled]: (state, action) => {
+    [listMemo.fulfilled]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        zipCodeList: data,
+        memoList: data,
         status: 'Fulfilled',
         action: 'get',
         statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listZipCode.rejected]: (state, action) => {
+    [listMemo.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        zipCodeList: data,
+        memoList: data,
         status: 'Error',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [createZipCode.pending]: (state) => {
+    [createMemo.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -77,7 +77,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_PENDING,
       };
     },
-    [createZipCode.fulfilled]: (state) => {
+    [createMemo.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -85,7 +85,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
     },
-    [createZipCode.rejected]: (state) => {
+    [createMemo.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -93,7 +93,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_REJECTED,
       };
     },
-    [updateZipCode.pending]: (state) => {
+    [updateMemo.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -101,7 +101,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
     },
-    [updateZipCode.fulfilled]: (state) => {
+    [updateMemo.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -109,7 +109,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
     },
-    [updateZipCode.rejected]: (state) => {
+    [updateMemo.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -117,7 +117,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
     },
-    [deleteZipCode.pending]: (state) => {
+    [deleteMemo.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -125,7 +125,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_DELETE_PENDING,
       };
     },
-    [deleteZipCode.fulfilled]: (state) => {
+    [deleteMemo.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -133,7 +133,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
     },
-    [deleteZipCode.rejected]: (state) => {
+    [deleteMemo.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -144,4 +144,4 @@ const zipCodeSlice = createSlice({
   },
 });
 
-export default zipCodeSlice.reducer;
+export default memoSlice.reducer;

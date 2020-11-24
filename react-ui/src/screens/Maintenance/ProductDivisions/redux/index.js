@@ -34,7 +34,7 @@ export const deletePD = createAsyncThunk('deletePD', async (payload, thunkAPI) =
 });
 
 const productDivisionSlice = createSlice({
-  name: 'productDivision',
+  name: 'productDivisions',
   initialState,
   reducers: {},
   extraReducers: {

@@ -2,46 +2,58 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
 
-export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunkAPI) => {
+export const listBankAccount = createAsyncThunk('listBankAccount', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/zip-codes?token=${accessToken}`);
+  const response = await axiosInstance.get(`/rest/bank-accounts?token=${accessToken}`);
 
   return response;
 });
 
-export const createZipCode = createAsyncThunk('createZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+export const createBankAccount = createAsyncThunk(
+  'createBankAccount',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
 
-  return response;
-});
+    return response;
+  }
+);
 
-export const updateZipCode = createAsyncThunk('updateZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+export const updateBankAccount = createAsyncThunk(
+  'updateBankAccount',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
 
-  return response;
-});
+    return response;
+  }
+);
 
-export const deleteZipCode = createAsyncThunk('deleteZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload;
-  const response = await axiosInstance.post(`/rest/zip-codes/delete?token=${accessToken}`, id);
+export const deleteBankAccount = createAsyncThunk(
+  'deleteBankAccount',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id } = payload;
+    const response = await axiosInstance.post(
+      `/rest/bank-accounts/delete?token=${accessToken}`,
+      id
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
-const zipCodeSlice = createSlice({
-  name: 'zipCodes',
+const bankAccountSlice = createSlice({
+  name: 'bankAccount',
   initialState: {
-    zipCodeList: [],
+    bankAccountList: [],
     status: '',
     statusMessage: '',
     action: '',
   },
   reducers: {},
   extraReducers: {
-    [listZipCode.pending]: (state) => {
+    [listBankAccount.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -49,27 +61,27 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
-    [listZipCode.fulfilled]: (state, action) => {
+    [listBankAccount.fulfilled]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        zipCodeList: data,
+        bankAccountList: data,
         status: 'Fulfilled',
         action: 'get',
         statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listZipCode.rejected]: (state, action) => {
+    [listBankAccount.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        zipCodeList: data,
+        bankAccountList: data,
         status: 'Error',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [createZipCode.pending]: (state) => {
+    [createBankAccount.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -77,7 +89,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_PENDING,
       };
     },
-    [createZipCode.fulfilled]: (state) => {
+    [createBankAccount.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -85,7 +97,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
     },
-    [createZipCode.rejected]: (state) => {
+    [createBankAccount.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -93,7 +105,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_ADD_REJECTED,
       };
     },
-    [updateZipCode.pending]: (state) => {
+    [updateBankAccount.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -101,7 +113,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
     },
-    [updateZipCode.fulfilled]: (state) => {
+    [updateBankAccount.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -109,7 +121,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
     },
-    [updateZipCode.rejected]: (state) => {
+    [updateBankAccount.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -117,7 +129,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
     },
-    [deleteZipCode.pending]: (state) => {
+    [deleteBankAccount.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -125,7 +137,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_DELETE_PENDING,
       };
     },
-    [deleteZipCode.fulfilled]: (state) => {
+    [deleteBankAccount.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -133,7 +145,7 @@ const zipCodeSlice = createSlice({
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
     },
-    [deleteZipCode.rejected]: (state) => {
+    [deleteBankAccount.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -144,4 +156,4 @@ const zipCodeSlice = createSlice({
   },
 });
 
-export default zipCodeSlice.reducer;
+export default bankAccountSlice.reducer;
