@@ -10,7 +10,7 @@ import { listClient, addClient, deleteClient } from './redux';
 import { listCluster } from '../ClusterCodes/redux';
 import { listInstitution } from '../InstitutionalCodes/redux';
 import { listS } from '../SalesReps/redux';
-import InputForm from './InputForm';
+import FormScreen from '../../../components/forms/FormScreen';
 
 const { Title } = Typography;
 
@@ -267,7 +267,7 @@ const Clients = (props) => {
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <InputForm
+        <FormScreen
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -276,7 +276,7 @@ const Clients = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <InputForm title="Edit Purchase Request" company={company} />
+        <FormScreen title="Edit Purchase Request" company={company} />
       </Route>
       <Route>
       <Row>

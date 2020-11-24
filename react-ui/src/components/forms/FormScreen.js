@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const SimpleForm = (props) => {
+const FormScreen = (props) => {
   const { title, onCancel, onSubmit, values, formDetails } = props;
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -99,7 +99,7 @@ const SimpleForm = (props) => {
   );
 };
 
-export default SimpleForm;
+export default FormScreen;
 
 const styles = {
   layout: {
