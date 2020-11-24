@@ -2,46 +2,48 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
 
-export const listProcedure = createAsyncThunk('listProcedure', async (payload, thunkAPI) => {
+export const listProduct = createAsyncThunk('listProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/procedures?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `/rest/products/company/${payload}?token=${accessToken}`
+  );
 
   return response;
 });
 
-export const createProcedure = createAsyncThunk('createProcedure', async (payload, thunkAPI) => {
+export const createProduct = createAsyncThunk('createProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/procedures?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
 
   return response;
 });
 
-export const updateProcedure = createAsyncThunk('updateProcedure', async (payload, thunkAPI) => {
+export const updateProduct = createAsyncThunk('updateProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/procedures?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
 
   return response;
 });
 
-export const deleteProcedure = createAsyncThunk('deleteProcedure', async (payload, thunkAPI) => {
+export const deleteProduct = createAsyncThunk('deleteProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  const response = await axiosInstance.post(`/rest/procedures/delete?token=${accessToken}`, id);
+  const response = await axiosInstance.post(`/rest/products/delete?token=${accessToken}`, id);
 
   return response;
 });
 
-const proceduresSlice = createSlice({
-  name: 'procedures',
+const productSlice = createSlice({
+  name: 'products',
   initialState: {
-    procedureList: [],
+    productList: [],
     status: '',
     statusMessage: '',
     action: '',
   },
   reducers: {},
   extraReducers: {
-    [listProcedure.pending]: (state) => {
+    [listProduct.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -49,27 +51,27 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
-    [listProcedure.fulfilled]: (state, action) => {
+    [listProduct.fulfilled]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        procedureList: data,
+        productList: data,
         status: 'Fulfilled',
         action: 'get',
         statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listProcedure.rejected]: (state, action) => {
+    [listProduct.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        procedureList: data,
+        productList: data,
         status: 'Error',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [createProcedure.pending]: (state) => {
+    [createProduct.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -77,7 +79,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_ADD_PENDING,
       };
     },
-    [createProcedure.fulfilled]: (state) => {
+    [createProduct.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -85,7 +87,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
     },
-    [createProcedure.rejected]: (state) => {
+    [createProduct.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -93,7 +95,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_ADD_REJECTED,
       };
     },
-    [updateProcedure.pending]: (state) => {
+    [updateProduct.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -101,7 +103,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
     },
-    [updateProcedure.fulfilled]: (state) => {
+    [updateProduct.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -109,7 +111,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
     },
-    [updateProcedure.rejected]: (state) => {
+    [updateProduct.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -117,7 +119,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
     },
-    [deleteProcedure.pending]: (state) => {
+    [deleteProduct.pending]: (state) => {
       return {
         ...state,
         status: 'Loading',
@@ -125,7 +127,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_DELETE_PENDING,
       };
     },
-    [deleteProcedure.fulfilled]: (state) => {
+    [deleteProduct.fulfilled]: (state) => {
       return {
         ...state,
         status: 'Fulfilled',
@@ -133,7 +135,7 @@ const proceduresSlice = createSlice({
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
     },
-    [deleteProcedure.rejected]: (state) => {
+    [deleteProduct.rejected]: (state) => {
       return {
         ...state,
         status: 'Error',
@@ -144,4 +146,4 @@ const proceduresSlice = createSlice({
   },
 });
 
-export default proceduresSlice.reducer;
+export default productSlice.reducer;

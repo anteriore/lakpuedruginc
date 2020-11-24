@@ -85,7 +85,7 @@ const Depots = (props) => {
   useEffect(() => {
     dispatch(listPC({ company })).then((response) => {
       dispatch(listPD({ company })).then((response) => {
-        setLoading(false)
+        setLoading(false);
       });
     });
   }, [dispatch, company]);
@@ -117,7 +117,7 @@ const Depots = (props) => {
       setLoading(true);
       dispatch(listPC({ company })).then(() => {
         setLoading(false);
-      })
+      });
       message.success(`Successfully deleted Product Category ${data.code}`);
     });
   };
@@ -146,7 +146,7 @@ const Depots = (props) => {
         setLoading(true);
         dispatch(listPC({ company })).then(() => {
           setLoading(false);
-        })
+        });
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -162,7 +162,7 @@ const Depots = (props) => {
         setLoading(true);
         dispatch(listPC({ company })).then(() => {
           setLoading(false);
-        })
+        });
       });
     }
 

@@ -14,11 +14,11 @@ const SimpleForm = (props) => {
   const FormItem = ({ item }) => {
     if (item.type === 'select') {
       if (typeof item.selectName === 'undefined') {
-        item.selectName = 'name'
+        item.selectName = 'name';
       }
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select>
+          <Select placeholder={item.placeholder}>
             {item.choices.map((choice) => (
               <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
             ))}

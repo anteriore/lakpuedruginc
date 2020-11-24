@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
-import { Row, Col, Tabs, Typography } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Tabs, Typography, Skeleton } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
 import { routes as MaintenanceRoutes } from '../../navigation/maintenance';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
+import { listCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
 const Maintenance = () => {
   const { path } = useRouteMatch();
-  const [company, setCompany] = useState(1);
+  const [company, setCompany] = useState({ id: 1, name: 'Lakpue Drug Inc.' });
+  const dispatch = useDispatch();
+  const [contentLoading, setContentLoading] = useState(true);
+  const { companyList } = useSelector((state) => state.company);
+
+  useEffect(() => {
+    dispatch(listCompany()).then(() => {
+      setContentLoading(false);
+    });
+  }, [dispatch]);
 
   const handleChangeTab = (id) => {
-    setCompany(id);
+    const selectedCompany = _.find(companyList, (o) => {
+      return o.id === parseInt(id, 10);
+    });
+
+    setCompany(selectedCompany);
   };
 
   return (
@@ -24,21 +40,21 @@ const Maintenance = () => {
             <Row>
               <Title level={3}>Maintenance</Title>
             </Row>
-            <Row>
-              <Col span={24}>
-                <Tabs defaultActiveKey="1" onChange={handleChangeTab}>
-                  <TabPane tab="Lakpue Drug Inc." key="1">
-                    <ModulesGrid company="LDI" modules={MaintenanceRoutes} />
-                  </TabPane>
-                  <TabPane tab="La Croesus Pharma Inc." key="2">
-                    <ModulesGrid company="LCP" modules={MaintenanceRoutes} />
-                  </TabPane>
-                  <TabPane tab="Fanfreluche Enterprises Inc." key="3">
-                    <ModulesGrid company="FEI" modules={MaintenanceRoutes} />
-                  </TabPane>
-                </Tabs>
-              </Col>
-            </Row>
+            {contentLoading ? (
+              <Skeleton />
+            ) : (
+              <Row>
+                <Col span={24}>
+                  <Tabs defaultActiveKey="company.id" onChange={handleChangeTab}>
+                    {companyList.map((val) => (
+                      <TabPane tab={val.name} key={val.id}>
+                        <ModulesGrid company={val.name} modules={MaintenanceRoutes} />
+                      </TabPane>
+                    ))}
+                  </Tabs>
+                </Col>
+              </Row>
+            )}
           </Container>
         </Route>
         {MaintenanceRoutes.map((module) => (

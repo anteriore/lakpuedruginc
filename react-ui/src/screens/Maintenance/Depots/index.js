@@ -72,7 +72,7 @@ const Depots = (props) => {
 
   useEffect(() => {
     dispatch(listDepot({ company })).then((response) => {
-      setLoading(false)
+      setLoading(false);
     });
   }, [dispatch, company]);
 
