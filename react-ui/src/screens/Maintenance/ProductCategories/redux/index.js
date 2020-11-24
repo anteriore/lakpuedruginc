@@ -16,14 +16,20 @@ export const listPC = createAsyncThunk('listPC', async (payload, thunkAPI) => {
 export const addPC = createAsyncThunk('addPC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-categories/?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/product-categories/?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 
 export const deletePC = createAsyncThunk('deletePC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-categories/delete?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/product-categories/delete?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 

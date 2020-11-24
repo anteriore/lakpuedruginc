@@ -71,7 +71,7 @@ const Depots = (props) => {
 
   useEffect(() => {
     dispatch(listDepot({ company })).then((response) => {
-      setLoading(false)
+      setLoading(false);
     });
   }, [dispatch, company]);
 
@@ -102,7 +102,7 @@ const Depots = (props) => {
       setLoading(true);
       dispatch(listDepot({ company })).then(() => {
         setLoading(false);
-      })
+      });
       message.success(`Successfully deleted Depot ${data.name}`);
     });
   };
@@ -131,7 +131,7 @@ const Depots = (props) => {
         setLoading(true);
         dispatch(listDepot({ company })).then(() => {
           setLoading(false);
-        })
+        });
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -147,7 +147,7 @@ const Depots = (props) => {
         setLoading(true);
         dispatch(listDepot({ company })).then(() => {
           setLoading(false);
-        })
+        });
       });
     }
 

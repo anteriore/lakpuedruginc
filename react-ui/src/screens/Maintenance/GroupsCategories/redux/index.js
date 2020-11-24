@@ -26,19 +26,14 @@ export const addG = createAsyncThunk('addG', async (payload, thunkAPI) => {
 export const deleteG = createAsyncThunk('deleteG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/group/delete?token=${accessToken}`,
-    payload
-  );
+  const response = await axiosInstance.post(`rest/group/delete?token=${accessToken}`, payload);
   return response;
 });
 
 export const listC = createAsyncThunk('listC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(
-    `rest/category/?token=${accessToken}`
-  );
+  const response = await axiosInstance.get(`rest/category/?token=${accessToken}`);
   return response;
 });
 
