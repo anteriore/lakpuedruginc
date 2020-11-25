@@ -4,7 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, QuestionCircleOutlined } fr
 import { useDispatch, useSelector } from 'react-redux';
 
 import { listG, addG, deleteG, listC, addC, deleteC } from './redux';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 const { Option } = Select;

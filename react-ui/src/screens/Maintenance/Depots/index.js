@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TableDisplay from '../../../components/TableDisplay';
 import { listDepot, addDepot, deleteDepot } from './redux';
 import { listA } from '../DepartmentArea/redux';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 
@@ -65,6 +65,7 @@ const Depots = (props) => {
         name: 'area',
         type: 'select',
         choices: areas,
+        rules: [{ required: true }],
       },
     ],
   };
@@ -100,10 +101,16 @@ const Depots = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteDepot(data.id)).then((response) => {
       setLoading(true);
-      dispatch(listDepot({ company })).then(() => {
+      if(response.payload.status === 200){
+        dispatch(listDepot({ company })).then(() => {
+          setLoading(false);
+          message.success(`Successfully deleted ${data.name}`);
+        })
+      }
+      else {
         setLoading(false);
-      })
-      message.success(`Successfully deleted Depot ${data.name}`);
+        message.error(`Unable to delete ${data.name}`);
+      }
     });
   };
 
@@ -114,40 +121,54 @@ const Depots = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = (data) => {
     if (formMode === 'edit') {
       const payload = {
-        ...values,
+        ...data,
         id: formData.id,
         company: {
           id: company,
         },
         area: {
-          id: values.area,
+          id: data.area,
         },
       };
 
-      dispatch(addDepot(payload)).then(() => {
+      dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
-        dispatch(listDepot({ company })).then(() => {
+        if(response.payload.status === 200){
+          dispatch(listDepot({ company })).then(() => {
+            setLoading(false);
+            message.success(`Successfully updated ${data.name}`);
+          })
+        }
+        else {
           setLoading(false);
-        })
+          message.error(`Unable to update ${data.name}`);
+        }
       });
     } else if (formMode === 'add') {
       const payload = {
-        ...values,
+        ...data,
         company: {
           id: company,
         },
         area: {
-          id: values.area,
+          id: data.area,
         },
       };
-      dispatch(addDepot(payload)).then(() => {
+      dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
-        dispatch(listDepot({ company })).then(() => {
+        if(response.payload.status === 200){
+          dispatch(listDepot({ company })).then(() => {
+            setLoading(false);
+            message.success(`Successfully added ${data.name}`);
+          })
+        }
+        else {
           setLoading(false);
-        })
+          message.error(`Unable to add ${data.name}`);
+        }
       });
     }
 

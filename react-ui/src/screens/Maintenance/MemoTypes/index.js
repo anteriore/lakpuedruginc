@@ -4,7 +4,7 @@ import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import GeneralStyles from '../../../datas/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
 import { listMemo, createMemo, updateMemo, deleteMemo } from './redux';
 

@@ -4,7 +4,7 @@ import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import GeneralStyles from '../../../datas/styles/styles.general';
 import { tableHeader, formDetails } from './data';
-import SimpleForm from '../../../components/forms/SimpleForm';
+import SimpleForm from '../../../components/forms/FormModal';
 import { listUnit, createUnit, updateUnit, deleteUnit } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
 
