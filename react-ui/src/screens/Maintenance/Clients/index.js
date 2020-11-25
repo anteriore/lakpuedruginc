@@ -90,7 +90,7 @@ const Clients = (props) => {
       },
       {
         label: 'Terms',
-        name: 'Terms',
+        name: 'terms',
         type: 'number',
         rules: [{ required: true, message: 'Please provide valid Terms' }],
         placeholder: 'Terms',
@@ -163,9 +163,9 @@ const Clients = (props) => {
     var clientData = clients.find(client => client.id === data.id)
     const formData = {
       ...clientData,
-      salesRep: clientData.salesRep.id,
-      clusterCode: clientData.clusterCode.id,
-      institutionalCode: clientData.institutionalCode.id,
+      salesRep: clientData.salesRep !== null ? clientData.salesRep.id : null,
+      clusterCode: clientData.clusterCode !== null ? clientData.clusterCode.id : null,
+      institutionalCode: clientData.institutionalCode !== null ? clientData.institutionalCode.id : null,
     };
     console.log(formData)
     setFormData(formData);
@@ -209,8 +209,14 @@ const Clients = (props) => {
         company: {
           id: company,
         },
-        area: {
-          id: data.area,
+        salesRep: {
+          id: data.salesRep,
+        },
+        clusterCode: {
+          id: data.clusterCode,
+        },
+        institutionalCode: {
+          id: data.institutionalCode,
         },
       };
 
@@ -219,6 +225,7 @@ const Clients = (props) => {
         if(response.payload.status === 200){
           dispatch(listClient({ company })).then(() => {
             setLoading(false);
+            history.goBack();
             message.success(`Successfully updated ${data.name}`);
           })
         }
@@ -276,7 +283,13 @@ const Clients = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen title="Edit Purchase Request" company={company} />
+        <FormScreen
+          title={formTitle}
+          onSubmit={onSubmit}
+          values={formData}
+          onCancel={handleCancelButton}
+          formDetails={formDetails} 
+        />
       </Route>
       <Route>
       <Row>

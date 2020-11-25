@@ -36,7 +36,10 @@ const TableSearch = (columnHeaders) => {
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      if (record[dataIndex].hasOwnProperty('name')) {
+      if(record[dataIndex] === null){
+        return ''
+      }
+      else if (record[dataIndex].hasOwnProperty('name')) {
         return record[dataIndex].name
           ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
           : '';
@@ -74,7 +77,11 @@ const TableSearch = (columnHeaders) => {
       if (header.datatype === 'string') {
         header = {
           ...header,
-          sorter: (a, b) => a[header.key].localeCompare(b[header.key]),
+          sorter: (a, b) => {
+            a = a[header.key] || '';
+            b = b[header.key] || '';
+            return a.localeCompare(b)
+          }
         };
       } else if (header.datatype === 'date') {
         header = {
