@@ -157,28 +157,28 @@ const Clients = (props) => {
             label: 'Name',
             name: 'name',
             type: 'string',
-            rules: [{ required: true, message: 'Please provide a valid name' }],
+            rules: [{ required: true, message: 'Name is required' }],
             placeholder: 'Name',
           },
           {
             label: 'Type',
             name: 'type',
             type: 'string',
-            rules: [{ required: true, message: 'Please provide a valid type' }],
+            rules: [{ required: true, message: 'Type is required' }],
             placeholder: 'Type',
           },
           {
             label: 'Branch',
             name: 'branch',
             type: 'string',
-            rules: [{ required: true, message: 'Please provide a valid branch' }],
+            rules: [{ required: true, message: 'Branch is required' }],
             placeholder: 'Branch',
           },
           {
             label: 'Telephone Number',
             name: 'telephoneNumber',
             type: 'string',
-            rules: [{ required: true, message: 'Please provide a valid Telephone Number' }],
+            rules: [{ required: true, message: 'Telephone number is required' }],
             placeholder: 'Telephone Number',
           },
         ]
@@ -404,6 +404,9 @@ const Clients = (props) => {
                   if(item.type === 'select'){
                     const itemData = displayData[item.name]
                     return <Descriptions.Item label={item.label}>{displayData[item.selectName]}</Descriptions.Item>
+                  }
+                  else if(item.type === 'list' || item.type === 'listSelect'){
+                    return ''
                   }
                   else {
                     return <Descriptions.Item label={item.label}>{displayData[item.name]}</Descriptions.Item>

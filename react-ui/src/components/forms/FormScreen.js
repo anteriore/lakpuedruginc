@@ -49,12 +49,27 @@ const FormScreen = (props) => {
     else if(item.type === 'listSelect' || item.type === 'list'){
       return (
         <div style={styles.formList}>
-        <Title level={5}>{item.label}</Title>
         <Form.List label={item.label} name={item.name} rules={item.rules}>
-          {(fields, { add, remove }) => (
+          {(fields, { add, remove, errors }) => (
             <>
+              <div {...styles.listTailLayout} type="dashed" style={{display: 'flex', justifyContent: 'flex-end'}}>
+                <Title level={5} style={{marginRight:"auto"}}>{item.label}</Title>
+                <Form.Item>
+                  <Button onClick={() => add()} icon={<PlusOutlined />}>
+                    Add
+                  </Button>
+                </Form.Item>
+
+                {item.type === 'listSelect' && 
+                  <Form.Item>
+                    <Button onClick={() => add()} icon={<SelectOutlined />}>
+                      Select
+                    </Button>
+                  </Form.Item>
+                }
+              </div>
               {fields.map(field => (
-                 <Space key={field.key} style={{ display: 'flex', justifyContent: 'flex-end', width: '87.5%' }}>
+                 <Space key={field.key} style={styles.listLayout}>
                    
                   {item.fields.map(itemField => {
                     if(itemField.type === 'hidden')
@@ -74,7 +89,7 @@ const FormScreen = (props) => {
                       return (
                         <Form.Item
                           {...field}
-                          {...styles.listLayout}
+                          {...styles.listItems}
                           name={[field.name, itemField.name]}
                           fieldKey={[field.fieldKey, itemField.name]}
                           rules={itemField.rules}
@@ -88,21 +103,7 @@ const FormScreen = (props) => {
                   <MinusCircleOutlined style={{marginTop: "auto"}} onClick={() => remove(field.name)} />
                 </Space>
               ))}
-              <div {...styles.listTailLayout} type="dashed" style={{display: 'flex', justifyContent: 'flex-end', width: '87.5%'}}>
-                <Form.Item>
-                  <Button onClick={() => add()} icon={<PlusOutlined />}>
-                    Add
-                  </Button>
-                </Form.Item>
-
-                {item.type === 'listSelect' && 
-                  <Form.Item>
-                    <Button onClick={() => add()} icon={<SelectOutlined />}>
-                      Select
-                    </Button>
-                  </Form.Item>
-                }
-              </div>
+              <Form.ErrorList errors={errors} />
             </>
           )}
         </Form.List>
@@ -175,13 +176,18 @@ const styles = {
       span: 15,
     },
   },
-  listLayout: {
+  listItems: {
     labelCol: {
       span: 24,
     },
     wrapperCol: {
       span: 24,
     },
+  },
+  listLayout: { 
+    display: 'flex', 
+    justifyContent: 'flex-end',
+    marginBottom: '2%'
   },
   tailLayout: {
     display: 'flex',
@@ -197,7 +203,12 @@ const styles = {
     },
   },
   formList: {
-    borderWidth: 1
+    borderStyle: "solid",
+    borderWidth: 1,
+    padding: "2%",
+    backgroundColor: "#FAFAFA",
+    width: '87.5%',
+    marginBottom: "2%" 
   },
   datePicker: {
     float: 'left',
