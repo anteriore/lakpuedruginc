@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import { columns } from './data/'
-import { listClient, addClient, deleteClient } from './redux';
+import { listClient, addClient, getClient, deleteClient } from './redux';
 import { listCluster } from '../ClusterCodes/redux';
 import { listInstitution } from '../InstitutionalCodes/redux';
 import { listS } from '../SalesReps/redux';
@@ -15,11 +15,14 @@ import FormScreen from '../../../components/forms/FormScreen';
 const { Title } = Typography;
 
 const Clients = (props) => {
-  const [displayForm, setDisplayForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
+  
+  const [loadingItem, setLoadingItem] = useState(true);
+  const [displayModal, setDisplayModal] = useState(false);
+  const [displayData, setDisplayData] = useState(null);
 
   const { company } = props;
   const dispatch = useDispatch();
@@ -194,10 +197,16 @@ const Clients = (props) => {
     });
   };
 
-  const handleRetrieve = (data) => {};
+  const handleRetrieve = (data) => {
+    setDisplayModal(true);
+    setLoadingItem(true);
+    dispatch(getClient({ id: data.id })).then((response) => {
+      setDisplayData(response.payload.data)
+      setLoadingItem(false);
+    })
+  };
 
   const handleCancelButton = () => {
-    setDisplayForm(false);
     setFormData(null);
   };
 
@@ -267,8 +276,13 @@ const Clients = (props) => {
       });
     }
 
-    setDisplayForm(false);
     setFormData(null);
+  };
+
+  const closeModal = () => {
+    setDisplayModal(false);
+    setLoadingItem(true);
+    setDisplayData(null);
   };
 
   return (
@@ -322,6 +336,35 @@ const Clients = (props) => {
               />
             )}
           </Col>
+          <Modal
+            title="Client Details"
+            visible={displayModal}
+            onOk={closeModal}
+            onCancel={closeModal}
+            width={1000}
+          >
+            {loadingItem ? (
+              <Skeleton />
+            ) : (
+              <>
+              <Descriptions
+                bordered
+                title={displayData.name}
+                size="default"
+              >
+                {formDetails.form_items.map((item) => {
+                  if(item.type === 'select'){
+                    const itemData = displayData[item.name]
+                    return <Descriptions.Item label={item.label}>{displayData[item.selectName]}</Descriptions.Item>
+                  }
+                  else {
+                    return <Descriptions.Item label={item.label}>{displayData[item.name]}</Descriptions.Item>
+                  }
+                })}
+              </Descriptions>
+              </>
+            )}
+          </Modal>
         </Row>
       </Route>
     </Switch>
