@@ -16,13 +16,25 @@ const Product = (props) => {
   const [contentLoading, setContenctLoading] = useState(true);
   const history = useHistory();
   const dispatch = useDispatch();
-  const { productList } = useSelector((state) => state.maintenance.products);
+  const { productList, action, statusMessage } = useSelector((state) => state.maintenance.products);
 
   useEffect(() => {
     dispatch(listProduct(company)).then(() => {
       setContenctLoading(false);
     });
   }, [dispatch, company]);
+
+  useEffect(() => {
+    if (action !== 'get' && action !== '') {
+      if (action === 'pending') {
+        message.info(statusMessage);
+      } else if (action === 'error') {
+        message.error(statusMessage);
+      } else {
+        message.success(statusMessage);
+      }
+    }
+  }, [statusMessage, action]);
 
   const handleUpdate = (values) => {
     history.push(`${path}/${values.id}/edit`);
