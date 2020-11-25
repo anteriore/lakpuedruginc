@@ -6,7 +6,7 @@ import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-desig
 import TableSearch from './TableSearch';
 
 const TableDisplay = (props) => {
-  const { columns: col, handleDelete, handleRetrieve, handleUpdate, data } = props;
+  const { columns: col, handleDelete, handleRetrieve, handleUpdate, data, deleteEnabled } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,15 +70,17 @@ const TableDisplay = (props) => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Button
-                  icon={<DeleteOutlined />}
-                  type="text"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  Delete
-                </Button>
+                {deleteEnabled ? (
+                   <Button
+                   icon={<DeleteOutlined />}
+                   type="text"
+                   onClick={(e) => {
+                     e.stopPropagation();
+                   }}
+                 >
+                   Delete
+                 </Button>
+                ) : ''}
               </Popconfirm>
             </div>
           );
@@ -122,6 +124,10 @@ const TableDisplay = (props) => {
 };
 
 export default TableDisplay;
+
+TableDisplay.defaultProps = {
+  deleteEnabled: true
+}
 
 const styles = {
   crudColumn: {

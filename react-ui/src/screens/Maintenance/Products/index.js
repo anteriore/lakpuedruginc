@@ -1,122 +1,94 @@
-import React from 'react';
-import { Row, Col, Typography, Button, Input, DatePicker, Space, Table } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Typography, Button, Skeleton, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
+import TableDisplay from '../../../components/TableDisplay';
+import { listProduct, createProduct, updateProduct } from './redux';
+import { tableHeader } from './data';
 
 const { Title } = Typography;
-const { Search } = Input;
-const { RangePicker } = DatePicker;
 
 const Product = (props) => {
-  const { title } = props;
+  const { title, company } = props;
   const { path } = useRouteMatch();
+  const [contentLoading, setContenctLoading] = useState(true);
   const history = useHistory();
-  const columns = [
-    {
-      title: 'Lot #',
-      dataIndex: 'id',
-      key: 'id',
-    },
-    {
-      title: 'FG Code',
-      dataIndex: 'fg_code',
-      key: 'fg_code',
-      align: 'center',
-    },
-    {
-      title: 'FG Name',
-      dataIndex: 'fg_name',
-      key: 'fg_name',
-      align: 'center',
-    },
-    {
-      title: 'Expiry',
-      dataIndex: 'expiration_date',
-      key: 'expiration_date',
-      align: 'center',
-    },
-  ];
+  const dispatch = useDispatch();
+  const { productList, action, statusMessage } = useSelector((state) => state.maintenance.products);
 
-  const data = [
-    {
-      id: '1',
-      fg_code: '12313123',
-      fg_name: 'tune',
-      expiration_date: '1-19-2020',
-    },
-    {
-      id: '2',
-      fg_code: '21313123',
-      fg_name: 'milk',
-      expiration_date: '1-19-2020',
-    },
-    {
-      id: '3',
-      fg_code: '12313123',
-      fg_name: 'cola',
-      expiration_date: '1-19-2020',
-    },
-  ];
+  useEffect(() => {
+    dispatch(listProduct(company)).then(() => {
+      setContenctLoading(false);
+    });
+  }, [dispatch, company]);
 
-  const columnFilter = () => {
-    let filteredColumn = columns.slice();
-    const actionColumn = [
-      {
-        title: 'Actions',
-        render: (row) => {
-          return (
-            <div style={styles.crudColumn}>
-              <Button
-                icon={<EditOutlined />}
-                type="text"
-                onClick={() => {
-                  history.push(`${path}/${row.id}/edit`);
-                }}
-              >
-                Edit
-              </Button>
-              <Button icon={<DeleteOutlined />} type="text" onClick={() => {}}>
-                Delete
-              </Button>
-            </div>
-          );
-        },
-        align: 'center',
-      },
-    ];
+  useEffect(() => {
+    if (action !== 'get' && action !== '') {
+      if (action === 'pending') {
+        message.info(statusMessage);
+      } else if (action === 'error') {
+        message.error(statusMessage);
+      } else {
+        message.success(statusMessage);
+      }
+    }
+  }, [statusMessage, action]);
 
-    filteredColumn = filteredColumn.concat(actionColumn);
-
-    return filteredColumn;
+  const handleUpdate = (values) => {
+    history.push(`${path}/${values.id}/edit`);
   };
+
+  const handleDelete = (row) => {
+    console.log("Delete Product APi is currently not available", row)
+  };
+
+  const onCreate = (values) => {
+    values.company = {id: company};
+    dispatch(createProduct(values)).then(() => {
+      dispatch(listProduct(company));
+    });
+  };
+
+  const onUpdate = (values) => {
+    values.company = {id: company};
+    dispatch(updateProduct(values)).then(() => {
+      dispatch(listProduct(company));
+    });
+  };
+
 
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <InputForm title="New Product" />
+        <InputForm title="New Product" onSubmit={onCreate} />
       </Route>
       <Route path={`${path}/:id/edit`}>
-        <InputForm title="Edit Product" />
+        <InputForm title="Edit Product" onSubmit={onUpdate} />
       </Route>
       <Route path={path}>
-        <Row gutter={[8, 24]}>
-          <Col style={styles.headerPage} span={20}>
-            <Title level={3}>{title}</Title>
-            <Button icon={<PlusOutlined />} onClick={() => history.push(`${path}/new`)}>
-              Add
-            </Button>
-          </Col>
-          <Col style={styles.filterArea} span={10}>
-            <Space size="large">
-              <Search placeholder="Search Product Name" />
-              <RangePicker />
-            </Space>
-          </Col>
-          <Col span={20}>
-            <Table dataSource={data} columns={columnFilter()} />
-          </Col>
-        </Row>
+        {contentLoading ? (
+          <Skeleton />
+        ) : (
+          <Row gutter={[8, 24]}>
+            <Col style={styles.headerPage} span={20}>
+              <Title level={3}>{title}</Title>
+              <Button icon={<PlusOutlined />} onClick={() => history.push(`${path}/new`)}>
+                Add
+              </Button>
+            </Col>
+            <Col span={20}>
+              <TableDisplay
+                columns={tableHeader}
+                data={productList}
+                handleUpdate={handleUpdate}
+                handleDelete={handleDelete}
+                deleteEnabled={false}
+              />
+            </Col>
+          </Row>
+        )}
       </Route>
     </Switch>
   );

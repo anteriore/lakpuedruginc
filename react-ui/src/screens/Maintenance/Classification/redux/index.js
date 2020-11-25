@@ -23,7 +23,10 @@ export const addC = createAsyncThunk('addC', async (payload, thunkAPI) => {
 export const deleteC = createAsyncThunk('deleteC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/classifications/delete?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/classifications/delete?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 
