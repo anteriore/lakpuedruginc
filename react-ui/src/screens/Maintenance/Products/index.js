@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
-import { listProduct, createProduct } from './redux';
+import { listProduct, createProduct, updateProduct } from './redux';
 import { tableHeader } from './data';
-import { formatInitialFormVal } from './helper';
 
 const { Title } = Typography;
 
@@ -20,7 +19,7 @@ const Product = (props) => {
   const { productList } = useSelector((state) => state.maintenance.products);
 
   useEffect(() => {
-    dispatch(listProduct(company.id)).then(() => {
+    dispatch(listProduct(company)).then(() => {
       setContenctLoading(false);
     });
   }, [dispatch, company]);
@@ -29,17 +28,23 @@ const Product = (props) => {
     history.push(`${path}/${values.id}/edit`);
   };
 
-  const handleDelete = () => {};
+  const handleDelete = (row) => {
+    console.log("Delete Product APi is currently not available", row)
+  };
 
   const onCreate = (values) => {
-    values.company = company;
+    values.company = {id: company};
     dispatch(createProduct(values)).then(() => {
-      dispatch(listProduct());
-      console.log(company);
+      dispatch(listProduct(company));
     });
   };
 
-  const onUpdate = () => {};
+  const onUpdate = (values) => {
+    values.company = {id: company};
+    dispatch(updateProduct(values)).then(() => {
+      dispatch(listProduct(company));
+    });
+  };
 
   return (
     <Switch>
@@ -66,6 +71,7 @@ const Product = (props) => {
                 data={productList}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                deleteEnabled={false}
               />
             </Col>
           </Row>

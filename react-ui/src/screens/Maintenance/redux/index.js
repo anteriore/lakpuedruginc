@@ -46,11 +46,8 @@ const maintenance = combineReducers({
   procedures,
   groupsCategories,
   salesReps,
-<<<<<<< HEAD
   clients,
-=======
   products,
->>>>>>> Maintenance Products
 });
 
 export default maintenance;

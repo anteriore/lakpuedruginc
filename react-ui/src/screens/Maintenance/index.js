@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Tabs, Typography, Skeleton } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 import { routes as MaintenanceRoutes } from '../../navigation/maintenance';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
@@ -13,7 +12,7 @@ const { Title } = Typography;
 
 const Maintenance = () => {
   const { path } = useRouteMatch();
-  const [company, setCompany] = useState({ id: 1, name: 'Lakpue Drug Inc.' });
+  const [company, setCompany] = useState(1);
   const dispatch = useDispatch();
   const [contentLoading, setContentLoading] = useState(true);
   const { companyList } = useSelector((state) => state.company);
@@ -25,11 +24,7 @@ const Maintenance = () => {
   }, [dispatch]);
 
   const handleChangeTab = (id) => {
-    const selectedCompany = _.find(companyList, (o) => {
-      return o.id === parseInt(id, 10);
-    });
-
-    setCompany(selectedCompany);
+    setCompany(id);
   };
 
   return (

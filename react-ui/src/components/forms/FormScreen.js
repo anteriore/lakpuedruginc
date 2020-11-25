@@ -9,7 +9,6 @@ const { Title } = Typography;
 const FormScreen = (props) => {
   const { title, onCancel, onSubmit, values, formDetails } = props;
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
   const history = useHistory();
 
   useEffect(() => {

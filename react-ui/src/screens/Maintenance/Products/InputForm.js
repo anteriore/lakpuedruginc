@@ -54,17 +54,14 @@ const InputForm = (props) => {
   },[dispatch])
 
   useEffect(() => {
-    console.log(products.productList, "Checking products")
-    if (id !== "undefined" && products.productList.length !== 0){
+    if (id !== undefined && products.productList.length !== 0){
       const selectedProduct = _.find(products.productList, (o) => {
         return o.id === parseInt(id,10);
       })
-      
-      console.log(
-        formatInitialFormVal(selectedProduct)
-      )
+      setSelectedFinishedGood(selectedProduct.finishedGood);
+      form.setFieldsValue(formatInitialFormVal(selectedProduct))
     }
-  }, [products])
+  }, [products, id, form])
 
   useEffect(() => {
     const newForm = tempFormDetails;
@@ -94,16 +91,10 @@ const InputForm = (props) => {
   }
 
   const onFinish = (values) => {
-    const masterList = {
-      depot: depots.list,
-      classification: classification.list,
-      category: productCategories.list,
-      division: productDivisions.list,
-      bigUnit: units.unitList,
-      smallUnit: units.unitList,
-      finishedGood: selectedFinishedGood
+    if( id !== undefined ){
+      values.id = parseInt(id,10);
     }
-    onSubmit(formatPayload(values, masterList));
+    onSubmit(formatPayload(values, selectedFinishedGood));
     history.goBack();
   }
 
@@ -199,6 +190,7 @@ const InputForm = (props) => {
         <Modal
           title="List of Finished Goods"
           visible={finshedGoodsMddal}
+          onCancel={() => setFinishedGoodsModal(false)}
           cancelButtonProps={{ style: { display: 'none' } }}
           okText="Select"
           width={800}
