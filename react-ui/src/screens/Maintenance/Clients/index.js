@@ -109,6 +109,7 @@ const Clients = (props) => {
         label: 'Sales Representative',
         name: 'salesRep',
         type: 'select',
+        selectName: 'name',
         choices: salesReps,
         rules: [{ required: true }],
       },
@@ -129,11 +130,58 @@ const Clients = (props) => {
         rules: [{ required: true }],
       },
       {
+        label: 'VAT',
+        name: 'vat',
+        type: 'number',
+        rules: [{ required: true, message: 'Please provide a valid value for VAT' }],
+        placeholder: 'VAT',
+      },
+      {
         label: 'Discount',
         name: 'discount',
         type: 'number',
-        rules: [{ required: true, message: 'Please provide a valid Discount' }],
+        rules: [{ required: true, message: 'Please provide a valid value for a Discount' }],
         placeholder: 'Discount',
+      },
+      {
+        label: 'Client References',
+        name: 'clientReferencesList',
+        type: 'list',
+        rules: [{ required: true }],
+        fields: [
+          {
+            name: 'id',
+            type: 'hidden',
+          },
+          {
+            label: 'Name',
+            name: 'name',
+            type: 'string',
+            rules: [{ required: true, message: 'Please provide a valid name' }],
+            placeholder: 'Name',
+          },
+          {
+            label: 'Type',
+            name: 'type',
+            type: 'string',
+            rules: [{ required: true, message: 'Please provide a valid type' }],
+            placeholder: 'Type',
+          },
+          {
+            label: 'Branch',
+            name: 'branch',
+            type: 'string',
+            rules: [{ required: true, message: 'Please provide a valid branch' }],
+            placeholder: 'Branch',
+          },
+          {
+            label: 'Telephone Number',
+            name: 'telephoneNumber',
+            type: 'string',
+            rules: [{ required: true, message: 'Please provide a valid Telephone Number' }],
+            placeholder: 'Telephone Number',
+          },
+        ]
       },
     ],
   };
