@@ -46,6 +46,7 @@ const Product = (props) => {
     });
   };
 
+
   return (
     <Switch>
       <Route path={`${path}/new`}>
