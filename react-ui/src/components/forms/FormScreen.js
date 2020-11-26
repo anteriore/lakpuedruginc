@@ -100,7 +100,7 @@ const FormScreen = (props) => {
                     }
                     
                   })}
-                  <MinusCircleOutlined style={{marginTop: "auto"}} onClick={() => remove(field.name)} />
+                  <MinusCircleOutlined style={{alignSelf: "center"}} onClick={() => remove(field.name)} />
                 </Space>
               ))}
               <Form.ErrorList errors={errors} />
@@ -187,7 +187,7 @@ const styles = {
   listLayout: { 
     display: 'flex', 
     justifyContent: 'flex-end',
-    marginBottom: '2%'
+    marginBottom: '2%',
   },
   tailLayout: {
     display: 'flex',
@@ -208,7 +208,7 @@ const styles = {
     padding: "2%",
     backgroundColor: "#FAFAFA",
     width: '87.5%',
-    marginBottom: "2%" 
+    marginBottom: "2%",
   },
   datePicker: {
     float: 'left',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions, Empty } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -147,6 +147,7 @@ const Clients = (props) => {
         label: 'Client References',
         name: 'clientReferencesList',
         type: 'list',
+        selectName: 'name',
         rules: [{ required: true }],
         fields: [
           {
@@ -413,6 +414,37 @@ const Clients = (props) => {
                   }
                 })}
               </Descriptions>
+
+              {formDetails.form_items.map((item) => {
+                if(item.type === 'list' || item.type === 'listSelect'){
+                  const itemList = displayData[item.name]
+                  var itemRender = []
+                  itemRender.push(
+                    <Title level={5} style={{marginRight:"auto", marginTop: "2%", marginBottom: "1%"}}>{item.label + ':'}</Title>
+                  )
+                  if(itemList.length === 0){
+                    itemRender.push(<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />)
+                  }
+                  {itemList.map((itemData) => {
+                    itemRender.push(
+                        <Descriptions
+                          title={itemData[item.selectName]}
+                          size="default"
+                        >
+                          {item.fields.map((field) => {
+                            if(field.type !== 'hidden'){
+                              console.log(field.name)
+                              console.log(field.type)
+                              console.log(itemData[field.name])
+                              return <Descriptions.Item label={field.label}>{itemData[field.name]}</Descriptions.Item>
+                            }
+                          })}
+                        </Descriptions>
+                    )
+                  })}
+                  return itemRender
+                }
+              })}
               </>
             )}
           </Modal>
