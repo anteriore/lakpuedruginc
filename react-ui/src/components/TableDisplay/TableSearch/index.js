@@ -59,10 +59,6 @@ const TableSearch = (columnHeaders) => {
           ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-
-      return record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-        : '';
     },
   });
   // eslint-disable-next-line no-unused-vars

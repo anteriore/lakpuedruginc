@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Form, Button, Input, InputNumber, Select, Row, Col, Typography } from 'antd';
-import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 const { TextArea } = Input;
