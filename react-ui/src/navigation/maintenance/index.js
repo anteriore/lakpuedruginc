@@ -21,6 +21,7 @@ import Procedures from '../../screens/Maintenance/Procedures';
 import GroupsCategories from '../../screens/Maintenance/GroupsCategories';
 import SalesReps from '../../screens/Maintenance/SalesReps';
 import Clients from '../../screens/Maintenance/Clients';
+import Vendors from '../../screens/Maintenance/Vendors';
 
 export const routes = [
   {
@@ -36,7 +37,7 @@ export const routes = [
   {
     title: 'Vendor',
     path: '/vendor',
-    component: '',
+    component: Vendors,
   },
   {
     title: 'Classification',

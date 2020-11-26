@@ -23,6 +23,7 @@ import groupsCategories from '../GroupsCategories/redux';
 import salesReps from '../SalesReps/redux';
 import clients from '../Clients/redux';
 import products from '../Products/redux';
+import vendors from '../Vendors/redux';
 
 const maintenance = combineReducers({
   departmentArea,
@@ -48,6 +49,7 @@ const maintenance = combineReducers({
   salesReps,
   clients,
   products,
+  vendors,
 });
 
 export default maintenance;
