@@ -33,6 +33,6 @@ export const columns = [
       title: 'Active',
       dataIndex: 'isActive',
       key: 'isActive',
-      datatype: 'string',
+      datatype: 'boolean',
     },
   ];

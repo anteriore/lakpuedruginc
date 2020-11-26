@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Button, Space } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 const TableSearch = (columnHeaders) => {
@@ -109,7 +109,23 @@ const TableSearch = (columnHeaders) => {
           render: (text) => moment(new Date(text)).format('DD/MM/YYYY'),
         };
       }
-    } else {
+    }
+    else if(header.datatype === 'boolean'){
+      if (typeof header.render === 'undefined') {
+        header = {
+          ...header,
+          render: (data) => {
+            if(data){
+              return <CheckOutlined />
+            }
+            else {
+              return <CloseOutlined />
+            }
+          },
+        };
+      }
+    }
+    else {
       header = {
         ...header,
         ...columnSearch(header.key),
