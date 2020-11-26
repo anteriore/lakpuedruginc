@@ -115,7 +115,7 @@ const TableDisplay = (props) => {
       onRow={(record, rowIndex) => {
         return {
           onClick: () => {
-            if(handleRetrieve !== null)
+            if(typeof(handleRetrieve) === 'function')
               handleRetrieve(record);
           }, // click row
         };
