@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions, Empty } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import { columns } from './data/'
-import { listClient, addClient, deleteClient } from './redux';
+import { listClient, addClient, getClient, deleteClient } from './redux';
 import { listCluster } from '../ClusterCodes/redux';
 import { listInstitution } from '../InstitutionalCodes/redux';
 import { listS } from '../SalesReps/redux';
@@ -15,11 +15,14 @@ import FormScreen from '../../../components/forms/FormScreen';
 const { Title } = Typography;
 
 const Clients = (props) => {
-  const [displayForm, setDisplayForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
+  
+  const [loadingItem, setLoadingItem] = useState(true);
+  const [displayModal, setDisplayModal] = useState(false);
+  const [displayData, setDisplayData] = useState(null);
 
   const { company } = props;
   const dispatch = useDispatch();
@@ -106,6 +109,7 @@ const Clients = (props) => {
         label: 'Sales Representative',
         name: 'salesRep',
         type: 'select',
+        selectName: 'name',
         choices: salesReps,
         rules: [{ required: true }],
       },
@@ -126,11 +130,59 @@ const Clients = (props) => {
         rules: [{ required: true }],
       },
       {
+        label: 'VAT',
+        name: 'vat',
+        type: 'number',
+        rules: [{ required: true, message: 'Please provide a valid value for VAT' }],
+        placeholder: 'VAT',
+      },
+      {
         label: 'Discount',
         name: 'discount',
         type: 'number',
-        rules: [{ required: true, message: 'Please provide a valid Discount' }],
+        rules: [{ required: true, message: 'Please provide a valid value for a Discount' }],
         placeholder: 'Discount',
+      },
+      {
+        label: 'Client References',
+        name: 'clientReferencesList',
+        type: 'list',
+        selectName: 'name',
+        rules: [{ required: true }],
+        fields: [
+          {
+            name: 'id',
+            type: 'hidden',
+          },
+          {
+            label: 'Name',
+            name: 'name',
+            type: 'string',
+            rules: [{ required: true, message: 'Name is required' }],
+            placeholder: 'Name',
+          },
+          {
+            label: 'Type',
+            name: 'type',
+            type: 'string',
+            rules: [{ required: true, message: 'Type is required' }],
+            placeholder: 'Type',
+          },
+          {
+            label: 'Branch',
+            name: 'branch',
+            type: 'string',
+            rules: [{ required: true, message: 'Branch is required' }],
+            placeholder: 'Branch',
+          },
+          {
+            label: 'Telephone Number',
+            name: 'telephoneNumber',
+            type: 'string',
+            rules: [{ required: true, message: 'Telephone number is required' }],
+            placeholder: 'Telephone Number',
+          },
+        ]
       },
     ],
   };
@@ -194,10 +246,16 @@ const Clients = (props) => {
     });
   };
 
-  const handleRetrieve = (data) => {};
+  const handleRetrieve = (data) => {
+    setDisplayModal(true);
+    setLoadingItem(true);
+    dispatch(getClient({ id: data.id })).then((response) => {
+      setDisplayData(response.payload.data)
+      setLoadingItem(false);
+    })
+  };
 
   const handleCancelButton = () => {
-    setDisplayForm(false);
     setFormData(null);
   };
 
@@ -267,8 +325,13 @@ const Clients = (props) => {
       });
     }
 
-    setDisplayForm(false);
     setFormData(null);
+  };
+
+  const closeModal = () => {
+    setDisplayModal(false);
+    setLoadingItem(true);
+    setDisplayData(null);
   };
 
   return (
@@ -322,6 +385,69 @@ const Clients = (props) => {
               />
             )}
           </Col>
+          <Modal
+            title="Client Details"
+            visible={displayModal}
+            onOk={closeModal}
+            onCancel={closeModal}
+            width={1000}
+          >
+            {loadingItem ? (
+              <Skeleton />
+            ) : (
+              <>
+              <Descriptions
+                bordered
+                title={displayData.name}
+                size="default"
+              >
+                {formDetails.form_items.map((item) => {
+                  if(item.type === 'select'){
+                    const itemData = displayData[item.name]
+                    return <Descriptions.Item label={item.label}>{displayData[item.selectName]}</Descriptions.Item>
+                  }
+                  else if(item.type === 'list' || item.type === 'listSelect'){
+                    return ''
+                  }
+                  else {
+                    return <Descriptions.Item label={item.label}>{displayData[item.name]}</Descriptions.Item>
+                  }
+                })}
+              </Descriptions>
+
+              {formDetails.form_items.map((item) => {
+                if(item.type === 'list' || item.type === 'listSelect'){
+                  const itemList = displayData[item.name]
+                  var itemRender = []
+                  itemRender.push(
+                    <Title level={5} style={{marginRight:"auto", marginTop: "2%", marginBottom: "1%"}}>{item.label + ':'}</Title>
+                  )
+                  if(itemList.length === 0){
+                    itemRender.push(<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />)
+                  }
+                  {itemList.map((itemData) => {
+                    itemRender.push(
+                        <Descriptions
+                          title={itemData[item.selectName]}
+                          size="default"
+                        >
+                          {item.fields.map((field) => {
+                            if(field.type !== 'hidden'){
+                              console.log(field.name)
+                              console.log(field.type)
+                              console.log(itemData[field.name])
+                              return <Descriptions.Item label={field.label}>{itemData[field.name]}</Descriptions.Item>
+                            }
+                          })}
+                        </Descriptions>
+                    )
+                  })}
+                  return itemRender
+                }
+              })}
+              </>
+            )}
+          </Modal>
         </Row>
       </Route>
     </Switch>

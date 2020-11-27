@@ -28,6 +28,15 @@ export const deleteClient = createAsyncThunk('deleteClient', async (payload, thu
   return response;
 });
 
+export const getClient = createAsyncThunk('getClient', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.get(
+    `rest/clients/${payload.id}?token=${accessToken}`
+  );
+  return response;
+});
+
 const clientSlice = createSlice({
   name: 'clients',
   initialState,
