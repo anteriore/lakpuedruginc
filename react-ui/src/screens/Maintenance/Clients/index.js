@@ -400,6 +400,7 @@ const Clients = (props) => {
                 bordered
                 title={displayData.name}
                 size="default"
+                layout="vertical"
               >
                 {formDetails.form_items.map((item) => {
                   if(item.type === 'select'){
