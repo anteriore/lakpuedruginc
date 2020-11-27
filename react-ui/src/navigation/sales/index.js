@@ -1,8 +1,10 @@
+import SalesOrders from '../../screens/Sales/SalesOrders';
+
 export const routes = [
   {
     title: 'Sales Orders',
     path: '/sales-orders',
-    component: '',
+    component: SalesOrders,
   },
   {
     title: 'Order Slips',
