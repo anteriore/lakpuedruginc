@@ -5,7 +5,7 @@ import Dashboard from '../../screens/Dashboard';
 import Maintenance from '../../screens/Maintenance';
 // import Users from '../../screens/Users/';
 // import Accounting from '../../screens/Accounting/';
-// import Sales from '../../screens/Sales/';
+import Sales from '../../screens/Sales/';
 // import MMD from '../../screens/MMD/';
 // import RND from '../../screens/RND/';
 // import Purchasing from '../../screens/Purchasing/';
@@ -18,7 +18,7 @@ const AdminRoutes = () => {
         <Route path="/maintenance" component={Maintenance} />
         {/* <Route path="/users" component={Users} /> */}
         {/* <Route path="/accounting" component={Accounting} /> */}
-        {/* <Route path="/sales" component={Sales} /> */}
+        <Route path="/sales" component={Sales} />
         {/* <Route path="/mmd" component={MMD} /> */}
         {/* <Route path="/rnd" component={RND} /> */}
         {/* <Route path="/purchasing" component={Purchasing} /> */}
