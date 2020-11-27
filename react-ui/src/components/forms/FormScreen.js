@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, Select, Row, Col, Typography } from 'antd';
+import { Form, Button, Input, InputNumber, Select, Row, Col, Typography, Space } from 'antd';
+import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -40,9 +41,74 @@ const FormScreen = (props) => {
     else if(item.type === 'number'){
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <InputNumber/>
+          <InputNumber style={styles.inputNumber}/>
         </Form.Item>
       );
+    }
+    else if(item.type === 'listSelect' || item.type === 'list'){
+      return (
+        <div style={styles.formList}>
+        <Form.List label={item.label} name={item.name} rules={item.rules}>
+          {(fields, { add, remove, errors }) => (
+            <>
+              <div {...styles.listTailLayout} type="dashed" style={{display: 'flex', justifyContent: 'flex-end'}}>
+                <Title level={5} style={{marginRight:"auto"}}>{item.label}</Title>
+                <Form.Item>
+                  <Button onClick={() => add()} icon={<PlusOutlined />}>
+                    Add
+                  </Button>
+                </Form.Item>
+
+                {item.type === 'listSelect' && 
+                  <Form.Item>
+                    <Button onClick={() => add()} icon={<SelectOutlined />}>
+                      Select
+                    </Button>
+                  </Form.Item>
+                }
+              </div>
+              {fields.map(field => (
+                 <Space key={field.key} style={styles.listLayout}>
+                   
+                  {item.fields.map(itemField => {
+                    if(itemField.type === 'hidden')
+                    {
+                      return (
+                        <Form.Item
+                          {...field}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          hidden={true}
+                        >
+                          <Input/>
+                        </Form.Item>
+                      )
+                    }
+                    else {
+                      return (
+                        <Form.Item
+                          {...field}
+                          {...styles.listItems}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          rules={itemField.rules}
+                        >
+                          <Input placeholder={itemField.placeholder} />
+                        </Form.Item>
+                      )
+                    }
+                    
+                  })}
+                  <MinusCircleOutlined style={{alignSelf: "center"}} onClick={() => remove(field.name)} />
+                </Space>
+              ))}
+              <Form.ErrorList errors={errors} />
+            </>
+          )}
+        </Form.List>
+        </div>
+      )
+      
     }
     else {
       return (
@@ -109,12 +175,44 @@ const styles = {
       span: 15,
     },
   },
+  listItems: {
+    labelCol: {
+      span: 24,
+    },
+    wrapperCol: {
+      span: 24,
+    },
+  },
+  listLayout: { 
+    display: 'flex', 
+    justifyContent: 'flex-end',
+    marginBottom: '2%',
+  },
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',
   },
+  listTailLayout: {
+    labelCol: {
+      span: 24,
+    },
+    wrapperCol: {
+      span: 24,
+    },
+  },
+  formList: {
+    borderStyle: "solid",
+    borderWidth: 1,
+    padding: "2%",
+    backgroundColor: "#FAFAFA",
+    width: '87.5%',
+    marginBottom: "2%",
+  },
   datePicker: {
+    float: 'left',
+  },
+  inputNumber: {
     float: 'left',
   },
 };
