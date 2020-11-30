@@ -40,7 +40,7 @@ export const tableProduct = [
   },
   {
     title: 'Finished Good',
-    dataIndex: 'finshedGood',
+    dataIndex: 'finishedGood',
     render: (object) => object.name
   },
   {

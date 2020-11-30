@@ -11,7 +11,7 @@ const FormItem = ({item}) => {
     }
     return (
       <Item label={item.label} name={item.name} rules={item.rules}>
-        <Select showSearch={item.type === 'selectSearch' ? true : false} style={{textAlign: 'left'}} placeholder={item.placeholder}>
+        <Select optionFilterProp="children" showSearch={item.type === 'selectSearch' ? true : false} style={{textAlign: 'left'}} placeholder={item.placeholder}>
           {item.choices.map((choice) => (
             <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
           ))}
