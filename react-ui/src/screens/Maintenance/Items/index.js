@@ -130,37 +130,25 @@ const ItemTypes = (props) => {
   };
 
   const onSubmit = (values) => {
+    var payload = {
+      ...values,
+      company: {
+        id: company,
+      },
+      type: {
+        id: values.type,
+      },
+      unit: {
+        id: values.unit,
+      },
+    };
     if (formMode === 'edit') {
-      const payload = {
-        ...values,
-        id: formData.id,
-        company: {
-          id: company,
-        },
-        type: {
-          id: values.type,
-        },
-        unit: {
-          id: values.unit,
-        },
-      };
+      payload.id = formData.id
 
       dispatch(addI(payload)).then(() => {
         dispatch(listI({ company }));
       });
     } else if (formMode === 'add') {
-      const payload = {
-        ...values,
-        company: {
-          id: company,
-        },
-        type: {
-          id: values.type,
-        },
-        unit: {
-          id: values.unit,
-        },
-      };
       dispatch(addI(payload)).then(() => {
         dispatch(listI({ company }));
       });
