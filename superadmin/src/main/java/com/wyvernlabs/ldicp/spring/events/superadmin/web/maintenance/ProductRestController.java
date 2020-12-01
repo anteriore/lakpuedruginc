@@ -60,4 +60,14 @@ public class ProductRestController {
         return productRepository.findByDepot(depot); 
     }
 
+    //dungan added this
+    @PostMapping("/delete")
+	public boolean delete(@RequestBody Long id) {
+		productRepository.deleteById(id);
+        return true;
+    }
+
+
+
+
 }
