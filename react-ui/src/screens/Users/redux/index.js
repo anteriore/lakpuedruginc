@@ -31,7 +31,7 @@ const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    resetData(state, action) {
+    clearData(state, action) {
       state.list = null
     },
   },
@@ -53,4 +53,5 @@ const userSlice = createSlice({
   },
 });
 
+export const { clearData } = userSlice.actions;
 export default userSlice.reducer;

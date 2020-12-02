@@ -8,7 +8,7 @@ const { TextArea } = Input;
 const { Title } = Typography;
 
 const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails } = props;
+  const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
   const history = useHistory();
 
@@ -46,11 +46,17 @@ const FormScreen = (props) => {
       );
     }
     else if(item.type === 'password'){
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Input.Password />
-        </Form.Item>
-      )
+      if(formMode === 'add'){
+        return (
+          <Form.Item label={item.label} name={item.name} rules={item.rules} dependencies={item.dependencies} hasFeedback>
+            <Input.Password />
+          </Form.Item>
+        )
+      }
+      else {
+        return ''
+      }
+      
     }
     else if(item.type === 'checkList'){
       return (

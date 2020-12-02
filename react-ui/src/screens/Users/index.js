@@ -7,10 +7,10 @@ import { UserAddOutlined, UserOutlined, EditOutlined, DeleteOutlined } from '@an
 import Container from '../../components/container';
 import FormScreen from '../../components/forms/FormScreen';
 
-import { listUser, addUser, deleteUser } from './redux/';
+import { listUser, addUser, deleteUser, clearData } from './redux/';
 import { listCompany } from '../../redux/company';
-import { listD } from '../Maintenance/DepartmentArea/redux';
-import { listDepot } from '../Maintenance/Depots/redux';
+import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
+import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -44,6 +44,13 @@ const Users = () => {
       setSelectedUser(null)
       updateUserDepartments(1)
     })
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearDepartment());
+    };
+
   }, [dispatch]);
 
   const formDetails = {
@@ -74,11 +81,11 @@ const Users = () => {
         rules: [{ required: true, message: 'Please provide a valid Email Address' }],
         placeholder: 'Email Address',
       },
-      /*{
+      {
         label: 'Password',
         name: 'password',
         type: 'password',
-        rules: [{ required: true, message: 'Please provide a valid password. Your password must be at least 8 characters.', min: 8 }],
+        rules: [{ required: true, message: 'Please provide a valid password. The password must be at least 8 characters long.', min: 8 }],
         placeholder: 'Password',
         writeOnly: true
       },
@@ -86,10 +93,21 @@ const Users = () => {
         label: 'Confirm Password',
         name: 'confirmPassword',
         type: 'password',
-        rules: [{ required: true, message: 'Please provide a valid password' }],
+        dependencies: ['password'],
+        rules: [
+          { required: true, message: 'Please confirm your password.' },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              if (!value || getFieldValue('password') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject('The two passwords that you entered do not match!');
+            },
+          }),
+        ],
         placeholder: 'Confirm Password',
         writeOnly: true
-      },*/
+      },
       {
         label: 'Employee Type',
         name: 'employeeType',
@@ -310,7 +328,8 @@ const Users = () => {
             onSubmit={onSubmit}
             values={formData}
             onCancel={handleCancelButton}
-            formDetails={formDetails} 
+            formDetails={formDetails}
+            formMode={formMode} 
           />
         </Route>
         <Route path={`${path}/:id`}>
@@ -320,6 +339,7 @@ const Users = () => {
             values={formData}
             onCancel={handleCancelButton}
             formDetails={formDetails} 
+            formMode={formMode} 
           />
         </Route>
         <Route>
@@ -398,7 +418,7 @@ const Users = () => {
                                   handleDelete(selectedUser)
                                 }}
                               >
-                                Delete User
+                                Deactivate User
                               </Button>
                               </Col>*/}
                           </Row>
@@ -411,7 +431,6 @@ const Users = () => {
                               return <Descriptions.Item label={item.label}>{itemData[item.selectName]}</Descriptions.Item>
                             }
                             else if(item.type === 'list' || item.type === 'listSelect' || item.type === 'checkList'){
-                              console.log("DATA", selectedUser[item.name])
                               return (
                                 <Descriptions.Item label={item.label}>
                                   <List
