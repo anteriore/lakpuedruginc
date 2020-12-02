@@ -57,7 +57,17 @@ public class ProductRestController {
     @GetMapping("/depot/{id}")
     public List<Product> listByDepot(@PathVariable Long id) {
         Depot depot = depotRepository.getOne(id);
-        return productRepository.findByDepot(depot);
+        return productRepository.findByDepot(depot); 
     }
+
+    //dungan added this
+    @PostMapping("/delete")
+	public boolean delete(@RequestBody Long id) {
+		productRepository.deleteById(id);
+        return true;
+    }
+
+
+
 
 }
