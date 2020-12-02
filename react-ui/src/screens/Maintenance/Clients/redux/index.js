@@ -41,7 +41,7 @@ const clientSlice = createSlice({
   name: 'clients',
   initialState,
   reducers: {
-    resetData(state, action) {
+    clearData(state, action) {
       state.list = null
     },
   },
@@ -63,4 +63,5 @@ const clientSlice = createSlice({
   },
 });
 
+export const { clearData } = clientSlice.actions;
 export default clientSlice.reducer;

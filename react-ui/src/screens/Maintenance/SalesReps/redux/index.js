@@ -30,7 +30,11 @@ export const deleteS = createAsyncThunk('deleteS', async (payload, thunkAPI) => 
 const salesRepSlice = createSlice({
   name: 'salesReps',
   initialState,
-  reducers: {},
+  reducers: {
+    clearData(state, action) {
+      state.list = null
+    },
+  },
   extraReducers: {
     [listS.pending]: (state, action) => {
       state.status = 'loading';
@@ -49,4 +53,5 @@ const salesRepSlice = createSlice({
   },
 });
 
+export const { clearData } = salesRepSlice.actions;
 export default salesRepSlice.reducer;

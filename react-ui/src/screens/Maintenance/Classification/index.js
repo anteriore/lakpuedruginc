@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listC, addC, deleteC } from './redux';
+import { listC, addC, deleteC, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -54,6 +54,10 @@ const Classification = (props) => {
 
   useEffect(() => {
     dispatch(listC({ company }));
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch, company]);
 
   const handleAdd = () => {

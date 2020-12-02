@@ -4,8 +4,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listDepot, addDepot, deleteDepot } from './redux';
-import { listA } from '../DepartmentArea/redux';
+import { listDepot, addDepot, deleteDepot, clearData } from './redux';
+import { listA, clearData as clearArea } from '../DepartmentArea/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -74,6 +74,12 @@ const Depots = (props) => {
     dispatch(listDepot({ company })).then((response) => {
       setLoading(false);
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearArea());
+    };
+
   }, [dispatch, company]);
 
   const handleAdd = () => {

@@ -5,7 +5,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { getPR, listPR, deletePR, resetItemData } from './redux';
+import { getPR, listPR, deletePR, resetItemData, clearData } from './redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
@@ -97,6 +97,7 @@ const PurchaseRequests = (props) => {
 
     return function cleanup() {
       dispatch(resetItemData());
+      dispatch(clearData());
     };
   }, [dispatch, company]);
 

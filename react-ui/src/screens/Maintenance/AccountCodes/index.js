@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listAC, addAC, deleteAC } from './redux';
+import { listAC, addAC, deleteAC, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -54,6 +54,11 @@ const AccountCodes = (props) => {
 
   useEffect(() => {
     dispatch(listAC({ company }));
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
+
   }, [dispatch, company]);
 
   const handleAdd = () => {

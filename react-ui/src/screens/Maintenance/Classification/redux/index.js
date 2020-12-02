@@ -33,7 +33,11 @@ export const deleteC = createAsyncThunk('deleteC', async (payload, thunkAPI) => 
 const classificationSlice = createSlice({
   name: 'classification',
   initialState,
-  reducers: {},
+  reducers: {
+    clearData(state, action) {
+      state.list = null
+    },
+  },
   extraReducers: {
     [listC.pending]: (state) => {
       state.status = 'loading';
@@ -52,4 +56,5 @@ const classificationSlice = createSlice({
   },
 });
 
+export const { clearData } = classificationSlice.actions;
 export default classificationSlice.reducer;

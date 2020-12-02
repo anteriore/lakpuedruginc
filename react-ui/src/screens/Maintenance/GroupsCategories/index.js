@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { listG, addG, deleteG, listC, addC, deleteC } from './redux';
+import { listG, addG, deleteG, listC, addC, deleteC, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -61,6 +61,7 @@ const GroupsCategories = (props) => {
     return () => {
       setselectedCategory(null);
       setselectedGroup(null);
+      dispatch(clearData());
     };
   }, [dispatch, company]);
 
