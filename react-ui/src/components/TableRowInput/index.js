@@ -23,6 +23,7 @@ export const EditableCell = ({
   children,
   dataIndex,
   record,
+  handleSave,
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
@@ -36,8 +37,7 @@ export const EditableCell = ({
   const save = async e => {
     try {
       const values = await form.validateFields();
-      
-      toggleEdit();
+      handleSave(values, record)
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }

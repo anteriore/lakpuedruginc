@@ -7,18 +7,22 @@ import {
   Table,
   Space,
   Button,
-  Skeleton
+  Skeleton,
+  Modal,
+  Checkbox
 } from 'antd';
 import Layout from 'antd/lib/layout/layout';
 import { useForm } from 'antd/lib/form/Form';
-import { formDetails, tableProduct } from './data';
+import { formDetails, tableProduct, tableProductInventory } from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { useDispatch, useSelector } from 'react-redux';
 import {listDepot} from '../../Maintenance/Depots/redux';
 import {listClient} from '../../Maintenance/Clients/redux';
+import { listProductInventory } from '../../Maintenance/redux/productInventory';
 import { useHistory } from 'react-router-dom';
 import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList} from '../../../helpers/general-helper';
+import { formatProduct } from './helpers';
 import _ from 'lodash';
 
 const {Title} = Typography;
@@ -28,10 +32,14 @@ const InputForm = (props) => {
   const [form] = useForm();
   const history = useHistory();
   const [contentLoading, setContentLoading] = useState(true)
+  const [modalContentLoading, setModalContentLoading] = useState(true);
+  const [productModal, setProductModal] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails))
+  const [requestedProductList, setRequestedProductList] = useState([])
   const { user } = useSelector((state) => state.auth);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
-  const { list: clientList } = useSelector((state) => state.maintenance.clients)
+  const { list: clientList } = useSelector((state) => state.maintenance.clients);
+  const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
   const dispatch = useDispatch();
   const component = {
     body:{
@@ -42,6 +50,11 @@ const InputForm = (props) => {
 
   useEffect(() => {
     dispatch(listDepot()).then(() => {
+      form.setFieldsValue({
+        preparedBy: `${user.firstName} ${user.lastName}`,
+        approvedBy: `${user.firstName} ${user.lastName}`,
+        requestedBy: `${user.firstName} ${user.lastName}`
+      })
       dispatch(listClient({company})).then(() => {
         setContentLoading(false);
       })
@@ -60,20 +73,13 @@ const InputForm = (props) => {
     clientList
   ])
 
-  const tempValueProducts = [{
-    code: "123124",
-    finishedGood: {
-      "id": 1,
-      "name": "Corned Tuna",
-      "code": "CT1",
-      "unit": null
-    },
-    quantity: 10,
-    quantityRequested: 0,
-    quantityRemaining: 10,
-    unitPrice: 0.0,
-    amount: 0
-  }];
+  const selectProductItems = () => {
+    setProductModal(true)
+    setModalContentLoading(true);
+    dispatch(listProductInventory()).then(() =>{
+      setModalContentLoading(false);
+    })
+  }
 
   const modProductColumn = tableProduct.map(col => {
     if (!col.editable) {
@@ -86,10 +92,50 @@ const InputForm = (props) => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave: () => {}
+        handleSave: (data, record) => {
+          console.log(data, record)
+        }
       }),
     };
   });
+
+  // render Product Items with checkbox
+  const renderProductItemColumns = (rawColumns) => {
+    let filteredColumn = [
+      {
+        title: "Action",
+        key: 'select',
+        render: (row) => {
+          return (
+            <Checkbox
+              onChange={(e) => {
+                onItemSelect(row, e.target.checked);
+              }}
+              checked={!!requestedProductList.some((item) => item.id === row.id)}
+            />
+          );
+        },
+      },
+    ];
+
+    const inputColumn = rawColumns.slice();
+
+    filteredColumn = filteredColumn.concat(inputColumn);
+
+    return filteredColumn;
+  };
+
+  // Check box function callback upon onChange 
+  const onItemSelect = (data, selected) => {
+    if(selected){
+      console.log(formatProduct(data))
+      setRequestedProductList(requestedProductList.concat(formatProduct(data)))
+    }else{
+      var selectedItems = requestedProductList.slice();
+      selectedItems.pop(data);
+      setRequestedProductList( selectedItems);
+    }
+  };
 
   return (
     <>
@@ -107,14 +153,25 @@ const InputForm = (props) => {
                 {...styles.formLayout}
               >
                 {_.dropRight(tempFormDetails.form_items).map((item) => <FormItem item={item}/>)}
-                <Form.Item wrapperCol={{span: 15, offset: 4}}>
-                  <Table 
+                <Form.Item wrapperCol={{span: 15, offset: 4}} name="product"  rules={[{ required: true }]}>
+                <Table 
                     components={component}
                     columns={modProductColumn}
                     rowClassName={() => 'editable-row'}
-                    dataSource={tempValueProducts}
+                    dataSource={requestedProductList}
+                    pagination={false}
                   />
                 </Form.Item>
+                <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
+                <Button
+                  onClick={() => {
+                    selectProductItems();
+                  }}
+                  style={{ width: '40%', float: 'right' }}
+                >
+                  Select/Remove Product item(s)
+                </Button>
+              </Form.Item>
                 <FormItem item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
@@ -130,6 +187,22 @@ const InputForm = (props) => {
             </Layout>
           )}
         </Col>
+        <Modal
+          title="Product List"
+          visible={productModal}
+          onCancel={() => setProductModal(false)}
+          onOk={() => setProductModal(false)}
+          cancelButtonProps={{ style: { display: 'none' } }}
+          width={1000}
+        >
+          {modalContentLoading ? (<Skeleton/>) : (
+            <Table
+             columns={renderProductItemColumns(tableProductInventory) }
+             dataSource={productInventoryList}
+             pagination={false}
+           />
+          )}
+        </Modal>
       </Row>
     </>
   )

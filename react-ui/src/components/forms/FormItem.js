@@ -49,7 +49,7 @@ const FormItem = ({item}) => {
   
   return (
     <Item label={item.label} name={item.name} rules={item.rules}>
-      <Input placeholder={item.placeholder} />
+      <Input disabled={item.type === 'readOnly' ? true : false} placeholder={item.placeholder} />
     </Item>
   );
 }

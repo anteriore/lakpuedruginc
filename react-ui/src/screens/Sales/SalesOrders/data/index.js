@@ -35,8 +35,14 @@ export const tableHeader = [
 
 export const tableProduct = [
   {
+    title: 'FG ID',
+    dataIndex: 'id',
+    render: (object) => object
+  },
+  {
     title: 'Code',
     dataIndex: 'code',
+    render: (object) => object.code
   },
   {
     title: 'Finished Good',
@@ -67,6 +73,23 @@ export const tableProduct = [
   },
 ]
 
+export const tableProductInventory = [
+  {
+    title: 'FG Code',
+    dataIndex: 'product',
+    render: (object) => object.finishedGood.code
+  },
+  {
+    title: 'Finished Good',
+    dataIndex: 'product',
+    render: (object) => object.finishedGood.name
+  },
+  {
+    title: 'Stock on Hand',
+    dataIndex: 'quantity',
+  }
+]
+
 export const formDetails = {
   form_name: 'zip_codes',
   form_items: [
@@ -82,6 +105,14 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please provide a sales order date' }],
       placeholder: 'Sales order number',
       type: 'date'
+    },
+    {
+      label: 'Type',
+      name: 'type',
+      rules: [{ required: true, message: 'Please provide a sales order type' }],
+      placeholder: 'Sales order type',
+      type: 'select',
+      choices: [{id: "DR/SI", name: "DR/SI"},{id: "OS", name: "OS"},{id: "PS", name: "PS"}]
     },
     {
       label: 'Depot',
@@ -102,20 +133,23 @@ export const formDetails = {
     {
       label: 'Prepared By',
       name: 'preparedBy',
-      rules: [{ required: true}],
+      rules: [{ required: true, message: 'Please login a valid user'}],
       placeholder: '',
+      type: 'readOnly'
     },
     {
       label: 'Approved By',
       name: 'approvedBy',
-      rules: [{ required: true}],
+      rules: [{ required: true, message: 'Please login a valid user'}],
       placeholder: '',
+      type: 'readOnly'
     },
     {
       label: 'Requested By',
       name: 'requestedBy',
-      rules: [{ required: true}],
+      rules: [{ required: true, message: 'Please login a valid user'}],
       placeholder: '',
+      type: 'readOnly'
     },
     {
       label: 'Remarks',
