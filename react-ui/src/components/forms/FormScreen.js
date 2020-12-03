@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
 const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
+  const { title, onCancel, onSubmit, values, formDetails } = props;
   const [form] = Form.useForm();
   const history = useHistory();
 
@@ -44,19 +43,6 @@ const FormScreen = (props) => {
           <InputNumber style={styles.inputNumber}/>
         </Form.Item>
       );
-    }
-    else if(item.type === 'password'){
-      if(formMode === 'add'){
-        return (
-          <Form.Item label={item.label} name={item.name} rules={item.rules} dependencies={item.dependencies} hasFeedback>
-            <Input.Password />
-          </Form.Item>
-        )
-      }
-      else {
-        return ''
-      }
-      
     }
     else if(item.type === 'checkList'){
       return (
@@ -135,12 +121,6 @@ const FormScreen = (props) => {
         </div>
       )
       
-    }
-    else if(item.type === 'custom'){
-      return item.render()
-    }
-    else if(item.type === 'customList'){
-      return item.render(item.choices)
     }
     else {
       return (

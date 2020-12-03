@@ -409,11 +409,10 @@ const Clients = (props) => {
               >
                 {formDetails.form_items.map((item) => {
                   if(item.type === 'select'){
-                    const itemData = displayData[item.name]
                     return <Descriptions.Item label={item.label}>{displayData[item.selectName]}</Descriptions.Item>
                   }
                   else if(item.type === 'list' || item.type === 'listSelect'){
-                    return ''
+                    return null
                   }
                   else {
                     return <Descriptions.Item label={item.label}>{displayData[item.name]}</Descriptions.Item>
@@ -431,7 +430,7 @@ const Clients = (props) => {
                   if(itemList.length === 0){
                     itemRender.push(<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />)
                   }
-                  {itemList.map((itemData) => {
+                  itemList.forEach((itemData) => {
                     itemRender.push(
                         <Descriptions
                           title={itemData[item.selectName]}
@@ -439,16 +438,17 @@ const Clients = (props) => {
                         >
                           {item.fields.map((field) => {
                             if(field.type !== 'hidden'){
-                              console.log(field.name)
-                              console.log(field.type)
-                              console.log(itemData[field.name])
                               return <Descriptions.Item label={field.label}>{itemData[field.name]}</Descriptions.Item>
                             }
+                            else return null
                           })}
                         </Descriptions>
                     )
-                  })}
+                  })
                   return itemRender
+                }
+                else {
+                  return null
                 }
               })}
               </>

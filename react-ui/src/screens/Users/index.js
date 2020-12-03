@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Row, 
   Col, 
-  Tabs, 
-  Form,
-  Checkbox,
-  Input,
+  Tabs,
   Button, 
   Typography, 
   Skeleton, 
@@ -52,7 +49,6 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList)
   const depots = useSelector((state) => state.maintenance.depots.list)
-  const users = useSelector((state) => state.users.listUser)
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -175,11 +171,10 @@ const Users = () => {
     setFormTitle('Edit User');
     setFormMode('edit');
     var depotData = []
-    data.depots.map((depot) => {
+    data.depots.forEach((depot) => {
       depotData.push(depot.id)
     })
     var permissionsData = {}
-    console.log(typeof(data.permissions))
     for (const [key, value] of Object.entries(data.permissions)) {
       var actions = []
       for (var i = 0; i < value.actions.length; i++) {
@@ -196,7 +191,6 @@ const Users = () => {
       depots: depotData,
       permissions: permissionsData
     };
-    console.log(formData)
     setFormData(formData);
     dispatch(listD({ company })).then(() => {
       dispatch(listDepot({ company })).then(() => {
@@ -228,21 +222,17 @@ const Users = () => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
-    
     var depotData = []
-    data.depots.map((depot) => {
+    data.depots.forEach((depot) => {
       depotData.push({
         id: depot
       })
     })
     var permissionData = {}
-    console.log(typeof(data.permissions))
     for (const key in data.permissions){
       var actionStr = ""
       if(typeof(data.permissions[key].actions) !== 'undefined' && data.permissions[key].actions !== null){
-        data.permissions[key].actions.map((action) => {
-          console.log(action)
+        data.permissions[key].actions.forEach((action) => {
           actionStr = actionStr + action
         })
 
@@ -269,7 +259,6 @@ const Users = () => {
       depots: depotData,
       permissions: permissionData
     };
-    console.log(payload)
     if (formMode === 'edit') {
       payload.id = formData.id
       dispatch(addUser(payload)).then((response) => {
@@ -285,7 +274,6 @@ const Users = () => {
         }
       });
     } else if (formMode === 'add') {
-      console.log(payload)
       dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
         if(response.payload.status === 200){
@@ -304,20 +292,20 @@ const Users = () => {
 
   const updateUserDepartments = (companyID) => {
     dispatch(listD({company: companyID})).then((response) => {
-      if(response.payload.status == 200){
+      if(response.payload.status === 200){
         var userDepartmentList = []
-        {response.payload.data.map((department) => {
+        response.payload.data.forEach((department) => {
           userDepartmentList.push({
             id: department.id,
             users: []
           })
-        })}
+        })
         dispatch(listUser({company: companyID})).then((response) => {
-          if(response.payload.status == 200){
-            {response.payload.data.map((user) => {
+          if(response.payload.status === 200){
+            response.payload.data.forEach((user) => {
               var usersPerDept = userDepartmentList.find(department => department.id === user.department.id)
               usersPerDept.users.push(user)
-            })}
+            })
             setUserDepartments(userDepartmentList)
             setContentLoading(false);
           }
@@ -338,7 +326,7 @@ const Users = () => {
       var index = 0
       var usersRow = []
       var usersGrid = []
-      departmentUsers.users.map((user) => {
+      departmentUsers.users.forEach((user) => {
         index += 1
         usersRow.push(
           <Card 
@@ -510,11 +498,14 @@ const Users = () => {
                               )
                             }
                             else if(item.type === 'customList'){
-                              return ''
+                              return null
                             }
                             else {
                               return <Descriptions.Item label={item.label}>{selectedUser[item.name]}</Descriptions.Item>
                             }
+                          }
+                          else {
+                            return null
                           }
                           
                         })}

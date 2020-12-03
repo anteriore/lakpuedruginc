@@ -55,7 +55,7 @@ const InputForm = (props) => {
         )
       }
       else {
-        return ''
+        return null
       }
       
     }
@@ -138,7 +138,7 @@ const InputForm = (props) => {
       
     }
     else if(item.type === 'custom' || item.type === 'customList'){
-      return ''
+      return null
     }
     else {
       return (
