@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Button, Typography, Skeleton, Divider, Empty, Card, Drawer, Descriptions, List, message } from 'antd';
+import { 
+  Row, 
+  Col, 
+  Tabs, 
+  Form,
+  Checkbox,
+  Input,
+  Button, 
+  Typography, 
+  Skeleton, 
+  Divider, 
+  Empty, 
+  Card, 
+  Drawer, 
+  Descriptions, 
+  List, 
+  message 
+} from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserAddOutlined, UserOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import Container from '../../components/container';
-import FormScreen from '../../components/forms/FormScreen';
+import InputForm from './InputForm';
 
-import { listUser, addUser, deleteUser, clearData } from './redux/';
+import { listUser, addUser, deleteUser, clearData, listPermission } from './redux/';
 import { listCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -35,7 +52,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList)
   const depots = useSelector((state) => state.maintenance.depots.list)
-  const users = useSelector((state) => state.users.list)
+  const users = useSelector((state) => state.users.listUser)
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -133,6 +150,11 @@ const Users = () => {
         rules: [{ required: true }],
         placeholder: 'Select depots',
       },
+      {
+        label: 'Permissions',
+        name: 'permissions',
+        type: 'customList',
+      },
     ],
   };
 
@@ -142,7 +164,9 @@ const Users = () => {
     setFormData(null);
     dispatch(listD({ company })).then(() => {
       dispatch(listDepot({ company })).then(() => {
-        history.push(`${path}/new`);
+        dispatch(listPermission({ company })).then(() => {
+          history.push(`${path}/new`);
+        })
       })
     });
   };
@@ -150,21 +174,35 @@ const Users = () => {
   const handleUpdate = (data) => {
     setFormTitle('Edit User');
     setFormMode('edit');
-    var userData = users.find(user => user.id === data.id)
     var depotData = []
-    userData.depots.map((depot) => {
+    data.depots.map((depot) => {
       depotData.push(depot.id)
     })
+    var permissionsData = {}
+    console.log(typeof(data.permissions))
+    for (const [key, value] of Object.entries(data.permissions)) {
+      var actions = []
+      for (var i = 0; i < value.actions.length; i++) {
+        actions.push(value.actions[i]);
+      }
+      permissionsData[key] = {
+        ...value,
+        actions: actions
+      }
+    }
     const formData = {
-      ...userData,
-      department: userData.department !== null ? userData.department.id : null,
+      ...data,
+      department: data.department !== null ? data.department.id : null,
       depots: depotData,
+      permissions: permissionsData
     };
     console.log(formData)
     setFormData(formData);
     dispatch(listD({ company })).then(() => {
       dispatch(listDepot({ company })).then(() => {
-        history.push(`${path}/${data.id}`);
+        dispatch(listPermission({ company })).then(() => {
+          history.push(`${path}/${data.id}`);
+        })
       })
     });
   };
@@ -191,12 +229,35 @@ const Users = () => {
 
   const onSubmit = (data) => {
     console.log(data)
+    
     var depotData = []
     data.depots.map((depot) => {
       depotData.push({
         id: depot
       })
     })
+    var permissionData = {}
+    console.log(typeof(data.permissions))
+    for (const key in data.permissions){
+      var actionStr = ""
+      if(typeof(data.permissions[key].actions) !== 'undefined' && data.permissions[key].actions !== null){
+        data.permissions[key].actions.map((action) => {
+          console.log(action)
+          actionStr = actionStr + action
+        })
+
+        if(typeof(data.permissions[key].code) === 'undefined'){
+          data.permissions[key].code = key
+        }
+
+        permissionData[key] = {
+          ...data.permissions[key],
+          actions: actionStr
+        }
+
+      }
+      
+    }
     var payload = {
       ...data,
       company: {
@@ -205,8 +266,10 @@ const Users = () => {
       department: {
         id: data.department
       },
-      depots: depotData
+      depots: depotData,
+      permissions: permissionData
     };
+    console.log(payload)
     if (formMode === 'edit') {
       payload.id = formData.id
       dispatch(addUser(payload)).then((response) => {
@@ -236,7 +299,6 @@ const Users = () => {
         }
       });
     }
-
     setFormData(null);
   };
 
@@ -323,7 +385,7 @@ const Users = () => {
     <Container location={{ pathname: path }}>
       <Switch>
         <Route path={`${path}/new`}>
-          <FormScreen
+          <InputForm
             title={formTitle}
             onSubmit={onSubmit}
             values={formData}
@@ -333,7 +395,7 @@ const Users = () => {
           />
         </Route>
         <Route path={`${path}/:id`}>
-          <FormScreen
+          <InputForm
             title={formTitle}
             onSubmit={onSubmit}
             values={formData}
@@ -447,6 +509,9 @@ const Users = () => {
                                 </Descriptions.Item>
                               )
                             }
+                            else if(item.type === 'customList'){
+                              return ''
+                            }
                             else {
                               return <Descriptions.Item label={item.label}>{selectedUser[item.name]}</Descriptions.Item>
                             }
@@ -480,6 +545,15 @@ const styles = {
     fontSize: '32px',
   },
 
+  formList: {
+    borderStyle: "solid",
+    borderWidth: 1,
+    padding: "2%",
+    backgroundColor: "#FAFAFA",
+    width: '87.5%',
+    marginBottom: "2%",
+  },
+
   row: {
     marginLeft: "1%",
   },
@@ -487,4 +561,16 @@ const styles = {
   span: 5,
 
   gutter: [16, 16],
+
+  listItems: {
+    labelCol: {
+      span: 12,
+      style: {
+        display: "flex"
+      }
+    },
+    wrapperCol: {
+      span: 12,
+    },
+  },
 };

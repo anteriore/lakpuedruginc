@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const FormScreen = (props) => {
+const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
   const history = useHistory();
+  const permissions = useSelector((state) => state.users.listPermission)
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -136,11 +137,8 @@ const FormScreen = (props) => {
       )
       
     }
-    else if(item.type === 'custom'){
-      return item.render()
-    }
-    else if(item.type === 'customList'){
-      return item.render(item.choices)
+    else if(item.type === 'custom' || item.type === 'customList'){
+      return ''
     }
     else {
       return (
@@ -174,6 +172,62 @@ const FormScreen = (props) => {
             {formDetails.form_items.map((item) => (
               <FormItem item={item} />
             ))}
+
+            <Form.List {...{wrapperCol: {span: 24}, labelCol: {span: 24}}}label={"Permissions"} name={"permissions"} rules={[{ required: true }]}>
+              {({ errors }) => (
+                <>
+                <Row><Title level={5} style={{float:"left"}}>{"Permissions"}</Title></Row>
+                <Row>
+                {permissions.map((permission) => {
+                  return (
+                    <Row style={styles.formList}>
+                    <Row style={{width: "100%"}}><Title level={5} style={{float:"left"}}>{permission.category}</Title></Row>
+                    <Row style={{width: "100%"}}>
+                      {permission.permissionSubs.map((permissionSub) => {
+                        return (
+                          <Row style={{width: "100%"}}>
+                            <Form.Item
+                              name={[permissionSub.code, "id"]}
+                              fieldKey={[permissionSub.code, "id"]}
+                              hidden={true}
+                            >
+                              <Input/>
+                            </Form.Item>
+                            <Form.Item
+                              name={[permissionSub.code, "code"]}
+                              fieldKey={[permissionSub.code, "code"]}
+                              hidden={true}
+                            >
+                              <Input/>
+                            </Form.Item>
+                            <Form.Item
+                              {...styles.listItems} 
+                              style={{display: "flex", justifyContent: "flex-end", width: "95%"}} 
+                              label={permissionSub.name} 
+                              name={[permissionSub.code, "actions"]}
+                              fieldKey={[permissionSub.code, "actions"]}
+                            >
+                              <Checkbox.Group>
+                                <Checkbox value={"c"}>{"Create"}</Checkbox>
+                                <Checkbox value={"r"}>{"Read"}</Checkbox>
+                                <Checkbox value={"u"}>{"Update"}</Checkbox>
+                                <Checkbox value={"d"}>{"Delete"}</Checkbox>
+                              </Checkbox.Group>
+                            </Form.Item>
+                          </Row>
+                        )
+                        
+                      })}
+                    </Row>
+                    </Row>
+                  )
+                })}
+                <Form.ErrorList errors={errors} />
+                </Row>
+                </>
+              )}
+            </Form.List>
+
             <div style={styles.tailLayout}>
               <Button type="primary" htmlType="submit">
                 Submit
@@ -196,7 +250,7 @@ const FormScreen = (props) => {
   );
 };
 
-export default FormScreen;
+export default InputForm;
 
 const styles = {
   layout: {
