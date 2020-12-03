@@ -318,7 +318,6 @@ const Users = () => {
     setContentLoading(true)
     setCompany(companyID)
     updateUserDepartments(companyID)
-    
   };
 
   const renderUsers = (departmentUsers) => {
@@ -404,7 +403,7 @@ const Users = () => {
                 <Tabs onChange={handleChangeTab}>
                   {companyList.map((company) => {
                     return (
-                      <TabPane tab={company.name} key={company.id}>
+                      <TabPane tab={company.name} key={company.id} disabled={contentLoading}>
                       </TabPane>
                     )
                   })}
