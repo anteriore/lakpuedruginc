@@ -7,9 +7,10 @@ import { updateAuthState } from '../../redux/auth';
 
 const { Text } = Typography;
 
-const Header = () => {
+const Header = (props) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const { setDisplayDrawer } = props;
 
   const handleMenuClick = (e) => {
     if (e.key === 'logout') {
@@ -21,10 +22,14 @@ const Header = () => {
         })
       );
     }
+    else if(e.key === 'account'){
+      setDisplayDrawer(true)
+    }
   };
 
   const menu = (
     <Menu onClick={handleMenuClick}>
+    <Menu.Item key="account">My Account</Menu.Item>
       <Menu.Item key="logout">Logout</Menu.Item>
     </Menu>
   );
@@ -41,6 +46,7 @@ const Header = () => {
           placement="bottomCenter"
           icon={<UserOutlined />}
           style={{ float: 'right', padding: '1%' }}
+          onClick={() => {setDisplayDrawer(true)}}
         >
           {user !== null && `${user.firstName} ${user.lastName}`}
         </Dropdown.Button>

@@ -26,8 +26,14 @@ const SimpleForm = (props) => {
         </Form.Item>
       );
     }
-
-    if (item.type === 'textArea') {
+    else if(item.type === 'password'){
+      return (
+        <Form.Item label={item.label} name={item.name} rules={item.rules} dependencies={item.dependencies} hasFeedback>
+          <Input.Password />
+        </Form.Item>
+      )
+    }
+    else if (item.type === 'textArea') {
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
           <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />

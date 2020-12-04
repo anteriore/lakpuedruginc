@@ -42,8 +42,10 @@ const processUserData = (data, action) => {
     username: data.username,
     firstName: data.firstName,
     lastName: data.lastName,
-    company: data.company.id,
-    department: data.department.id,
+    middleInitial: data.middleInitial,
+    company: data.company,
+    department: data.department,
+    employeeType: data.employeeType,
   };
 
   return processedData;
