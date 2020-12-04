@@ -24,6 +24,11 @@ export const EditableCell = ({
   dataIndex,
   record,
   handleSave,
+  limit,
+  maxLimit,
+  minLimit,
+  precisionEnabled,
+  precision,
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
@@ -38,9 +43,7 @@ export const EditableCell = ({
     try {
       const values = await form.validateFields();
       handleSave(values, record)
-    } catch (errInfo) {
-      console.log('Save failed:', errInfo);
-    }
+    } catch (errInfo) {}
   };
 
   let childNode = children;
@@ -57,7 +60,25 @@ export const EditableCell = ({
           },
         ]}
       >
-        <InputNumber inputRef onBlur={save}/>
+        {limit ? (
+          <InputNumber 
+            inputRef  
+            onChange={save}
+            min={minLimit} 
+            max={maxLimit} 
+            precision={precisionEnabled ? precision : 0}
+            formatter={value => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          />
+        ) : (
+          <InputNumber 
+            inputRef  
+            min={minLimit} 
+            onChange={save}
+            precision={precisionEnabled ? precision : 0}
+            formatter={value => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          />
+        ) }
+        
       </Form.Item>
     ) : (
       <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={toggleEdit}>

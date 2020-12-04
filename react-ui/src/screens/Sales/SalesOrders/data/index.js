@@ -57,6 +57,7 @@ export const tableProduct = [
     title: 'Quantity',
     dataIndex: 'quantityRequested',
     editable: true,
+    limit: true
   },
   {
     title: 'Remaining',
@@ -66,6 +67,8 @@ export const tableProduct = [
     title: 'Unit Price',
     dataIndex: 'unitPrice',
     editable: true,
+    precisionEnabled: true, 
+    precision: 2
   },
   {
     title: 'Amount',
@@ -112,7 +115,7 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please provide a sales order type' }],
       placeholder: 'Sales order type',
       type: 'select',
-      choices: [{id: "DR/SI", name: "DR/SI"},{id: "OS", name: "OS"},{id: "PS", name: "PS"}]
+      choices: [{id: "DR_SI", name: "DR/SI"},{id: "OS", name: "OS"},{id: "PS", name: "PS"}]
     },
     {
       label: 'Depot',
@@ -155,7 +158,7 @@ export const formDetails = {
       label: 'Remarks',
       name: 'remarks',
       rules: [{}],
-      placeholder: 'Remarsk (optional)',
+      placeholder: 'Remarks (optional)',
       type: 'textarea'
     },
   ],

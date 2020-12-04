@@ -11,14 +11,14 @@ export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload,
 
 export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`/rest/sales-orders?token=${accessToken}`, payload);
 
   return response;
 });
 
 export const updateSalesOrder = createAsyncThunk('updateSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`/rest/sales-orders?token=${accessToken}`, payload);
 
   return response;
 });
@@ -26,7 +26,7 @@ export const updateSalesOrder = createAsyncThunk('updateSalesOrder', async (payl
 export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  const response = await axiosInstance.post(`/rest/zip-codes/delete?token=${accessToken}`, id);
+  const response = await axiosInstance.post(`/rest/sales-orders/delete?token=${accessToken}`, id);
 
   return response;
 });

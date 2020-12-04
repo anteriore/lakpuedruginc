@@ -9,7 +9,8 @@ import {
   Button,
   Skeleton,
   Modal,
-  Checkbox
+  Checkbox,
+  message
 } from 'antd';
 import Layout from 'antd/lib/layout/layout';
 import { useForm } from 'antd/lib/form/Form';
@@ -28,7 +29,7 @@ import _ from 'lodash';
 const {Title} = Typography;
 
 const InputForm = (props) => {
-  const { title, company } = props;
+  const { title, company, onSubmit } = props;
   const [form] = useForm();
   const history = useHistory();
   const [contentLoading, setContentLoading] = useState(true)
@@ -59,7 +60,7 @@ const InputForm = (props) => {
         setContentLoading(false);
       })
     })
-  },[dispatch]);
+  },[dispatch,user,company, form]);
 
   useEffect(() => {
     const newForm = tempFormDetails;
@@ -70,7 +71,8 @@ const InputForm = (props) => {
     setTempFormDetails(updateList(newForm, masterList));
   },[
     depotList,
-    clientList
+    clientList,
+    tempFormDetails
   ])
 
   const selectProductItems = () => {
@@ -87,15 +89,39 @@ const InputForm = (props) => {
     }
     return {
       ...col,
-      onCell: record => ({
+      onCell: record => {
+        return {
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
+        limit: col.limit,
         title: col.title,
+        maxLimit: record.quantity,
+        minLimit: 0,
+        precisionEnabled: col.precisionEnabled,
+        precision: col.precision,
         handleSave: (data, record) => {
-          console.log(data, record)
+          let currentProduct = _.clone(_.find(requestedProductList, (prod) => prod.id === record.finishedGood.id ));
+          Object.entries(data).forEach(([key, value]) => {
+            currentProduct = {...currentProduct, [key]: value}
+
+            if(key === 'quantityRequested'){
+              currentProduct = {...currentProduct, quantityRemaining: currentProduct.quantity - value}
+            }
+
+            if(key === 'unitPrice') {
+              currentProduct = {...currentProduct, amount: (currentProduct.quantityRequested * value).toFixed(2)}
+            }
+          });
+          
+          const indexProduct = _.indexOf(requestedProductList, (object) => object.finishedGood.id === record.id)
+          let newArray = _.clone(requestedProductList);
+          newArray.splice(indexProduct, 1, currentProduct);
+        
+          setRequestedProductList(newArray)
+          form.setFieldsValue({product: newArray})
         }
-      }),
+      }},
     };
   });
 
@@ -111,7 +137,7 @@ const InputForm = (props) => {
               onChange={(e) => {
                 onItemSelect(row, e.target.checked);
               }}
-              checked={!!requestedProductList.some((item) => item.id === row.id)}
+              checked={!!requestedProductList.some((item) => item.id === row.product.finishedGood.id)}
             />
           );
         },
@@ -128,15 +154,24 @@ const InputForm = (props) => {
   // Check box function callback upon onChange 
   const onItemSelect = (data, selected) => {
     if(selected){
-      console.log(formatProduct(data))
-      setRequestedProductList(requestedProductList.concat(formatProduct(data)))
+      if (data.quantity !== 0 && data.quantity > 0){
+        setRequestedProductList(requestedProductList.concat(formatProduct(data)));
+      }else{
+        message.warning("Cannot add requested product with empty stock on hand");
+      }
     }else{
-      var selectedItems = requestedProductList.slice();
-      selectedItems.pop(data);
+      let selectedItems = requestedProductList.slice();
+      selectedItems.pop(formatProduct(data));
+      form.setFieldsValue({product: selectedItems});
       setRequestedProductList( selectedItems);
     }
   };
 
+  const onFinish = () => {
+    onSubmit(form.getFieldsValue());
+    history.goBack();
+  }
+  
   return (
     <>
       <Row>
@@ -150,10 +185,12 @@ const InputForm = (props) => {
             <Layout style={styles.layout}>
               <Form
                 form={form}
+                onFinish={onFinish}
                 {...styles.formLayout}
               >
                 {_.dropRight(tempFormDetails.form_items).map((item) => <FormItem item={item}/>)}
-                <Form.Item wrapperCol={{span: 15, offset: 4}} name="product"  rules={[{ required: true }]}>
+                <Form.Item wrapperCol={{span: 15, offset: 4}} name="product"  rules={[{ required: true, message: "Please select a product" }]}>
+                { }
                 <Table 
                     components={component}
                     columns={modProductColumn}
