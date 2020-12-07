@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space, Skeleton, message } from 'antd';
-import { LockOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
+import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Skeleton, message } from 'antd';
+import { LockOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -15,7 +15,6 @@ const { TextArea } = Input;
 const { Title } = Typography;
 
 const Account = (props) => {
-  const { title, onCancel, onSubmit, values } = props;
   const [form] = Form.useForm();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -47,7 +46,7 @@ const Account = (props) => {
         dispatch(clearDepartment());
       };
 
-  }, [dispatch]);
+  }, [dispatch, user.company.id]);
 
   useEffect(() => {
     if(!loading){
@@ -261,8 +260,7 @@ const Account = (props) => {
             ) : (
                 <Form 
                     {...styles.layout}
-                    form={form}
-                    initialValues={values} 
+                    form={form} 
                     name={formDetails.form_name}
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}

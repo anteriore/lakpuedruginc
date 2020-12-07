@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Drawer, Descriptions, List, Button } from 'antd';
+import { Row, Col, Drawer, Descriptions, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
