@@ -50,4 +50,11 @@ public class UserRestController {
         return userRepository.findByCompany(company);
     }
 
+    @GetMapping("/activeusers/{id}")
+    public List<User> listActive(@PathVariable boolean id) {
+        //Company company = companyRepository.getOne(id);
+        return userRepository.findByActive(id);
+    }
+
+
 }
