@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, Select, Row, Col, Typography, Space } from 'antd';
+import { Form, Button, Input, InputNumber, DatePicker, Select, Row, Col, Typography, Space } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -11,21 +12,35 @@ const FormScreen = (props) => {
   const { title, onCancel, onSubmit, values, formDetails } = props;
   const [form] = Form.useForm();
   const history = useHistory();
+  const dateFormat = 'YYYY/MM/DD';
 
   useEffect(() => {
     form.setFieldsValue(values);
   }, [values, form]);
 
+  const onFinish = (data) => {
+    formDetails.form_items.forEach((item) => {
+      if(item.type === 'date'){
+        data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format('HH:mm:ss')}`
+      }
+    })
+    onSubmit(data)
+  }
+
   const FormItem = ({ item }) => {
     if (item.type === 'select') {
-      if (typeof item.selectName === 'undefined') {
-        item.selectName = 'name'
+      if(typeof item.render === 'undefined') {
+        if (typeof item.selectName === 'undefined') {
+          item.selectName = 'name'
+        }
+        item.render = choice => choice[item.selectName]
       }
+      
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
           <Select>
             {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
+              <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
             ))}
           </Select>
         </Form.Item>
@@ -41,7 +56,14 @@ const FormScreen = (props) => {
     else if(item.type === 'number'){
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <InputNumber style={styles.inputNumber}/>
+          <InputNumber style={styles.inputNumber} min={item.min} max={item.max} readOnly={item.readOnly}/>
+        </Form.Item>
+      );
+    }
+    else if(item.type === 'date'){
+      return (
+        <Form.Item label={item.label} name={item.name} rules={item.rules}>
+          <DatePicker format={dateFormat} style={styles.datePicker} />
         </Form.Item>
       );
     }
@@ -113,7 +135,7 @@ const FormScreen = (props) => {
     else {
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Input placeholder={item.placeholder} />
+          <Input placeholder={item.placeholder} readOnly={item.readOnly}/>
         </Form.Item>
       );
     }
@@ -136,7 +158,7 @@ const FormScreen = (props) => {
             form={form}
             initialValues={values} 
             name={formDetails.form_name}
-            onFinish={onSubmit}
+            onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
             {formDetails.form_items.map((item) => (
