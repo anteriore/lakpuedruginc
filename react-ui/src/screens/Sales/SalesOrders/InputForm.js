@@ -14,22 +14,23 @@ import {
 } from 'antd';
 import Layout from 'antd/lib/layout/layout';
 import { useForm } from 'antd/lib/form/Form';
-import { formDetails, tableProduct, tableProductInventory } from './data';
+import { formDetails, tableProduct, tableProductInventory, initValueForm} from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { useDispatch, useSelector } from 'react-redux';
 import {listDepot} from '../../Maintenance/Depots/redux';
 import {listClient} from '../../Maintenance/Clients/redux';
 import { listProductInventory } from '../../Maintenance/redux/productInventory';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { EditableRow, EditableCell } from '../../../components/TableRowInput';
-import { updateList} from '../../../helpers/general-helper';
-import { formatProduct } from './helpers';
+import { updateList, fromatInitForm } from '../../../helpers/general-helper';
+import { formatProduct, formatProductCalc } from './helpers';
 import _ from 'lodash';
 
 const {Title} = Typography;
 
 const InputForm = (props) => {
   const { title, company, onSubmit } = props;
+  const { id } = useParams();
   const [form] = useForm();
   const history = useHistory();
   const [contentLoading, setContentLoading] = useState(true)
@@ -41,6 +42,7 @@ const InputForm = (props) => {
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
   const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
+  const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
   const dispatch = useDispatch();
   const component = {
     body:{
@@ -48,6 +50,18 @@ const InputForm = (props) => {
       row: EditableRow
     }
   }
+
+  useEffect(() => {
+    if(id !== undefined &&  salesOrderList.length !== 0){
+      const selectedSales = _.find(salesOrderList, (o) => {
+        return o.id === parseInt(id,10);
+      })
+      
+      form.setFieldsValue(fromatInitForm(selectedSales, initValueForm));
+      form.setFieldsValue({product: formatProductCalc(selectedSales.products)});
+      setRequestedProductList(formatProductCalc(selectedSales.products));
+    }
+  },[salesOrderList, id, form])
 
   useEffect(() => {
     dispatch(listDepot()).then(() => {
@@ -80,7 +94,7 @@ const InputForm = (props) => {
     setModalContentLoading(true);
     dispatch(listProductInventory()).then(() =>{
       setModalContentLoading(false);
-    })
+    });
   }
 
   const modProductColumn = tableProduct.map(col => {
@@ -106,7 +120,10 @@ const InputForm = (props) => {
             currentProduct = {...currentProduct, [key]: value}
 
             if(key === 'quantityRequested'){
-              currentProduct = {...currentProduct, quantityRemaining: currentProduct.quantity - value}
+              currentProduct = {...currentProduct, 
+                quantityRemaining: currentProduct.quantity - value,
+                amount: (currentProduct.unitPrice * value).toFixed(2)
+              }
             }
 
             if(key === 'unitPrice') {
@@ -188,9 +205,8 @@ const InputForm = (props) => {
                 onFinish={onFinish}
                 {...styles.formLayout}
               >
-                {_.dropRight(tempFormDetails.form_items).map((item) => <FormItem item={item}/>)}
+                {_.dropRight(tempFormDetails.form_items).map((item, i) => <FormItem key={i} item={item}/>)}
                 <Form.Item wrapperCol={{span: 15, offset: 4}} name="product"  rules={[{ required: true, message: "Please select a product" }]}>
-                { }
                 <Table 
                     components={component}
                     columns={modProductColumn}

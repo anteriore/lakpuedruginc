@@ -94,7 +94,7 @@ export const tableProductInventory = [
 ]
 
 export const formDetails = {
-  form_name: 'zip_codes',
+  form_name: 'sales_orders',
   form_items: [
     {
       label: 'Number',
@@ -163,3 +163,35 @@ export const formDetails = {
     },
   ],
 };
+
+
+export const initValueForm = [
+  {
+    name: "number",
+    type: "input"
+  },
+  {
+    name: "number",
+    type: "input"
+  },
+  {
+    name: "type",
+    type: "input"
+  },
+  {
+    name: "date",
+    type: "date"
+  },
+  {
+    name: "depot",
+    type: "select"
+  },
+  {
+    name: "client",
+    type: "select"
+  },
+  {
+    name: "remarks",
+    type: "input"
+  }
+]

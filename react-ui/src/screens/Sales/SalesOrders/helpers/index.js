@@ -16,6 +16,25 @@ export const formatProduct = (rawProducts) => {
   }
 }
 
+export const formatProductCalc = (rawProducts) => {
+  let existingProducts = [];
+  console.log(rawProducts);
+  rawProducts.forEach((product) => {
+    existingProducts.push({
+      id: product.finishedGood.id,
+      code: product.finishedGood,
+      finishedGood: product.finishedGood,
+      quantity: product.quantity,
+      quantityRequested: product.quantityRequested,
+      quantityRemaining: product.quantityRemaining,
+      unitPrice: product.unitPrice,
+      amount: (product.unitPrice * product.quantityRequested)
+    })
+  })
+
+  return existingProducts;
+}
+
 export const formatPayload = (approvalId, company, value) => {
   let totalAmount = 0.0;
   let totalQuantity = 0;
@@ -35,8 +54,6 @@ export const formatPayload = (approvalId, company, value) => {
     products: []
   }
 
- 
-
   value.product.forEach((prod) => {
     let newProductValue = {}
 
@@ -55,6 +72,6 @@ export const formatPayload = (approvalId, company, value) => {
   })
 
   formattedValue = {...formattedValue, totalAmount, totalQuantity};
-  
+
   return formattedValue;
 }

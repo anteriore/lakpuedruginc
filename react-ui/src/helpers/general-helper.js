@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment';
 
 // for adding values on list form inputs
 export const updateList = (form, choices) => {
@@ -17,3 +18,24 @@ export const updateList = (form, choices) => {
   });
   return form;
 };
+
+export const fromatInitForm = (rawValues, fieldNames) => {
+  let newField = {};
+
+  fieldNames.forEach(({name, type}) => {
+    switch(type){
+      case "date":
+        newField[name] = moment(new Date(rawValues[name]));
+        break;
+      case "select": 
+        const { id } = rawValues[name];
+        newField[name] = id;
+        break;
+      default:
+        newField[name] = rawValues[name];
+        break;
+    }
+  });
+  
+  return newField;
+}
