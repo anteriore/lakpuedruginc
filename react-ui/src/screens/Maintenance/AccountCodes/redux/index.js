@@ -33,7 +33,11 @@ export const deleteAC = createAsyncThunk('deleteAC', async (payload, thunkAPI) =
 const accountCodeSlice = createSlice({
   name: 'accountCodes',
   initialState,
-  reducers: {},
+  reducers: {
+    clearData(state, action) {
+      state.list = null
+    },
+  },
   extraReducers: {
     [listAC.pending]: (state) => {
       state.status = 'loading';
@@ -52,4 +56,5 @@ const accountCodeSlice = createSlice({
   },
 });
 
+export const { clearData } = accountCodeSlice.actions;
 export default accountCodeSlice.reducer;

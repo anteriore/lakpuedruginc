@@ -6,10 +6,10 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import { columns } from './data/'
-import { listClient, addClient, getClient, deleteClient } from './redux';
+import { listClient, addClient, getClient, deleteClient, clearData } from './redux';
 import { listCluster } from '../ClusterCodes/redux';
 import { listInstitution } from '../InstitutionalCodes/redux';
-import { listS } from '../SalesReps/redux';
+import { listS, clearData as clearS } from '../SalesReps/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 
 const { Title } = Typography;
@@ -194,6 +194,11 @@ const Clients = (props) => {
       setFormData(null);
       setLoading(false)
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearS());
+    };
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -400,6 +405,7 @@ const Clients = (props) => {
                 bordered
                 title={displayData.name}
                 size="default"
+                layout="vertical"
               >
                 {formDetails.form_items.map((item) => {
                   if(item.type === 'select'){

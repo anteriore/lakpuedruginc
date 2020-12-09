@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listPD, addPD, deletePD } from './redux';
+import { listPD, addPD, deletePD, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -66,6 +66,11 @@ const ProductDivisions = (props) => {
 
   useEffect(() => {
     dispatch(listPD({ company }));
+    
+    return function cleanup() {
+      dispatch(clearData());
+    };
+
   }, [dispatch, company]);
 
   const handleAdd = () => {

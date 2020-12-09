@@ -4,8 +4,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listI, addI, deleteI } from './redux';
-import { listIT } from '../ItemTypes/redux';
+import { listI, addI, deleteI, clearData } from './redux';
+import { listIT, clearData as clearIT } from '../ItemTypes/redux';
 import { listUnit } from '../Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
@@ -86,6 +86,11 @@ const ItemTypes = (props) => {
 
   useEffect(() => {
     dispatch(listI({ company }));
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearIT());
+    };
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -130,37 +135,25 @@ const ItemTypes = (props) => {
   };
 
   const onSubmit = (values) => {
+    var payload = {
+      ...values,
+      company: {
+        id: company,
+      },
+      type: {
+        id: values.type,
+      },
+      unit: {
+        id: values.unit,
+      },
+    };
     if (formMode === 'edit') {
-      const payload = {
-        ...values,
-        id: formData.id,
-        company: {
-          id: company,
-        },
-        type: {
-          id: values.type,
-        },
-        unit: {
-          id: values.unit,
-        },
-      };
+      payload.id = formData.id
 
       dispatch(addI(payload)).then(() => {
         dispatch(listI({ company }));
       });
     } else if (formMode === 'add') {
-      const payload = {
-        ...values,
-        company: {
-          id: company,
-        },
-        type: {
-          id: values.type,
-        },
-        unit: {
-          id: values.unit,
-        },
-      };
       dispatch(addI(payload)).then(() => {
         dispatch(listI({ company }));
       });

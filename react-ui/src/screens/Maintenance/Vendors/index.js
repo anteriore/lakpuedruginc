@@ -6,9 +6,9 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import { columns } from './data'
-import { listVendor, addVendor, getVendor, deleteVendor } from './redux';
-import { listD, listA } from '../DepartmentArea/redux';
-import { listG } from '../GroupsCategories/redux';
+import { listVendor, addVendor, getVendor, deleteVendor, clearData } from './redux';
+import { listD, listA, clearData as clearA } from '../DepartmentArea/redux';
+import { listG, clearData as clearG } from '../GroupsCategories/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 
 const { Title } = Typography;
@@ -123,6 +123,13 @@ const Vendors = (props) => {
       setFormData(null);
       setLoading(false)
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearA());
+      dispatch(clearG());
+    };
+
   }, [dispatch, company]);
 
   const handleAdd = () => {

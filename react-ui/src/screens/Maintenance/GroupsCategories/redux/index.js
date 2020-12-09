@@ -54,7 +54,12 @@ export const deleteC = createAsyncThunk('deleteC', async (payload, thunkAPI) => 
 const groupCategorySlice = createSlice({
   name: 'groupsCategories',
   initialState,
-  reducers: {},
+  reducers: {
+    clearData(state, action) {
+      state.groupList = null
+      state.categoryList = null
+    },
+  },
   extraReducers: {
     [listG.pending]: (state) => {
       state.status = 'loading';
@@ -88,4 +93,5 @@ const groupCategorySlice = createSlice({
   },
 });
 
+export const { clearData } = groupCategorySlice.actions;
 export default groupCategorySlice.reducer;

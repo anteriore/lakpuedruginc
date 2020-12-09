@@ -59,7 +59,12 @@ export const deleteA = createAsyncThunk('deleteA', async (payload, thunkAPI) => 
 const departmentAreaSlice = createSlice({
   name: 'departmentArea',
   initialState,
-  reducers: {},
+  reducers: {
+    clearData(state, action) {
+      state.deptList = null
+      state.areaList = null
+    },
+  },
   extraReducers: {
     [listD.pending]: (state) => {
       state.status = 'loading';
@@ -93,4 +98,5 @@ const departmentAreaSlice = createSlice({
   },
 });
 
+export const { clearData } = departmentAreaSlice.actions;
 export default departmentAreaSlice.reducer;

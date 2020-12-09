@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, Select, Row, Col, Typography, Space } from 'antd';
+import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -8,7 +8,7 @@ const { TextArea } = Input;
 const { Title } = Typography;
 
 const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails } = props;
+  const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
   const history = useHistory();
 
@@ -23,7 +23,7 @@ const FormScreen = (props) => {
       }
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select>
+          <Select placeholder={item.placeholder}>
             {item.choices.map((choice) => (
               <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
             ))}
@@ -45,7 +45,33 @@ const FormScreen = (props) => {
         </Form.Item>
       );
     }
-    else if(item.type === 'listSelect' || item.type === 'list'){
+    else if(item.type === 'password'){
+      if(formMode === 'add'){
+        return (
+          <Form.Item label={item.label} name={item.name} rules={item.rules} dependencies={item.dependencies} hasFeedback>
+            <Input.Password />
+          </Form.Item>
+        )
+      }
+      else {
+        return ''
+      }
+      
+    }
+    else if(item.type === 'checkList'){
+      return (
+        <Form.Item label={item.label} name={item.name} rules={item.rules}>
+          <Checkbox.Group style={styles.inputCheckList}>
+              {item.choices.map((choice) => (
+                <Row>
+                  <Checkbox value={choice.id}>{item.render(choice)}</Checkbox>
+                </Row>
+              ))}
+          </Checkbox.Group>
+        </Form.Item>
+      )
+    }
+    else if(item.type === 'list' || item.type === 'listForm'){
       return (
         <div style={styles.formList}>
         <Form.List label={item.label} name={item.name} rules={item.rules}>
@@ -59,7 +85,7 @@ const FormScreen = (props) => {
                   </Button>
                 </Form.Item>
 
-                {item.type === 'listSelect' && 
+                {item.type === 'selectList' && 
                   <Form.Item>
                     <Button onClick={() => add()} icon={<SelectOutlined />}>
                       Select
@@ -113,7 +139,7 @@ const FormScreen = (props) => {
     else {
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Input placeholder={item.placeholder} />
+          <Input placeholder={item.placeholder} maxLength={item.maxLength} />
         </Form.Item>
       );
     }
@@ -213,6 +239,9 @@ const styles = {
     float: 'left',
   },
   inputNumber: {
+    float: 'left',
+  },
+  inputCheckList: {
     float: 'left',
   },
 };

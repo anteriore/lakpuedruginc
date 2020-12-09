@@ -36,7 +36,11 @@ export const deletePC = createAsyncThunk('deletePC', async (payload, thunkAPI) =
 const productCategorySlice = createSlice({
   name: 'productCategories',
   initialState,
-  reducers: {},
+  reducers: {
+    clearData(state, action) {
+      state.list = null
+    },
+  },
   extraReducers: {
     [listPC.pending]: (state, action) => {
       state.status = 'loading';
@@ -55,4 +59,5 @@ const productCategorySlice = createSlice({
   },
 });
 
+export const { clearData } = productCategorySlice.actions;
 export default productCategorySlice.reducer;
