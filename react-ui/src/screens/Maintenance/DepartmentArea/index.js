@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listD, addD, deleteD, listA, addA, deleteA } from './redux';
+import { listD, addD, deleteD, listA, addA, deleteA, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -91,6 +91,10 @@ const DepartmentArea = (props) => {
   useEffect(() => {
     dispatch(listD({ company }));
     dispatch(listA({ company }));
+    
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch, company]);
 
   const handleAddD = () => {

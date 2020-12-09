@@ -10,4 +10,5 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	public List<User> findByCompany(Company company);
 	public List<User> findByEmail(String email);
+	public List<User> findByActive(boolean active);
 }

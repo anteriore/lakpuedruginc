@@ -41,7 +41,7 @@ const vendorSlice = createSlice({
   name: 'vendors',
   initialState,
   reducers: {
-    resetData(state, action) {
+    clearData(state, action) {
       state.list = null
     },
   },
@@ -63,4 +63,5 @@ const vendorSlice = createSlice({
   },
 });
 
+export const { clearData } = vendorSlice.actions;
 export default vendorSlice.reducer;

@@ -1,45 +1,32 @@
 import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, DatePicker, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
+import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import moment from 'moment';
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails } = props;
+const InputForm = (props) => {
+  const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
   const history = useHistory();
-  const dateFormat = 'YYYY/MM/DD';
+  const permissions = useSelector((state) => state.users.listPermission)
 
   useEffect(() => {
     form.setFieldsValue(values);
   }, [values, form]);
 
-  const onFinish = (data) => {
-    formDetails.form_items.forEach((item) => {
-      if(item.type === 'date'){
-        data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format('HH:mm:ss')}`
-      }
-    })
-    onSubmit(data)
-  }
-
   const FormItem = ({ item }) => {
     if (item.type === 'select') {
-      if(typeof item.render === 'undefined') {
-        if (typeof item.selectName === 'undefined') {
-          item.selectName = 'name'
-        }
-        item.render = choice => choice[item.selectName]
+      if (typeof item.selectName === 'undefined') {
+        item.selectName = 'name'
       }
-      
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
           <Select placeholder={item.placeholder}>
             {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
+              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
             ))}
           </Select>
         </Form.Item>
@@ -55,16 +42,22 @@ const FormScreen = (props) => {
     else if(item.type === 'number'){
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <InputNumber style={styles.inputNumber} min={item.min} max={item.max} readOnly={item.readOnly}/>
+          <InputNumber style={styles.inputNumber}/>
         </Form.Item>
       );
     }
-    else if(item.type === 'date'){
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <DatePicker format={dateFormat} style={styles.datePicker} />
-        </Form.Item>
-      );
+    else if(item.type === 'password'){
+      if(formMode === 'add'){
+        return (
+          <Form.Item label={item.label} name={item.name} rules={item.rules} dependencies={item.dependencies} hasFeedback>
+            <Input.Password />
+          </Form.Item>
+        )
+      }
+      else {
+        return null
+      }
+      
     }
     else if(item.type === 'checkList'){
       return (
@@ -144,10 +137,13 @@ const FormScreen = (props) => {
       )
       
     }
+    else if(item.type === 'custom' || item.type === 'customList'){
+      return null
+    }
     else {
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Input placeholder={item.placeholder} maxLength={item.maxLength} readOnly={item.readOnly} />
+          <Input placeholder={item.placeholder} maxLength={item.maxLength} />
         </Form.Item>
       );
     }
@@ -170,12 +166,68 @@ const FormScreen = (props) => {
             form={form}
             initialValues={values} 
             name={formDetails.form_name}
-            onFinish={onFinish}
+            onFinish={onSubmit}
             onFinishFailed={onFinishFailed}
           >
             {formDetails.form_items.map((item) => (
               <FormItem item={item} />
             ))}
+
+            <Form.List {...{wrapperCol: {span: 24}, labelCol: {span: 24}}}label={"Permissions"} name={"permissions"} rules={[{ required: true }]}>
+              {({ errors }) => (
+                <>
+                <Row><Title level={5} style={{float:"left"}}>{"Permissions"}</Title></Row>
+                <Row>
+                {permissions.map((permission) => {
+                  return (
+                    <Row style={styles.formList}>
+                    <Row style={{width: "100%"}}><Title level={5} style={{float:"left"}}>{permission.category}</Title></Row>
+                    <Row style={{width: "100%"}}>
+                      {permission.permissionSubs.map((permissionSub) => {
+                        return (
+                          <Row style={{width: "100%"}}>
+                            <Form.Item
+                              name={[permissionSub.code, "id"]}
+                              fieldKey={[permissionSub.code, "id"]}
+                              hidden={true}
+                            >
+                              <Input/>
+                            </Form.Item>
+                            <Form.Item
+                              name={[permissionSub.code, "code"]}
+                              fieldKey={[permissionSub.code, "code"]}
+                              hidden={true}
+                            >
+                              <Input/>
+                            </Form.Item>
+                            <Form.Item
+                              {...styles.listItems} 
+                              style={{display: "flex", justifyContent: "flex-end", width: "95%"}} 
+                              label={permissionSub.name} 
+                              name={[permissionSub.code, "actions"]}
+                              fieldKey={[permissionSub.code, "actions"]}
+                            >
+                              <Checkbox.Group>
+                                <Checkbox value={"c"}>{"Create"}</Checkbox>
+                                <Checkbox value={"r"}>{"Read"}</Checkbox>
+                                <Checkbox value={"u"}>{"Update"}</Checkbox>
+                                <Checkbox value={"d"}>{"Delete"}</Checkbox>
+                              </Checkbox.Group>
+                            </Form.Item>
+                          </Row>
+                        )
+                        
+                      })}
+                    </Row>
+                    </Row>
+                  )
+                })}
+                <Form.ErrorList errors={errors} />
+                </Row>
+                </>
+              )}
+            </Form.List>
+
             <div style={styles.tailLayout}>
               <Button type="primary" htmlType="submit">
                 Submit
@@ -198,7 +250,7 @@ const FormScreen = (props) => {
   );
 };
 
-export default FormScreen;
+export default InputForm;
 
 const styles = {
   layout: {

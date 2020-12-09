@@ -30,7 +30,11 @@ export const deleteDepot = createAsyncThunk('deleteDepot', async (payload, thunk
 const depotSlice = createSlice({
   name: 'depots',
   initialState,
-  reducers: {},
+  reducers: {
+    clearData(state, action) {
+      state.list = null
+    },
+  },
   extraReducers: {
     [listDepot.pending]: (state, action) => {
       state.status = 'loading';
@@ -49,4 +53,5 @@ const depotSlice = createSlice({
   },
 });
 
+export const { clearData } = depotSlice.actions;
 export default depotSlice.reducer;

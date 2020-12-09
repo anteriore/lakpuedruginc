@@ -9,7 +9,7 @@ const initialState = {
 export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   console.log(`rest/clients/${payload.company}?token=${accessToken}`)
-
+  console.log(payload,"Checking payload")
   const response = await axiosInstance.get(`rest/clients/company/${payload.company}/?token=${accessToken}`);
   return response;
 });
@@ -41,7 +41,7 @@ const clientSlice = createSlice({
   name: 'clients',
   initialState,
   reducers: {
-    resetData(state, action) {
+    clearData(state, action) {
       state.list = null
     },
   },
@@ -63,4 +63,5 @@ const clientSlice = createSlice({
   },
 });
 
+export const { clearData } = clientSlice.actions;
 export default clientSlice.reducer;

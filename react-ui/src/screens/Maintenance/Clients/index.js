@@ -6,10 +6,10 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import { columns } from './data/'
-import { listClient, addClient, getClient, deleteClient } from './redux';
+import { listClient, addClient, getClient, deleteClient, clearData } from './redux';
 import { listCluster } from '../ClusterCodes/redux';
 import { listInstitution } from '../InstitutionalCodes/redux';
-import { listS } from '../SalesReps/redux';
+import { listS, clearData as clearS } from '../SalesReps/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 
 const { Title } = Typography;
@@ -194,6 +194,11 @@ const Clients = (props) => {
       setFormData(null);
       setLoading(false)
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearS());
+    };
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -400,14 +405,14 @@ const Clients = (props) => {
                 bordered
                 title={displayData.name}
                 size="default"
+                layout="vertical"
               >
                 {formDetails.form_items.map((item) => {
                   if(item.type === 'select'){
-                    const itemData = displayData[item.name]
                     return <Descriptions.Item label={item.label}>{displayData[item.selectName]}</Descriptions.Item>
                   }
                   else if(item.type === 'list' || item.type === 'listSelect'){
-                    return ''
+                    return null
                   }
                   else {
                     return <Descriptions.Item label={item.label}>{displayData[item.name]}</Descriptions.Item>
@@ -425,7 +430,7 @@ const Clients = (props) => {
                   if(itemList.length === 0){
                     itemRender.push(<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />)
                   }
-                  {itemList.map((itemData) => {
+                  itemList.forEach((itemData) => {
                     itemRender.push(
                         <Descriptions
                           title={itemData[item.selectName]}
@@ -433,16 +438,17 @@ const Clients = (props) => {
                         >
                           {item.fields.map((field) => {
                             if(field.type !== 'hidden'){
-                              console.log(field.name)
-                              console.log(field.type)
-                              console.log(itemData[field.name])
                               return <Descriptions.Item label={field.label}>{itemData[field.name]}</Descriptions.Item>
                             }
+                            else return null
                           })}
                         </Descriptions>
                     )
-                  })}
+                  })
                   return itemRender
+                }
+                else {
+                  return null
                 }
               })}
               </>

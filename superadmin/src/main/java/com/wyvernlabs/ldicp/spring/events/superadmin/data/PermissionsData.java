@@ -86,6 +86,7 @@ public class PermissionsData {
         p6.setPermissionSubs(p6Subs);
         permissionRepository.save(p6);
 
+        /*
         Permission p7 = new Permission();
         p7.setCategory("BUILDING1");
         p7.setSortOrder(7);
@@ -94,5 +95,7 @@ public class PermissionsData {
         p7Subs.add(new PermissionSub(null, "Reports", "building1-r", 2));
         p7.setPermissionSubs(p7Subs);
         permissionRepository.save(p7);
+
+        */
     }
 }

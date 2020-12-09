@@ -7,6 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+
+import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
@@ -23,6 +30,8 @@ public class Depot {
 	private String areaCode;
 	@OneToOne
 	private Company company;
+	@ManyToMany
+    private Set<User> users;
 
 	public Long getId() {
 		return id;
@@ -35,6 +44,16 @@ public class Depot {
 	public Area getArea() {
 		return area;
 	}
+
+
+	
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
 
 	public void setArea(Area area) {
 		this.area = area;

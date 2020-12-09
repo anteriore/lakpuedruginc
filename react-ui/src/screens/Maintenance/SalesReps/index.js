@@ -4,8 +4,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listS, addS, deleteS } from './redux';
-import { listC } from '../GroupsCategories/redux';
+import { listS, addS, deleteS, clearData } from './redux';
+import { listC, clearData as clearC } from '../GroupsCategories/redux';
 import { listRegionCode } from '../RegionCodes/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
@@ -104,6 +104,12 @@ const SalesReps = (props) => {
     dispatch(listS({ company })).then(() => {
       setLoading(false)
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearC());
+    };
+
   }, [dispatch, company]);
 
   const handleAdd = () => {

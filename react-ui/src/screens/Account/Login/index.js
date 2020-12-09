@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Typography, Form, Input, Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 
-import { login, resetErrorMsg } from '../../redux/auth';
+import { login, resetErrorMsg } from '../../../redux/auth';
 
 const Login = () => {
   const error = useSelector((state) => state.auth.error);
