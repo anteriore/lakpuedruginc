@@ -22,12 +22,13 @@ public class User {
     private String middleInitial;
     private String email;
     private String password;
+    private boolean active = true;
     @OneToOne
     private Company company;
     private String employeeType;
     @OneToOne
     private Department department;
-    @OneToMany
+    @ManyToMany
     private Set<Depot> depots;
 
     private String[] roles;
@@ -102,6 +103,12 @@ public class User {
 
     public Company getCompany() {
         return company;
+    }
+    public void setActive(boolean active){
+        this.active=active;
+    }
+    public boolean getActive(){
+        return active;
     }
 
     public void setCompany(Company company) {

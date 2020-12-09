@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+
+import com.wyvernlabs.ldicp.spring.events.superadmin.domain.SalesOrder;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesOrderRepository;
+
+
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Company;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Depot;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Product;
@@ -62,9 +69,25 @@ public class ProductRestController {
 
     //dungan added this
     @PostMapping("/delete")
-	public boolean delete(@RequestBody Long id) {
-		productRepository.deleteById(id);
-        return true;
+	public ResponseEntity delete(@RequestBody Long id) {
+    
+       // Optional<Product> optionalEntity =  productRepository.findById(id);
+       // Product product = optionalEntity.get();
+
+
+		
+		//List <Item> x=SalesOrderRepository.findByUnitId(product.getId());
+
+	//	System.out.println(x.size());
+
+		//if(x.size()>0){
+            if(true){
+			return ResponseEntity.unprocessableEntity().body("Failed to delete the specified organization due to dependencies");
+		}else
+		{
+			productRepository.deleteById(id);
+			return ResponseEntity.ok("Successfully deleted the specified organization");
+		}
     }
 
 
