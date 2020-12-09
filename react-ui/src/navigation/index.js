@@ -3,7 +3,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import AdminRoutes from './routes/AdminRoutes';
-import Login from '../screens/Login';
+import Login from '../screens/Account/Login';
 import { getUser } from '../redux/auth';
 
 const Main = () => {

@@ -10,6 +10,7 @@ import Sales from '../../screens/Sales/';
 // import RND from '../../screens/RND/';
 // import Purchasing from '../../screens/Purchasing/';
 // import Costing from '../../screens/Costing/';
+import Account from '../../screens/Account/';
 
 const AdminRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const AdminRoutes = () => {
       <Switch>
         <Route path="/maintenance" component={Maintenance} />
         <Route path="/users" component={Users} />
+        <Route path="/account" component={Account} />
         {/* <Route path="/accounting" component={Accounting} /> */}
         <Route path="/sales" component={Sales} />
         {/* <Route path="/mmd" component={MMD} /> */}

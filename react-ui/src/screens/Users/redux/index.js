@@ -3,7 +3,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../utils/axios-instance';
 
 const initialState = {
-  list: null,
+  listUser: null,
+  listPermission: null,
 };
 
 export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI) => {
@@ -27,12 +28,20 @@ export const deleteUser = createAsyncThunk('deleteUser', async (payload, thunkAP
   return response;
 });
 
+export const listPermission = createAsyncThunk('listUser', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.get(`rest/permissions/?token=${accessToken}`);
+  return response;
+});
+
 const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
     clearData(state, action) {
-      state.list = null
+      state.listUser = null
+      state.listPermission = null
     },
   },
   extraReducers: {
@@ -42,12 +51,27 @@ const userSlice = createSlice({
     [listUser.fulfilled]: (state, action) => {
       if (action.payload !== undefined && action.payload.status === 200) {
         state.status = 'succeeded';
-        state.list = action.payload.data;
+        state.listUser = action.payload.data;
       } else {
         state.status = 'failed';
       }
     },
     [listUser.rejected]: (state, action) => {
+      state.status = 'failed';
+    },
+
+    [listPermission.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listPermission.fulfilled]: (state, action) => {
+      if (action.payload !== undefined && action.payload.status === 200) {
+        state.status = 'succeeded';
+        state.listPermission = action.payload.data;
+      } else {
+        state.status = 'failed';
+      }
+    },
+    [listPermission.rejected]: (state, action) => {
       state.status = 'failed';
     },
   },
