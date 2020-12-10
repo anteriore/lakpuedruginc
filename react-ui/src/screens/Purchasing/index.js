@@ -13,7 +13,9 @@ import FormDetails, { columns } from './data/'
 import { listPO, addPO, deletePO } from './redux';
 import { listVendor } from '../Maintenance/Vendors/redux';
 import { listD as listDepartment, listA as listArea } from '../Maintenance/DepartmentArea/redux';
+import { listUnit } from '../Maintenance/Units/redux';
 import { listCompany } from '../../redux/company';
+import Modal from 'antd/lib/modal/Modal';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -59,7 +61,9 @@ const Purchasing = () => {
     dispatch(listVendor({ company })).then(() => {
       dispatch(listDepartment({ company })).then(() => {
         dispatch(listArea({ company })).then(() => {
-          history.push(`${path}/new`);
+          dispatch(listUnit({ company })).then(() => {
+            history.push(`${path}/new`);
+          })
         })
       })
     });
@@ -69,6 +73,13 @@ const Purchasing = () => {
     setFormTitle('Edit Purchase Order');
     setFormMode('edit');
     var poData = purchaseOrders.find(po => po.id === data.id)
+    var orderedItems = []
+    poData.orderedItems.forEach((item) => {
+      orderedItems.push({
+        ...item,
+        unit: item.unit.id
+      })
+    })
     const formData = {
       ...poData,
       date: moment(new Date(data.date)) || moment(),
@@ -76,12 +87,15 @@ const Purchasing = () => {
       department: poData.department !== null ? poData.department.id : null,
       area: poData.area !== null ? poData.area.id : null,
       vendor: poData.vendor !== null ? poData.vendor.id : null,
+      orderedItems: orderedItems
     };
     setFormData(formData);
     dispatch(listVendor({ company })).then(() => {
       dispatch(listDepartment({ company })).then(() => {
         dispatch(listArea({ company })).then(() => {
-          history.push(`${path}/${data.id}`);
+          dispatch(listUnit({ company })).then(() => {
+            history.push(`${path}/${data.id}`);
+          })
         })
       })
     });
@@ -98,9 +112,22 @@ const Purchasing = () => {
   };
 
   const onSubmit = (data) => {
+    console.log(data)
+    var orderedItems = []
+    data.orderedItems.forEach((item) => {
+      orderedItems.push({
+        ...item,
+        unit: {
+          id: item.unit
+        }
+      })
+    })
     var payload = {
       ...data,
       number: null,
+      company: {
+        id: company
+      },
       department: {
         id: data.department,
       },
@@ -110,39 +137,51 @@ const Purchasing = () => {
       vendor: {
         id: data.vendor,
       },
+      orderedItems: orderedItems
     }
     console.log(payload)
     
     if(formMode === 'edit'){
-      payload.id = data.id
-      payload.number = data.number
+      payload.id = formData.id
+      payload.number = formData.number
     }
 
-    /*
+    
     dispatch(addPO(payload)).then((response) => {
       setLoading(true);
       if(response.payload.status === 200){
-        dispatch(listPO({ company })).then(() => {
+        dispatch(listPO({ company })).then((response) => {
           setLoading(false);
           history.goBack();
           if(formMode === 'edit'){
-            message.success(`Successfully updated ${data.name}`);
+            message.success(`Successfully updated ${formData.number}`);
           }
           else {
-            message.success(`Successfully added ${data.name}`);
+            message.success(`Successfully added purchase order "${response.payload.number}"`);
           }
         })
       }
       else {
         setLoading(false);
         if(formMode === 'edit'){
-          message.error(`Unable to update ${data.name}`);
+          message.error(`Unable to update ${formData.number}`);
         }
         else {
-          message.error(`Unable to add ${data.name}`);
+          message.error(`Unable to add purchase order`);
         }
       }
-    })*/
+    })
+  }
+
+  const renderModal = () => {
+    return (
+      <Modal
+        visible={true}
+        title={"Modal"}
+      >
+
+      </Modal>
+    )
   }
 
   return (
@@ -194,7 +233,8 @@ const Purchasing = () => {
             onSubmit={onSubmit}
             values={formData}
             onCancel={handleCancelButton}
-            formDetails={formDetails} 
+            formDetails={formDetails}
+            formModal={renderModal}
           />
         </Route>
         <Route path={`${path}/:id`}>

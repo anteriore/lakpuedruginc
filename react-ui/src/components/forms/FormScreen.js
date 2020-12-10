@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, DatePicker, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
+import { Form, Button, Input, InputNumber, DatePicker, Select, Checkbox, Row, Col, Typography, Space, Table, Empty } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import moment from 'moment';
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
 const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails } = props;
+  const { title, onCancel, onSubmit, values, formDetails, formModal = () => null } = props;
   const [form] = Form.useForm();
   const history = useHistory();
+  const { path } = useRouteMatch();
   const dateFormat = 'YYYY/MM/DD';
 
   useEffect(() => {
@@ -34,16 +35,24 @@ const FormScreen = (props) => {
         }
         item.render = choice => choice[item.selectName]
       }
+
+      if(item.choices === null || item.choices.length === 0){
+        history.push(`/${path.split('/')[1]}`)
+        return null
+      }
+      else {
+        return (
+          <Form.Item label={item.label} name={item.name} rules={item.rules}>
+            <Select placeholder={item.placeholder}>
+              {item.choices.map((choice) => (
+                <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        );
+      }
       
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select placeholder={item.placeholder}>
-            {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-      );
+      
     }
     else if (item.type === 'textArea') {
       return (
@@ -144,6 +153,25 @@ const FormScreen = (props) => {
       )
       
     }
+    else if(item.type === 'table'){
+      return (
+      <Form.List label={item.label} name={item.name} rules={item.rules}>
+        {(fields, { errors }) => (
+          <Col span={20} offset={1}>
+            <Table
+              style={{marginBottom: "2%"}}
+              dataSource={form.getFieldValue(item.name)}
+              columns={renderTableColumns(fields, item)}
+              pagination={false}
+              locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+              summary={item.summary}
+            />
+            <Form.ErrorList errors={errors} />
+          </Col>
+        )}
+      </Form.List>
+    )
+    }
     else {
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
@@ -152,6 +180,101 @@ const FormScreen = (props) => {
       );
     }
   };
+
+  //for rendering tables
+  const renderTableColumns = (formFields, item) => {
+    var columns = []
+    item.fields.forEach((field) => {
+      if(!field.readOnly){
+        if(field.type === 'number'){
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = form.getFieldValue(item.name).indexOf(row)
+              return (
+                <Form.Item
+                  {...formFields[index]}
+                  name={[formFields[index].name, field.name]}
+                  fieldKey={[formFields[index].fieldKey, field.name]}
+                  rules={field.rules}
+                >
+                  <InputNumber min={field.min} max={field.max} />
+                </Form.Item>
+              );
+            },
+          })
+        }
+        else if(field.type === 'hidden' || field.type === 'hiddenNumber'){
+          columns.push({
+            key: field.name,
+            visible: false,
+            render: (row) => {
+              const index = form.getFieldValue(item.name).indexOf(row)
+              return (
+                <Form.Item
+                  {...formFields[index]}
+                  name={[formFields[index].name, field.name]}
+                  fieldKey={[formFields[index].fieldKey, field.name]}
+                  hidden={true}
+                >
+                  {field.type === 'hidden' ? <Input/> : <InputNumber min={field.min} max={field.max}></InputNumber>}
+                </Form.Item>
+              )
+            },
+          })
+          
+        }
+        else if(field.type === 'select'){
+          columns.push({
+            title: field.label,
+            key: field.name,
+            visible: false,
+            render: (row) => {
+              const index = form.getFieldValue(item.name).indexOf(row)
+              if(typeof field.render === 'undefined') {
+                if (typeof field.selectName === 'undefined') {
+                  field.selectName = 'name'
+                }
+                field.render = choice => choice[field.selectName]
+              }
+        
+              if(field.choices === null || field.choices.length === 0){
+                history.push(`/${path.split('/')[1]}`)
+                return null
+              }
+              return (
+                <Form.Item
+                  {...formFields[index]}
+                  name={[formFields[index].name, field.name]}
+                  fieldKey={[formFields[index].fieldKey, field.name]}
+                >
+                  <Select placeholder={field.placeholder}>
+                    {field.choices.map((choice) => (
+                      <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              )
+            },
+          })
+        }
+        else {
+          if(typeof field.render === 'undefined' || field.render === null){
+            field.render = (object) => object[field.name]
+          }
+          columns.push({
+              title: field.label,
+              key: field.name,
+              render: (object) => field.render(object)
+          })
+        }
+      }
+    })
+
+    return columns
+
+  }
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
@@ -191,7 +314,7 @@ const FormScreen = (props) => {
               </Button>
             </div>
           </Form>
-          
+          {formModal()}
         </Col>
       </Row>
     </>

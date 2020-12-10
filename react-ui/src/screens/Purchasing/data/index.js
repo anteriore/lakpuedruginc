@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Table, Typography } from 'antd';
 
-import { listVendor } from '../../Maintenance/Vendors/redux';
-import { listD as listDepartment, listA as listArea } from '../../Maintenance/DepartmentArea/redux';
+const { Text } = Typography;
 
 export const columns = [
   {
@@ -51,6 +51,7 @@ const FormDetails = () => {
   const vendors = useSelector((state) => state.maintenance.vendors.list)
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList)
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList)
+  const units = useSelector((state) => state.maintenance.units.unitList)
 
   const formDetail = {
     form_name: 'depot',
@@ -106,7 +107,7 @@ const FormDetails = () => {
       {
         label: 'Job Order Number',
         name: 'jobOrderNo',
-        rules: [{ required: true, message: 'Please provide a valid Job Order Number' }],
+        rules: [{ message: 'Please provide a valid Job Order Number' }],
         placeholder: 'Job Order Number',
       },
       {
@@ -122,11 +123,68 @@ const FormDetails = () => {
         placeholder: 'Deliver To',
       },
       {
-        label: 'Remarks',
-        name: 'remarks',
-        type: 'textArea',
-        rules: [{ required: true, message: 'Please provide a valid remark' }],
-        placeholder: 'Remarks',
+        label: 'Ordered Items',
+        name: 'orderedItems',
+        key: 'id',
+        type: 'table',
+        rules: [{ required: true }],
+        fields: [
+          {
+            label: 'PRF Number',
+            name: 'prfNumber'
+          },
+          {
+            label: 'Requested Item',
+            name: 'requestedItemId',
+            type: 'hiddenNumber'
+          },
+          {
+            label: 'Item',
+            name: 'item',
+            render: (object) => object.item.name
+          },
+          {
+            label: 'Quantity',
+            name: 'quantity',
+            type: 'number',
+            rules: [{ required: true }],
+          },
+          {
+            label: 'Unit',
+            name: 'unit',
+            type: 'select',
+            choices: units,
+            rules: [{ required: true }],
+          },
+          {
+            label: 'Unit Price',
+            name: 'unitPrice',
+            type: 'number',
+            rules: [{ required: true }],
+          },
+          {
+            label: 'Amount',
+            name: 'amount',
+            render: (object) => object.quantity * object.unitPrice
+          },
+        ],
+        summary: (data) => {
+          let totalAmount = 0;
+  
+          data.forEach(({ amount }) => {
+            totalAmount += amount;
+          });
+  
+          return (
+              <Table.Summary.Row>
+                <Table.Summary.Cell>Total Amount</Table.Summary.Cell>
+                <Table.Summary.Cell>
+                  <Text>{totalAmount}</Text>
+                </Table.Summary.Cell>
+              </Table.Summary.Row>
+          );
+        }
+        
       },
       {
         label: 'VAT (Percentage)',
@@ -138,12 +196,11 @@ const FormDetails = () => {
         placeholder: 'VAT',
       },
       {
-        label: 'Total Amount',
-        name: 'totalAmount',
-        type: 'number',
-        min: 0,
-        placeholder: 'Total Amount',
-        readOnly: true
+        label: 'Remarks',
+        name: 'remarks',
+        type: 'textArea',
+        rules: [{ required: true, message: 'Please provide a valid remark' }],
+        placeholder: 'Remarks',
       },
     ],
   };
