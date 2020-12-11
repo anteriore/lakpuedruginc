@@ -40,7 +40,7 @@ export const tableHeader = [
   },
 ];
 
-const formDetails = {
+export const formDetails = {
   form_name: 'order_slips',
   form_items: [
     {

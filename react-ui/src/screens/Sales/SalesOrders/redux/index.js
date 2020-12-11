@@ -31,6 +31,13 @@ export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payl
   return response;
 });
 
+export const listSalesOrderByDepot = createAsyncThunk('listSalesOrderByDepot', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.get(`/rest/sales-orders/depot/${payload}?token=${accessToken}`);
+
+  return response;
+});
+
 const salesOrdersSlice = createSlice({
   name: 'salesOrders',
   initialState: {
@@ -60,6 +67,34 @@ const salesOrdersSlice = createSlice({
       };
     },
     [listSalesOrder.rejected]: (state, action) => {
+      const { data } = action.payload;
+      return {
+        ...state,
+        salesOrderList: data,
+        status: 'Error',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listSalesOrderByDepot.pending]: (state) => {
+      return {
+        ...state,
+        status: 'Loading',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_PENDING,
+      };
+    },
+    [listSalesOrderByDepot.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      return {
+        ...state,
+        salesOrderList: data,
+        status: 'Fulfilled',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_FULFILLED,
+      };
+    },
+    [listSalesOrderByDepot.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,

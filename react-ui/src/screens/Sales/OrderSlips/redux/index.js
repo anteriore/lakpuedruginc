@@ -59,8 +59,7 @@ const orderSlipsSlice = createSlice({
         statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listOrderSlips.rejected]: (state, action) => {
-      const { data } = action.payload;
+    [listOrderSlips.rejected]: (state) => {
       return {
         ...state,
         orderSlipsList: [],

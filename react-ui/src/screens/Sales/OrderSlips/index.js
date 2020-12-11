@@ -21,9 +21,9 @@ const OrderSlips = (props) => {
 
   useEffect(() => {
     dispatch(listOrderSlips(company)).then(() => {
-      setContentLoading(false)
+      setContentLoading(false);
     })
-  },[dispatch, listOrderSlips,company])
+  },[dispatch,company])
 
   const handleAddButton = () => {
     history.push(`${path}/new`);
