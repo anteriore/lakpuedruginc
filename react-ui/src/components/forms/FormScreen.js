@@ -1,21 +1,27 @@
-import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, DatePicker, Select, Checkbox, Row, Col, Typography, Space, Table, Empty } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Button, Input, InputNumber, DatePicker, Select, Checkbox, Modal, Row, Col, Typography, Space, Table, Empty } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import moment from 'moment';
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
 const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails, formModal = () => null } = props;
+  const { title, onCancel, onSubmit, values, formDetails, formModal } = props;
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const [ tableData, setTableData ] = useState(null)
   const dateFormat = 'YYYY/MM/DD';
 
+  const [loadingModal, setLoadingModal] = useState(true)
+  const [displayModal, setDisplayModal] = useState(false)
+
   useEffect(() => {
-    form.setFieldsValue(values);
+    if(values !== null){
+      form.setFieldsValue(values);
+      setTableData(values[formModal.name])
+    }
   }, [values, form]);
 
   const onFinish = (data) => {
@@ -26,6 +32,10 @@ const FormScreen = (props) => {
     })
     onSubmit(data)
   }
+
+  const handleInputChange = (event) => {
+    //setTableData(form.getFieldValue(formModal.name))
+  };
 
   const FormItem = ({ item }) => {
     if (item.type === 'select') {
@@ -140,7 +150,6 @@ const FormScreen = (props) => {
                         </Form.Item>
                       )
                     }
-                    
                   })}
                   <MinusCircleOutlined style={{alignSelf: "center"}} onClick={() => remove(field.name)} />
                 </Space>
@@ -158,9 +167,13 @@ const FormScreen = (props) => {
       <Form.List label={item.label} name={item.name} rules={item.rules}>
         {(fields, { errors }) => (
           <Col span={20} offset={1}>
+            <Form.Item style={{float: "right"}}>
+              <Button type="primary" onClick={() => {setDisplayModal(true); setLoadingModal(false); }} icon={<SelectOutlined />}>
+                Select
+              </Button>
+            </Form.Item>
             <Table
-              style={{marginBottom: "2%"}}
-              dataSource={form.getFieldValue(item.name)}
+              dataSource={tableData}
               columns={renderTableColumns(fields, item)}
               pagination={false}
               locale={{ emptyText: <Empty description="No Item Seleted." /> }}
@@ -181,6 +194,8 @@ const FormScreen = (props) => {
     }
   };
 
+  
+
   //for rendering tables
   const renderTableColumns = (formFields, item) => {
     var columns = []
@@ -199,7 +214,7 @@ const FormScreen = (props) => {
                   fieldKey={[formFields[index].fieldKey, field.name]}
                   rules={field.rules}
                 >
-                  <InputNumber min={field.min} max={field.max} />
+                  <InputNumber min={field.min} max={field.max} onChange={handleInputChange} />
                 </Form.Item>
               );
             },
@@ -276,9 +291,93 @@ const FormScreen = (props) => {
 
   }
 
+  const onModalSelect = (data, isSelected) => {
+    if(formModal !== null && typeof formModal !== 'undefined'){
+      if (isSelected) {
+        var selectedItems = {}
+        selectedItems[formModal.name] = []
+        if(form.getFieldValue(formModal.name) !== null && typeof form.getFieldValue(formModal.name) !== 'undefined'){
+          selectedItems[formModal.name] = selectedItems[formModal.name].concat(form.getFieldValue(formModal.name))
+        }
+        var processedData = data
+        if(typeof formModal.processData === 'function'){
+          processedData = formModal.processData(data)
+        }
+        selectedItems[formModal.name] = selectedItems[formModal.name].concat(processedData);
+        form.setFieldsValue(selectedItems)
+        setTableData(form.getFieldValue(formModal.name))
+      } 
+      else {
+        var selectedItems = {}
+        selectedItems[formModal.name] = []
+        if(form.getFieldValue(formModal.name) !== null && typeof form.getFieldValue(formModal.name) !== 'undefined'){
+          selectedItems[formModal.name] = selectedItems[formModal.name].concat(form.getFieldValue(formModal.name))
+        }
+        var processedData = data
+        if(typeof formModal.processData === 'function'){
+          processedData = formModal.processData(data)
+        }
+        if(typeof formModal.selectedKey === 'undefined'){
+          formModal.selectedKey = 'id'
+        }
+        if(typeof formModal.key === 'undefined'){
+          formModal.key = 'id'
+        }
+        //var index = selectedItems[formModal.name].findIndex(item => item[formModal.selectedKey] === data[formModal.key])
+        //selectedItems[formModal.name].splice(index, 1)
+        selectedItems[formModal.name] = selectedItems[formModal.name].filter((item) => item[formModal.selectedKey] !== data[formModal.key])
+        form.setFieldsValue(selectedItems)
+        setTableData(form.getFieldValue(formModal.name))
+      }
+    }
+    
+  }
+
+  const renderModalColumns = (columns) => {
+    var modalColumns = [
+      {
+        key: 'select',
+        render: (row) => {
+          return (
+            <Checkbox
+              onChange={(e) => {
+                onModalSelect(row, e.target.checked);
+              }}
+              defaultChecked={formModal.checkSelected(form.getFieldValue(formModal.name), row)}
+            />
+          );
+        },
+      },
+    ]
+
+    modalColumns = modalColumns.concat(columns);
+
+    return modalColumns
+
+  }
+
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
     // message.error(errorInfo)
+  };
+
+  const expandedRowRender = () => {
+    const columns = [
+      { title: 'Date', dataIndex: 'date', key: 'date' },
+      { title: 'Name', dataIndex: 'name', key: 'name' },
+      { title: 'Upgrade Status', dataIndex: 'upgradeNum', key: 'upgradeNum' },
+    ];
+
+    const data = [];
+    for (let i = 0; i < 3; ++i) {
+      data.push({
+        key: i,
+        date: '2014-12-24 23:12:00',
+        name: 'This is production name',
+        upgradeNum: 'Upgraded: 56',
+      });
+    }
+    return <Table columns={columns} dataSource={data} pagination={false} />;
   };
 
   return (
@@ -295,6 +394,7 @@ const FormScreen = (props) => {
             name={formDetails.form_name}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            onFieldsChange={handleInputChange}
           >
             {formDetails.form_items.map((item) => (
               <FormItem item={item} />
@@ -314,7 +414,23 @@ const FormScreen = (props) => {
               </Button>
             </div>
           </Form>
-          {formModal()}
+          {!loadingModal && formModal !== null && typeof formModal !== 'undefined' &&
+            <Modal
+              visible={displayModal}
+              title={"Modal"}
+              onOk={() => setDisplayModal(false)}
+              onCancel={() => setDisplayModal(false)}
+              cancelButtonProps={{ style: { display: 'none' } }}
+              width={1000}
+            >
+              <Table
+                dataSource={formModal.data}
+                columns={renderModalColumns(formModal.columns)}
+                pagination={false}
+                expandable={{expandedRowRender}}
+              />
+            </Modal>
+          }
         </Col>
       </Row>
     </>

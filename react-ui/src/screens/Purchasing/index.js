@@ -14,8 +14,8 @@ import { listPO, addPO, deletePO } from './redux';
 import { listVendor } from '../Maintenance/Vendors/redux';
 import { listD as listDepartment, listA as listArea } from '../Maintenance/DepartmentArea/redux';
 import { listUnit } from '../Maintenance/Units/redux';
+import { listPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany } from '../../redux/company';
-import Modal from 'antd/lib/modal/Modal';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -35,7 +35,7 @@ const Purchasing = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const history = useHistory();
-  const formDetails = FormDetails();
+  const {formDetails, modalDetails} = FormDetails();
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -62,7 +62,9 @@ const Purchasing = () => {
       dispatch(listDepartment({ company })).then(() => {
         dispatch(listArea({ company })).then(() => {
           dispatch(listUnit({ company })).then(() => {
-            history.push(`${path}/new`);
+            dispatch(listPR({ company })).then(() => {
+              history.push(`${path}/new`);
+            })
           })
         })
       })
@@ -77,7 +79,7 @@ const Purchasing = () => {
     poData.orderedItems.forEach((item) => {
       orderedItems.push({
         ...item,
-        unit: item.unit.id
+        unit: item.unit.id,
       })
     })
     const formData = {
@@ -87,14 +89,16 @@ const Purchasing = () => {
       department: poData.department !== null ? poData.department.id : null,
       area: poData.area !== null ? poData.area.id : null,
       vendor: poData.vendor !== null ? poData.vendor.id : null,
-      orderedItems: orderedItems
+      orderedItems: orderedItems,
     };
     setFormData(formData);
     dispatch(listVendor({ company })).then(() => {
       dispatch(listDepartment({ company })).then(() => {
         dispatch(listArea({ company })).then(() => {
           dispatch(listUnit({ company })).then(() => {
-            history.push(`${path}/${data.id}`);
+            dispatch(listPR({ company })).then(() => {
+              history.push(`${path}/${data.id}`);
+            })
           })
         })
       })
@@ -114,13 +118,16 @@ const Purchasing = () => {
   const onSubmit = (data) => {
     console.log(data)
     var orderedItems = []
+    var totalAmount = 0
     data.orderedItems.forEach((item) => {
       orderedItems.push({
         ...item,
         unit: {
           id: item.unit
-        }
+        },
+        amount: item.quantity * item.unitPrice
       })
+      totalAmount += item.quantity * item.unitPrice
     })
     var payload = {
       ...data,
@@ -137,7 +144,8 @@ const Purchasing = () => {
       vendor: {
         id: data.vendor,
       },
-      orderedItems: orderedItems
+      orderedItems: orderedItems,
+      totalAmount: totalAmount
     }
     console.log(payload)
     
@@ -171,17 +179,6 @@ const Purchasing = () => {
         }
       }
     })
-  }
-
-  const renderModal = () => {
-    return (
-      <Modal
-        visible={true}
-        title={"Modal"}
-      >
-
-      </Modal>
-    )
   }
 
   return (
@@ -234,7 +231,7 @@ const Purchasing = () => {
             values={formData}
             onCancel={handleCancelButton}
             formDetails={formDetails}
-            formModal={renderModal}
+            formModal={modalDetails}
           />
         </Route>
         <Route path={`${path}/:id`}>
@@ -244,6 +241,7 @@ const Purchasing = () => {
             values={formData}
             onCancel={handleCancelButton}
             formDetails={formDetails} 
+            formModal={modalDetails}
           />
         </Route>
       </Switch>

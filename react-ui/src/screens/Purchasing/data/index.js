@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Table, Typography } from 'antd';
+import { Row, Table, Typography } from 'antd';
 
 const { Text } = Typography;
 
@@ -52,8 +52,9 @@ const FormDetails = () => {
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList)
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList)
   const units = useSelector((state) => state.maintenance.units.unitList)
+  const purchaseRequests = useSelector((state) => state.dashboard.purchaseRequests.list)
 
-  const formDetail = {
+  const formDetails = {
     form_name: 'depot',
     form_items: [
       {
@@ -165,14 +166,14 @@ const FormDetails = () => {
           {
             label: 'Amount',
             name: 'amount',
-            render: (object) => object.quantity * object.unitPrice
+            render: (object) => { return object.quantity * object.unitPrice}
           },
         ],
         summary: (data) => {
           let totalAmount = 0;
   
-          data.forEach(({ amount }) => {
-            totalAmount += amount;
+          data.forEach(({ quantity, unitPrice }) => {
+            totalAmount += quantity * unitPrice;
           });
   
           return (
@@ -199,13 +200,81 @@ const FormDetails = () => {
         label: 'Remarks',
         name: 'remarks',
         type: 'textArea',
-        rules: [{ required: true, message: 'Please provide a valid remark' }],
+        rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
       },
     ],
   };
 
-  return formDetail
+  const modalDetails = {
+    name: 'orderedItems',
+    key: "number",
+    selectedKey: "prfNumber",
+    data: purchaseRequests,
+    columns: [
+      {
+        title: 'PRF Number',
+        dataIndex: 'number',
+        key: 'number',
+      },
+      {
+        title: 'Requested by',
+        dataIndex: 'requestedBy',
+        key: 'requestedBy',
+        render: (item) => {console.log(item.requestedBy); return item.requestedBy.firstName + ' ' + item.requestedBy.lastName}
+      },
+      /*
+      {
+        title: 'Code',
+        dataIndex: 'code',
+        key: 'code',
+      },
+      {
+        title: 'Item',
+        dataIndex: 'item',
+        key: 'item',
+        render: (item) => item.name
+      },
+      {
+        title: 'Type',
+        dataIndex: 'type',
+        key: 'type',
+        render: (object) => object.name,
+      },
+      {
+        title: 'Quantity',
+        dataIndex: 'quantity',
+        key: 'quantity',
+      },
+      {
+        title: 'Unit',
+        dataIndex: 'unit',
+        key: 'unit',
+        render: (object) => object.name,
+      },*/
+    ],
+    processData: (data) => {
+      var processedData = []
+
+      data.requestedItems.forEach((item) => {
+        processedData.push({
+          prfNumber: data.number,
+          requestedItemId: item.id,
+          item: item.item,
+          quantity: item.quantityRequested
+        })
+      })
+      
+      return processedData
+    },
+    checkSelected: (selectedData, rowData) => {
+      if(typeof selectedData !== 'undefined' && selectedData.some((item) => item.prfNumber === rowData.number)){
+        return true
+      }
+    }
+  };
+
+  return {formDetails, modalDetails}
 
 }
 
