@@ -73,6 +73,7 @@ const FormDetails = () => {
         label: 'Vendor',
         name: 'vendor',
         type: 'select',
+        selectName: "name",
         choices: vendors,
         render: vendor => `[${vendor.code}] ${vendor.name}`,
         rules: [{ required: true }],
@@ -81,6 +82,7 @@ const FormDetails = () => {
         label: 'Department',
         name: 'department',
         type: 'select',
+        selectName: "name",
         choices: departments,
         rules: [{ required: true }],
       },
@@ -88,6 +90,7 @@ const FormDetails = () => {
         label: 'Area',
         name: 'area',
         type: 'select',
+        selectName: "name",
         choices: areas,
         rules: [{ required: true }],
       },
@@ -124,72 +127,6 @@ const FormDetails = () => {
         placeholder: 'Deliver To',
       },
       {
-        label: 'Ordered Items',
-        name: 'orderedItems',
-        key: 'id',
-        type: 'table',
-        rules: [{ required: true }],
-        fields: [
-          {
-            label: 'PRF Number',
-            name: 'prfNumber'
-          },
-          {
-            label: 'Requested Item',
-            name: 'requestedItemId',
-            type: 'hiddenNumber'
-          },
-          {
-            label: 'Item',
-            name: 'item',
-            render: (object) => object.item.name
-          },
-          {
-            label: 'Quantity',
-            name: 'quantity',
-            type: 'number',
-            rules: [{ required: true }],
-            min: 0
-          },
-          {
-            label: 'Unit',
-            name: 'unit',
-            type: 'select',
-            choices: units,
-            rules: [{ required: true }],
-          },
-          {
-            label: 'Unit Price',
-            name: 'unitPrice',
-            type: 'number',
-            rules: [{ required: true }],
-            min: 0
-          },
-          {
-            label: 'Amount',
-            name: 'amount',
-            render: (object) => { console.log(object.quantity * object.unitPrice); return object.quantity * object.unitPrice}
-          },
-        ],
-        summary: (data) => {
-          let totalAmount = 0;
-  
-          data.forEach(({ quantity, unitPrice }) => {
-            totalAmount += quantity * unitPrice;
-          });
-  
-          return (
-              <Table.Summary.Row>
-                <Table.Summary.Cell>Total Amount</Table.Summary.Cell>
-                <Table.Summary.Cell>
-                  <Text>{totalAmount}</Text>
-                </Table.Summary.Cell>
-              </Table.Summary.Row>
-          );
-        }
-        
-      },
-      {
         label: 'VAT (Percentage)',
         name: 'vat',
         type: 'number',
@@ -208,53 +145,127 @@ const FormDetails = () => {
     ],
   };
 
-  const modalDetails = {
+  const tableDetails = {
+    label: 'Purchase Request',
     name: 'orderedItems',
-    key: "number",
+    key: "id",
+    rules: [{ required: true }],
+    fields: [
+      {
+        label: 'Item',
+        name: 'item',
+        render: (object) => `[${object.item.code}] ${object.item.name}`
+      },
+      {
+        label: 'PRF Number',
+        name: 'prfNumber'
+      },
+      {
+        label: 'Requested Item',
+        name: 'requestedItemId',
+        type: 'hiddenNumber'
+      },
+      {
+        label: 'Quantity',
+        name: 'quantity',
+        type: 'number',
+        rules: [{ required: true }],
+        min: 0
+      },
+      {
+        label: 'Unit',
+        name: 'unit',
+        type: 'select',
+        choices: units,
+        rules: [{ required: true }],
+        placeholder: "Unit of Measurement"
+      },
+      {
+        label: 'Unit Price',
+        name: 'unitPrice',
+        type: 'number',
+        rules: [{ required: true }],
+        min: 0
+      },
+      {
+        label: 'Amount',
+        name: 'amount',
+        render: (object) => { return object.quantity * object.unitPrice  || 0}
+      },
+    ],
+    summary: (data) => {
+      let totalAmount = 0;
+
+      data.forEach(({ quantity, unitPrice }) => {
+        totalAmount += quantity * unitPrice;
+      });
+
+      return (
+          <Table.Summary.Row>
+            <Table.Summary.Cell>Total Amount</Table.Summary.Cell>
+            <Table.Summary.Cell>
+              <Text>{totalAmount}</Text>
+            </Table.Summary.Cell>
+          </Table.Summary.Row>
+      );
+    },
+    //select data
+    foreignKey: "number",
     selectedKey: "prfNumber",
-    data: purchaseRequests,
-    columns: [
+    selectData: purchaseRequests,
+    selectFields: [
       {
         title: 'PRF Number',
         dataIndex: 'number',
         key: 'number',
       },
-      /*
       {
         title: 'Requested by',
         dataIndex: 'requestedBy',
         key: 'requestedBy',
-        render: (item) => {console.log(item.requestedBy); return item.requestedBy.firstName + ' ' + item.requestedBy.lastName}
+        render: (item) => {return item.firstName + ' ' + item.lastName}
       },
       {
-        title: 'Code',
-        dataIndex: 'code',
-        key: 'code',
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
       },
-      {
-        title: 'Item',
-        dataIndex: 'item',
-        key: 'item',
-        render: (item) => item.name
-      },
-      {
-        title: 'Type',
-        dataIndex: 'type',
-        key: 'type',
-        render: (object) => object.name,
-      },
-      {
-        title: 'Quantity',
-        dataIndex: 'quantity',
-        key: 'quantity',
-      },
-      {
-        title: 'Unit',
-        dataIndex: 'unit',
-        key: 'unit',
-        render: (object) => object.name,
-      },*/
     ],
+    nestedData: {
+      label: "Requested Items",
+      fields: [
+        {
+          title: 'Code',
+          dataIndex: 'item',
+          key: 'code',
+          render: (item) => item.type.code,
+        },
+        {
+          title: 'Item',
+          dataIndex: 'item',
+          key: 'item',
+          render: (item) => item.name
+        },
+        {
+          title: 'Type',
+          dataIndex: 'item',
+          key: 'type',
+          render: (item) => item.type.name,
+        },
+        {
+          title: 'Quantity',
+          dataIndex: 'quantityRequested',
+          key: 'quantity',
+        },
+        {
+          title: 'Unit',
+          dataIndex: 'unit',
+          key: 'unit',
+          render: (object) => object.name,
+        },
+      ],
+      data: "requestedItems"
+    },
     processData: (data) => {
       var processedData = []
 
@@ -270,13 +281,13 @@ const FormDetails = () => {
       return processedData
     },
     checkSelected: (selectedData, rowData) => {
-      if(typeof selectedData !== 'undefined' && selectedData.some((item) => item.prfNumber === rowData.number)){
+      if(typeof selectedData !== 'undefined' && selectedData !== null && selectedData.some((item) => item.prfNumber === rowData.number)){
         return true
       }
     }
   };
 
-  return {formDetails, modalDetails}
+  return {formDetails, tableDetails}
 
 }
 

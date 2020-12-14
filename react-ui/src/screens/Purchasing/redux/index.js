@@ -41,7 +41,7 @@ const purchaseOrderSlice = createSlice({
   name: 'purchaseOrders',
   initialState,
   reducers: {
-    resetData(state, action) {
+    clearData(state, action) {
       state.list = null
     },
   },
@@ -63,4 +63,5 @@ const purchaseOrderSlice = createSlice({
   },
 });
 
+export const { clearData } = purchaseOrderSlice.actions;
 export default purchaseOrderSlice.reducer;

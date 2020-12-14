@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton, Button, message } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, List, Drawer, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,11 +10,11 @@ import TableDisplay from '../../components/TableDisplay';
 import FormScreen from '../../components/forms/FormScreen';
 import FormDetails, { columns } from './data/'
 
-import { listPO, addPO, deletePO } from './redux';
-import { listVendor } from '../Maintenance/Vendors/redux';
-import { listD as listDepartment, listA as listArea } from '../Maintenance/DepartmentArea/redux';
+import { listPO, addPO, deletePO, clearData } from './redux';
+import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
+import { listD as listDepartment, listA as listArea, clearData as clearDA } from '../Maintenance/DepartmentArea/redux';
 import { listUnit } from '../Maintenance/Units/redux';
-import { listPR } from '../Dashboard/PurchaseRequests/redux';
+import { listPR, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -24,6 +24,9 @@ const Purchasing = () => {
   const [company, setCompany] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loadingCompany, setLoadingCompany] = useState(true);
+  
+  const [displayDrawer, setDisplayDrawer] = useState(false)
+  const [selectedPO, setSelectedPO] = useState(null)
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -35,15 +38,22 @@ const Purchasing = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const history = useHistory();
-  const {formDetails, modalDetails} = FormDetails();
+  const {formDetails, tableDetails} = FormDetails();
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false)
       dispatch(listPO({company: company})).then(() => {
         setLoading(false)
+        setSelectedPO(null)
       })
     });
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearVendor());
+      dispatch(clearDA());
+      dispatch(clearPR());
+    };
   }, [dispatch]);
 
   const handleChangeTab = (id) => {
@@ -107,9 +117,25 @@ const Purchasing = () => {
   };
 
   const handleDelete = (data) => {
+    dispatch(deletePO(data.id)).then((response) => {
+      setLoading(true);
+      if(response.payload.status === 200){
+        dispatch(listPO({ company })).then(() => {
+          setLoading(false);
+          message.success(`Successfully deleted ${data.number}`);
+        })
+      }
+      else {
+        setLoading(false);
+        message.error(`Unable to delete ${data.number}`);
+      }
+    });
   };
 
   const handleRetrieve = (data) => {
+    console.log(data)
+    setSelectedPO(data)
+    setDisplayDrawer(true)
   };
 
   const handleCancelButton = () => {
@@ -117,7 +143,6 @@ const Purchasing = () => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
     var orderedItems = []
     var totalAmount = 0
     data.orderedItems.forEach((item) => {
@@ -148,7 +173,6 @@ const Purchasing = () => {
       orderedItems: orderedItems,
       totalAmount: totalAmount
     }
-    console.log(payload)
     
     if(formMode === 'edit'){
       payload.id = formData.id
@@ -222,6 +246,65 @@ const Purchasing = () => {
                 />
                 )}
               </Col>
+                <Drawer
+                  width={"50%"}
+                  placement="right"
+                  closable={false}
+                  onClose={() => {
+                    setDisplayDrawer(false)
+                    setSelectedPO(null)
+                  }}
+                  visible={displayDrawer}
+                >
+                  {selectedPO === null ? (
+                    <Skeleton />
+                  ) : (
+                    <>
+                    <Descriptions
+                      bordered
+                      title={`Purchase Order ${selectedPO["number"]}`}
+                      size="default"
+                      layout="vertical"
+                    >
+                      {formDetails.form_items.map((item) => {
+                        if(!item.writeOnly){
+                          if(item.type === 'select'){
+                            const itemData = selectedPO[item.name]
+                            return <Descriptions.Item label={item.label}>{itemData[item.selectName]}</Descriptions.Item>
+                          }
+                          else if(item.type === 'list' || item.type === 'listSelect' || item.type === 'checkList'){
+                            return (
+                              <Descriptions.Item label={item.label}>
+                                <List
+                                  size="small"
+                                  bordered
+                                  dataSource={selectedPO[item.name]}
+                                  renderItem={listItem => (
+                                    <List.Item>
+                                      {item.render(listItem)}
+                                    </List.Item>
+                                  )
+                                  }
+                                />
+                              </Descriptions.Item>
+                            )
+                          }
+                          else if(item.type === 'customList'){
+                            return null
+                          }
+                          else {
+                            return <Descriptions.Item label={item.label}>{selectedPO[item.name]}</Descriptions.Item>
+                          }
+                        }
+                        else {
+                          return null
+                        }
+                        
+                      })}
+                    </Descriptions>
+                    </>
+                  )}
+                </Drawer>
             </Row>
           )}
         </Route>
@@ -232,7 +315,7 @@ const Purchasing = () => {
             values={formData}
             onCancel={handleCancelButton}
             formDetails={formDetails}
-            formModal={modalDetails}
+            formTable={tableDetails}
           />
         </Route>
         <Route path={`${path}/:id`}>
@@ -242,7 +325,7 @@ const Purchasing = () => {
             values={formData}
             onCancel={handleCancelButton}
             formDetails={formDetails} 
-            formModal={modalDetails}
+            formTable={tableDetails}
           />
         </Route>
       </Switch>
