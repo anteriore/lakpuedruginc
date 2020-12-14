@@ -80,6 +80,7 @@ const Purchasing = () => {
       orderedItems.push({
         ...item,
         unit: item.unit.id,
+        amount: null
       })
     })
     const formData = {

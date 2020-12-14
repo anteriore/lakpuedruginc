@@ -149,6 +149,7 @@ const FormDetails = () => {
             name: 'quantity',
             type: 'number',
             rules: [{ required: true }],
+            min: 0
           },
           {
             label: 'Unit',
@@ -162,11 +163,12 @@ const FormDetails = () => {
             name: 'unitPrice',
             type: 'number',
             rules: [{ required: true }],
+            min: 0
           },
           {
             label: 'Amount',
             name: 'amount',
-            render: (object) => { return object.quantity * object.unitPrice}
+            render: (object) => { console.log(object.quantity * object.unitPrice); return object.quantity * object.unitPrice}
           },
         ],
         summary: (data) => {
@@ -217,13 +219,13 @@ const FormDetails = () => {
         dataIndex: 'number',
         key: 'number',
       },
+      /*
       {
         title: 'Requested by',
         dataIndex: 'requestedBy',
         key: 'requestedBy',
         render: (item) => {console.log(item.requestedBy); return item.requestedBy.firstName + ' ' + item.requestedBy.lastName}
       },
-      /*
       {
         title: 'Code',
         dataIndex: 'code',

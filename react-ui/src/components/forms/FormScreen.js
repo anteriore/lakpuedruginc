@@ -12,6 +12,7 @@ const FormScreen = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [ tableData, setTableData ] = useState(null)
+  const tableSettings = formDetails.form_items.find((item) => item.name === formModal.name)
   const dateFormat = 'YYYY/MM/DD';
 
   const [loadingModal, setLoadingModal] = useState(true)
@@ -33,8 +34,19 @@ const FormScreen = (props) => {
     onSubmit(data)
   }
 
-  const handleInputChange = (event) => {
-    //setTableData(form.getFieldValue(formModal.name))
+  const handleInputChange = (item, index, event) => {
+    var data = { ...tableData}
+    var row = data[index]
+    row[item] = event
+    console.log(data)
+    console.log(row)
+    var dataArray = []
+    for (const [key, value] of Object.entries(data)) {
+      dataArray.push(value)
+    }
+    //console.log(data)
+    setTableData(dataArray)
+    console.log(tableData)
   };
 
   const FormItem = ({ item }) => {
@@ -163,27 +175,7 @@ const FormScreen = (props) => {
       
     }
     else if(item.type === 'table'){
-      return (
-      <Form.List label={item.label} name={item.name} rules={item.rules}>
-        {(fields, { errors }) => (
-          <Col span={20} offset={1}>
-            <Form.Item style={{float: "right"}}>
-              <Button type="primary" onClick={() => {setDisplayModal(true); setLoadingModal(false); }} icon={<SelectOutlined />}>
-                Select
-              </Button>
-            </Form.Item>
-            <Table
-              dataSource={tableData}
-              columns={renderTableColumns(fields, item)}
-              pagination={false}
-              locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-              summary={item.summary}
-            />
-            <Form.ErrorList errors={errors} />
-          </Col>
-        )}
-      </Form.List>
-    )
+      return null
     }
     else {
       return (
@@ -197,7 +189,7 @@ const FormScreen = (props) => {
   
 
   //for rendering tables
-  const renderTableColumns = (formFields, item) => {
+  const renderTableColumns = (item) => {
     var columns = []
     item.fields.forEach((field) => {
       if(!field.readOnly){
@@ -206,16 +198,10 @@ const FormScreen = (props) => {
             title: field.label,
             key: field.name,
             render: (row) => {
-              const index = form.getFieldValue(item.name).indexOf(row)
+              const index = tableData.indexOf(row)
+              const rowData = tableData[index]
               return (
-                <Form.Item
-                  {...formFields[index]}
-                  name={[formFields[index].name, field.name]}
-                  fieldKey={[formFields[index].fieldKey, field.name]}
-                  rules={field.rules}
-                >
-                  <InputNumber min={field.min} max={field.max} onChange={handleInputChange} />
-                </Form.Item>
+                  <InputNumber min={field.min} max={field.max} defaultValue={rowData[field.name]} onChange={(e) => {handleInputChange(field.name, index, e)}} />
               );
             },
           })
@@ -224,19 +210,12 @@ const FormScreen = (props) => {
           columns.push({
             key: field.name,
             visible: false,
-            render: (row) => {
+            /*render: (row) => {
               const index = form.getFieldValue(item.name).indexOf(row)
               return (
-                <Form.Item
-                  {...formFields[index]}
-                  name={[formFields[index].name, field.name]}
-                  fieldKey={[formFields[index].fieldKey, field.name]}
-                  hidden={true}
-                >
-                  {field.type === 'hidden' ? <Input/> : <InputNumber min={field.min} max={field.max}></InputNumber>}
-                </Form.Item>
+                field.type === 'hidden' ? <Input/> : <InputNumber min={field.min} max={field.max}></InputNumber>
               )
-            },
+            },*/
           })
           
         }
@@ -259,17 +238,11 @@ const FormScreen = (props) => {
                 return null
               }
               return (
-                <Form.Item
-                  {...formFields[index]}
-                  name={[formFields[index].name, field.name]}
-                  fieldKey={[formFields[index].fieldKey, field.name]}
-                >
                   <Select placeholder={field.placeholder}>
                     {field.choices.map((choice) => (
                       <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
                     ))}
                   </Select>
-                </Form.Item>
               )
             },
           })
@@ -394,11 +367,26 @@ const FormScreen = (props) => {
             name={formDetails.form_name}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
-            onFieldsChange={handleInputChange}
           >
             {formDetails.form_items.map((item) => (
               <FormItem item={item} />
             ))}
+          </Form>
+          {typeof tableSettings !== 'undefined' && 
+            <Col span={20} offset={1}>
+              <div style={{float: "right"}}>
+                <Button type="primary" onClick={() => {setDisplayModal(true); setLoadingModal(false); }} icon={<SelectOutlined />}>
+                  Select
+                </Button>
+              </div>
+              <Table
+                dataSource={tableData}
+                columns={renderTableColumns(tableSettings)}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                summary={tableSettings.summary}
+              />
+            </Col>}
             <div style={styles.tailLayout}>
               <Button type="primary" htmlType="submit">
                 Submit
@@ -413,7 +401,6 @@ const FormScreen = (props) => {
                 Cancel
               </Button>
             </div>
-          </Form>
           {!loadingModal && formModal !== null && typeof formModal !== 'undefined' &&
             <Modal
               visible={displayModal}
