@@ -18,6 +18,10 @@ public class SalesOrderProduct {
 	private Long id;
 	@OneToOne
 	private FinishedGood finishedGood;
+	//added
+	@OneToOne
+	private Product product;
+
 	private int quantity;
 	private String status = "Pending";
 	private String soNumber;
@@ -35,6 +39,14 @@ public class SalesOrderProduct {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Product getProduct(){
+		return product;
+	}
+
+	public void setProduct(Product product){
+		this.product = product;
 	}
 
 	public FinishedGood getFinishedGood() {
