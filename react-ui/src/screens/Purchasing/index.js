@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, List, Drawer, message } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ const Purchasing = () => {
   const [loading, setLoading] = useState(true);
   const [loadingCompany, setLoadingCompany] = useState(true);
   
-  const [displayDrawer, setDisplayDrawer] = useState(false)
+  const [displayModal, setDisplayModal] = useState(false)
   const [selectedPO, setSelectedPO] = useState(null)
 
   const [formTitle, setFormTitle] = useState('');
@@ -134,7 +134,7 @@ const Purchasing = () => {
 
   const handleRetrieve = (data) => {
     setSelectedPO(data)
-    setDisplayDrawer(true)
+    setDisplayModal(true)
   };
 
   const handleCancelButton = () => {
@@ -245,16 +245,20 @@ const Purchasing = () => {
                 />
                 )}
               </Col>
-                <Drawer
-                  width={"50%"}
-                  placement="right"
-                  closable={false}
-                  onClose={() => {
-                    setDisplayDrawer(false)
-                    setSelectedPO(null)
-                  }}
-                  visible={displayDrawer}
-                >
+              <Modal
+                title="Client Details"
+                visible={displayModal}
+                onOk={() => { 
+                  setDisplayModal(false)
+                  setSelectedPO(null)
+                }}
+                onCancel={() => { 
+                  setDisplayModal(false)
+                  setSelectedPO(null)
+                }}
+                width={1000}
+                cancelButtonProps={{ style: { display: 'none' } }}
+              >
                   {selectedPO === null ? (
                     <Skeleton />
                   ) : (
@@ -284,6 +288,7 @@ const Purchasing = () => {
                         
                       })}
                       </Descriptions>
+                      <Title level={5} style={{marginRight:"auto", marginTop: "2%", marginBottom: "1%"}}>{'Ordered Items:'}</Title>
                       {selectedPO[tableDetails.name].map((item) => {
                           return (
                           <Descriptions
@@ -315,7 +320,7 @@ const Purchasing = () => {
                         }
                     </>
                   )}
-                </Drawer>
+                </Modal>
             </Row>
           )}
         </Route>

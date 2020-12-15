@@ -396,6 +396,7 @@ const Clients = (props) => {
             onOk={closeModal}
             onCancel={closeModal}
             width={1000}
+            cancelButtonProps={{ style: { display: 'none' } }}
           >
             {loadingItem ? (
               <Skeleton />
