@@ -133,7 +133,6 @@ const Purchasing = () => {
   };
 
   const handleRetrieve = (data) => {
-    console.log(data)
     setSelectedPO(data)
     setDisplayDrawer(true)
   };
@@ -272,25 +271,8 @@ const Purchasing = () => {
                             const itemData = selectedPO[item.name]
                             return <Descriptions.Item label={item.label}>{itemData[item.selectName]}</Descriptions.Item>
                           }
-                          else if(item.type === 'list' || item.type === 'listSelect' || item.type === 'checkList'){
-                            return (
-                              <Descriptions.Item label={item.label}>
-                                <List
-                                  size="small"
-                                  bordered
-                                  dataSource={selectedPO[item.name]}
-                                  renderItem={listItem => (
-                                    <List.Item>
-                                      {item.render(listItem)}
-                                    </List.Item>
-                                  )
-                                  }
-                                />
-                              </Descriptions.Item>
-                            )
-                          }
-                          else if(item.type === 'customList'){
-                            return null
+                          else if(item.type === 'date'){
+                            return <Descriptions.Item label={item.label}>{moment(new Date(selectedPO[item.name])).format('DD/MM/YYYY')}</Descriptions.Item>
                           }
                           else {
                             return <Descriptions.Item label={item.label}>{selectedPO[item.name]}</Descriptions.Item>
@@ -301,7 +283,36 @@ const Purchasing = () => {
                         }
                         
                       })}
-                    </Descriptions>
+                      </Descriptions>
+                      {selectedPO[tableDetails.name].map((item) => {
+                          return (
+                          <Descriptions
+                            title={`[${item.item.code}] ${item.item.name}`}
+                            size="default"
+                          >
+                          {tableDetails.fields.map((field) => {
+                            if(field.type === 'hidden' || field.type === 'hiddenNumber'){
+                              return null
+                            }
+                            else if(typeof field.render === 'function'){
+                              return <Descriptions.Item label={field.label}>{field.render(item)}</Descriptions.Item>
+                            }
+                            else if(field.type === 'select'){
+                              if(typeof field.selectName === 'undefined'){
+                                field.selectName = "name"
+                              }
+                              const fieldData = item[field.name]
+                              return <Descriptions.Item label={field.label}>{fieldData[field.selectName]}</Descriptions.Item>
+                            }
+                            else {
+                              return <Descriptions.Item label={field.label}>{item[field.name]}</Descriptions.Item>
+                            }
+                          
+                          })}
+                          </Descriptions>
+                          )
+                          })
+                        }
                     </>
                   )}
                 </Drawer>
