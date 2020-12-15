@@ -13,7 +13,7 @@ import {
   message, 
   Layout
 } from 'antd';
-import _ from 'lodash';
+import _, { fromPairs } from 'lodash';
 import { formDetails } from './data';
 import { useForm } from 'antd/lib/form/Form';
 import FormItem from '../../../components/forms/FormItem';
@@ -21,14 +21,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { listDepot } from '../../Maintenance/Depots/redux';
 import { listSalesOrderByDepot } from '../SalesOrders/redux';
 import { updateList } from '../../../helpers/general-helper';
+import { useHistory, useParams } from 'react-router-dom';
+import { formatSOList } from './helpers';
 
 const {Title} = Typography;
 
 const InputForm = (props) => {
   const {title, company} = props;
+  const history = useHistory();
   const [contentLoading, setContentLoading] = useState(true)
   const [showSalesSection, setShowSalesSection] = useState(false)
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
+  const { user } = useSelector((state) => state.auth)
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
   const [form] = useForm();
@@ -36,6 +40,11 @@ const InputForm = (props) => {
 
   useEffect(() => {
     dispatch(listDepot()).then(() => {
+      form.setFieldsValue({
+        preparedBy: `${user.firstName} ${user.lastName}`,
+        releasedBy: `${user.firstName} ${user.lastName}`,
+        checkedBy: `${user.firstName} ${user.lastName}`, 
+      })
       setContentLoading(false)
     })
   },[dispatch]);
@@ -48,6 +57,7 @@ const InputForm = (props) => {
     let formItem = _.find(newForm.form_items, {name: 'depot'});
     
     const handleDepotChange = (value) => {
+      form.setFieldsValue({salesOrder: ""})
       setShowSalesSection(false);
       dispatch(listSalesOrderByDepot(value))
     }  
@@ -59,15 +69,15 @@ const InputForm = (props) => {
   useEffect(() => {
     if(form.getFieldValue('depot') !== undefined){
       if(salesOrderList.length === 0){
-        message.warning("There's no sales orders on this selected depot")
+        message.warning("There's no sales orders on this selected depot");
       }else{
         const newForm = tempFormDetails;
         const masterList = {
-          salesOrder: salesOrderList,
+          salesOrder: formatSOList(salesOrderList),
         }
 
         setTempFormDetails(updateList(newForm, masterList));
-        setShowSalesSection(true)
+        setShowSalesSection(true);
       }
     }
   }, [salesOrderList, tempFormDetails, form])
@@ -91,6 +101,22 @@ const InputForm = (props) => {
                 { showSalesSection ? (
                   _.dropRight(_.drop(tempFormDetails.form_items,3),1).map((item, i) => <FormItem key={i} item={item}/>)
                 ) : ''}
+                {showSalesSection ? (
+                  <Form.Item>
+                    Table Here
+                  </Form.Item>
+                ) : ''}
+                <FormItem item={_.last(formDetails.form_items)} />
+                <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
+                  <Space size={16}>
+                    <Button htmlType="button" onClick={() => history.goBack()}>
+                      Cancel
+                    </Button>
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
+                  </Space>
+                </Form.Item>
               </Form>
             </Layout>
           )}

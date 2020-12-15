@@ -1,8 +1,8 @@
 export const formatProduct = (rawProducts) => {
-
   if(rawProducts !== null && rawProducts !== undefined){
     const newFormat = {
       id: rawProducts.product.finishedGood.id,
+      product: rawProducts.product.id,
       code: rawProducts.product.finishedGood,
       finishedGood: rawProducts.product.finishedGood,
       quantity: rawProducts.quantity,
@@ -23,6 +23,7 @@ export const formatProductCalc = (rawProducts) => {
     existingProducts.push({
       id: product.finishedGood.id,
       code: product.finishedGood,
+      product: product.product.id,
       finishedGood: product.finishedGood,
       quantity: product.quantity,
       quantityRequested: product.quantityRequested,
@@ -39,6 +40,7 @@ export const formatPayload = (approvalId, company, value) => {
   let totalAmount = 0.0;
   let totalQuantity = 0;
   let formattedValue = {}
+  console.log(value)
 
   formattedValue = {...formattedValue, 
     company: {id: company},
@@ -61,6 +63,7 @@ export const formatPayload = (approvalId, company, value) => {
     totalQuantity = totalQuantity + prod.quantity;
     newProductValue = {...newProductValue, 
       finishedGood: {id: prod.finishedGood.id},
+      product: {id: prod.product},
       quantity: prod.quantity,
       quantityRemaining: prod.quantityRemaining,
       quantityRequested: prod.quantityRequested,
