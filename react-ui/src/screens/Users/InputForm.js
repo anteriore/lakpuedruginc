@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
+import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space, message } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -151,7 +151,7 @@ const InputForm = (props) => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
-    // message.error(errorInfo)
+    message.error("An error has occured. Please double check the information that you have provided.")
   };
 
   return (

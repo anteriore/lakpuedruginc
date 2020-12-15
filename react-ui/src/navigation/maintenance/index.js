@@ -27,11 +27,13 @@ export const routes = [
   {
     title: 'Finished Goods',
     path: '/finished_goods',
+    key: 'rnd-finished-good',
     component: FinishedGoods,
   },
   {
     title: 'Client',
     path: '/client',
+    key: 'mis-c',
     component: Clients,
   },
   {

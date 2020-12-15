@@ -7,6 +7,7 @@ const initialState = {
   token: '',
   expired: false,
   user: null,
+  permissions: null,
   error: null,
 };
 
@@ -63,6 +64,21 @@ const authSlice = createSlice({
     resetErrorMsg(state) {
       state.error = null;
     },
+    checkRoutePermissions(state, routes){
+      var routeList = []
+      console.log(routes)
+      routes.payload.forEach((route) => {
+        if(typeof route.key !== 'undefined'){
+          if(typeof state.permissions[route.key] !== 'undefined'){
+            routeList.push(route)
+          }
+        }
+        else {
+          routeList.push(route)
+        }
+      })
+      return routeList
+    },
   },
   extraReducers: {
     [login.pending]: (state) => {
@@ -94,6 +110,7 @@ const authSlice = createSlice({
       if (action.payload !== undefined && action.payload.status === 200) {
         state.status = 'succeeded';
         state.user = processUserData(action.payload.data, action.type);
+        state.permissions = action.payload.data.permissions
       } else if (typeof action.payload === 'undefined') {
         state.status = 'failed';
         state.error = 'Unable get user info';
@@ -109,6 +126,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { updateAuthState, resetErrorMsg } = authSlice.actions;
+export const { updateAuthState, checkRoutePermissions, resetErrorMsg } = authSlice.actions;
 
 export default authSlice.reducer;
