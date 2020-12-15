@@ -61,23 +61,8 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.expired = action.payload.expired;
     },
-    resetErrorMsg(state) {
+    resetErrorMsg(state, action) {
       state.error = null;
-    },
-    checkRoutePermissions(state, routes){
-      var routeList = []
-      console.log(routes)
-      routes.payload.forEach((route) => {
-        if(typeof route.key !== 'undefined'){
-          if(typeof state.permissions[route.key] !== 'undefined'){
-            routeList.push(route)
-          }
-        }
-        else {
-          routeList.push(route)
-        }
-      })
-      return routeList
     },
   },
   extraReducers: {
@@ -126,6 +111,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { updateAuthState, checkRoutePermissions, resetErrorMsg } = authSlice.actions;
+export const { updateAuthState, resetErrorMsg } = authSlice.actions;
 
 export default authSlice.reducer;

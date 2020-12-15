@@ -6,7 +6,6 @@ import { routes } from '../../navigation/maintenance';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
 
-import { checkRoutePermissions } from '../../redux/auth';
 import { listCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -14,21 +13,38 @@ const { Title } = Typography;
 
 const Maintenance = () => {
   const { path } = useRouteMatch();
-  const [company, setCompany] = useState(1);
   const dispatch = useDispatch();
+
+  const [company, setCompany] = useState(1);
   const [contentLoading, setContentLoading] = useState(true);
-  const { companyList } = useSelector((state) => state.company);
   const [moduleRoutes, setModuleRoutes] = useState([]);
+
+  const { companyList } = useSelector((state) => state.company);
+  const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
-      console.log(routes)
+      setModuleRoutes(routes)
+      //setModuleRoutes(getPermittedRoutes())
       setContentLoading(false);
     });
 
   }, [dispatch]);
 
-  
+  const getPermittedRoutes = () => {
+    var routeList = []
+    routes.forEach((route) => {
+      if(typeof route.key !== 'undefined'){
+        if(typeof permissions[route.key] !== 'undefined'){
+          routeList.push(route)
+        }
+      }
+      else {
+        routeList.push(route)
+      }
+    })
+    return routeList
+  }
 
   const handleChangeTab = (id) => {
     setCompany(id);

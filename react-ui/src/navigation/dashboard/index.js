@@ -2,7 +2,7 @@ import PurchaseRequests from '../../screens/Dashboard/PurchaseRequests';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
 
-export const modules = [
+export const routes = [
   {
     title: 'Purchase Requests',
     path: '/purchase',
