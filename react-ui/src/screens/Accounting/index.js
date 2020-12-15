@@ -1,63 +1,76 @@
-/* eslint-disable no-unused-vars, no-console, no-plusplus */
-import React, { useState } from 'react';
-import { Row, Col, Tabs } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Tabs, Typography, Skeleton } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { routes } from '../../navigation/accounting';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
 
+import { listCompany } from '../../redux/company';
+
 const { TabPane } = Tabs;
+const { Title } = Typography;
 
-function callback(key) {
-  console.log(key);
-}
-
-const Accounting = (props) => {
+const Accounting = () => {
   const { path } = useRouteMatch();
-  const [title, setTitle] = useState('Accounting');
-  const [modules, setModules] = useState([]);
+  const dispatch = useDispatch();
 
-  const renderRoutes = () => {
-    const routes = [];
+  const [company, setCompany] = useState(1);
+  const [contentLoading, setContentLoading] = useState(true);
+  const [moduleRoutes, setModuleRoutes] = useState([]);
 
-    for (let i = 0; i < modules.length; i++) {
-      const ComponentTag = modules[i].component;
-      routes.push(
-        <Route path={path + modules[i].path}>
-          <Container location={{ pathname: path + modules[i].path }}>
-            <ComponentTag title={modules[i].title} />
-          </Container>
-        </Route>
-      );
-    }
+  const companies = useSelector((state) => state.company.companyList);
 
-    return routes;
+  useEffect(() => {
+    dispatch(listCompany()).then(() => {
+      setModuleRoutes(routes)
+      setContentLoading(false)
+    });
+
+  }, [dispatch]);
+
+  const handleChangeTab = (id) => {
+    setCompany(id);
   };
 
   return (
-    <Switch>
-      <Route exact path={path}>
-        <Container location={{ pathname: path }}>
-          <Row>{title}</Row>
-          <Row>
-            <Col span={24}>
-              <Tabs defaultActiveKey="1" onChange={console.log('Change Tab')}>
-                <TabPane tab="Lakpue Drug Inc." key="1">
-                  <ModulesGrid company="LDI" modules={modules} />
-                </TabPane>
-                <TabPane tab="La Croesus Pharma Inc." key="2">
-                  <ModulesGrid company="LCP" modules={modules} />
-                </TabPane>
-                <TabPane tab="Fanfreluche Enterprises Inc." key="3">
-                  <ModulesGrid company="FEI" modules={modules} />
-                </TabPane>
-              </Tabs>
-            </Col>
-          </Row>
-        </Container>
-      </Route>
-      {renderRoutes()}
-    </Switch>
+    <>
+      <Switch>
+        <Route exact path={path}>
+          <Container location={{ pathname: path }}>
+            <Row>
+              <Title level={3}>Maintenance</Title>
+            </Row>
+            {contentLoading ? (
+              <Skeleton />
+            ) : (
+              <Row>
+                <Col span={24}>
+                  <Tabs defaultActiveKey="company.id" onChange={handleChangeTab}>
+                    {companies.map((val) => {
+                      return (
+                        <TabPane tab={val.name} key={val.id}>
+                          <ModulesGrid company={val.name} modules={moduleRoutes} />
+                        </TabPane>
+                      )
+                    })}
+                  </Tabs>
+                </Col>
+              </Row>
+            )}
+          </Container>
+        </Route>
+        {!contentLoading && moduleRoutes.map((module) => {
+          return (
+            <Route path={path + module.path}>
+              <Container location={{ pathname: path + module.path }}>
+                <module.component title={module.title} company={company} />
+              </Container>
+            </Route>
+          )
+        })}
+      </Switch>
+    </>
   );
 };
 
