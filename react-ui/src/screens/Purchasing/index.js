@@ -1,63 +1,351 @@
-/* eslint-disable no-unused-vars, no-console, no-plusplus */
-import React, { useState } from 'react';
-import { Row, Col, Tabs } from 'antd';
-import { Switch, Route, useRouteMatch } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, Modal, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 
 import Container from '../../components/container';
-import ModulesGrid from '../../components/ModulesGrid';
+import TableDisplay from '../../components/TableDisplay';
+import FormScreen from '../../components/forms/FormScreen';
+import FormDetails, { columns } from './data/'
+
+import { listPO, addPO, deletePO, clearData } from './redux';
+import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
+import { listD as listDepartment, listA as listArea, clearData as clearDA } from '../Maintenance/DepartmentArea/redux';
+import { listUnit } from '../Maintenance/Units/redux';
+import { listPR, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
+import { listCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
+const { Title } = Typography;
 
-function callback(key) {
-  console.log(key);
-}
+const Purchasing = () => {
+  const [company, setCompany] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [loadingCompany, setLoadingCompany] = useState(true);
+  
+  const [displayModal, setDisplayModal] = useState(false)
+  const [selectedPO, setSelectedPO] = useState(null)
 
-const Purchasing = (props) => {
+  const [formTitle, setFormTitle] = useState('');
+  const [formMode, setFormMode] = useState('');
+  const [formData, setFormData] = useState(null);
+
+  const purchaseOrders = useSelector((state) => state.purchaseOrders.list)
+  const companies = useSelector((state) => state.company.companyList);
+  
   const { path } = useRouteMatch();
-  const [title, setTitle] = useState('Purchasing');
-  const [modules, setModules] = useState([]);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const {formDetails, tableDetails} = FormDetails();
 
-  const renderRoutes = () => {
-    const routes = [];
+  useEffect(() => {
+    dispatch(listCompany()).then(() => {
+      setLoadingCompany(false)
+      dispatch(listPO({company: company})).then(() => {
+        setLoading(false)
+        setSelectedPO(null)
+      })
+    });
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearVendor());
+      dispatch(clearDA());
+      dispatch(clearPR());
+    };
+  }, [dispatch]);
 
-    for (let i = 0; i < modules.length; i++) {
-      const ComponentTag = modules[i].component;
-      routes.push(
-        <Route path={path + modules[i].path}>
-          <Container location={{ pathname: path + modules[i].path }}>
-            <ComponentTag title={modules[i].title} />
-          </Container>
-        </Route>
-      );
-    }
-
-    return routes;
+  const handleChangeTab = (id) => {
+    setCompany(id)
+    setLoading(true)
+    dispatch(listPO({company: id})).then(() => {
+      setLoading(false)
+    })
   };
 
+  const handleAdd = () => {
+    setFormTitle('Create Purchase Order');
+    setFormMode('add');
+    setFormData(null);
+    dispatch(listVendor({ company })).then(() => {
+      dispatch(listDepartment({ company })).then(() => {
+        dispatch(listArea({ company })).then(() => {
+          dispatch(listUnit({ company })).then(() => {
+            dispatch(listPR({ company })).then(() => {
+              history.push(`${path}/new`);
+            })
+          })
+        })
+      })
+    });
+  };
+
+  const handleUpdate = (data) => {
+    setFormTitle('Edit Purchase Order');
+    setFormMode('edit');
+    var poData = purchaseOrders.find(po => po.id === data.id)
+    var orderedItems = []
+    poData.orderedItems.forEach((item) => {
+      orderedItems.push({
+        ...item,
+        unit: item.unit.id,
+        amount: null
+      })
+    })
+    const formData = {
+      ...poData,
+      date: moment(new Date(data.date)) || moment(),
+      dueDate: moment(new Date(data.dueDate)) || moment(),
+      department: poData.department !== null ? poData.department.id : null,
+      area: poData.area !== null ? poData.area.id : null,
+      vendor: poData.vendor !== null ? poData.vendor.id : null,
+      orderedItems: orderedItems,
+    };
+    setFormData(formData);
+    dispatch(listVendor({ company })).then(() => {
+      dispatch(listDepartment({ company })).then(() => {
+        dispatch(listArea({ company })).then(() => {
+          dispatch(listUnit({ company })).then(() => {
+            dispatch(listPR({ company })).then(() => {
+              history.push(`${path}/${data.id}`);
+            })
+          })
+        })
+      })
+    });
+  };
+
+  const handleDelete = (data) => {
+    dispatch(deletePO(data.id)).then((response) => {
+      setLoading(true);
+      if(response.payload.status === 200){
+        dispatch(listPO({ company })).then(() => {
+          setLoading(false);
+          message.success(`Successfully deleted ${data.number}`);
+        })
+      }
+      else {
+        setLoading(false);
+        message.error(`Unable to delete ${data.number}`);
+      }
+    });
+  };
+
+  const handleRetrieve = (data) => {
+    setSelectedPO(data)
+    setDisplayModal(true)
+  };
+
+  const handleCancelButton = () => {
+    setFormData(null);
+  };
+
+  const onSubmit = (data) => {
+    var orderedItems = []
+    var totalAmount = 0
+    data.orderedItems.forEach((item) => {
+      orderedItems.push({
+        ...item,
+        unit: {
+          id: item.unit
+        },
+        amount: item.quantity * item.unitPrice
+      })
+      totalAmount += item.quantity * item.unitPrice
+    })
+    var payload = {
+      ...data,
+      number: null,
+      company: {
+        id: company
+      },
+      department: {
+        id: data.department,
+      },
+      area: {
+        id: data.area,
+      },
+      vendor: {
+        id: data.vendor,
+      },
+      orderedItems: orderedItems,
+      totalAmount: totalAmount
+    }
+    
+    if(formMode === 'edit'){
+      payload.id = formData.id
+      payload.number = formData.number
+    }
+
+    
+    dispatch(addPO(payload)).then((response) => {
+      setLoading(true);
+      if(response.payload.status === 200){
+        dispatch(listPO({ company })).then((response) => {
+          setLoading(false);
+          history.goBack();
+          if(formMode === 'edit'){
+            message.success(`Successfully updated ${formData.number}`);
+          }
+          else {
+            message.success(`Successfully added purchase order "${response.payload.number}"`);
+          }
+        })
+      }
+      else {
+        setLoading(false);
+        if(formMode === 'edit'){
+          message.error(`Unable to update ${formData.number}`);
+        }
+        else {
+          message.error(`Unable to add purchase order`);
+        }
+      }
+    })
+  }
+
   return (
-    <Switch>
-      <Route exact path={path}>
-        <Container location={{ pathname: path }}>
-          <Row>{title}</Row>
+    <Container location={{ pathname: path }}>
+      <Switch>
+        <Route exact path={path}>
           <Row>
-            <Col span={24}>
-              <Tabs defaultActiveKey="1" onChange={console.log('Change Tab')}>
-                <TabPane tab="Lakpue Drug Inc." key="1">
-                  <ModulesGrid company="LDI" modules={modules} />
-                </TabPane>
-                <TabPane tab="La Croesus Pharma Inc." key="2">
-                  <ModulesGrid company="LCP" modules={modules} />
-                </TabPane>
-                <TabPane tab="Fanfreluche Enterprises Inc." key="3">
-                  <ModulesGrid company="FEI" modules={modules} />
-                </TabPane>
-              </Tabs>
-            </Col>
+            <Title level={3}>Purchase Orders</Title>
           </Row>
-        </Container>
-      </Route>
-      {renderRoutes()}
-    </Switch>
+          {loadingCompany ? (
+            <Skeleton />
+          ) : (
+            <Row>
+              <Col span={20}>
+                <Tabs defaultActiveKey="company.id" onChange={handleChangeTab}>
+                  {companies.map((val) => (
+                    <TabPane tab={val.name} key={val.id}/>
+                  ))}
+                </Tabs>
+
+                <Button
+                  style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                  icon={<PlusOutlined />}
+                  onClick={(e) => {
+                    handleAdd();
+                  }}
+                >
+                  Add
+                </Button>
+                
+                {loading ? (
+                  <Skeleton />
+                ) : (
+                <TableDisplay
+                  columns={columns}
+                  data={purchaseOrders}
+                  handleRetrieve={handleRetrieve}
+                  handleUpdate={handleUpdate}
+                  handleDelete={handleDelete}
+                />
+                )}
+              </Col>
+              <Modal
+                title="Client Details"
+                visible={displayModal}
+                onOk={() => { 
+                  setDisplayModal(false)
+                  setSelectedPO(null)
+                }}
+                onCancel={() => { 
+                  setDisplayModal(false)
+                  setSelectedPO(null)
+                }}
+                width={1000}
+                cancelButtonProps={{ style: { display: 'none' } }}
+              >
+                  {selectedPO === null ? (
+                    <Skeleton />
+                  ) : (
+                    <>
+                    <Descriptions
+                      bordered
+                      title={`Purchase Order ${selectedPO["number"]}`}
+                      size="default"
+                      layout="vertical"
+                    >
+                      {formDetails.form_items.map((item) => {
+                        if(!item.writeOnly){
+                          if(item.type === 'select'){
+                            const itemData = selectedPO[item.name]
+                            return <Descriptions.Item label={item.label}>{itemData[item.selectName]}</Descriptions.Item>
+                          }
+                          else if(item.type === 'date'){
+                            return <Descriptions.Item label={item.label}>{moment(new Date(selectedPO[item.name])).format('DD/MM/YYYY')}</Descriptions.Item>
+                          }
+                          else {
+                            return <Descriptions.Item label={item.label}>{selectedPO[item.name]}</Descriptions.Item>
+                          }
+                        }
+                        else {
+                          return null
+                        }
+                        
+                      })}
+                      </Descriptions>
+                      <Title level={5} style={{marginRight:"auto", marginTop: "2%", marginBottom: "1%"}}>{'Ordered Items:'}</Title>
+                      {selectedPO[tableDetails.name].map((item) => {
+                          return (
+                          <Descriptions
+                            title={`[${item.item.code}] ${item.item.name}`}
+                            size="default"
+                          >
+                          {tableDetails.fields.map((field) => {
+                            if(field.type === 'hidden' || field.type === 'hiddenNumber'){
+                              return null
+                            }
+                            else if(typeof field.render === 'function'){
+                              return <Descriptions.Item label={field.label}>{field.render(item)}</Descriptions.Item>
+                            }
+                            else if(field.type === 'select'){
+                              if(typeof field.selectName === 'undefined'){
+                                field.selectName = "name"
+                              }
+                              const fieldData = item[field.name]
+                              return <Descriptions.Item label={field.label}>{fieldData[field.selectName]}</Descriptions.Item>
+                            }
+                            else {
+                              return <Descriptions.Item label={field.label}>{item[field.name]}</Descriptions.Item>
+                            }
+                          
+                          })}
+                          </Descriptions>
+                          )
+                          })
+                        }
+                    </>
+                  )}
+                </Modal>
+            </Row>
+          )}
+        </Route>
+        <Route path={`${path}/new`}>
+          <FormScreen
+            title={formTitle}
+            onSubmit={onSubmit}
+            values={formData}
+            onCancel={handleCancelButton}
+            formDetails={formDetails}
+            formTable={tableDetails}
+          />
+        </Route>
+        <Route path={`${path}/:id`}>
+          <FormScreen
+            title={formTitle}
+            onSubmit={onSubmit}
+            values={formData}
+            onCancel={handleCancelButton}
+            formDetails={formDetails} 
+            formTable={tableDetails}
+          />
+        </Route>
+      </Switch>
+    </Container>
   );
 };
 
