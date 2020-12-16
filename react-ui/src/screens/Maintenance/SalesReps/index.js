@@ -48,16 +48,62 @@ const SalesReps = (props) => {
       dataIndex: 'productCategory',
       key: 'productCategory',
       datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.productCategory.name.localeCompare(b.productCategory.name),
+      render: (object) => {
+        if(typeof object !== 'undefined' && object !== null ){
+          return object.name
+        }
+        else {
+          return null
+        }
+      },
+      sorter: (a, b) => {
+        if(typeof a.productCategory !== 'undefined' && a.productCategory !== null){
+          a = a.productCategory.name
+        }
+        else {
+          a = ''
+        }
+
+        if(typeof b.productCategory !== 'undefined' && b.productCategory !== null){
+          b = b.productCategory.name
+        }
+        else {
+          b = ''
+        }
+
+        return a.localeCompare(b)
+      },
     },
     {
       title: 'Region Code',
       dataIndex: 'regionCode',
       key: 'regionCode',
       datatype: 'string',
-      render: (object) => object.code,
-      sorter: (a, b) => a.regionCode.code.localeCompare(b.regionCode.code),
+      render: (object) => {
+        if(typeof object !== 'undefined' && object !== null ){
+          return object.code
+        }
+        else {
+          return null
+        }
+      },
+      sorter: (a, b) => {
+        if(typeof a.regionCode !== 'undefined' && a.regionCode !== null){
+          a = a.regionCode.code
+        }
+        else {
+          a = ''
+        }
+
+        if(typeof b.regionCode !== 'undefined' && b.regionCode !== null){
+          b = b.regionCode.code
+        }
+        else {
+          b = ''
+        }
+
+        return a.localeCompare(b)
+      },
     },
   ];
 

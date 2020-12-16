@@ -371,7 +371,7 @@ const Clients = (props) => {
           <Col span={20}>
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
+              icon={<PlusOutlined/>}
               onClick={(e) => {
                 handleAdd();
               }}
@@ -379,7 +379,7 @@ const Clients = (props) => {
               Add
             </Button>
             {loading ? (
-              <Skeleton />
+              <Skeleton/>
             ) : (
               <TableDisplay
                 columns={columns}
@@ -410,7 +410,8 @@ const Clients = (props) => {
               >
                 {formDetails.form_items.map((item) => {
                   if(item.type === 'select'){
-                    return <Descriptions.Item label={item.label}>{displayData[item.selectName]}</Descriptions.Item>
+                    var itemData = displayData[item.name]
+                    return <Descriptions.Item label={item.label}>{itemData !== null ? (itemData[item.selectName]) : (null)}</Descriptions.Item>
                   }
                   else if(item.type === 'list' || item.type === 'listSelect'){
                     return null
