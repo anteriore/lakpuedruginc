@@ -12,7 +12,7 @@ import FormScreen from '../../../components/forms/FormScreen';
 import { listPDCDisbursement, addPDCDisbursement, deletePDCDisbursement } from './redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const PDCDisbursements = (props) => {
   const dispatch = useDispatch();
@@ -190,7 +190,6 @@ const PDCDisbursements = (props) => {
             )}
           </Col>
           <Modal
-            title="PDC Disbursement Details"
             visible={displayModal}
             onOk={() => { 
               setDisplayModal(false)
@@ -209,7 +208,7 @@ const PDCDisbursements = (props) => {
                 <>
                 <Descriptions
                   bordered
-                  title={`${selectedPDC["number"]}`}
+                  title={`${selectedPDC['number']} Details`}
                   size="default"
                   layout="vertical"
                 >
@@ -239,8 +238,11 @@ const PDCDisbursements = (props) => {
                   {selectedPDC["cheques"].map((item) => {
                     return (
                       <Descriptions
-                        title={item['number']}
-                        size="default"
+                        style={{marginTop: "2%"}}
+                        bordered
+                        title={<Text>{item['number']}</Text>}
+                        size="small"
+                        layout="vertical"
                       >
                         {formDetails.form_items.find(item => item.name === 'cheques').fields.map((field) => {
                           if(field.type === 'hidden' || field.type === 'hiddenNumber'){
