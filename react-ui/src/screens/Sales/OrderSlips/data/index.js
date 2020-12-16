@@ -40,6 +40,57 @@ export const tableHeader = [
   },
 ];
 
+export const salesOrderHeader = [
+  { 
+    title: 'Lot #', 
+    dataIndex: 'lotNumber', 
+    key: 'lotNumber' 
+  },
+  { 
+    title: 'Expiration', 
+    dataIndex: 'expiration', 
+    key: 'expiration' 
+  },
+  { 
+    title: 'Stock on Hand', 
+    dataIndex: 'stockOnHand', 
+    key: 'stockOnHand' 
+  },
+  { 
+    title: 'Quantity', 
+    dataIndex: 'quantity', 
+    key: 'quantity' 
+  },
+]
+
+export const salesInfoHeader = [
+  { 
+    title: 'FG', 
+    dataIndex: 'fgCode', 
+    key: 'fgCode' 
+  },
+  { 
+    title: 'Quantity', 
+    dataIndex: 'quantity', 
+    key: 'quantity' 
+  },
+  { 
+    title: 'Remaining', 
+    dataIndex: 'quantityRemaining', 
+    key: 'quantityRemaining' 
+  },
+  { 
+    title: 'Unit Price', 
+    dataIndex: 'unitPrice', 
+    key: 'unitPrice',
+  },
+  { 
+    title: 'Amount', 
+    dataIndex: 'amount', 
+    key: 'amount',
+  },
+]
+
 export const formDetails = {
   form_name: 'order_slips',
   form_items: [
