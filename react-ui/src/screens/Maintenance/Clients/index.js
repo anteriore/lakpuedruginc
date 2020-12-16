@@ -371,7 +371,7 @@ const Clients = (props) => {
           <Col span={20}>
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
+              icon={<PlusOutlined/>}
               onClick={(e) => {
                 handleAdd();
               }}
@@ -379,7 +379,7 @@ const Clients = (props) => {
               Add
             </Button>
             {loading ? (
-              <Skeleton />
+              <Skeleton/>
             ) : (
               <TableDisplay
                 columns={columns}
@@ -396,6 +396,7 @@ const Clients = (props) => {
             onOk={closeModal}
             onCancel={closeModal}
             width={1000}
+            cancelButtonProps={{ style: { display: 'none' } }}
           >
             {loadingItem ? (
               <Skeleton />
