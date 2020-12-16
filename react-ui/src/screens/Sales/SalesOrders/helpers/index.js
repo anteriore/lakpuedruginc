@@ -1,7 +1,8 @@
 export const formatProduct = (rawProducts) => {
   if(rawProducts !== null && rawProducts !== undefined){
     const newFormat = {
-      id: rawProducts.product.finishedGood.id,
+      id: rawProducts.id,
+      finishedGoodID: rawProducts.product.finishedGood.id,
       product: rawProducts.product.id,
       code: rawProducts.product.finishedGood,
       finishedGood: rawProducts.product.finishedGood,
@@ -18,10 +19,10 @@ export const formatProduct = (rawProducts) => {
 
 export const formatProductCalc = (rawProducts) => {
   let existingProducts = [];
-  console.log(rawProducts);
   rawProducts.forEach((product) => {
     existingProducts.push({
-      id: product.finishedGood.id,
+      id: product.product.id,
+      finishedGoodID: product.finishedGood.id,
       code: product.finishedGood,
       product: product.product.id,
       finishedGood: product.finishedGood,
@@ -40,7 +41,6 @@ export const formatPayload = (approvalId, company, value) => {
   let totalAmount = 0.0;
   let totalQuantity = 0;
   let formattedValue = {}
-  console.log(value)
 
   formattedValue = {...formattedValue, 
     company: {id: company},
@@ -58,12 +58,11 @@ export const formatPayload = (approvalId, company, value) => {
 
   value.product.forEach((prod) => {
     let newProductValue = {}
-
     totalAmount = totalAmount + parseFloat(prod.amount);
     totalQuantity = totalQuantity + prod.quantity;
     newProductValue = {...newProductValue, 
       finishedGood: {id: prod.finishedGood.id},
-      product: {id: prod.product},
+      product: {id: prod.id},
       quantity: prod.quantity,
       quantityRemaining: prod.quantityRemaining,
       quantityRequested: prod.quantityRequested,
