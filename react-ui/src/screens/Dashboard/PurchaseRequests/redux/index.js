@@ -16,6 +16,7 @@ const initialState = {
     status: null,
     requestedItems: [],
   },
+  list: null
 };
 
 export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
@@ -153,6 +154,7 @@ const purchaseRequestSlice = createSlice({
     },
     clearData(state, action) {
       state.listData = []
+      state.list = null
     },
   },
   extraReducers: {
@@ -163,6 +165,7 @@ const purchaseRequestSlice = createSlice({
       if (action.payload !== undefined && action.payload.status === 200) {
         state.status = 'succeeded';
         state.listData = processData(action.payload.data, action.type);
+        state.list = action.payload.data
       } else {
         state.status = 'failed';
       }
