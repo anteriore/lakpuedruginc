@@ -65,6 +65,47 @@ const FormDetails = () => {
         rules: [{ required: true }],
       },
       {
+        label: 'Cheque(s)',
+        name: 'cheques',
+        type: 'list',
+        selectName: 'number',
+        rules: [{ required: true }],
+        fields: [
+          {
+            name: 'id',
+            type: 'hidden',
+          },
+          {
+            label: 'Cheque Number',
+            name: 'number',
+            type: 'string',
+            rules: [{ required: true, message: 'Cheque number is required' }],
+            placeholder: 'Cheque Number',
+          },
+          {
+            label: 'Date',
+            name: 'date',
+            type: 'date',
+            rules: [{ required: true, message: 'Date is required' }],
+          },
+          {
+            label: 'Amount',
+            name: 'amount',
+            prefix: 'Amount',
+            rules: [{ required: true, pattern: new RegExp("^[0-9]*\.?[0-9]*$"), message: 'Please enter a valid amount' }],
+            placeholder: 'Amount',
+
+          },
+          {
+            label: 'Remarks',
+            name: 'remarks',
+            type: 'string',
+            rules: [{ message: 'Please provide a valid remark' }],
+            placeholder: 'Remarks',
+          },
+        ]
+      },
+      {
         label: 'Remarks',
         name: 'remarks',
         type: 'textArea',
