@@ -20,7 +20,7 @@ public class SalesOrderProduct {
 	private FinishedGood finishedGood;
 	//added
 	@OneToOne
-	private Product product;
+	private ProductInventory productInventory;
 
 	private int quantity;
 	private String status = "Pending";
@@ -41,12 +41,12 @@ public class SalesOrderProduct {
 		this.id = id;
 	}
 
-	public Product getProduct(){
-		return product;
+	public ProductInventory getProduct(){
+		return productInventory;
 	}
 
-	public void setProduct(Product product){
-		this.product = product;
+	public void setProduct(ProductInventory productInventory){
+		this.productInventory = productInventory;
 	}
 
 	public FinishedGood getFinishedGood() {
