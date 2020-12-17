@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Input, InputNumber, DatePicker, Select, Checkbox, Modal, Row, Col, Typography, Space, Table, Empty } from 'antd';
+import { Form, Button, Input, InputNumber, DatePicker, Select, Checkbox, Modal, Row, Col, Typography, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -66,6 +66,7 @@ const FormScreen = (props) => {
       }
 
       if(item.choices === null || item.choices.length === 0){
+        message.error(`Unable to perform this action. There is no existing data for the ${item.label}`)
         history.push(`/${path.split('/')[1]}`)
         return null
       }
@@ -123,7 +124,7 @@ const FormScreen = (props) => {
         <Form.List label={item.label} name={item.name} rules={item.rules}>
           {(fields, { add, remove, errors }) => (
             <>
-              <div {...styles.listTailLayout} type="dashed" style={{display: 'flex', justifyContent: 'flex-end'}}>
+              <div {...styles.listTailLayout} type="dashed" style={{display: 'flex'}}>
                 <Title level={5} style={{marginRight:"auto"}}>{item.label}</Title>
                 <Form.Item>
                   <Button onClick={() => add()} icon={<PlusOutlined />}>
@@ -181,6 +182,37 @@ const FormScreen = (props) => {
                          <DatePicker format={dateFormat}/>
                         </Form.Item>
                       );
+                    }
+                    else if(itemField.type === 'select'){
+                      if(typeof itemField.render === 'undefined') {
+                        if (typeof itemField.selectName === 'undefined') {
+                          itemField.selectName = 'name'
+                        }
+                        itemField.render = choice => choice[itemField.selectName]
+                      }
+                
+                      if(itemField.choices === null || itemField.choices.length === 0){
+                        message.error(`Unable to perform this action. There is no existing data for the ${itemField.label}`)
+                        history.push(`/${path.split('/')[1]}`)
+                        return null
+                      }
+                      else {
+                        return (
+                          <Form.Item
+                            {...field}
+                            {...styles.listItems}
+                            name={[field.name, itemField.name]}
+                            fieldKey={[field.fieldKey, itemField.name]}
+                            rules={itemField.rules}
+                          >
+                            <Select placeholder={itemField.placeholder}>
+                              {itemField.choices.map((choice) => (
+                                <Select.Option value={choice.id}>{itemField.render(choice)}</Select.Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                        );
+                      }
                     }
                     else {
                       return (
@@ -259,6 +291,7 @@ const FormScreen = (props) => {
               }
         
               if(field.choices === null || field.choices.length === 0){
+                message.error(`Unable to perform this action. There is no existing data for the ${field.label}`)
                 history.push(`/${path.split('/')[1]}`)
                 return null
               }
@@ -473,7 +506,6 @@ const styles = {
   },
   listLayout: { 
     display: 'flex', 
-    justifyContent: 'flex-end',
     marginBottom: '2%',
   },
   tailLayout: {

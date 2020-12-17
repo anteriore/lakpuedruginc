@@ -208,7 +208,7 @@ const Clients = (props) => {
     dispatch(listCluster({ company })).then(() => {
       dispatch(listInstitution({ company })).then(() => {
         dispatch(listS({ company })).then(() => {
-      history.push(`${path}/new`);
+          history.push(`${path}/new`);
         })
       })
     });
