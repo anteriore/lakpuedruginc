@@ -16,7 +16,7 @@ const logger = createLogger({
 const persistConfig = {
   key: 'root',
   storage,
-  //whitelist: ['auth'],
+  whitelist: ['auth'],
   stateReconciler: autoMergeLevel1,
 };
 

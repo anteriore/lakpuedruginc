@@ -66,8 +66,8 @@ const FormScreen = (props) => {
       }
 
       if(item.choices === null || item.choices.length === 0){
-        message.error(`Unable to perform this action. There is no existing data for the ${item.label}`)
-        history.push(`/${path.split('/')[1]}`)
+        var lastIndex = path.lastIndexOf("/");
+        history.push(path.substring(0, lastIndex))
         return null
       }
       else {
@@ -192,8 +192,9 @@ const FormScreen = (props) => {
                       }
                 
                       if(itemField.choices === null || itemField.choices.length === 0){
-                        message.error(`Unable to perform this action. There is no existing data for the ${itemField.label}`)
-                        history.push(`/${path.split('/')[1]}`)
+                        var lastIndex = path.lastIndexOf("/");
+                        history.push(path.substring(0, lastIndex))
+
                         return null
                       }
                       else {
@@ -291,8 +292,8 @@ const FormScreen = (props) => {
               }
         
               if(field.choices === null || field.choices.length === 0){
-                message.error(`Unable to perform this action. There is no existing data for the ${field.label}`)
-                history.push(`/${path.split('/')[1]}`)
+                var lastIndex = path.lastIndexOf("/");
+                history.push(path.substring(0, lastIndex))
                 return null
               }
               return (
