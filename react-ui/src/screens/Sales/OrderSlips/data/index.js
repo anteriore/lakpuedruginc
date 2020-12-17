@@ -153,3 +153,26 @@ export const formDetails = {
     },
   ]
 }
+
+export const initValueForm = [
+  {
+    name: "number",
+    type: "input"
+  },
+  {
+    name: "date",
+    type: "date"
+  },
+  {
+    name: "depot",
+    type: "select"
+  },
+  {
+    name: "salesOrder",
+    type: "select"
+  },
+  {
+    name: "remarks",
+    type: "input"
+  }
+]

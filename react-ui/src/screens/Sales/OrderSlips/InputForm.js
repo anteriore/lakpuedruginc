@@ -12,8 +12,9 @@ import {
   Layout
 } from 'antd';
 import _ from 'lodash';
-import { formDetails, salesOrderHeader, salesInfoHeader } from './data';
+import { formDetails, salesOrderHeader, salesInfoHeader, initValueForm } from './data';
 import { useForm } from 'antd/lib/form/Form';
+import { fromatInitForm } from '../../../helpers/general-helper';
 import FormItem from '../../../components/forms/FormItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { listDepot } from '../../Maintenance/Depots/redux';
@@ -25,8 +26,9 @@ import { formatSOList, formatSalesProduct, formatSalesInfo } from './helpers';
 const {Title} = Typography;
 
 const InputForm = (props) => {
-  const {title, company} = props;
+  const {title, onSubmit} = props;
   const history = useHistory();
+  const { id } = useParams();
   const [contentLoading, setContentLoading] = useState(true)
   const [showSalesSection, setShowSalesSection] = useState(false)
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
@@ -34,8 +36,23 @@ const InputForm = (props) => {
   const { user } = useSelector((state) => state.auth)
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
+  const { orderSlipsList } = useSelector((state) => state.sales.orderSlips);
   const [form] = useForm();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(id !== undefined && orderSlipsList.length !== 0){
+      const selectedOrderSlips = _.find(orderSlipsList, (o) => {
+        return o.id === parseInt(id,10);
+      });
+      
+      form.setFieldsValue(fromatInitForm(selectedOrderSlips, initValueForm))
+      dispatch(listSalesOrderByDepot(selectedOrderSlips.depot.id)).then(() => {
+        setSelectedSales(selectedOrderSlips.salesOrder);
+        setShowSalesSection(true);
+      })
+    }
+  },[dispatch,orderSlipsList, id, form])
 
   useEffect(() => {
     dispatch(listDepot()).then(() => {
@@ -43,7 +60,7 @@ const InputForm = (props) => {
         preparedBy: `${user.firstName} ${user.lastName}`,
         releasedBy: `${user.firstName} ${user.lastName}`,
         checkedBy: `${user.firstName} ${user.lastName}`, 
-      })
+      });
       setContentLoading(false)
     })
   },[dispatch, form, user]);
@@ -97,6 +114,11 @@ const InputForm = (props) => {
     />
   };
 
+  const onFinish = (value) => {
+    onSubmit(value, selectedSales);
+    history.goBack();
+  }
+
   return (
     <>
       <Row>
@@ -110,6 +132,7 @@ const InputForm = (props) => {
             <Layout style={styles.layout}>
               <Form
                 form={form}
+                onFinish={onFinish}
                 {...styles.formLayout}
               >
                 { _.dropRight(tempFormDetails.form_items, 5).map((item, i) => <FormItem key={i} item={item}/>)}

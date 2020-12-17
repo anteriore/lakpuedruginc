@@ -51,3 +51,24 @@ export const formatSalesInfo = (sales) => {
 
   return null;
 }
+
+export const formatPayload = (approvalId, company, value, salesOrder) => {
+  let formattedValue = {}
+  formattedValue = {...formattedValue,
+    number: value.number,
+    date: value.date,
+    preparedBy: {id: approvalId},
+    checkedBy: {id: approvalId},
+    approvedBy: {id: approvalId},
+    releasedBy: {id: approvalId},
+    salesOrder: {id: value.salesOrder},
+    client: {id: salesOrder.client.id},
+    company: {"id": company},
+    depot: {id: salesOrder.depot.id},
+    remarks: value.remarks,
+    type: "OS",
+    orderedProducts: []
+  }
+
+  return formattedValue;
+}
