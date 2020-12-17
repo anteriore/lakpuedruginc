@@ -246,7 +246,7 @@ const Purchasing = () => {
                 )}
               </Col>
               <Modal
-                title="Client Details"
+                title="Purchase Order Details"
                 visible={displayModal}
                 onOk={() => { 
                   setDisplayModal(false)

@@ -140,7 +140,7 @@ const FormScreen = (props) => {
                 }
               </div>
               {fields.map(field => (
-                 <Space key={field.key} style={styles.listLayout}>
+                 <Space key={field.key} style={styles.listLayout} align="baseline">
                    
                   {item.fields.map(itemField => {
                     if(itemField.type === 'hidden')
@@ -156,6 +156,32 @@ const FormScreen = (props) => {
                         </Form.Item>
                       )
                     }
+                    else if(itemField.type === 'number') {
+                      return (
+                        <Form.Item
+                          {...field}
+                          {...styles.listItems}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          rules={itemField.rules}
+                        >
+                          <InputNumber placeholder={itemField.placeholder} prefix={item.prefix} suffix={item.suffix} />
+                        </Form.Item>
+                      )
+                    }
+                    else if(itemField.type === 'date'){
+                      return (
+                        <Form.Item
+                          {...field}
+                          {...styles.listItems}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          rules={itemField.rules}
+                        >
+                         <DatePicker format={dateFormat}/>
+                        </Form.Item>
+                      );
+                    }
                     else {
                       return (
                         <Form.Item
@@ -165,12 +191,12 @@ const FormScreen = (props) => {
                           fieldKey={[field.fieldKey, itemField.name]}
                           rules={itemField.rules}
                         >
-                          <Input placeholder={itemField.placeholder} />
+                          <Input placeholder={itemField.placeholder} prefix={item.prefix} suffix={item.suffix} />
                         </Form.Item>
                       )
                     }
                   })}
-                  <MinusCircleOutlined style={{alignSelf: "center"}} onClick={() => remove(field.name)} />
+                  <MinusCircleOutlined onClick={() => remove(field.name)} />
                 </Space>
               ))}
               <Form.ErrorList errors={errors} />
@@ -467,7 +493,7 @@ const styles = {
     borderStyle: "solid",
     borderWidth: 1,
     padding: "2%",
-    backgroundColor: "#FAFAFA",
+    //backgroundColor: "#FAFAFA",
     width: '87.5%',
     marginBottom: "2%",
   },
