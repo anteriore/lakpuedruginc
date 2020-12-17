@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listCluster = createAsyncThunk('listCluster', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -51,6 +52,9 @@ const clusterCodeSlice = createSlice({
     },
     [listCluster.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      if(data.length === 0) {
+        Message.warning('There is no existing data for institutional codes')
+      }
       return {
         ...state,
         clusterList: data,

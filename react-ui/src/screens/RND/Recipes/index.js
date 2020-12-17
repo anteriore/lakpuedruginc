@@ -15,7 +15,6 @@ const { Title } = Typography;
 
 const Clients = (props) => {
   const [loading, setLoading] = useState(true);
-  const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   
@@ -43,7 +42,6 @@ const Clients = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Create Recipe');
     setFormMode('add');
     setFormData(null);
     dispatch(getFGList({ company })).then(() => {
@@ -67,7 +65,65 @@ const Clients = (props) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
+    var ingredients = []
+    data.ingredients.forEach((ingredient) => {
+      ingredients.push({
+        ...ingredient,
+        item: {
+          id: ingredient.item
+        },
+        quantity: parseInt(ingredient.quantity)
+      })
+    })
+    var payload = {
+      date: data.date,
+      remarks: data.remarks,
+      finishedGood: {
+        id: data.finishedGood
+      },
+      company: {
+        id: company,
+      },
+      ingredientGroups: [{
+        name: data.activeIngredientGroup,
+        ingredients: ingredients
+      }]
+    };
+    console.log(payload)
+
+    if (formMode === 'edit') {
+      payload.id = formData.id
+      dispatch(addRecipe(payload)).then((response) => {
+        setLoading(true);
+        if(response.payload.status === 200){
+          dispatch(listRecipe({ company })).then(() => {
+            setLoading(false);
+            history.goBack();
+            message.success(`Successfully updated the recipe`);
+          })
+        }
+        else {
+          setLoading(false);
+          message.error(`Unable to update recipe`);
+        }
+      });
+    } else if (formMode === 'add') {
+      dispatch(addRecipe(payload)).then((response) => {
+        setLoading(true);
+        if(response.payload.status === 200){
+          dispatch(listRecipe({ company })).then(() => {
+            setLoading(false);
+            history.goBack();
+            message.success(`Successfully added the recipe`);
+          })
+        }
+        else {
+          setLoading(false);
+          message.error(`Unable to add recipe. Please double check the provided information.`);
+        }
+      });
+    }
+    setFormData(null);
   };
 
   const closeModal = () => {
@@ -80,7 +136,7 @@ const Clients = (props) => {
     <Switch>
       <Route path={`${path}/new`}>
         <FormScreen
-          title={formTitle}
+          title={'Create Recipe'}
           onSubmit={onSubmit}
           values={formData}
           onCancel={handleCancelButton}
@@ -89,7 +145,7 @@ const Clients = (props) => {
       </Route>
       <Route path={`${path}/:id`}>
         <FormScreen
-          title={formTitle}
+          title={'Update Recipe'}
           onSubmit={onSubmit}
           values={formData}
           onCancel={handleCancelButton}
