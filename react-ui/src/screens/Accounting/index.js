@@ -39,7 +39,7 @@ const Accounting = () => {
         <Route exact path={path}>
           <Container location={{ pathname: path }}>
             <Row>
-              <Title level={3}>Maintenance</Title>
+              <Title level={3}>Accounting</Title>
             </Row>
             {contentLoading ? (
               <Skeleton />
