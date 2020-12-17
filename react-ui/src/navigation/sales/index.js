@@ -1,4 +1,5 @@
 import SalesOrders from '../../screens/Sales/SalesOrders';
+import OrderSlips from '../../screens/Sales/OrderSlips';
 
 export const routes = [
   {
@@ -9,7 +10,7 @@ export const routes = [
   {
     title: 'Order Slips',
     path: '/order-slips',
-    component: '',
+    component: OrderSlips,
   },
   {
     title: 'Sales Invoices',

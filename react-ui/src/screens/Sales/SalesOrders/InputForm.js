@@ -115,8 +115,8 @@ const InputForm = (props) => {
         precisionEnabled: col.precisionEnabled,
         precision: col.precision,
         handleSave: (data, record) => {
-          let currentProduct = _.clone(_.find(requestedProductList, (prod) => prod.id === record.finishedGood.id ));
-          Object.entries(data).forEach(([key, value]) => {
+          let currentProduct = _.clone(_.find(requestedProductList, (prod) => prod.id === record.id ));
+            Object.entries(data).forEach(([key, value]) => {
             currentProduct = {...currentProduct, [key]: value}
 
             if(key === 'quantityRequested'){
@@ -130,11 +130,10 @@ const InputForm = (props) => {
               currentProduct = {...currentProduct, amount: (currentProduct.quantityRequested * value).toFixed(2)}
             }
           });
-          
-          const indexProduct = _.indexOf(requestedProductList, (object) => object.finishedGood.id === record.id)
+
+          const indexProduct = _.findIndex(requestedProductList, (object) => object.id === record.id)
           let newArray = _.clone(requestedProductList);
           newArray.splice(indexProduct, 1, currentProduct);
-        
           setRequestedProductList(newArray)
           form.setFieldsValue({product: newArray})
         }
@@ -154,7 +153,9 @@ const InputForm = (props) => {
               onChange={(e) => {
                 onItemSelect(row, e.target.checked);
               }}
-              checked={!!requestedProductList.some((item) => item.id === row.product.finishedGood.id)}
+              checked={!!requestedProductList.some((item) => {
+                return item.id === row.id
+              })}
             />
           );
         },
@@ -207,24 +208,24 @@ const InputForm = (props) => {
               >
                 {_.dropRight(tempFormDetails.form_items).map((item, i) => <FormItem key={i} item={item}/>)}
                 <Form.Item wrapperCol={{span: 15, offset: 4}} name="product"  rules={[{ required: true, message: "Please select a product" }]}>
-                <Table 
-                    components={component}
-                    columns={modProductColumn}
-                    rowClassName={() => 'editable-row'}
-                    dataSource={requestedProductList}
-                    pagination={false}
-                  />
+                  <Table 
+                      components={component}
+                      columns={modProductColumn}
+                      rowClassName={() => 'editable-row'}
+                      dataSource={requestedProductList}
+                      pagination={false}
+                    />
+                  </Form.Item>
+                  <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
+                  <Button
+                    onClick={() => {
+                      selectProductItems();
+                    }}
+                    style={{ width: '40%', float: 'right' }}
+                  >
+                    Select/Remove Product item(s)
+                  </Button>
                 </Form.Item>
-                <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
-                <Button
-                  onClick={() => {
-                    selectProductItems();
-                  }}
-                  style={{ width: '40%', float: 'right' }}
-                >
-                  Select/Remove Product item(s)
-                </Button>
-              </Form.Item>
                 <FormItem item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>

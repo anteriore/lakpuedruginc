@@ -1,3 +1,4 @@
+
 export const tableHeader = [
   {
     title: 'Date',
@@ -35,9 +36,12 @@ export const tableHeader = [
 
 export const tableProduct = [
   {
-    title: 'FG ID',
+    title: 'ID',
     dataIndex: 'id',
-    render: (object) => object
+  },
+  {
+    title: 'FG ID',
+    dataIndex: 'finishedGoodID',
   },
   {
     title: 'Code',
@@ -47,7 +51,8 @@ export const tableProduct = [
   {
     title: 'Finished Good',
     dataIndex: 'finishedGood',
-    render: (object) => object.name
+    key: 'finishedGood',
+    render: (object) => object.name,
   },
   {
     title: 'Stock on Hand',
