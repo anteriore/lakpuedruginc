@@ -3,6 +3,7 @@ import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions, E
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import moment from 'moment';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data/'
@@ -28,7 +29,7 @@ const Clients = (props) => {
   const { path } = useRouteMatch();
 
   const { formDetails } = FormDetails()
-  const data = useSelector((state) => state.rnd.recipes.list);
+  const recipes = useSelector((state) => state.rnd.recipes.list);
 
   useEffect(() => {
     dispatch(listRecipe({ company })).then((response) => {
@@ -52,6 +53,28 @@ const Clients = (props) => {
   };
 
   const handleUpdate = (data) => {
+    setFormMode('edit');
+    var recipeData = recipes.find(po => po.id === data.id)
+    var ingredients = []
+    recipeData.activeIngredientGroup.ingredients.forEach((item) => {
+      ingredients.push({
+        ...item,
+        item: item.item.id
+      })
+    })
+    const formData = {
+      id: recipeData.id,
+      finishedGood: recipeData.finishedGood !== null ? recipeData.finishedGood.id : null,
+      date: moment(new Date(recipeData.date)) || moment(),
+      activeIngredientGroup: recipeData.activeIngredientGroup.name,
+      ingredients: ingredients
+    };
+    setFormData(formData);
+    dispatch(getFGList({ company })).then(() => {
+      dispatch(listI({ company })).then(() => {
+        history.push(`${path}/${data.id}`);
+      })
+    });
   };
 
   const handleDelete = (data) => {
@@ -176,7 +199,7 @@ const Clients = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={data}
+                data={recipes}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
