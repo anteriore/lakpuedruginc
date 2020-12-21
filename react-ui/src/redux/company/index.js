@@ -13,11 +13,16 @@ const companySlice = createSlice({
   name: 'company',
   initialState: {
     companyList: [],
+    selectedCompany: 1,
     status: '',
     statusMessage: '',
     action: '',
   },
-  reducers: {},
+  reducers: {
+    setCompany(state, selectedCompany) {
+      state.selectedCompany = selectedCompany.payload;
+    },
+  },
   extraReducers: {
     [listCompany.pending]: (state) => {
       return {
@@ -50,4 +55,5 @@ const companySlice = createSlice({
   },
 });
 
+export const { setCompany } = companySlice.actions;
 export default companySlice.reducer;

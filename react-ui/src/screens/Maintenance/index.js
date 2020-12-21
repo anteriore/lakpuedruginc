@@ -5,17 +5,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { routes as MaintenanceRoutes } from '../../navigation/maintenance';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
-import { listCompany } from '../../redux/company';
+import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
 const Maintenance = () => {
   const { path } = useRouteMatch();
-  const [company, setCompany] = useState(1);
   const dispatch = useDispatch();
   const [contentLoading, setContentLoading] = useState(true);
-  const { companyList } = useSelector((state) => state.company);
+  const companies = useSelector((state) => state.company.companyList);
+  const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -24,7 +24,7 @@ const Maintenance = () => {
   }, [dispatch]);
 
   const handleChangeTab = (id) => {
-    setCompany(id);
+    dispatch(setCompany(id))
   };
 
   return (
@@ -40,8 +40,8 @@ const Maintenance = () => {
             ) : (
               <Row>
                 <Col span={24}>
-                  <Tabs defaultActiveKey="company.id" onChange={handleChangeTab}>
-                    {companyList.map((val) => (
+                  <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
+                    {companies.map((val) => (
                       <TabPane tab={val.name} key={val.id}>
                         <ModulesGrid company={val.name} modules={MaintenanceRoutes} />
                       </TabPane>
@@ -55,7 +55,7 @@ const Maintenance = () => {
         {MaintenanceRoutes.map((module) => (
           <Route path={path + module.path}>
             <Container location={{ pathname: path + module.path }}>
-              <module.component title={module.title} company={company} />
+              <module.component title={module.title} company={selectedCompany} />
             </Container>
           </Route>
         ))}

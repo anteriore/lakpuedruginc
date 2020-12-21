@@ -22,7 +22,7 @@ import Container from '../../components/container';
 import InputForm from './InputForm';
 
 import { listUser, addUser, deleteUser, clearData, listPermission } from './redux';
-import { listCompany } from '../../redux/company';
+import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
 
@@ -39,9 +39,9 @@ const Users = () => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
 
-  const { companyList } = useSelector((state) => state.company);
   const [companyLoading, setCompanyLoading] = useState(true);
-  const [company, setCompany] = useState(1);
+  const companies = useSelector((state) => state.company.companyList);
+  const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
   const [displayDrawer, setDisplayDrawer] = useState(false);
   const [contentLoading, setContentLoading] = useState(true);
@@ -164,9 +164,9 @@ const Users = () => {
     setFormTitle('Add User');
     setFormMode('add');
     setFormData(null);
-    dispatch(listD({ company })).then(() => {
-      dispatch(listDepot({ company })).then(() => {
-        dispatch(listPermission({ company })).then(() => {
+    dispatch(listD({ selectedCompany })).then(() => {
+      dispatch(listDepot({ selectedCompany })).then(() => {
+        dispatch(listPermission({ selectedCompany })).then(() => {
           history.push(`${path}/new`);
         });
       });
@@ -198,9 +198,9 @@ const Users = () => {
       permissions: permissionsData,
     };
     setFormData(formData);
-    dispatch(listD({ company })).then(() => {
-      dispatch(listDepot({ company })).then(() => {
-        dispatch(listPermission({ company })).then(() => {
+    dispatch(listD({ selectedCompany })).then(() => {
+      dispatch(listDepot({ selectedCompany })).then(() => {
+        dispatch(listPermission({ selectedCompany })).then(() => {
           history.push(`${path}/${data.id}`);
         });
       });
@@ -211,7 +211,7 @@ const Users = () => {
     dispatch(deleteUser(data.id)).then((response) => {
       setContentLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listUser({ company })).then(() => {
+        dispatch(listUser({ selectedCompany })).then(() => {
           setContentLoading(false);
           message.success(`Successfully deleted ${data.firstName} ${data.lastName}`);
         });
@@ -257,7 +257,7 @@ const Users = () => {
     const payload = {
       ...data,
       company: {
-        id: company,
+        id: selectedCompany,
       },
       department: {
         id: data.department,
@@ -270,7 +270,7 @@ const Users = () => {
       dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
-          updateUserDepartments(company);
+          updateUserDepartments(selectedCompany);
           history.goBack();
           message.success(`Successfully updated ${data.firstName} ${data.lastName}`);
         } else {
@@ -282,7 +282,7 @@ const Users = () => {
       dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
-          updateUserDepartments(company);
+          updateUserDepartments(selectedCompany);
           history.goBack();
           message.success(`Successfully added ${data.firstName} ${data.lastName}`);
         } else {
@@ -322,7 +322,7 @@ const Users = () => {
 
   const handleChangeTab = (companyID) => {
     setContentLoading(true);
-    setCompany(companyID);
+    dispatch(setCompany(companyID));
     updateUserDepartments(companyID);
   };
 
@@ -405,8 +405,8 @@ const Users = () => {
           ) : (
             <Row>
               <Col span={20}>
-                <Tabs onChange={handleChangeTab}>
-                  {companyList.map((company) => {
+                <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
+                  {companies.map((company) => {
                     return (
                       <TabPane tab={company.name} key={company.id} disabled={contentLoading} />
                     );
