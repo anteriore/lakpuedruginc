@@ -40,17 +40,13 @@ const ItemTypes = (props) => {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.type.name.localeCompare(b.type.name),
+      datatype: 'object',
     },
     {
       title: 'Unit',
       dataIndex: 'unit',
       key: 'unit',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.unit.name.localeCompare(b.unit.name),
+      datatype: 'object',
     },
   ];
 

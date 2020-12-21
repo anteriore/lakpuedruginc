@@ -45,9 +45,8 @@ const Depots = (props) => {
       title: 'Division',
       dataIndex: 'productDivision',
       key: 'productDivision',
-      datatype: 'string',
-      render: (object) => object.title,
-      sorter: (a, b) => a.productDivision.title.localeCompare(b.productDivision.title),
+      name: 'title',
+      datatype: 'object',
     },
   ];
 

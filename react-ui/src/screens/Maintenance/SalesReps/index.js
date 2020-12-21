@@ -47,58 +47,15 @@ const SalesReps = (props) => {
       title: 'Category',
       dataIndex: 'productCategory',
       key: 'productCategory',
-      datatype: 'string',
-      render: (object) => {
-        if (typeof object !== 'undefined' && object !== null) {
-          return object.name;
-        }
-
-        return null;
-      },
-      sorter: (a, b) => {
-        if (typeof a.productCategory !== 'undefined' && a.productCategory !== null) {
-          a = a.productCategory.name;
-        } else {
-          a = '';
-        }
-
-        if (typeof b.productCategory !== 'undefined' && b.productCategory !== null) {
-          b = b.productCategory.name;
-        } else {
-          b = '';
-        }
-
-        return a.localeCompare(b);
-      },
+      datatype: 'object',
     },
     {
       title: 'Region Code',
       dataIndex: 'regionCode',
       key: 'regionCode',
-      datatype: 'string',
-      render: (object) => {
-        if (typeof object !== 'undefined' && object !== null) {
-          return object.code;
-        }
-
-        return null;
-      },
-      sorter: (a, b) => {
-        if (typeof a.regionCode !== 'undefined' && a.regionCode !== null) {
-          a = a.regionCode.code;
-        } else {
-          a = '';
-        }
-
-        if (typeof b.regionCode !== 'undefined' && b.regionCode !== null) {
-          b = b.regionCode.code;
-        } else {
-          b = '';
-        }
-
-        return a.localeCompare(b);
-      },
-    },
+      name: 'code',
+      datatype: 'object',
+    }
   ];
 
   const formDetail = {
