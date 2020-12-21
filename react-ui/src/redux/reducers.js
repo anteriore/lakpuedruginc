@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
   users,
   company,
   purchaseOrders,
-  sales
+  sales,
 });
 
 export default rootReducer;

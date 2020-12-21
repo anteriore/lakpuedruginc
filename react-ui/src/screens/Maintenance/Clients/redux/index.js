@@ -8,9 +8,11 @@ const initialState = {
 
 export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  console.log(`rest/clients/${payload.company}?token=${accessToken}`)
-  console.log(payload,"Checking payload")
-  const response = await axiosInstance.get(`rest/clients/company/${payload.company}/?token=${accessToken}`);
+  console.log(`rest/clients/${payload.company}?token=${accessToken}`);
+  console.log(payload, 'Checking payload');
+  const response = await axiosInstance.get(
+    `rest/clients/company/${payload.company}/?token=${accessToken}`
+  );
   return response;
 });
 
@@ -31,9 +33,7 @@ export const deleteClient = createAsyncThunk('deleteClient', async (payload, thu
 export const getClient = createAsyncThunk('getClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(
-    `rest/clients/${payload.id}?token=${accessToken}`
-  );
+  const response = await axiosInstance.get(`rest/clients/${payload.id}?token=${accessToken}`);
   return response;
 });
 
@@ -42,7 +42,7 @@ const clientSlice = createSlice({
   initialState,
   reducers: {
     clearData(state, action) {
-      state.list = null
+      state.list = null;
     },
   },
   extraReducers: {

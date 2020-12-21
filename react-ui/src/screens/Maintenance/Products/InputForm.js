@@ -1,15 +1,30 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { Row, Col, Typography, Input, InputNumber,Button, Form, Layout, Select, DatePicker, Space, Modal, Table, Skeleton } from 'antd';
-import { getFGList } from '../FinishedGoods/redux';
+import {
+  Row,
+  Col,
+  Typography,
+  Input,
+  InputNumber,
+  Button,
+  Form,
+  Layout,
+  Select,
+  DatePicker,
+  Space,
+  Modal,
+  Table,
+  Skeleton,
+} from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
+import { getFGList } from '../FinishedGoods/redux';
 import { tableHeaderFinishedGoods, formDetails } from './data';
 import { listDepot } from '../Depots/redux';
 import { listC as listClass } from '../Classification/redux';
 import { listPC } from '../ProductCategories/redux';
 import { listPD } from '../ProductDivisions/redux';
 import { listUnit } from '../Units/redux';
-import _ from 'lodash';
 import { updateList, formatPayload, formatInitialFormVal } from './helper';
 
 const { Title } = Typography;
@@ -25,43 +40,43 @@ const InputForm = (props) => {
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [finshedGoodsMddal, setFinishedGoodsModal] = useState(false);
   const [selectedFinishedGood, setSelectedFinishedGood] = useState('');
-  const { list: fGList} = useSelector((state) => state.maintenance.finishedGoods);
-  const { 
-    depots, 
-    classification, 
-    productCategories, 
+  const { list: fGList } = useSelector((state) => state.maintenance.finishedGoods);
+  const {
+    depots,
+    classification,
+    productCategories,
     productDivisions,
     units,
-    products
+    products,
   } = useSelector((state) => state.maintenance);
-  
+
   useEffect(() => {
-    dispatch(getFGList())
-  },[dispatch]);
+    dispatch(getFGList());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listDepot()).then(() => {
       dispatch(listPC()).then(() => {
         dispatch(listClass()).then(() => {
           dispatch(listPD()).then(() => {
-              dispatch(listUnit()).then(() => {
-                setContentLoading(false);
-              })
+            dispatch(listUnit()).then(() => {
+              setContentLoading(false);
+            });
           });
         });
       });
     });
-  },[dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
-    if (id !== undefined && products.productList.length !== 0){
+    if (id !== undefined && products.productList.length !== 0) {
       const selectedProduct = _.find(products.productList, (o) => {
-        return o.id === parseInt(id,10);
-      })
+        return o.id === parseInt(id, 10);
+      });
       setSelectedFinishedGood(selectedProduct.finishedGood);
-      form.setFieldsValue(formatInitialFormVal(selectedProduct))
+      form.setFieldsValue(formatInitialFormVal(selectedProduct));
     }
-  }, [products, id, form])
+  }, [products, id, form]);
 
   useEffect(() => {
     const newForm = tempFormDetails;
@@ -71,41 +86,34 @@ const InputForm = (props) => {
       category: productCategories.list,
       division: productDivisions.list,
       bigUnit: units.unitList,
-      smallUnit: units.unitList
-    }
+      smallUnit: units.unitList,
+    };
     setTempFormDetails(updateList(newForm, masterList));
-  },[
-    depots,
-    classification, 
-    productCategories, 
-    productDivisions, 
-    units, 
-    tempFormDetails
-  ])
+  }, [depots, classification, productCategories, productDivisions, units, tempFormDetails]);
 
   const onItemSelect = (values) => {
-    const {code, name} = values;
-    setSelectedFinishedGood(values)
-    form.setFieldsValue({fg_code: code, fg_name: name})
-    setFinishedGoodsModal(false)
-  }
+    const { code, name } = values;
+    setSelectedFinishedGood(values);
+    form.setFieldsValue({ fg_code: code, fg_name: name });
+    setFinishedGoodsModal(false);
+  };
 
   const onFinish = (values) => {
-    if( id !== undefined ){
-      values.id = parseInt(id,10);
+    if (id !== undefined) {
+      values.id = parseInt(id, 10);
     }
     onSubmit(formatPayload(values, selectedFinishedGood));
     history.goBack();
-  }
+  };
 
-  const FormItem = ({item}) => {
+  const FormItem = ({ item }) => {
     if (item.type === 'select') {
       if (typeof item.selectName === 'undefined') {
-        item.selectName = 'name'
+        item.selectName = 'name';
       }
       return (
         <Item label={item.label} name={item.name} rules={item.rules}>
-          <Select style={{textAlign: 'left'}} placeholder={item.placeholder}>
+          <Select style={{ textAlign: 'left' }} placeholder={item.placeholder}>
             {item.choices.map((choice) => (
               <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
             ))}
@@ -116,29 +124,38 @@ const InputForm = (props) => {
 
     if (item.type === 'number') {
       return (
-        <Item label={item.label} name={item.name} wrapperCol={{
-          span: 2,
-          offset: 2
-        }}>
-          <InputNumber style={{width: '10rem'}} min={1} max={50} placeholder={item.placeholder} />
+        <Item
+          label={item.label}
+          name={item.name}
+          wrapperCol={{
+            span: 2,
+            offset: 2,
+          }}
+        >
+          <InputNumber style={{ width: '10rem' }} min={1} max={50} placeholder={item.placeholder} />
         </Item>
       );
     }
-    
+
     if (item.type === 'date') {
       return (
-        <Item label={item.label} name={item.name} rules={item.rules} wrapperCol={{ span: 4, offset: 2 }}>
+        <Item
+          label={item.label}
+          name={item.name}
+          rules={item.rules}
+          wrapperCol={{ span: 4, offset: 2 }}
+        >
           <DatePicker style={{ float: 'left', width: '25rem' }} />
         </Item>
       );
     }
-    
+
     return (
       <Item label={item.label} name={item.name} rules={item.rules}>
         <Input placeholder={item.placeholder} />
       </Item>
     );
-  }
+  };
 
   return (
     <div>
@@ -147,45 +164,48 @@ const InputForm = (props) => {
       </Row>
       <Row>
         <Col span={20} offset={1}>
-            {contentLoading ? (
-              <Skeleton/>
-            ) : (
-              <Layout style={styles.layout}>
-                <Form onFinish={onFinish} form={form} {...styles.formLayout}>
-                  <Item label="FG Code">
+          {contentLoading ? (
+            <Skeleton />
+          ) : (
+            <Layout style={styles.layout}>
+              <Form onFinish={onFinish} form={form} {...styles.formLayout}>
+                <Item label="FG Code">
                   <Row gutter={8}>
                     <Col span={15}>
-                      <Item
-                        name="fg_code" 
-                        noStyle
-                      >
-                        <Input disabled/>
+                      <Item name="fg_code" noStyle>
+                        <Input disabled />
                       </Item>
                     </Col>
                     <Col span={9}>
-                      <Button style={{width: '100%'}} onClick={() => setFinishedGoodsModal(true)}>Select Finished Goods</Button>
+                      <Button style={{ width: '100%' }} onClick={() => setFinishedGoodsModal(true)}>
+                        Select Finished Goods
+                      </Button>
                     </Col>
                   </Row>
-                  </Item>
-                  <Item label="FG Name" name="fg_name" rules={[{ required: true, message: 'Please select finished goods' }]}>
-                    <Input disabled/>
-                  </Item>
-                  {tempFormDetails.form_items.map((item) => (
-                    <FormItem item={item}/>
-                  ))}
-                  <Item wrapperCol={{ offset: 13, span: 5 }}>
-                    <Space size={16}>
-                      <Button htmlType="button" onClick={() => history.goBack()}>
-                        Cancel
-                      </Button>
-                      <Button type="primary" htmlType="submit">
-                        Submit
-                      </Button>
-                    </Space>
-                  </Item>
-                </Form>
-              </Layout>
-            )}
+                </Item>
+                <Item
+                  label="FG Name"
+                  name="fg_name"
+                  rules={[{ required: true, message: 'Please select finished goods' }]}
+                >
+                  <Input disabled />
+                </Item>
+                {tempFormDetails.form_items.map((item) => (
+                  <FormItem item={item} />
+                ))}
+                <Item wrapperCol={{ offset: 13, span: 5 }}>
+                  <Space size={16}>
+                    <Button htmlType="button" onClick={() => history.goBack()}>
+                      Cancel
+                    </Button>
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
+                  </Space>
+                </Item>
+              </Form>
+            </Layout>
+          )}
         </Col>
         <Modal
           title="List of Finished Goods"
@@ -201,9 +221,9 @@ const InputForm = (props) => {
             columns={tableHeaderFinishedGoods}
             pagination={false}
             onRow={(index) => {
-              return{
-                onClick: event => onItemSelect(index)
-              }
+              return {
+                onClick: (event) => onItemSelect(index),
+              };
             }}
           />
         </Modal>
@@ -221,7 +241,7 @@ const styles = {
     },
     wrapperCol: {
       span: 11,
-      offset: 2
+      offset: 2,
     },
   },
   layout: {

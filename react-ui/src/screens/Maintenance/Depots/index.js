@@ -79,7 +79,6 @@ const Depots = (props) => {
       dispatch(clearData());
       dispatch(clearArea());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -107,13 +106,12 @@ const Depots = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteDepot(data.id)).then((response) => {
       setLoading(true);
-      if(response.payload.status === 200){
+      if (response.payload.status === 200) {
         dispatch(listDepot({ company })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.name}`);
-        })
-      }
-      else {
+        });
+      } else {
         setLoading(false);
         message.error(`Unable to delete ${data.name}`);
       }
@@ -142,13 +140,12 @@ const Depots = (props) => {
 
       dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           dispatch(listDepot({ company })).then(() => {
             setLoading(false);
             message.success(`Successfully updated ${data.name}`);
-          })
-        }
-        else {
+          });
+        } else {
           setLoading(false);
           message.error(`Unable to update ${data.name}`);
         }
@@ -165,13 +162,12 @@ const Depots = (props) => {
       };
       dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           dispatch(listDepot({ company })).then(() => {
             setLoading(false);
             message.success(`Successfully added ${data.name}`);
-          })
-        }
-        else {
+          });
+        } else {
           setLoading(false);
           message.error(`Unable to add ${data.name}`);
         }

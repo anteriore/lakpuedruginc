@@ -56,8 +56,8 @@ const groupCategorySlice = createSlice({
   initialState,
   reducers: {
     clearData(state, action) {
-      state.groupList = null
-      state.categoryList = null
+      state.groupList = null;
+      state.categoryList = null;
     },
   },
   extraReducers: {

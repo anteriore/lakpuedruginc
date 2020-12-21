@@ -4,7 +4,9 @@ import * as message from '../../../../datas/constants/response-message.constant'
 
 export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/sales-orders/company/${payload}?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `/rest/sales-orders/company/${payload}?token=${accessToken}`
+  );
 
   return response;
 });
@@ -31,12 +33,17 @@ export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payl
   return response;
 });
 
-export const listSalesOrderByDepot = createAsyncThunk('listSalesOrderByDepot', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/sales-orders/depot/${payload}?token=${accessToken}`);
+export const listSalesOrderByDepot = createAsyncThunk(
+  'listSalesOrderByDepot',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `/rest/sales-orders/depot/${payload}?token=${accessToken}`
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
 const salesOrdersSlice = createSlice({
   name: 'salesOrders',

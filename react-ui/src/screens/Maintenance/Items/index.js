@@ -135,7 +135,7 @@ const ItemTypes = (props) => {
   };
 
   const onSubmit = (values) => {
-    var payload = {
+    const payload = {
       ...values,
       company: {
         id: company,
@@ -148,7 +148,7 @@ const ItemTypes = (props) => {
       },
     };
     if (formMode === 'edit') {
-      payload.id = formData.id
+      payload.id = formData.id;
 
       dispatch(addI(payload)).then(() => {
         dispatch(listI({ company }));

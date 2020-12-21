@@ -35,7 +35,7 @@ const accountCodeSlice = createSlice({
   initialState,
   reducers: {
     clearData(state, action) {
-      state.list = null
+      state.list = null;
     },
   },
   extraReducers: {

@@ -61,8 +61,8 @@ const departmentAreaSlice = createSlice({
   initialState,
   reducers: {
     clearData(state, action) {
-      state.deptList = null
-      state.areaList = null
+      state.deptList = null;
+      state.areaList = null;
     },
   },
   extraReducers: {

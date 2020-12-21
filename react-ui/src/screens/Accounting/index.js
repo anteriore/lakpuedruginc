@@ -23,10 +23,9 @@ const Accounting = () => {
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
-      setModuleRoutes(routes)
-      setContentLoading(false)
+      setModuleRoutes(routes);
+      setContentLoading(false);
     });
-
   }, [dispatch]);
 
   const handleChangeTab = (id) => {
@@ -52,7 +51,7 @@ const Accounting = () => {
                         <TabPane tab={val.name} key={val.id}>
                           <ModulesGrid company={val.name} modules={moduleRoutes} />
                         </TabPane>
-                      )
+                      );
                     })}
                   </Tabs>
                 </Col>
@@ -60,15 +59,16 @@ const Accounting = () => {
             )}
           </Container>
         </Route>
-        {!contentLoading && moduleRoutes.map((module) => {
-          return (
-            <Route path={path + module.path}>
-              <Container location={{ pathname: path + module.path }}>
-                <module.component title={module.title} company={company} />
-              </Container>
-            </Route>
-          )
-        })}
+        {!contentLoading &&
+          moduleRoutes.map((module) => {
+            return (
+              <Route path={path + module.path}>
+                <Container location={{ pathname: path + module.path }}>
+                  <module.component title={module.title} company={company} />
+                </Container>
+              </Route>
+            );
+          })}
       </Switch>
     </>
   );

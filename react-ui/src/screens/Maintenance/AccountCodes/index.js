@@ -58,7 +58,6 @@ const AccountCodes = (props) => {
     return function cleanup() {
       dispatch(clearData());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {

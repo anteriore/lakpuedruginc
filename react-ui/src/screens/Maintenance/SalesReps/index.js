@@ -49,29 +49,26 @@ const SalesReps = (props) => {
       key: 'productCategory',
       datatype: 'string',
       render: (object) => {
-        if(typeof object !== 'undefined' && object !== null ){
-          return object.name
+        if (typeof object !== 'undefined' && object !== null) {
+          return object.name;
         }
-        else {
-          return null
-        }
+
+        return null;
       },
       sorter: (a, b) => {
-        if(typeof a.productCategory !== 'undefined' && a.productCategory !== null){
-          a = a.productCategory.name
-        }
-        else {
-          a = ''
-        }
-
-        if(typeof b.productCategory !== 'undefined' && b.productCategory !== null){
-          b = b.productCategory.name
-        }
-        else {
-          b = ''
+        if (typeof a.productCategory !== 'undefined' && a.productCategory !== null) {
+          a = a.productCategory.name;
+        } else {
+          a = '';
         }
 
-        return a.localeCompare(b)
+        if (typeof b.productCategory !== 'undefined' && b.productCategory !== null) {
+          b = b.productCategory.name;
+        } else {
+          b = '';
+        }
+
+        return a.localeCompare(b);
       },
     },
     {
@@ -80,29 +77,26 @@ const SalesReps = (props) => {
       key: 'regionCode',
       datatype: 'string',
       render: (object) => {
-        if(typeof object !== 'undefined' && object !== null ){
-          return object.code
+        if (typeof object !== 'undefined' && object !== null) {
+          return object.code;
         }
-        else {
-          return null
-        }
+
+        return null;
       },
       sorter: (a, b) => {
-        if(typeof a.regionCode !== 'undefined' && a.regionCode !== null){
-          a = a.regionCode.code
-        }
-        else {
-          a = ''
-        }
-
-        if(typeof b.regionCode !== 'undefined' && b.regionCode !== null){
-          b = b.regionCode.code
-        }
-        else {
-          b = ''
+        if (typeof a.regionCode !== 'undefined' && a.regionCode !== null) {
+          a = a.regionCode.code;
+        } else {
+          a = '';
         }
 
-        return a.localeCompare(b)
+        if (typeof b.regionCode !== 'undefined' && b.regionCode !== null) {
+          b = b.regionCode.code;
+        } else {
+          b = '';
+        }
+
+        return a.localeCompare(b);
       },
     },
   ];
@@ -148,14 +142,13 @@ const SalesReps = (props) => {
 
   useEffect(() => {
     dispatch(listS({ company })).then(() => {
-      setLoading(false)
+      setLoading(false);
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearC());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -165,7 +158,7 @@ const SalesReps = (props) => {
     dispatch(listC({ company })).then(() => {
       dispatch(listRegionCode({ company })).then(() => {
         setDisplayForm(true);
-      })
+      });
     });
   };
 
@@ -181,20 +174,19 @@ const SalesReps = (props) => {
     dispatch(listC({ company })).then(() => {
       dispatch(listRegionCode({ company })).then(() => {
         setDisplayForm(true);
-      })
+      });
     });
   };
 
   const handleDelete = (data) => {
     dispatch(deleteS(data.id)).then((response) => {
       setLoading(true);
-      if(response.payload.status === 200){
+      if (response.payload.status === 200) {
         message.success(`Successfully deleted ${data.name}`);
         dispatch(listS({ company })).then(() => {
           setLoading(false);
-        })
-      }
-      else {
+        });
+      } else {
         message.success(`Unable to delete ${data.name}`);
         setLoading(false);
       }
@@ -225,13 +217,12 @@ const SalesReps = (props) => {
       };
 
       dispatch(addS(payload)).then((response) => {
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
           dispatch(listS({ company })).then(() => {
             setLoading(false);
-          })
-        }
-        else {
+          });
+        } else {
           message.success(`Unable to update ${data.name}`);
           setLoading(false);
         }
@@ -251,13 +242,12 @@ const SalesReps = (props) => {
       };
       dispatch(addS(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           message.success(`Successfully added ${data.name}`);
           dispatch(listS({ company })).then(() => {
             setLoading(false);
-          })
-        }
-        else {
+          });
+        } else {
           message.success(`Unable to added ${data.name}`);
           setLoading(false);
         }

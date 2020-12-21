@@ -3,14 +3,14 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 
 import Dashboard from '../../screens/Dashboard';
 import Maintenance from '../../screens/Maintenance';
-import Users from '../../screens/Users/';
-import Accounting from '../../screens/Accounting/';
-import Sales from '../../screens/Sales/';
+import Users from '../../screens/Users';
+import Accounting from '../../screens/Accounting';
+import Sales from '../../screens/Sales';
 // import MMD from '../../screens/MMD/';
 // import RND from '../../screens/RND/';
-import Purchasing from '../../screens/Purchasing/';
+import Purchasing from '../../screens/Purchasing';
 // import Costing from '../../screens/Costing/';
-import Account from '../../screens/Account/';
+import Account from '../../screens/Account';
 
 const AdminRoutes = () => {
   return (

@@ -71,16 +71,18 @@ const TableDisplay = (props) => {
                 cancelText="No"
               >
                 {deleteEnabled ? (
-                   <Button
-                   icon={<DeleteOutlined />}
-                   type="text"
-                   onClick={(e) => {
-                     e.stopPropagation();
-                   }}
-                 >
-                   Delete
-                 </Button>
-                ) : ''}
+                  <Button
+                    icon={<DeleteOutlined />}
+                    type="text"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  ''
+                )}
               </Popconfirm>
             </div>
           );
@@ -115,10 +117,7 @@ const TableDisplay = (props) => {
       onRow={(record, rowIndex) => {
         return {
           onClick: () => {
-
-            if(typeof(handleRetrieve) === 'function')
-
-              handleRetrieve(record);
+            if (typeof handleRetrieve === 'function') handleRetrieve(record);
           }, // click row
         };
       }}
@@ -129,8 +128,8 @@ const TableDisplay = (props) => {
 export default TableDisplay;
 
 TableDisplay.defaultProps = {
-  deleteEnabled: true
-}
+  deleteEnabled: true,
+};
 
 const styles = {
   crudColumn: {

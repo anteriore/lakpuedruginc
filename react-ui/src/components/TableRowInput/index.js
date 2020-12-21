@@ -1,8 +1,5 @@
-import React, {useState, useContext}  from 'react';
-import {
-  Form,
-  InputNumber
-} from 'antd';
+import React, { useState, useContext } from 'react';
+import { Form, InputNumber } from 'antd';
 
 const EditableContext = React.createContext();
 
@@ -39,10 +36,10 @@ export const EditableCell = ({
     form.setFieldsValue({ [dataIndex]: record[dataIndex] });
   };
 
-  const save = async e => {
+  const save = async (e) => {
     try {
       const values = await form.validateFields();
-      handleSave(values, record)
+      handleSave(values, record);
     } catch (errInfo) {}
   };
 
@@ -61,24 +58,23 @@ export const EditableCell = ({
         ]}
       >
         {limit ? (
-          <InputNumber 
-            inputRef  
+          <InputNumber
+            inputRef
             onChange={save}
-            min={minLimit} 
-            max={maxLimit} 
+            min={minLimit}
+            max={maxLimit}
             precision={precisionEnabled ? precision : 0}
-            formatter={value => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
         ) : (
-          <InputNumber 
-            inputRef  
-            min={minLimit} 
+          <InputNumber
+            inputRef
+            min={minLimit}
             onChange={save}
             precision={precisionEnabled ? precision : 0}
-            formatter={value => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
-        ) }
-        
+        )}
       </Form.Item>
     ) : (
       <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={toggleEdit}>
