@@ -320,6 +320,7 @@ const Purchasing = () => {
                         </Descriptions>
                       );
                     })}
+                    </Descriptions>
                   </>
                 )}
               </Modal>
