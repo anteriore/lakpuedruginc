@@ -8,9 +8,11 @@ const initialState = {
 
 export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  console.log(`rest/clients/${payload.company}?token=${accessToken}`)
+  console.log(`rest/clients/${payload.company}?token=${accessToken}`);
 
-  const response = await axiosInstance.get(`rest/purchase-orders/company/${payload.company}/?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `rest/purchase-orders/company/${payload.company}/?token=${accessToken}`
+  );
   return response;
 });
 
@@ -24,7 +26,10 @@ export const addPO = createAsyncThunk('addPO', async (payload, thunkAPI) => {
 export const deletePO = createAsyncThunk('deletePO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/purchase-orders/delete?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/purchase-orders/delete?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 
@@ -42,7 +47,7 @@ const purchaseOrderSlice = createSlice({
   initialState,
   reducers: {
     clearData(state, action) {
-      state.list = null
+      state.list = null;
     },
   },
   extraReducers: {

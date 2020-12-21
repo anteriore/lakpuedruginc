@@ -8,9 +8,11 @@ const initialState = {
 
 export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  console.log(`rest/vendors/${payload.company}?token=${accessToken}`)
+  console.log(`rest/vendors/${payload.company}?token=${accessToken}`);
 
-  const response = await axiosInstance.get(`rest/vendors/company/${payload.company}/?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `rest/vendors/company/${payload.company}/?token=${accessToken}`
+  );
   return response;
 });
 
@@ -24,9 +26,7 @@ export const addVendor = createAsyncThunk('addVendor', async (payload, thunkAPI)
 export const getVendor = createAsyncThunk('getVendor', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(
-    `rest/vendors/${payload.id}?token=${accessToken}`
-  );
+  const response = await axiosInstance.get(`rest/vendors/${payload.id}?token=${accessToken}`);
   return response;
 });
 
@@ -42,7 +42,7 @@ const vendorSlice = createSlice({
   initialState,
   reducers: {
     clearData(state, action) {
-      state.list = null
+      state.list = null;
     },
   },
   extraReducers: {

@@ -2,12 +2,15 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../datas/constants/response-message.constant';
 
-export const listProductInventory = createAsyncThunk('listProductInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/product-inventory?token=${accessToken}`);
+export const listProductInventory = createAsyncThunk(
+  'listProductInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/product-inventory?token=${accessToken}`);
 
-  return response;
-});
+    return response;
+  }
+);
 
 const productInventorySlice = createSlice({
   name: 'productInventory',
@@ -45,7 +48,7 @@ const productInventorySlice = createSlice({
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
-    }
+    },
   },
 });
 

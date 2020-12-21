@@ -4,7 +4,7 @@ import orderSlips from '../OrderSlips/redux';
 
 const sales = combineReducers({
   salesOrders,
-  orderSlips
+  orderSlips,
 });
 
 export default sales;

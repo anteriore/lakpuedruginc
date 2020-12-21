@@ -10,7 +10,9 @@ const initialState = {
 export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/users/company/${payload.company}/?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `rest/users/company/${payload.company}/?token=${accessToken}`
+  );
   return response;
 });
 
@@ -40,8 +42,8 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     clearData(state, action) {
-      state.listUser = null
-      state.listPermission = null
+      state.listUser = null;
+      state.listPermission = null;
     },
   },
   extraReducers: {

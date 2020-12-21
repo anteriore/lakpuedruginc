@@ -91,7 +91,7 @@ const DepartmentArea = (props) => {
   useEffect(() => {
     dispatch(listD({ company }));
     dispatch(listA({ company }));
-    
+
     return function cleanup() {
       dispatch(clearData());
     };

@@ -66,11 +66,10 @@ const ProductDivisions = (props) => {
 
   useEffect(() => {
     dispatch(listPD({ company }));
-    
+
     return function cleanup() {
       dispatch(clearData());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {

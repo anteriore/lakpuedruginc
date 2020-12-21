@@ -21,15 +21,14 @@ const Header = (props) => {
           expired: false,
         })
       );
-    }
-    else if(e.key === 'account'){
-      setDisplayDrawer(true)
+    } else if (e.key === 'account') {
+      setDisplayDrawer(true);
     }
   };
 
   const menu = (
     <Menu onClick={handleMenuClick}>
-    <Menu.Item key="account">My Account</Menu.Item>
+      <Menu.Item key="account">My Account</Menu.Item>
       <Menu.Item key="logout">Logout</Menu.Item>
     </Menu>
   );
@@ -46,7 +45,9 @@ const Header = (props) => {
           placement="bottomCenter"
           icon={<UserOutlined />}
           style={{ float: 'right', padding: '1%' }}
-          onClick={() => {setDisplayDrawer(true)}}
+          onClick={() => {
+            setDisplayDrawer(true);
+          }}
         >
           {user !== null && `${user.firstName} ${user.lastName}`}
         </Dropdown.Button>

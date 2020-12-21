@@ -19,7 +19,7 @@ const Login = () => {
     dispatch(login(values)).then(() => {
       dispatch(getUser()).then(() => {
         history.push('/');
-      })
+      });
     });
   };
 

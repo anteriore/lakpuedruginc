@@ -20,14 +20,14 @@ export const updateList = (form, choices) => {
 };
 
 export const fromatInitForm = (rawValues, fieldNames) => {
-  let newField = {};
+  const newField = {};
 
-  fieldNames.forEach(({name, type}) => {
-    switch(type){
-      case "date":
+  fieldNames.forEach(({ name, type }) => {
+    switch (type) {
+      case 'date':
         newField[name] = moment(new Date(rawValues[name]));
         break;
-      case "select": 
+      case 'select':
         const { id } = rawValues[name];
         newField[name] = id;
         break;
@@ -36,6 +36,6 @@ export const fromatInitForm = (rawValues, fieldNames) => {
         break;
     }
   });
-  
+
   return newField;
-}
+};

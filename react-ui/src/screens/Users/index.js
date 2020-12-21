@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
+import {
+  Row,
+  Col,
   Tabs,
-  Button, 
-  Typography, 
-  Skeleton, 
-  Divider, 
-  Empty, 
-  Card, 
-  Drawer, 
-  Descriptions, 
-  List, 
-  message 
+  Button,
+  Typography,
+  Skeleton,
+  Divider,
+  Empty,
+  Card,
+  Drawer,
+  Descriptions,
+  List,
+  message,
 } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,7 +21,7 @@ import { UserAddOutlined, UserOutlined, EditOutlined, DeleteOutlined } from '@an
 import Container from '../../components/container';
 import InputForm from './InputForm';
 
-import { listUser, addUser, deleteUser, clearData, listPermission } from './redux/';
+import { listUser, addUser, deleteUser, clearData, listPermission } from './redux';
 import { listCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -38,32 +38,31 @@ const Users = () => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-  
-  const { companyList } = useSelector((state) => state.company)
-  const [companyLoading, setCompanyLoading] = useState(true)
-  const [company, setCompany] = useState(1)
 
-  const [displayDrawer, setDisplayDrawer] = useState(false)
-  const [contentLoading, setContentLoading] = useState(true)
-  const [userDepartments, setUserDepartments] = useState([])
-  const [selectedUser, setSelectedUser] = useState(null)
-  const departments = useSelector((state) => state.maintenance.departmentArea.deptList)
-  const depots = useSelector((state) => state.maintenance.depots.list)
+  const { companyList } = useSelector((state) => state.company);
+  const [companyLoading, setCompanyLoading] = useState(true);
+  const [company, setCompany] = useState(1);
+
+  const [displayDrawer, setDisplayDrawer] = useState(false);
+  const [contentLoading, setContentLoading] = useState(true);
+  const [userDepartments, setUserDepartments] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
+  const depots = useSelector((state) => state.maintenance.depots.list);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
       setFormData(null);
-      setCompanyLoading(false)
-      setSelectedUser(null)
-      updateUserDepartments(1)
-    })
+      setCompanyLoading(false);
+      setSelectedUser(null);
+      updateUserDepartments(1);
+    });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearDepartment());
     };
-
   }, [dispatch]);
 
   const formDetails = {
@@ -80,7 +79,7 @@ const Users = () => {
         name: 'middleInitial',
         rules: [{ required: true, message: 'Please provide a valid Middle Initial' }],
         placeholder: 'Middle Initial',
-        maxLength: 2
+        maxLength: 2,
       },
       {
         label: 'Last Name',
@@ -98,9 +97,16 @@ const Users = () => {
         label: 'Password',
         name: 'password',
         type: 'password',
-        rules: [{ required: true, message: 'Please provide a valid password. The password must be at least 8 characters long.', min: 8 }],
+        rules: [
+          {
+            required: true,
+            message:
+              'Please provide a valid password. The password must be at least 8 characters long.',
+            min: 8,
+          },
+        ],
         placeholder: 'Password',
-        writeOnly: true
+        writeOnly: true,
       },
       {
         label: 'Confirm Password',
@@ -119,7 +125,7 @@ const Users = () => {
           }),
         ],
         placeholder: 'Confirm Password',
-        writeOnly: true
+        writeOnly: true,
       },
       {
         label: 'Employee Type',
@@ -142,7 +148,7 @@ const Users = () => {
         type: 'checkList',
         selectName: 'name',
         choices: depots,
-        render: object => `[${object.code}] ${object.name}`,
+        render: (object) => `[${object.code}] ${object.name}`,
         rules: [{ required: true }],
         placeholder: 'Select depots',
       },
@@ -162,55 +168,54 @@ const Users = () => {
       dispatch(listDepot({ company })).then(() => {
         dispatch(listPermission({ company })).then(() => {
           history.push(`${path}/new`);
-        })
-      })
+        });
+      });
     });
   };
 
   const handleUpdate = (data) => {
     setFormTitle('Edit User');
     setFormMode('edit');
-    var depotData = []
+    const depotData = [];
     data.depots.forEach((depot) => {
-      depotData.push(depot.id)
-    })
-    var permissionsData = {}
+      depotData.push(depot.id);
+    });
+    const permissionsData = {};
     for (const [key, value] of Object.entries(data.permissions)) {
-      var actions = []
-      for (var i = 0; i < value.actions.length; i++) {
+      const actions = [];
+      for (let i = 0; i < value.actions.length; i++) {
         actions.push(value.actions[i]);
       }
       permissionsData[key] = {
         ...value,
-        actions: actions
-      }
+        actions,
+      };
     }
     const formData = {
       ...data,
       department: data.department !== null ? data.department.id : null,
       depots: depotData,
-      permissions: permissionsData
+      permissions: permissionsData,
     };
     setFormData(formData);
     dispatch(listD({ company })).then(() => {
       dispatch(listDepot({ company })).then(() => {
         dispatch(listPermission({ company })).then(() => {
           history.push(`${path}/${data.id}`);
-        })
-      })
+        });
+      });
     });
   };
 
   const handleDelete = (data) => {
     dispatch(deleteUser(data.id)).then((response) => {
       setContentLoading(true);
-      if(response.payload.status === 200){
+      if (response.payload.status === 200) {
         dispatch(listUser({ company })).then(() => {
           setContentLoading(false);
           message.success(`Successfully deleted ${data.firstName} ${data.lastName}`);
-        })
-      }
-      else {
+        });
+      } else {
         setContentLoading(false);
         message.error(`Unable to delete ${data.firstName} ${data.lastName}`);
       }
@@ -222,53 +227,53 @@ const Users = () => {
   };
 
   const onSubmit = (data) => {
-    var depotData = []
+    const depotData = [];
     data.depots.forEach((depot) => {
       depotData.push({
-        id: depot
-      })
-    })
-    var permissionData = {}
-    for (const key in data.permissions){
-      var actionStr = ""
-      if(typeof(data.permissions[key].actions) !== 'undefined' && data.permissions[key].actions !== null){
+        id: depot,
+      });
+    });
+    const permissionData = {};
+    for (const key in data.permissions) {
+      var actionStr = '';
+      if (
+        typeof data.permissions[key].actions !== 'undefined' &&
+        data.permissions[key].actions !== null
+      ) {
         data.permissions[key].actions.forEach((action) => {
-          actionStr = actionStr + action
-        })
+          actionStr += action;
+        });
 
-        if(typeof(data.permissions[key].code) === 'undefined'){
-          data.permissions[key].code = key
+        if (typeof data.permissions[key].code === 'undefined') {
+          data.permissions[key].code = key;
         }
 
         permissionData[key] = {
           ...data.permissions[key],
-          actions: actionStr
-        }
-
+          actions: actionStr,
+        };
       }
-      
     }
-    var payload = {
+    const payload = {
       ...data,
       company: {
         id: company,
       },
       department: {
-        id: data.department
+        id: data.department,
       },
       depots: depotData,
-      permissions: permissionData
+      permissions: permissionData,
     };
     if (formMode === 'edit') {
-      payload.id = formData.id
+      payload.id = formData.id;
       dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
-        if(response.payload.status === 200){
-            updateUserDepartments(company)
-            history.goBack();
-            message.success(`Successfully updated ${data.firstName} ${data.lastName}`);
-        }
-        else {
+        if (response.payload.status === 200) {
+          updateUserDepartments(company);
+          history.goBack();
+          message.success(`Successfully updated ${data.firstName} ${data.lastName}`);
+        } else {
           setContentLoading(false);
           message.error(`Unable to update ${data.firstName} ${data.lastName}`);
         }
@@ -276,12 +281,11 @@ const Users = () => {
     } else if (formMode === 'add') {
       dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
-        if(response.payload.status === 200){
-          updateUserDepartments(company)
+        if (response.payload.status === 200) {
+          updateUserDepartments(company);
           history.goBack();
           message.success(`Successfully added ${data.firstName} ${data.lastName}`);
-        }
-        else {
+        } else {
           setContentLoading(false);
           message.error(`Unable to add ${data.firstName} ${data.lastName}`);
         }
@@ -291,81 +295,82 @@ const Users = () => {
   };
 
   const updateUserDepartments = (companyID) => {
-    dispatch(listD({company: companyID})).then((response) => {
-      if(response.payload.status === 200){
-        var userDepartmentList = []
+    dispatch(listD({ company: companyID })).then((response) => {
+      if (response.payload.status === 200) {
+        const userDepartmentList = [];
         response.payload.data.forEach((department) => {
           userDepartmentList.push({
             id: department.id,
-            users: []
-          })
-        })
-        dispatch(listUser({company: companyID})).then((response) => {
-          if(response.payload.status === 200){
+            users: [],
+          });
+        });
+        dispatch(listUser({ company: companyID })).then((response) => {
+          if (response.payload.status === 200) {
             response.payload.data.forEach((user) => {
-              var usersPerDept = userDepartmentList.find(department => department.id === user.department.id)
-              usersPerDept.users.push(user)
-            })
-            setUserDepartments(userDepartmentList)
+              const usersPerDept = userDepartmentList.find(
+                (department) => department.id === user.department.id
+              );
+              usersPerDept.users.push(user);
+            });
+            setUserDepartments(userDepartmentList);
             setContentLoading(false);
           }
-        })
+        });
       }
     });
-  }
+  };
 
   const handleChangeTab = (companyID) => {
-    setContentLoading(true)
-    setCompany(companyID)
-    updateUserDepartments(companyID)
+    setContentLoading(true);
+    setCompany(companyID);
+    updateUserDepartments(companyID);
   };
 
   const renderUsers = (departmentUsers) => {
-    if(departmentUsers.users.length > 0) {
-      var index = 0
-      var usersRow = []
-      var usersGrid = []
+    if (departmentUsers.users.length > 0) {
+      let index = 0;
+      let usersRow = [];
+      const usersGrid = [];
       departmentUsers.users.forEach((user) => {
-        index += 1
+        index += 1;
         usersRow.push(
-          <Card 
-            bordered 
+          <Card
+            bordered
             hoverable
             style={styles.Card}
             onClick={() => {
-              setSelectedUser(user)
-              showDrawer()
+              setSelectedUser(user);
+              showDrawer();
             }}
           >
-            <Meta
-              avatar={<UserOutlined/>}
-              title={user.firstName + ' ' + user.lastName}
-            />
-            
+            <Meta avatar={<UserOutlined />} title={`${user.firstName} ${user.lastName}`} />
           </Card>
-        )
-        if(index % 4 === 0){
-          usersGrid.push(<Row gutter={styles.gutter}>{usersRow}</Row>)
-          usersRow = []
+        );
+        if (index % 4 === 0) {
+          usersGrid.push(<Row gutter={styles.gutter}>{usersRow}</Row>);
+          usersRow = [];
         }
-      })
-      if(index % 4 !== 0){
-        usersGrid.push(<Row gutter={styles.gutter} style={styles.row}>{usersRow}</Row>)
+      });
+      if (index % 4 !== 0) {
+        usersGrid.push(
+          <Row gutter={styles.gutter} style={styles.row}>
+            {usersRow}
+          </Row>
+        );
       }
-      return usersGrid
+      return usersGrid;
     }
-    else {
-     return (<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />)
-    }
-  }
+
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  };
 
   const showDrawer = () => {
-    setDisplayDrawer(true)
+    setDisplayDrawer(true);
   };
 
   const onClose = () => {
-    setDisplayDrawer(false)
-    setSelectedUser(null)
+    setDisplayDrawer(false);
+    setSelectedUser(null);
   };
 
   return (
@@ -378,7 +383,7 @@ const Users = () => {
             values={formData}
             onCancel={handleCancelButton}
             formDetails={formDetails}
-            formMode={formMode} 
+            formMode={formMode}
           />
         </Route>
         <Route path={`${path}/:id`}>
@@ -387,8 +392,8 @@ const Users = () => {
             onSubmit={onSubmit}
             values={formData}
             onCancel={handleCancelButton}
-            formDetails={formDetails} 
-            formMode={formMode} 
+            formDetails={formDetails}
+            formMode={formMode}
           />
         </Route>
         <Route>
@@ -403,64 +408,64 @@ const Users = () => {
                 <Tabs onChange={handleChangeTab}>
                   {companyList.map((company) => {
                     return (
-                      <TabPane tab={company.name} key={company.id} disabled={contentLoading}>
-                      </TabPane>
-                    )
+                      <TabPane tab={company.name} key={company.id} disabled={contentLoading} />
+                    );
                   })}
-                  
                 </Tabs>
-                
-              {contentLoading ? (
-                <Skeleton />
-              ) : (
-                <>
-                <Button
-                  style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-                  icon={<UserAddOutlined />}
-                  onClick={(e) => {
-                    handleAdd();
-                  }}
-                >
-                  Add
-                </Button>
-                {departments.map((department) => {
-                    const departmentUsers = userDepartments.find(userDepartment => userDepartment.id === department.id)
-                    return (
-                      <>
-                      <Divider orientation="left">{department.name}</Divider>
-                        {renderUsers(departmentUsers)}
-                      </>
-                    )
-                  })}
-                  <Drawer
-                    width={"50%"}
-                    placement="right"
-                    closable={false}
-                    onClose={onClose}
-                    visible={displayDrawer}
-                  >
-                    {selectedUser === null ? (
-                      <Skeleton />
-                    ) : (
-                      <>
-                      <Descriptions
-                        bordered
-                        title={selectedUser.firstName + ' ' + selectedUser.lastName}
-                        size="default"
-                        layout="vertical"
-                        extra={
-                          <Row gutter={[8,8]}>
-                            <Col>
-                              <Button
-                                icon={<EditOutlined />}
-                                onClick={(e) => {
-                                  handleUpdate(selectedUser)
-                                }}
-                              >
-                                Edit User
-                              </Button>
-                            </Col>
-                            {/*<Col>
+
+                {contentLoading ? (
+                  <Skeleton />
+                ) : (
+                  <>
+                    <Button
+                      style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                      icon={<UserAddOutlined />}
+                      onClick={(e) => {
+                        handleAdd();
+                      }}
+                    >
+                      Add
+                    </Button>
+                    {departments.map((department) => {
+                      const departmentUsers = userDepartments.find(
+                        (userDepartment) => userDepartment.id === department.id
+                      );
+                      return (
+                        <>
+                          <Divider orientation="left">{department.name}</Divider>
+                          {renderUsers(departmentUsers)}
+                        </>
+                      );
+                    })}
+                    <Drawer
+                      width="50%"
+                      placement="right"
+                      closable={false}
+                      onClose={onClose}
+                      visible={displayDrawer}
+                    >
+                      {selectedUser === null ? (
+                        <Skeleton />
+                      ) : (
+                        <>
+                          <Descriptions
+                            bordered
+                            title={`${selectedUser.firstName} ${selectedUser.lastName}`}
+                            size="default"
+                            layout="vertical"
+                            extra={
+                              <Row gutter={[8, 8]}>
+                                <Col>
+                                  <Button
+                                    icon={<EditOutlined />}
+                                    onClick={(e) => {
+                                      handleUpdate(selectedUser);
+                                    }}
+                                  >
+                                    Edit User
+                                  </Button>
+                                </Col>
+                                {/* <Col>
                               <Button danger
                                 icon={<DeleteOutlined />}
                                 onClick={(e) => {
@@ -469,53 +474,59 @@ const Users = () => {
                               >
                                 Deactivate User
                               </Button>
-                              </Col>*/}
-                          </Row>
-                        }
-                      >
-                        {formDetails.form_items.map((item) => {
-                          if(!item.writeOnly){
-                            if(item.type === 'select'){
-                              const itemData = selectedUser[item.name]
-                              return <Descriptions.Item label={item.label}>{itemData[item.selectName]}</Descriptions.Item>
+                              </Col> */}
+                              </Row>
                             }
-                            else if(item.type === 'list' || item.type === 'listSelect' || item.type === 'checkList'){
-                              return (
-                                <Descriptions.Item label={item.label}>
-                                  <List
-                                    size="small"
-                                    bordered
-                                    dataSource={selectedUser[item.name]}
-                                    renderItem={listItem => (
-                                      <List.Item>
-                                        {item.render(listItem)}
-                                      </List.Item>
-                                    )
-                                    }
-                                  />
-                                </Descriptions.Item>
-                              )
-                            }
-                            else if(item.type === 'customList'){
-                              return null
-                            }
-                            else {
-                              return <Descriptions.Item label={item.label}>{selectedUser[item.name]}</Descriptions.Item>
-                            }
-                          }
-                          else {
-                            return null
-                          }
-                          
-                        })}
-                      </Descriptions>
-                      </>
-                    )}
-                  </Drawer>
+                          >
+                            {formDetails.form_items.map((item) => {
+                              if (!item.writeOnly) {
+                                if (item.type === 'select') {
+                                  const itemData = selectedUser[item.name];
+                                  return (
+                                    <Descriptions.Item label={item.label}>
+                                      {itemData[item.selectName]}
+                                    </Descriptions.Item>
+                                  );
+                                }
+                                if (
+                                  item.type === 'list' ||
+                                  item.type === 'listSelect' ||
+                                  item.type === 'checkList'
+                                ) {
+                                  return (
+                                    <Descriptions.Item label={item.label}>
+                                      <List
+                                        size="small"
+                                        bordered
+                                        dataSource={selectedUser[item.name]}
+                                        renderItem={(listItem) => (
+                                          <List.Item>{item.render(listItem)}</List.Item>
+                                        )}
+                                      />
+                                    </Descriptions.Item>
+                                  );
+                                }
+                                if (item.type === 'customList') {
+                                  return null;
+                                }
+
+                                return (
+                                  <Descriptions.Item label={item.label}>
+                                    {selectedUser[item.name]}
+                                  </Descriptions.Item>
+                                );
+                              }
+
+                              return null;
+                            })}
+                          </Descriptions>
+                        </>
+                      )}
+                    </Drawer>
                   </>
-              )}
-            </Col>
-          </Row>
+                )}
+              </Col>
+            </Row>
           )}
         </Route>
       </Switch>
@@ -527,8 +538,8 @@ export default Users;
 
 const styles = {
   Card: {
-    backgroundColor: "#FAFAFA",
-    marginRight: "2%"
+    backgroundColor: '#FAFAFA',
+    marginRight: '2%',
   },
 
   CardIcon: {
@@ -536,16 +547,16 @@ const styles = {
   },
 
   formList: {
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderWidth: 1,
-    padding: "2%",
-    backgroundColor: "#FAFAFA",
+    padding: '2%',
+    backgroundColor: '#FAFAFA',
     width: '87.5%',
-    marginBottom: "2%",
+    marginBottom: '2%',
   },
 
   row: {
-    marginLeft: "1%",
+    marginLeft: '1%',
   },
 
   span: 5,
@@ -556,8 +567,8 @@ const styles = {
     labelCol: {
       span: 12,
       style: {
-        display: "flex"
-      }
+        display: 'flex',
+      },
     },
     wrapperCol: {
       span: 12,

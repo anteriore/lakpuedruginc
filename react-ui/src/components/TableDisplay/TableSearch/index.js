@@ -36,10 +36,10 @@ const TableSearch = (columnHeaders) => {
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      if(record[dataIndex] === null){
-        return ''
+      if (record[dataIndex] === null) {
+        return '';
       }
-      else if (record[dataIndex].hasOwnProperty('name')) {
+      if (record[dataIndex].hasOwnProperty('name')) {
         return record[dataIndex].name
           ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
           : '';
@@ -49,16 +49,15 @@ const TableSearch = (columnHeaders) => {
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      else if (record[dataIndex].hasOwnProperty('code')) {
+      if (record[dataIndex].hasOwnProperty('code')) {
         return record[dataIndex].code
           ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      else {
-        return record[dataIndex]
-          ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-          : '';
-      }
+
+      return record[dataIndex]
+        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+        : '';
     },
   });
   // eslint-disable-next-line no-unused-vars
@@ -79,8 +78,8 @@ const TableSearch = (columnHeaders) => {
           sorter: (a, b) => {
             a = a[header.key] || '';
             b = b[header.key] || '';
-            return a.localeCompare(b)
-          }
+            return a.localeCompare(b);
+          },
         };
       } else if (header.datatype === 'date') {
         header = {
@@ -105,23 +104,20 @@ const TableSearch = (columnHeaders) => {
           render: (text) => moment(new Date(text)).format('DD/MM/YYYY'),
         };
       }
-    }
-    else if(header.datatype === 'boolean'){
+    } else if (header.datatype === 'boolean') {
       if (typeof header.render === 'undefined') {
         header = {
           ...header,
           render: (data) => {
-            if(data){
-              return <CheckOutlined />
+            if (data) {
+              return <CheckOutlined />;
             }
-            else {
-              return <CloseOutlined />
-            }
+
+            return <CloseOutlined />;
           },
         };
       }
-    }
-    else {
+    } else {
       header = {
         ...header,
         ...columnSearch(header.key),

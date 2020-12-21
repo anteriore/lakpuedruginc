@@ -4,7 +4,9 @@ import * as message from '../../../../datas/constants/response-message.constant'
 
 export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/order-slips/company/${payload}?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `/rest/order-slips/company/${payload}?token=${accessToken}`
+  );
 
   return response;
 });

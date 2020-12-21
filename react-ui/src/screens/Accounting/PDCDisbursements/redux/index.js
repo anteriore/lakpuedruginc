@@ -6,33 +6,48 @@ const initialState = {
   list: null,
 };
 
-export const listPDCDisbursement = createAsyncThunk('listPDCDisbursement', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const listPDCDisbursement = createAsyncThunk(
+  'listPDCDisbursement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/pdc-disbursements?token=${accessToken}`);
-  return response;
-});
+    const response = await axiosInstance.get(`rest/pdc-disbursements?token=${accessToken}`);
+    return response;
+  }
+);
 
-export const addPDCDisbursement = createAsyncThunk('addPDCDisbursement', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const addPDCDisbursement = createAsyncThunk(
+  'addPDCDisbursement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/pdc-disbursements/?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/pdc-disbursements/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-export const deletePDCDisbursement = createAsyncThunk('deletePDCDisbursement', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const deletePDCDisbursement = createAsyncThunk(
+  'deletePDCDisbursement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/pdc-disbursements/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/pdc-disbursements/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const PDCDisbursementSlice = createSlice({
   name: 'PDCDisbursements',
   initialState,
   reducers: {
     clearData(state, action) {
-      state.list = null
+      state.list = null;
     },
   },
   extraReducers: {

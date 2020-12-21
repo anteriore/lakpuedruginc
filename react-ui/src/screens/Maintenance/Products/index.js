@@ -41,23 +41,22 @@ const Product = (props) => {
   };
 
   const handleDelete = (row) => {
-    console.log("Delete Product APi is currently not available", row)
+    console.log('Delete Product APi is currently not available', row);
   };
 
   const onCreate = (values) => {
-    values.company = {id: company};
+    values.company = { id: company };
     dispatch(createProduct(values)).then(() => {
       dispatch(listProduct(company));
     });
   };
 
   const onUpdate = (values) => {
-    values.company = {id: company};
+    values.company = { id: company };
     dispatch(updateProduct(values)).then(() => {
       dispatch(listProduct(company));
     });
   };
-
 
   return (
     <Switch>

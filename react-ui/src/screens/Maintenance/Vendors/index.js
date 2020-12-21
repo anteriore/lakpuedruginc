@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { columns } from './data'
+import { columns } from './data';
 import { listVendor, addVendor, getVendor, deleteVendor, clearData } from './redux';
 import { listD, listA, clearData as clearA } from '../DepartmentArea/redux';
 import { listG, clearData as clearG } from '../GroupsCategories/redux';
@@ -116,12 +116,10 @@ const Vendors = (props) => {
     ],
   };
 
-  
-
   useEffect(() => {
     dispatch(listVendor({ company })).then((response) => {
       setFormData(null);
-      setLoading(false)
+      setLoading(false);
     });
 
     return function cleanup() {
@@ -129,7 +127,6 @@ const Vendors = (props) => {
       dispatch(clearA());
       dispatch(clearG());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -140,42 +137,41 @@ const Vendors = (props) => {
       dispatch(listD({ company })).then(() => {
         dispatch(listG({ company })).then(() => {
           history.push(`${path}/new`);
-        })
-      })
+        });
+      });
     });
   };
 
   const handleUpdate = (data) => {
     setFormTitle('Edit Vendor');
     setFormMode('edit');
-    var vendorData = vendors.find(vendor => vendor.id === data.id)
+    const vendorData = vendors.find((vendor) => vendor.id === data.id);
     const formData = {
       ...vendorData,
       department: vendorData.department !== null ? vendorData.department.id : null,
       area: vendorData.area !== null ? vendorData.area.id : null,
       group: vendorData.group !== null ? vendorData.group.id : null,
     };
-    console.log(formData)
+    console.log(formData);
     setFormData(formData);
     dispatch(listA({ company })).then(() => {
       dispatch(listD({ company })).then(() => {
         dispatch(listG({ company })).then(() => {
-        history.push(`${path}/${data.id}`);
-        })
-      })
+          history.push(`${path}/${data.id}`);
+        });
+      });
     });
   };
 
   const handleDelete = (data) => {
     dispatch(deleteVendor(data.id)).then((response) => {
       setLoading(true);
-      if(response.payload.status === 200){
+      if (response.payload.status === 200) {
         dispatch(listVendor({ company })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.name}`);
-        })
-      }
-      else {
+        });
+      } else {
         setLoading(false);
         message.error(`Unable to delete ${data.name}`);
       }
@@ -186,11 +182,11 @@ const Vendors = (props) => {
     setDisplayModal(true);
     setLoadingItem(true);
     dispatch(getVendor({ id: data.id })).then((response) => {
-      setDisplayData(response.payload.data)
+      setDisplayData(response.payload.data);
       setLoadingItem(false);
-    })
+    });
   };
-  
+
   const closeModal = () => {
     setDisplayModal(false);
     setLoadingItem(true);
@@ -222,14 +218,13 @@ const Vendors = (props) => {
 
       dispatch(addVendor(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           dispatch(listVendor({ company })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.name}`);
-          })
-        }
-        else {
+          });
+        } else {
           setLoading(false);
           message.error(`Unable to update ${data.name}`);
         }
@@ -252,14 +247,13 @@ const Vendors = (props) => {
       };
       dispatch(addVendor(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           dispatch(listVendor({ company })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${data.name}`);
-          })
-        }
-        else {
+          });
+        } else {
           setLoading(false);
           message.error(`Unable to add ${data.name}`);
         }
@@ -277,7 +271,7 @@ const Vendors = (props) => {
           onSubmit={onSubmit}
           values={formData}
           onCancel={handleCancelButton}
-          formDetails={formDetails} 
+          formDetails={formDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -286,17 +280,17 @@ const Vendors = (props) => {
           onSubmit={onSubmit}
           values={formData}
           onCancel={handleCancelButton}
-          formDetails={formDetails} 
+          formDetails={formDetails}
         />
       </Route>
       <Route>
-      <Row>
-        <Col span={20}>
-          <Title level={3} style={{ float: 'left' }}>
-            {props.title}
-          </Title>
-        </Col>
-      </Row>
+        <Row>
+          <Col span={20}>
+            <Title level={3} style={{ float: 'left' }}>
+              {props.title}
+            </Title>
+          </Col>
+        </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
             <Button
@@ -332,29 +326,31 @@ const Vendors = (props) => {
             <Skeleton />
           ) : (
             <>
-            <Descriptions
-              bordered
-              title={displayData.name}
-              size="default"
-            >
-              {formDetails.form_items.map((item) => {
-                if(item.type === 'select'){
-                  const itemData = displayData[item.name]
-                  if(itemData !== null){
-                    return <Descriptions.Item label={item.label}>{itemData[item.selectName]}</Descriptions.Item>
+              <Descriptions bordered title={displayData.name} size="default">
+                {formDetails.form_items.map((item) => {
+                  if (item.type === 'select') {
+                    const itemData = displayData[item.name];
+                    if (itemData !== null) {
+                      return (
+                        <Descriptions.Item label={item.label}>
+                          {itemData[item.selectName]}
+                        </Descriptions.Item>
+                      );
+                    }
+
+                    return <Descriptions.Item label={item.label} />;
                   }
-                  else {
-                    return <Descriptions.Item label={item.label}></Descriptions.Item>
+                  if (item.type === 'list' || item.type === 'listSelect') {
+                    return '';
                   }
-                }
-                else if(item.type === 'list' || item.type === 'listSelect'){
-                  return ''
-                }
-                else {
-                  return <Descriptions.Item label={item.label}>{displayData[item.name]}</Descriptions.Item>
-                }
-              })}
-            </Descriptions>
+
+                  return (
+                    <Descriptions.Item label={item.label}>
+                      {displayData[item.name]}
+                    </Descriptions.Item>
+                  );
+                })}
+              </Descriptions>
             </>
           )}
         </Modal>
