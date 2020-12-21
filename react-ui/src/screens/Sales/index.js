@@ -10,7 +10,7 @@ import { routes as SalesRoutes } from '../../navigation/sales';
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
-const Sales = (props) => {
+const Sales = () => {
   const { path } = useRouteMatch();
   const [company, setCompany] = useState(1);
   const dispatch = useDispatch();

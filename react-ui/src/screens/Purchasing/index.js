@@ -8,7 +8,7 @@ import moment from 'moment';
 import Container from '../../components/container';
 import TableDisplay from '../../components/TableDisplay';
 import FormScreen from '../../components/forms/FormScreen';
-import FormDetails, { columns } from "./data"
+import FormDetails, { columns } from './data';
 
 import { listPO, addPO, deletePO, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
@@ -47,7 +47,7 @@ const Purchasing = () => {
   useEffect(() => {
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
-      dispatch(listPO({ company: company })).then(() => {
+      dispatch(listPO({ company })).then(() => {
         setLoading(false);
         setSelectedPO(null);
       });
@@ -88,8 +88,8 @@ const Purchasing = () => {
   const handleUpdate = (data) => {
     setFormTitle('Edit Purchase Order');
     setFormMode('edit');
-    let poData = purchaseOrders.find((po) => po.id === data.id);
-    let orderedItems = [];
+    const poData = purchaseOrders.find((po) => po.id === data.id);
+    const orderedItems = [];
     poData.orderedItems.forEach((item) => {
       orderedItems.push({
         ...item,
@@ -145,7 +145,7 @@ const Purchasing = () => {
   };
 
   const onSubmit = (data) => {
-    let orderedItems = [];
+    const orderedItems = [];
     let totalAmount = 0;
     data.orderedItems.forEach((item) => {
       orderedItems.push({
@@ -157,7 +157,7 @@ const Purchasing = () => {
       });
       totalAmount += item.quantity * item.unitPrice;
     });
-    let payload = {
+    const payload = {
       ...data,
       number: null,
       company: {
@@ -173,7 +173,7 @@ const Purchasing = () => {
         id: data.vendor,
       },
       orderedItems,
-      totalAmount
+      totalAmount,
     };
 
     if (formMode === 'edit') {
@@ -269,57 +269,76 @@ const Purchasing = () => {
                       layout="vertical"
                     >
                       {formDetails.form_items.map((item) => {
-                        if(!item.writeOnly){
-                          if(item.type === 'select'){
-                            const itemData = selectedPO[item.name]
-                            return <Descriptions.Item label={item.label}>{itemData[item.selectName]}</Descriptions.Item>
+                        if (!item.writeOnly) {
+                          if (item.type === 'select') {
+                            const itemData = selectedPO[item.name];
+                            return (
+                              <Descriptions.Item label={item.label}>
+                                {itemData[item.selectName]}
+                              </Descriptions.Item>
+                            );
                           }
-                          if(item.type === 'date'){
-                            return <Descriptions.Item label={item.label}>{moment(new Date(selectedPO[item.name])).format('DD/MM/YYYY')}</Descriptions.Item>
+                          if (item.type === 'date') {
+                            return (
+                              <Descriptions.Item label={item.label}>
+                                {moment(new Date(selectedPO[item.name])).format('DD/MM/YYYY')}
+                              </Descriptions.Item>
+                            );
                           }
-                          else {
-                            return <Descriptions.Item label={item.label}>{selectedPO[item.name]}</Descriptions.Item>
-                          }
+
+                          return (
+                            <Descriptions.Item label={item.label}>
+                              {selectedPO[item.name]}
+                            </Descriptions.Item>
+                          );
                         }
-                        else {
-                          return null
-                        }
-                        
+
+                        return null;
                       })}
-                    <Title
-                      level={5}
-                      style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
-                    >
-                      {'Ordered Items:'}
-                    </Title>
-                    {selectedPO[tableDetails.name].map((item) => {
-                      return (
-                        <Descriptions
-                          title={`[${item.item.code}] ${item.item.name}`}
-                          size="default"
-                        >
-                          {tableDetails.fields.map((field) => {
-                            if(field.type === 'hidden' || field.type === 'hiddenNumber'){
-                              return null
-                            }
-                            if(typeof field.render === 'function'){
-                              return <Descriptions.Item label={field.label}>{field.render(item)}</Descriptions.Item>
-                            }
-                            else if(field.type === 'select'){
-                              if(typeof field.selectName === 'undefined'){
-                                field.selectName = "name"
+                      <Title
+                        level={5}
+                        style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
+                      >
+                        Ordered Items:
+                      </Title>
+                      {selectedPO[tableDetails.name].map((item) => {
+                        return (
+                          <Descriptions
+                            title={`[${item.item.code}] ${item.item.name}`}
+                            size="default"
+                          >
+                            {tableDetails.fields.map((field) => {
+                              if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+                                return null;
                               }
-                              const fieldData = item[field.name]
-                              return <Descriptions.Item label={field.label}>{fieldData[field.selectName]}</Descriptions.Item>
-                            }
-                            else {
-                              return <Descriptions.Item label={field.label}>{item[field.name]}</Descriptions.Item>
-                            }
-                          
-                          })}
-                        </Descriptions>
-                      );
-                    })}
+                              if (typeof field.render === 'function') {
+                                return (
+                                  <Descriptions.Item label={field.label}>
+                                    {field.render(item)}
+                                  </Descriptions.Item>
+                                );
+                              }
+                              if (field.type === 'select') {
+                                if (typeof field.selectName === 'undefined') {
+                                  field.selectName = 'name';
+                                }
+                                const fieldData = item[field.name];
+                                return (
+                                  <Descriptions.Item label={field.label}>
+                                    {fieldData[field.selectName]}
+                                  </Descriptions.Item>
+                                );
+                              }
+
+                              return (
+                                <Descriptions.Item label={field.label}>
+                                  {item[field.name]}
+                                </Descriptions.Item>
+                              );
+                            })}
+                          </Descriptions>
+                        );
+                      })}
                     </Descriptions>
                   </>
                 )}

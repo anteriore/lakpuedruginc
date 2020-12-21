@@ -45,9 +45,9 @@ const OrderSlips = (props) => {
   };
 
   const handleEditButton = (value) => {
-    const { id } = value;
+    const { id: rowId } = value;
     setOrderId(id);
-    history.push(`${path}/${id}/edit`);
+    history.push(`${path}/${rowId}/edit`);
   };
 
   const handleDeleteButton = (row) => {

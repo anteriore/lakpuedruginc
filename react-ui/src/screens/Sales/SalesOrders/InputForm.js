@@ -110,9 +110,9 @@ const InputForm = (props) => {
           minLimit: 0,
           precisionEnabled: col.precisionEnabled,
           precision: col.precision,
-          handleSave: (data, record) => {
+          handleSave: (data, rowRecord) => {
             let currentProduct = _.clone(
-              _.find(requestedProductList, (prod) => prod.id === record.id)
+              _.find(requestedProductList, (prod) => prod.id === rowRecord.id)
             );
             Object.entries(data).forEach(([key, value]) => {
               currentProduct = { ...currentProduct, [key]: value };
@@ -135,7 +135,7 @@ const InputForm = (props) => {
 
             const indexProduct = _.findIndex(
               requestedProductList,
-              (object) => object.id === record.id
+              (object) => object.id === rowRecord.id
             );
             const newArray = _.clone(requestedProductList);
             newArray.splice(indexProduct, 1, currentProduct);
@@ -210,8 +210,8 @@ const InputForm = (props) => {
           ) : (
             <Layout style={styles.layout}>
               <Form form={form} onFinish={onFinish} {...styles.formLayout}>
-                {_.dropRight(tempFormDetails.form_items).map((item, i) => (
-                  <FormItem key={i} item={item} />
+                {_.dropRight(tempFormDetails.form_items).map((item) => (
+                  <FormItem key={item.name} item={item} />
                 ))}
                 <Form.Item
                   wrapperCol={{ span: 15, offset: 4 }}

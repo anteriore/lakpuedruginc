@@ -62,8 +62,8 @@ const SimpleForm = (props) => {
       title={title}
       onCancel={onCancel}
       onOk={() => {
-        form.validateFields().then((values) => {
-          onSubmit(values);
+        form.validateFields().then((formValues) => {
+          onSubmit(formValues);
           form.resetFields();
         });
       }}

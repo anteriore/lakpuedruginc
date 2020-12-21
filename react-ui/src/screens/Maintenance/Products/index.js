@@ -5,7 +5,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
-import { listProduct, createProduct, updateProduct } from './redux';
+import { listProduct, createProduct, updateProduct, deleteProduct } from './redux';
 import { tableHeader } from './data';
 
 const { Title } = Typography;
@@ -41,7 +41,13 @@ const Product = (props) => {
   };
 
   const handleDelete = (row) => {
-    console.log('Delete Product APi is currently not available', row);
+    dispatch(deleteProduct(row))
+      .then(() => {
+        dispatch(listProduct());
+      })
+      .catch((err) => {
+        message.error(`Something went wrong! details: ${err}`);
+      });
   };
 
   const onCreate = (values) => {
@@ -83,7 +89,7 @@ const Product = (props) => {
                 data={productList}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                deleteEnabled={false}
+                deleteEnabled
               />
             </Col>
           </Row>

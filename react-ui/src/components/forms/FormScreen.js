@@ -14,6 +14,7 @@ import {
   Space,
   Table,
   Empty,
+  message,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -57,8 +58,7 @@ const FormScreen = (props) => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-    // message.error(errorInfo)
+    message.error(errorInfo);
   };
 
   const handleTableChange = (item, index, event) => {
@@ -177,7 +177,8 @@ const FormScreen = (props) => {
                             <Input />
                           </Form.Item>
                         );
-                      } if (itemField.type === 'number') {
+                      }
+                      if (itemField.type === 'number') {
                         return (
                           <Form.Item
                             {...field}
@@ -193,7 +194,8 @@ const FormScreen = (props) => {
                             />
                           </Form.Item>
                         );
-                      } if (itemField.type === 'date') {
+                      }
+                      if (itemField.type === 'date') {
                         return (
                           <Form.Item
                             {...field}
@@ -205,23 +207,22 @@ const FormScreen = (props) => {
                             <DatePicker format={dateFormat} />
                           </Form.Item>
                         );
-                      } else {
-                        return (
-                          <Form.Item
-                            {...field}
-                            {...styles.listItems}
-                            name={[field.name, itemField.name]}
-                            fieldKey={[field.fieldKey, itemField.name]}
-                            rules={itemField.rules}
-                          >
-                            <Input
-                              placeholder={itemField.placeholder}
-                              prefix={item.prefix}
-                              suffix={item.suffix}
-                            />
-                          </Form.Item>
-                        );
                       }
+                      return (
+                        <Form.Item
+                          {...field}
+                          {...styles.listItems}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          rules={itemField.rules}
+                        >
+                          <Input
+                            placeholder={itemField.placeholder}
+                            prefix={item.prefix}
+                            suffix={item.suffix}
+                          />
+                        </Form.Item>
+                      );
                     })}
                     <MinusCircleOutlined onClick={() => remove(field.name)} />
                   </Space>

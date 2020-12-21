@@ -31,12 +31,12 @@ const depotSlice = createSlice({
   name: 'depots',
   initialState,
   reducers: {
-    clearData(state, action) {
+    clearData(state) {
       state.list = null;
     },
   },
   extraReducers: {
-    [listDepot.pending]: (state, action) => {
+    [listDepot.pending]: (state) => {
       state.status = 'loading';
     },
     [listDepot.fulfilled]: (state, action) => {
@@ -47,7 +47,7 @@ const depotSlice = createSlice({
         state.status = 'failed';
       }
     },
-    [listDepot.rejected]: (state, action) => {
+    [listDepot.rejected]: (state) => {
       state.status = 'failed';
     },
   },
