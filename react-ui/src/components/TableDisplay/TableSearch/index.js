@@ -82,38 +82,35 @@ const TableSearch = (columnHeaders) => {
             return a.localeCompare(b);
           },
         };
-      }
-      else if(header.datatype === 'object') {
-        if(typeof header.name === 'undefined' || header.name === null) {
-          header.name = 'name'
+      } else if (header.datatype === 'object') {
+        if (typeof header.name === 'undefined' || header.name === null) {
+          header.name = 'name';
         }
         header = {
           ...header,
           sorter: (a, b) => {
             if (typeof a[header.key] !== 'undefined' && a[header.key] !== null) {
-              a = a[header.key]
-              a = a[header.name]
+              a = a[header.key];
+              a = a[header.name];
             } else {
               a = '';
             }
-    
+
             if (typeof b[header.key] !== 'undefined' && b[header.key] !== null) {
-              b = b[header.key]
-              b = b[header.name]
+              b = b[header.key];
+              b = b[header.name];
             } else {
               b = '';
             }
             return a.localeCompare(b);
           },
-        }
-      } 
-      else if (header.datatype === 'date') {
+        };
+      } else if (header.datatype === 'date') {
         header = {
           ...header,
           sorter: (a, b) => new Date(a[header.key]) - new Date(b[header.key]),
         };
-      } 
-      else {
+      } else {
         header = {
           ...header,
           sorter: (a, b) => a[header.key] - b[header.key],
@@ -122,7 +119,7 @@ const TableSearch = (columnHeaders) => {
     }
 
     // add filter/search bar
-    
+
     if (typeof header.render === 'undefined') {
       if (header.datatype === 'date') {
         // TODO: Date Filter/Search Bar
@@ -130,36 +127,32 @@ const TableSearch = (columnHeaders) => {
           ...header,
           render: (text) => moment(new Date(text)).format('DD/MM/YYYY'),
         };
-      } 
-      else if (header.datatype === 'boolean') {
-          header = {
-            ...header,
-            render: (data) => {
-              if (data) {
-                return <CheckOutlined />;
-              }
+      } else if (header.datatype === 'boolean') {
+        header = {
+          ...header,
+          render: (data) => {
+            if (data) {
+              return <CheckOutlined />;
+            }
 
-              return <CloseOutlined />;
-            },
-          };
-      }
-      else if(header.datatype === "object") {
+            return <CloseOutlined />;
+          },
+        };
+      } else if (header.datatype === 'object') {
         header = {
           ...header,
           render: (object) => {
             if (typeof object !== 'undefined' && object !== null) {
               return object[header.name];
             }
-            else {
-              return null;
-            }
+
+            return null;
           },
         };
       }
-    } 
+    }
 
-
-    if(header.datatype !== 'boolean' && header.datatype !== 'date') {
+    if (header.datatype !== 'boolean' && header.datatype !== 'date') {
       header = {
         ...header,
         defaultSortOrder: header.defaultSortOrder || 'ascend',

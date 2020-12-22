@@ -11,14 +11,14 @@ export const tableHeader = [
     dataIndex: 'name',
     key: 'name',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Code',
     dataIndex: 'code',
     key: 'code',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
 ];
 

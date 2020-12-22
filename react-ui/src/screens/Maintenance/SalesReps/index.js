@@ -55,7 +55,7 @@ const SalesReps = (props) => {
       key: 'regionCode',
       name: 'code',
       datatype: 'object',
-    }
+    },
   ];
 
   const formDetail = {

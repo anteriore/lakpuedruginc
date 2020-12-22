@@ -25,7 +25,7 @@ export const tableHeader = [
     dataIndex: 'lotNumber',
     key: 'lotNumber',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Finished Goods',
