@@ -15,20 +15,20 @@ const TableSearch = (columnHeaders) => {
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          onPressEnter={() => confirm()}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
         />
         <Space>
           <Button
             type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            onClick={() => confirm()}
             icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
           >
             Search
           </Button>
-          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+          <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
             Reset
           </Button>
         </Space>
@@ -63,14 +63,6 @@ const TableSearch = (columnHeaders) => {
       }
     },
   });
-  // eslint-disable-next-line no-unused-vars
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-  };
 
   const filterDate = (dataIndex, dataValue) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -79,13 +71,12 @@ const TableSearch = (columnHeaders) => {
           onChange={(e) => { setSelectedKeys([e] || []);}}
           format={dateFormat}
           style={{ marginBottom: 8}}
-          onOk={() => handleSearch(selectedKeys, confirm, dataIndex)}
         />
         <br/>
         <Space style={{display: "flex", justifyContent: "flex-end"}}>
           <Button
             type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            onClick={() => confirm()}
             icon={<FilterOutlined />}
             size="small"
             style={{ width: 90 }}
@@ -102,10 +93,9 @@ const TableSearch = (columnHeaders) => {
       <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      const start = value[0]
-      const end = value[1]
-      const recordDate = moment(new Date(record[dataIndex])).isBetween(start, end, 'day') || moment(new Date(record[dataIndex])).isSame(start, "day") || moment(new Date(record[dataIndex])).isSame(end, "day")
-      return recordDate
+      return moment(new Date(record[dataIndex])).isBetween(value[0], value[1], 'day') 
+        || moment(new Date(record[dataIndex])).isSame(value[0], "day") 
+        || moment(new Date(record[dataIndex])).isSame(value[1], "day")
     },
   });
 
@@ -162,10 +152,8 @@ const TableSearch = (columnHeaders) => {
       }
   
       // add filter/search bar
-      
       if (typeof header.render === 'undefined') {
         if (header.datatype === 'date') {
-          // TODO: Date Filter/Search Bar
           header = {
             ...header,
             render: (text) => moment(new Date(text)).format('DD/MM/YYYY'),
