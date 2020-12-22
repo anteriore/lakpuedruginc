@@ -29,7 +29,7 @@ const Accounting = () => {
   }, [dispatch]);
 
   const handleChangeTab = (id) => {
-    dispatch(setCompany(id))
+    dispatch(setCompany(id));
   };
 
   return (

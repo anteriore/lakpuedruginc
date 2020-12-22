@@ -11,21 +11,21 @@ export const tableHeader = [
     dataIndex: 'area',
     key: 'area',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Code',
     dataIndex: 'code',
     key: 'code',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Description',
     dataIndex: 'description',
     key: 'description',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
 ];
 
