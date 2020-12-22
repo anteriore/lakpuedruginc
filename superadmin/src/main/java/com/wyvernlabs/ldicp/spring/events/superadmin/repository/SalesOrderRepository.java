@@ -29,4 +29,7 @@ public interface SalesOrderRepository extends JpaRepository<SalesOrder, Long>{
 	List<SalesOrder> findByDepot(Depot depot);
 	
 	List<SalesOrder> findByDepotAndStatusInAndDateBetween(Depot depot, String[] status, Date startDate, Date endDate);
+
+
+	//public List<Item> findByProductId(Long id);
 }

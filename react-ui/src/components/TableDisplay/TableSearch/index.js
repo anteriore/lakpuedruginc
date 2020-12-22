@@ -5,6 +5,7 @@ import moment from 'moment';
 
 const TableSearch = (columnHeaders) => {
   const newColumnHeaders = [];
+  const { hasOwnProperty } = Object.prototype;
 
   const columnSearch = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -39,17 +40,17 @@ const TableSearch = (columnHeaders) => {
       if (record[dataIndex] === null) {
         return '';
       }
-      if (record[dataIndex].hasOwnProperty('name')) {
+      if (hasOwnProperty.call(record[dataIndex], 'name')) {
         return record[dataIndex].name
           ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      if (record[dataIndex].hasOwnProperty('title')) {
+      if (hasOwnProperty.call(record[dataIndex], 'title')) {
         return record[dataIndex].title
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      if (record[dataIndex].hasOwnProperty('code')) {
+      if (hasOwnProperty.call(record[dataIndex], 'code')) {
         return record[dataIndex].code
           ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
           : '';

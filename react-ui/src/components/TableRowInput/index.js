@@ -36,11 +36,14 @@ export const EditableCell = ({
     form.setFieldsValue({ [dataIndex]: record[dataIndex] });
   };
 
-  const save = async (e) => {
+  const save = async () => {
     try {
       const values = await form.validateFields();
       handleSave(values, record);
-    } catch (errInfo) {}
+      return values;
+    } catch (errInfo) {
+      return errInfo;
+    }
   };
 
   let childNode = children;
@@ -77,7 +80,12 @@ export const EditableCell = ({
         )}
       </Form.Item>
     ) : (
-      <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={toggleEdit}>
+      <div
+        aria-hidden="true"
+        className="editable-cell-value-wrap"
+        style={{ paddingRight: 24 }}
+        onClick={toggleEdit}
+      >
         {children}
       </div>
     );

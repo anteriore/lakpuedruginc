@@ -40,6 +40,9 @@ public class SalesOrder {
 	private String remarks;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<SalesOrderProduct> products;
+
+	
+
 	@OneToOne
 	private Company company;
 	@Enumerated(EnumType.STRING)

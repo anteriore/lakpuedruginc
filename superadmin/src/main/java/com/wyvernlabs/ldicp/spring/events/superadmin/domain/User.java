@@ -142,7 +142,7 @@ public class User {
     @Override
     public String toString() {
         return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleInitial="
-                + middleInitial + ", email=" + email + ", password=" + password + ", company=" + company
+                + middleInitial + ", email=" + email + ", password=" + "XD" + ", company=" + company
                 + ", employeeType=" + employeeType + ", department=" + department + ", depots=" + depots + ", roles="
                 + Arrays.toString(roles) + ", permissions=" + permissions + "]";
     }

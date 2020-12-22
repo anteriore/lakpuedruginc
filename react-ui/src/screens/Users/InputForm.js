@@ -10,6 +10,7 @@ import {
   Col,
   Typography,
   Space,
+  message,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
@@ -129,19 +130,18 @@ const InputForm = (props) => {
                             <Input />
                           </Form.Item>
                         );
-                      } 
-                        return (
-                          <Form.Item
-                            {...field}
-                            {...styles.listItems}
-                            name={[field.name, itemField.name]}
-                            fieldKey={[field.fieldKey, itemField.name]}
-                            rules={itemField.rules}
-                          >
-                            <Input placeholder={itemField.placeholder} />
-                          </Form.Item>
-                        );
-                      
+                      }
+                      return (
+                        <Form.Item
+                          {...field}
+                          {...styles.listItems}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          rules={itemField.rules}
+                        >
+                          <Input placeholder={itemField.placeholder} />
+                        </Form.Item>
+                      );
                     })}
                     <MinusCircleOutlined
                       style={{ alignSelf: 'center' }}
@@ -168,8 +168,7 @@ const InputForm = (props) => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-    // message.error(errorInfo)
+    message.error(errorInfo);
   };
 
   return (
