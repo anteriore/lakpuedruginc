@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Table, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-import TableSearch from './TableSearch';
+import TableHeader from './TableHeader';
 
 const TableDisplay = (props) => {
   const { columns: col, handleDelete, handleRetrieve, handleUpdate, data, deleteEnabled } = props;
@@ -11,7 +11,7 @@ const TableDisplay = (props) => {
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataCount, setDataCount] = useState(0);
-  const [columns, setColumns] = useState(TableSearch(col));
+  const [columns, setColumns] = useState(TableHeader(col));
 
   /*
     columns must have an id
