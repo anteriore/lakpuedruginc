@@ -19,13 +19,12 @@ import {
 } from '../Maintenance/DepartmentArea/redux';
 import { listUnit } from '../Maintenance/Units/redux';
 import { listPR, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
-import { listCompany } from '../../redux/company';
+import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
 const Purchasing = () => {
-  const [company, setCompany] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loadingCompany, setLoadingCompany] = useState(true);
 
@@ -38,6 +37,7 @@ const Purchasing = () => {
 
   const purchaseOrders = useSelector((state) => state.purchaseOrders.list);
   const companies = useSelector((state) => state.company.companyList);
+  const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
@@ -47,7 +47,7 @@ const Purchasing = () => {
   useEffect(() => {
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
-      dispatch(listPO({ company })).then(() => {
+      dispatch(listPO({ company: selectedCompany })).then(() => {
         setLoading(false);
         setSelectedPO(null);
       });
@@ -61,7 +61,7 @@ const Purchasing = () => {
   }, [dispatch]);
 
   const handleChangeTab = (id) => {
-    setCompany(id);
+    dispatch(setCompany(id));
     setLoading(true);
     dispatch(listPO({ company: id })).then(() => {
       setLoading(false);
@@ -72,11 +72,11 @@ const Purchasing = () => {
     setFormTitle('Create Purchase Order');
     setFormMode('add');
     setFormData(null);
-    dispatch(listVendor({ company })).then(() => {
-      dispatch(listDepartment({ company })).then(() => {
-        dispatch(listArea({ company })).then(() => {
-          dispatch(listUnit({ company })).then(() => {
-            dispatch(listPR({ company })).then(() => {
+    dispatch(listVendor({ selectedCompany })).then(() => {
+      dispatch(listDepartment({ selectedCompany })).then(() => {
+        dispatch(listArea({ selectedCompany })).then(() => {
+          dispatch(listUnit({ selectedCompany })).then(() => {
+            dispatch(listPR({ selectedCompany })).then(() => {
               history.push(`${path}/new`);
             });
           });
@@ -107,11 +107,11 @@ const Purchasing = () => {
       orderedItems,
     };
     setFormData(formData);
-    dispatch(listVendor({ company })).then(() => {
-      dispatch(listDepartment({ company })).then(() => {
-        dispatch(listArea({ company })).then(() => {
-          dispatch(listUnit({ company })).then(() => {
-            dispatch(listPR({ company })).then(() => {
+    dispatch(listVendor({ selectedCompany })).then(() => {
+      dispatch(listDepartment({ selectedCompany })).then(() => {
+        dispatch(listArea({ selectedCompany })).then(() => {
+          dispatch(listUnit({ selectedCompany })).then(() => {
+            dispatch(listPR({ selectedCompany })).then(() => {
               history.push(`${path}/${data.id}`);
             });
           });
@@ -124,7 +124,7 @@ const Purchasing = () => {
     dispatch(deletePO(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listPO({ company })).then(() => {
+        dispatch(listPO({ selectedCompany })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
@@ -161,7 +161,7 @@ const Purchasing = () => {
       ...data,
       number: null,
       company: {
-        id: company,
+        id: selectedCompany,
       },
       department: {
         id: data.department,
@@ -184,7 +184,7 @@ const Purchasing = () => {
     dispatch(addPO(payload)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listPO({ company })).then((response) => {
+        dispatch(listPO({ selectedCompany })).then((response) => {
           setLoading(false);
           history.goBack();
           if (formMode === 'edit') {
@@ -216,7 +216,7 @@ const Purchasing = () => {
           ) : (
             <Row>
               <Col span={20}>
-                <Tabs defaultActiveKey="company.id" onChange={handleChangeTab}>
+                <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
                   {companies.map((val) => (
                     <TabPane tab={val.name} key={val.id} />
                   ))}

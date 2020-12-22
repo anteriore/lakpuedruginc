@@ -6,7 +6,7 @@ import { routes } from '../../navigation/accounting';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
 
-import { listCompany } from '../../redux/company';
+import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -15,11 +15,11 @@ const Accounting = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
 
-  const [company, setCompany] = useState(1);
   const [contentLoading, setContentLoading] = useState(true);
   const [moduleRoutes, setModuleRoutes] = useState([]);
 
   const companies = useSelector((state) => state.company.companyList);
+  const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -29,7 +29,7 @@ const Accounting = () => {
   }, [dispatch]);
 
   const handleChangeTab = (id) => {
-    setCompany(id);
+    dispatch(setCompany(id))
   };
 
   return (
@@ -45,7 +45,7 @@ const Accounting = () => {
             ) : (
               <Row>
                 <Col span={24}>
-                  <Tabs defaultActiveKey="company.id" onChange={handleChangeTab}>
+                  <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
                     {companies.map((val) => {
                       return (
                         <TabPane tab={val.name} key={val.id}>
@@ -64,7 +64,7 @@ const Accounting = () => {
             return (
               <Route path={path + module.path}>
                 <Container location={{ pathname: path + module.path }}>
-                  <module.component title={module.title} company={company} />
+                  <module.component title={module.title} company={selectedCompany} />
                 </Container>
               </Route>
             );
