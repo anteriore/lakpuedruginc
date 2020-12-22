@@ -164,10 +164,12 @@ const Users = () => {
     setFormTitle('Add User');
     setFormMode('add');
     setFormData(null);
+    setCompanyLoading(true)
     dispatch(listD({ selectedCompany })).then(() => {
       dispatch(listDepot({ selectedCompany })).then(() => {
         dispatch(listPermission({ selectedCompany })).then(() => {
           history.push(`${path}/new`);
+          setCompanyLoading(false)
         });
       });
     });
@@ -198,10 +200,12 @@ const Users = () => {
       permissions: permissionsData,
     };
     setFormData(formData);
+    setCompanyLoading(true)
     dispatch(listD({ selectedCompany })).then(() => {
       dispatch(listDepot({ selectedCompany })).then(() => {
         dispatch(listPermission({ selectedCompany })).then(() => {
           history.push(`${path}/${data.id}`);
+          setCompanyLoading(false)
         });
       });
     });
