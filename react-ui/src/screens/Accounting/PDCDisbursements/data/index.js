@@ -1,8 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Table, Typography } from 'antd';
-
-const { Text } = Typography;
 
 export const columns = [
   {
@@ -35,10 +32,6 @@ export const columns = [
 
 const FormDetails = () => {
   const vendors = useSelector((state) => state.maintenance.vendors.list);
-  const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
-  const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
-  const units = useSelector((state) => state.maintenance.units.unitList);
-  const purchaseRequests = useSelector((state) => state.dashboard.purchaseRequests.list);
 
   const formDetails = {
     form_name: 'pdc_disbursement',
