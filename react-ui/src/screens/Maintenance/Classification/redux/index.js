@@ -34,7 +34,7 @@ const classificationSlice = createSlice({
   name: 'classification',
   initialState,
   reducers: {
-    clearData(state, action) {
+    clearData(state) {
       state.list = null;
     },
   },

@@ -44,7 +44,7 @@ const Container = (props) => {
                     <Col>
                       <Button
                         icon={<EditOutlined />}
-                        onClick={(e) => {
+                        onClick={() => {
                           history.push('/account');
                         }}
                       >

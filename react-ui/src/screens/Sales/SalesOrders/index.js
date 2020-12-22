@@ -45,9 +45,9 @@ const SalesOrders = (props) => {
   };
 
   const handleEditButton = (value) => {
-    const { id } = value;
+    const { id: rowId } = value;
     setOrderId(value.id);
-    history.push(`${path}/${id}/edit`);
+    history.push(`${path}/${rowId}/edit`);
   };
 
   const handleDeleteButton = (row) => {

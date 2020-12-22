@@ -27,10 +27,11 @@ export const fromatInitForm = (rawValues, fieldNames) => {
       case 'date':
         newField[name] = moment(new Date(rawValues[name]));
         break;
-      case 'select':
+      case 'select': {
         const { id } = rawValues[name];
         newField[name] = id;
         break;
+      }
       default:
         newField[name] = rawValues[name];
         break;

@@ -15,6 +15,8 @@ export const formatProduct = (rawProducts) => {
 
     return newFormat;
   }
+
+  return {};
 };
 
 export const formatProductCalc = (rawProducts) => {

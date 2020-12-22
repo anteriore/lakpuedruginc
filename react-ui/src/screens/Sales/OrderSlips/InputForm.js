@@ -116,12 +116,12 @@ const InputForm = (props) => {
           ) : (
             <Layout style={styles.layout}>
               <Form form={form} onFinish={onFinish} {...styles.formLayout}>
-                {_.dropRight(tempFormDetails.form_items, 5).map((item, i) => (
-                  <FormItem key={i} item={item} />
+                {_.dropRight(tempFormDetails.form_items, 5).map((item) => (
+                  <FormItem key={item.name} item={item} />
                 ))}
                 {showSalesSection
-                  ? _.dropRight(_.drop(tempFormDetails.form_items, 3), 1).map((item, i) => (
-                      <FormItem key={i} item={item} />
+                  ? _.dropRight(_.drop(tempFormDetails.form_items, 3), 1).map((item) => (
+                      <FormItem key={item.name} item={item} />
                     ))
                   : ''}
                 {showSalesSection ? (
