@@ -58,7 +58,8 @@ const FormScreen = (props) => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    message.error(errorInfo);
+    //console.log(errorInfo)
+    message.error("An error has occurred. Please double check the information you've provided.");
   };
 
   const handleTableChange = (item, index, event) => {

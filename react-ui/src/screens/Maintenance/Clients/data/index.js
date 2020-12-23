@@ -137,6 +137,7 @@ const FormDetails = () => {
         selectName: 'code',
         choices: clusterCodes,
         rules: [{ required: true, message: 'Please select a Cluster' }],
+        render: (object) => `[${object.code}] ${object.area}`,
       },
       {
         label: 'Institutional Codes',
