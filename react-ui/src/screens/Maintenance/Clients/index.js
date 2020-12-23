@@ -29,7 +29,7 @@ const Clients = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const clients = useSelector((state) => state.maintenance.clients.list);
-  const {formDetails} = FormDetails()
+  const { formDetails } = FormDetails();
 
   useEffect(() => {
     dispatch(listClient({ company })).then((response) => {

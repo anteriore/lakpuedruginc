@@ -45,7 +45,7 @@ const PurchaseRequests = (props) => {
       dataIndex: 'department',
       key: 'department',
       filters: departments,
-      filterKey: 'name'
+      filterKey: 'name',
     },
     {
       title: 'Status',
@@ -101,8 +101,8 @@ const PurchaseRequests = (props) => {
   useEffect(() => {
     dispatch(listPR({ company })).then(() => {
       dispatch(listD({ company })).then(() => {
-        setLoading(false)
-      })
+        setLoading(false);
+      });
     });
 
     return function cleanup() {
@@ -126,12 +126,12 @@ const PurchaseRequests = (props) => {
   };
 
   const handleDelete = (data) => {
-    setLoading(true)
+    setLoading(true);
     dispatch(deletePR(data.id)).then((response) => {
       dispatch(listPR({ company })).then(() => {
-        setLoading(false)
+        setLoading(false);
         message.success(`Successfully deleted Purchase Request ${data.number}`);
-      })
+      });
     });
   };
   const handleRetrieve = (data) => {

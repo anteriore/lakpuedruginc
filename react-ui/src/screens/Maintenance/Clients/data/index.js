@@ -43,7 +43,9 @@ export const columns = [
 const FormDetails = () => {
   const salesReps = useSelector((state) => state.maintenance.salesReps.list);
   const clusterCodes = useSelector((state) => state.maintenance.clusterCode.clusterList);
-  const institionalCodes = useSelector((state) => state.maintenance.institutionalCodes.institutionList);
+  const institionalCodes = useSelector(
+    (state) => state.maintenance.institutionalCodes.institutionList
+  );
 
   const formDetails = {
     form_name: 'pdc_disbursement',
@@ -126,7 +128,7 @@ const FormDetails = () => {
         type: 'select',
         selectName: 'codename',
         choices: salesReps,
-        rules: [{ required: true, message: 'Please select a Sales Representative'}],
+        rules: [{ required: true, message: 'Please select a Sales Representative' }],
       },
       {
         label: 'Cluster',

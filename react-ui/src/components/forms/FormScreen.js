@@ -79,13 +79,11 @@ const FormScreen = (props) => {
           item.selectName = 'name';
         }
 
-        if(item.selectName === 'codename'){
+        if (item.selectName === 'codename') {
           item.render = (choice) => `[${choice.code}] ${choice.name}`;
-        }
-        else {
+        } else {
           item.render = (choice) => choice[item.selectName];
         }
-
       }
 
       if (item.choices === null || item.choices.length === 0) {
