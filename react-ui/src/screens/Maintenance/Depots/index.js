@@ -39,9 +39,8 @@ const Depots = (props) => {
       title: 'Area',
       dataIndex: 'area',
       key: 'area',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.area.name.localeCompare(b.area.name),
+      name: 'name',
+      datatype: 'object',
     },
   ];
 
@@ -65,7 +64,7 @@ const Depots = (props) => {
         name: 'area',
         type: 'select',
         choices: areas,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please select an Area' }],
       },
     ],
   };
