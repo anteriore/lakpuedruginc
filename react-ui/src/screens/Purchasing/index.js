@@ -72,14 +72,14 @@ const Purchasing = () => {
     setFormTitle('Create Purchase Order');
     setFormMode('add');
     setFormData(null);
-    setLoadingCompany(true)
+    setLoadingCompany(true);
     dispatch(listVendor({ company: selectedCompany })).then(() => {
       dispatch(listDepartment({ company: selectedCompany })).then(() => {
         dispatch(listArea({ company: selectedCompany })).then(() => {
           dispatch(listUnit({ company: selectedCompany })).then(() => {
             dispatch(listPR({ company: selectedCompany })).then(() => {
               history.push(`${path}/new`);
-              setLoadingCompany(false)
+              setLoadingCompany(false);
             });
           });
         });
@@ -109,14 +109,14 @@ const Purchasing = () => {
       orderedItems,
     };
     setFormData(formData);
-    setLoadingCompany(true)
+    setLoadingCompany(true);
     dispatch(listVendor({ company: selectedCompany })).then(() => {
       dispatch(listDepartment({ company: selectedCompany })).then(() => {
         dispatch(listArea({ company: selectedCompany })).then(() => {
           dispatch(listUnit({ company: selectedCompany })).then(() => {
             dispatch(listPR({ company: selectedCompany })).then(() => {
               history.push(`${path}/${data.id}`);
-              setLoadingCompany(false)
+              setLoadingCompany(false);
             });
           });
         });
