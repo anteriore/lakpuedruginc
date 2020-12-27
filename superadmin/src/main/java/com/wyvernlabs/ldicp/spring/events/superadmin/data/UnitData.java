@@ -18,7 +18,7 @@ public class UnitData {
 	@Autowired
 	private UnitRepository unitRepository;
 	
-	public void init() {/*
+	public void init() {
 		Unit g = new Unit();
 		g.setName("Gram");
 		g.setCode("g");
@@ -38,9 +38,9 @@ public class UnitData {
 		liter.setName("Liter");
 		liter.setCode("L");
 		unitRepository.save(liter);
-		*/
+		
 
-		readCSV("unitData.csv");
+	//	readCSV("unitData.csv");
 	}
 
 
