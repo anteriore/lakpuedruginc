@@ -7,6 +7,14 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Department;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepartmentRepository;
 
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+
+
 @Component
 public class DepartmentData {
 	private DepartmentRepository departmentRepository;
@@ -19,7 +27,10 @@ public class DepartmentData {
 	
 	public void init() {
 		Company company = companyRepository.getOne(1L);
-    	Department department = new Department();
+		//Department department = new Department();
+		
+		//dont use these
+		/*
     	department.setCode("A01");
     	department.setName("Admin");
     	department.setCompany(company);
@@ -43,10 +54,59 @@ public class DepartmentData {
     	department5.setCode("E01");
     	department5.setName("Engineering");
     	department5.setCompany(company);
-    	departmentRepository.save(department5);
-    	
-    	
+		departmentRepository.save(department5);
+		*/
+    	//dont use these
+		
+		readCSV("departmentData.csv");
 	}
+
+
+
+	public void readCSV(String csvname){
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/"+csvname;
+        BufferedReader br = null;
+        String line = "";
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		Company company = companyRepository.getOne(1L);
+        try {				
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
+
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+				//for (int i = 0; i < data.length; i++) {
+					//System.out.print(i+")["+ data[i].replace("\"", "")+"]" );
+					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
+
+					Client tempdepartment = new Department();
+					tempdepartment.setCode(data[0].replace("\"", ""));
+					tempdepartment.setName(data[1].replace("\"", ""));
+					tempdepartment.setCompany(company);
+					departmentRepository.save(tempdepartment);
+
+
+              
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+	
+
+	}
+
+
+
 	
 	
 }
