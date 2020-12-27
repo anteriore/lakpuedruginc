@@ -78,7 +78,7 @@ public class DepartmentData {
 					//System.out.print(i+")["+ data[i].replace("\"", "")+"]" );
 					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
 
-					Client tempdepartment = new Department();
+					Department tempdepartment = new Department();
 					tempdepartment.setCode(data[0].replace("\"", ""));
 					tempdepartment.setName(data[1].replace("\"", ""));
 					tempdepartment.setCompany(company);
