@@ -74,9 +74,7 @@ public class DepartmentData {
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-				//for (int i = 0; i < data.length; i++) {
-					//System.out.print(i+")["+ data[i].replace("\"", "")+"]" );
-					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
+				
 
 					Department tempdepartment = new Department();
 					tempdepartment.setCode(data[0].replace("\"", ""));

@@ -6,12 +6,19 @@ import org.springframework.stereotype.Component;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Unit;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UnitRepository;
 
+
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
 @Component
 public class UnitData {
 	@Autowired
 	private UnitRepository unitRepository;
 	
-	public void init() {
+	public void init() {/*
 		Unit g = new Unit();
 		g.setName("Gram");
 		g.setCode("g");
@@ -31,100 +38,66 @@ public class UnitData {
 		liter.setName("Liter");
 		liter.setCode("L");
 		unitRepository.save(liter);
+		*/
 
-		Unit tempUnit  = new Unit();
-		tempUnit.setName("Liter");
-		tempUnit.setCode("LI");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("BOT");
-		tempUnit.setCode("BOT");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("DRM");
-		tempUnit.setCode("Drum");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("STP");
-		tempUnit.setCode("STP");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("GMS");
-		tempUnit.setCode("GMS");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("G");
-		tempUnit.setCode("G");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("ML");
-		tempUnit.setCode("ML");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("GM");
-		tempUnit.setCode("GM");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("BOX");
-		tempUnit.setCode("BOX");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("KGS");
-		tempUnit.setCode("KGS");
-		unitRepository.save(tempUnit);
-
-		tempUnit.setName("K");
-		tempUnit.setCode("K");
-		unitRepository.save(tempUnit);
+		readCSV("unitData.csv");
+	}
 
 
-		tempUnit.setName("VIA");
-		tempUnit.setCode("VIA");
-		unitRepository.save(tempUnit);
 
-		tempUnit.setName("LT");
-		tempUnit.setCode("LT");
-		unitRepository.save(tempUnit);
 
-		tempUnit.setName("PCS");
-		tempUnit.setCode("PCS");
-		unitRepository.save(tempUnit);
 
-		tempUnit.setName("VL");
-		tempUnit.setCode("VL");
-		unitRepository.save(tempUnit);
 
-		tempUnit.setName("KG-");
-		tempUnit.setCode("KG-");
-		unitRepository.save(tempUnit);
 
-		tempUnit.setName("VLS");
-		tempUnit.setCode("VLS");
-		unitRepository.save(tempUnit);
 
-		tempUnit.setName("CAP");
-		tempUnit.setCode("CAP");
-		unitRepository.save(tempUnit);
+	public void readCSV(String csvname){
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/"+csvname;
+        BufferedReader br = null;
+        String line = "";
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        try {				
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
 
-		tempUnit.setName("TAB");
-		tempUnit.setCode("TAB");
-		unitRepository.save(tempUnit);
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+				
 
-		tempUnit.setName("BLT");
-		tempUnit.setCode("BLT");
-		unitRepository.save(tempUnit);
+					Unit tempunit = new Unit();
+					tempunit.setName(data[0].replace("\"", ""));
+					tempunit.setCode(data[1].replace("\"", ""));
+				
+					unitRepository.save(tempunit);
 
-		tempUnit.setName("ROLL");
-		tempUnit.setCode("ROLL");
-		unitRepository.save(tempUnit);
 
-		tempUnit.setName("MG");
-		tempUnit.setCode("MG");
-		unitRepository.save(tempUnit);
+              
+            }
 
-		tempUnit.setName("INDBOX");
-		tempUnit.setCode("INDBOX");
-		unitRepository.save(tempUnit);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
