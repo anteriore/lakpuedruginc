@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { listBankAccount, createBankAccount, updateBankAccount, deleteBankAccount } from './redux';
+import { listBankAccount, createBankAccount, updateBankAccount, deleteBankAccount, clearData } from './redux';
 
 const { Title } = Typography;
 
@@ -24,6 +24,10 @@ const BankAccounts = (props) => {
 
   useEffect(() => {
     dispatch(listBankAccount());
+    
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch]);
 
   useEffect(() => {

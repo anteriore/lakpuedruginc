@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listCluster = createAsyncThunk('listCluster', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -30,16 +31,18 @@ export const deleteCluster = createAsyncThunk('deleteCluster', async (payload, t
 
   return response;
 });
-
+const initialState = {
+  clusterList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
 const clusterCodeSlice = createSlice({
   name: 'clusterCode',
-  initialState: {
-    clusterList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listCluster.pending]: (state) => {
       return {
@@ -50,14 +53,32 @@ const clusterCodeSlice = createSlice({
       };
     },
     [listCluster.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        clusterList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for cluster codes"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          clusterList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listCluster.rejected]: (state, action) => {
       const { data } = action.payload;

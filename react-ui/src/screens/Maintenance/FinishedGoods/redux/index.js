@@ -13,7 +13,8 @@ import {
   ITEM_DELETE_PENDING,
   ITEM_DELETE_FULFILLED,
   ITEM_DELETE_REJECTED,
-} from '../../../../datas/constants/response-message.constant';
+} from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 // Async Actions API section
 export const getFGList = createAsyncThunk('getFGList', async (payload, thunkAPI) => {
@@ -45,29 +46,51 @@ export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) =
   return response;
 });
 
+const initialState = {
+  list: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 // Reducer Store section
 const finishedGoodsSlice = createSlice({
   name: 'finishedGoods',
-  initialState: {
-    list: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [getFGList.pending]: (state) => {
       return { ...state, status: 'Loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
     },
     [getFGList.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        list: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for finished goods"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          list: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: ITEMS_GET_REJECTED,
+        };
+      }
     },
     [getFGList.rejected]: (state) => {
       return { ...state, status: 'Error', action: 'get', statusMessage: ITEMS_GET_REJECTED };

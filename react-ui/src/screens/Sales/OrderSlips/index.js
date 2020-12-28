@@ -3,7 +3,7 @@ import { Row, Typography, Col, Button, Skeleton, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader } from './data';
 import { listOrderSlips, createOrderSlips, updateOrderSlips, deleteOrderSlips } from './redux';

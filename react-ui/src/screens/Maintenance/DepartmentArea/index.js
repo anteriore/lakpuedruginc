@@ -223,7 +223,7 @@ const DepartmentArea = (props) => {
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
-        <Col span={10}>
+        <Col span={12}>
           <Title level={5} style={{ float: 'left' }}>
             Departments
           </Title>
@@ -242,9 +242,10 @@ const DepartmentArea = (props) => {
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdateD}
             handleDelete={handleDeleteD}
+            pagination={{ size: "small" }}
           />
         </Col>
-        <Col span={10}>
+        <Col span={12}>
           <Title level={5} style={{ float: 'left' }}>
             Areas
           </Title>
@@ -263,6 +264,7 @@ const DepartmentArea = (props) => {
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdateA}
             handleDelete={handleDeleteA}
+            pagination={{ size: "small" }}
           />
         </Col>
         <SimpleForm

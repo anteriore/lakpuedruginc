@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -48,16 +49,18 @@ export const deleteInstitution = createAsyncThunk(
     return response;
   }
 );
-
+const initialState = {
+  institutionList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
 const institutionalCodesSlice = createSlice({
   name: 'institutionalCodes',
-  initialState: {
-    institutionList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listInstitution.pending]: (state) => {
       return {
@@ -68,14 +71,32 @@ const institutionalCodesSlice = createSlice({
       };
     },
     [listInstitution.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        institutionList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for institutional codes"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          institutionList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listInstitution.rejected]: (state, action) => {
       const { data } = action.payload;

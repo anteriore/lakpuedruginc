@@ -1,13 +1,13 @@
 // Items actions
 // get list items message
-export const ITEMS_GET_PENDING = 'Searching for items';
-export const ITEMS_GET_FULFILLED = 'Successfully retrieved some items';
-export const ITEMS_GET_REJECTED = 'Failed to retrieved some items';
+export const ITEMS_GET_PENDING = 'Retrieving data';
+export const ITEMS_GET_FULFILLED = 'Successfully retrieved data';
+export const ITEMS_GET_REJECTED = 'Failed to retrieve data';
 
 // get item message
 export const ITEM_GET_PENDING = 'Searching specific item';
 export const ITEM_GET_FULFILLED = 'Successfully retrieved specific item';
-export const ITEM_GET_REJECTED = 'Failed to retrieved specific item';
+export const ITEM_GET_REJECTED = 'Failed to retrieve specific item';
 
 // add item message
 export const ITEM_ADD_PENDING = 'Adding item';
