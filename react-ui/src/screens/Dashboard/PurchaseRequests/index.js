@@ -6,16 +6,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
 import { getPR, listPR, deletePR, resetItemData, clearData } from './redux';
+import { listD } from '../../Maintenance/DepartmentArea/redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
 const { Title } = Typography;
 
 const PurchaseRequests = (props) => {
+  const [loading, setLoading] = useState(true);
   const [loadingItem, setLoadingItem] = useState(false);
 
   const [displayModal, setDisplayModal] = useState(false);
   const [displayData, setDisplayData] = useState(null);
+
+  const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
 
   const columns = [
     {
@@ -40,6 +44,8 @@ const PurchaseRequests = (props) => {
       title: 'Department',
       dataIndex: 'department',
       key: 'department',
+      filters: departments,
+      filterKey: 'name',
     },
     {
       title: 'Status',
@@ -93,7 +99,11 @@ const PurchaseRequests = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(listPR({ company }));
+    dispatch(listPR({ company })).then(() => {
+      dispatch(listD({ company })).then(() => {
+        setLoading(false);
+      });
+    });
 
     return function cleanup() {
       dispatch(resetItemData());
@@ -116,9 +126,12 @@ const PurchaseRequests = (props) => {
   };
 
   const handleDelete = (data) => {
+    setLoading(true);
     dispatch(deletePR(data.id)).then((response) => {
-      dispatch(listPR({ company }));
-      message.success(`Successfully deleted Purchase Request ${data.number}`);
+      dispatch(listPR({ company })).then(() => {
+        setLoading(false);
+        message.success(`Successfully deleted Purchase Request ${data.number}`);
+      });
     });
   };
   const handleRetrieve = (data) => {
@@ -153,15 +166,19 @@ const PurchaseRequests = (props) => {
           </Col>
         </Row>
         <Row>
-          <Col span={20}>
-            <TableDisplay
-              columns={columns}
-              data={data}
-              handleRetrieve={handleRetrieve}
-              handleUpdate={handleUpdate}
-              handleDelete={handleDelete}
-            />
-          </Col>
+          {loading ? (
+            <Skeleton />
+          ) : (
+            <Col span={20}>
+              <TableDisplay
+                columns={columns}
+                data={data}
+                handleRetrieve={handleRetrieve}
+                handleUpdate={handleUpdate}
+                handleDelete={handleDelete}
+              />
+            </Col>
+          )}
         </Row>
         <Modal
           title="Purchase Request"

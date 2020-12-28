@@ -48,15 +48,15 @@ const ZipCodes = (props) => {
     newForm.form_items.forEach((form) => {
       if (form.name === 'regionCode') {
         regionCodeList.forEach((regionCode) => {
-          const { id, code } = regionCode;
-          form.choices.push({ id, name: code });
+          const { id, code, area } = regionCode;
+          form.choices.push({ id, code: code, area: area });
         });
       }
 
       if (form.name === 'provinceCode') {
         provinceCodeList.forEach((provinceCode) => {
-          const { id, code } = provinceCode;
-          form.choices.push({ id, name: code });
+          const { id, code, area } = provinceCode;
+          form.choices.push({ id, code: code, area: area });
         });
       }
 

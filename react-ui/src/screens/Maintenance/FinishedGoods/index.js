@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Typography, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
 import { tableHeader, formDetails } from './data';
 import { getFGList, createFG, deleteFG, updateFG } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
+import { listUnit } from '../Units/redux';
 
 const { Title } = Typography;
 
@@ -14,10 +16,12 @@ const FinishedGoods = (props) => {
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [formValues, setFormValues] = useState('');
+  const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [mode, setMode] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
   const { list, statusMessage, action } = useSelector((state) => state.maintenance.finishedGoods);
+  const { unitList } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
     dispatch(getFGList({ company }));
@@ -35,18 +39,40 @@ const FinishedGoods = (props) => {
     }
   }, [statusMessage, action]);
 
+  useEffect(() => {
+    const newForm = tempFormDetails;
+    newForm.form_items.forEach((form) => {
+      if (form.name === 'unit') {
+        unitList.forEach((unit) => {
+          const { id, code } = unit;
+          form.choices.push({ id, name: code });
+        });
+      }
+
+      form.choices = _.uniqBy(form.choices, 'id');
+    });
+    setTempFormDetails(newForm);
+  }, [unitList, tempFormDetails]);
+
   const handleAddButton = () => {
     setModalTitle('Add Finished Good');
     setMode('add');
-    setIsOpenForm(!isOpenForm);
+    dispatch(listUnit()).then(() => {
+      setIsOpenForm(!isOpenForm);
+    });
   };
 
   const handleEditButton = (row) => {
     setCurrentID(row.id);
     setModalTitle('Edit Finished Good');
     setMode('edit');
-    setFormValues(row);
-    setIsOpenForm(!isOpenForm);
+    setFormValues({
+      ...row,
+      unit: row.unit !== null ? row.unit.id : 1,
+    });
+    dispatch(listUnit()).then(() => {
+      setIsOpenForm(!isOpenForm);
+    });
   };
 
   const handleDeleteButton = (row) => {
@@ -68,12 +94,15 @@ const FinishedGoods = (props) => {
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
+      newValues.unit = { id: values.unit };
 
       dispatch(updateFG(newValues)).then(() => {
         dispatch(getFGList());
       });
     } else if (mode === 'add') {
-      dispatch(createFG(values)).then(() => {
+      const newValues = values;
+      newValues.unit = { id: values.unit };
+      dispatch(createFG(newValues)).then(() => {
         dispatch(getFGList());
       });
     }

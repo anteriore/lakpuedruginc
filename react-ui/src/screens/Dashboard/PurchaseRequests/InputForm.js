@@ -174,8 +174,9 @@ const InputForm = (props) => {
     dispatch(addPR(data)).then((response) => {
       if (response.payload.status === 200) {
         message.success('Successfully saved');
-        dispatch(listPR({ company: props.company }));
-        history.goBack();
+        dispatch(listPR({ company: props.company })).then(() => {
+          history.goBack();
+        });
       } else {
         message.error('Something went wrong. Unable to add item.');
       }

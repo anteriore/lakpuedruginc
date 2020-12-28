@@ -95,7 +95,7 @@ const Vendors = (props) => {
         type: 'select',
         selectName: 'name',
         choices: areas,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please select an Area' }],
       },
       {
         label: 'Department',
@@ -103,7 +103,7 @@ const Vendors = (props) => {
         type: 'select',
         selectName: 'name',
         choices: departments,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please select a Department' }],
       },
       {
         label: 'Group',
@@ -111,7 +111,7 @@ const Vendors = (props) => {
         type: 'select',
         selectName: 'name',
         choices: groups,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please select a Group' }],
       },
     ],
   };

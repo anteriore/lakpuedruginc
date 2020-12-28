@@ -72,12 +72,14 @@ const Purchasing = () => {
     setFormTitle('Create Purchase Order');
     setFormMode('add');
     setFormData(null);
-    dispatch(listVendor({ selectedCompany })).then(() => {
-      dispatch(listDepartment({ selectedCompany })).then(() => {
-        dispatch(listArea({ selectedCompany })).then(() => {
-          dispatch(listUnit({ selectedCompany })).then(() => {
-            dispatch(listPR({ selectedCompany })).then(() => {
+    setLoadingCompany(true);
+    dispatch(listVendor({ company: selectedCompany })).then(() => {
+      dispatch(listDepartment({ company: selectedCompany })).then(() => {
+        dispatch(listArea({ company: selectedCompany })).then(() => {
+          dispatch(listUnit({ company: selectedCompany })).then(() => {
+            dispatch(listPR({ company: selectedCompany })).then(() => {
               history.push(`${path}/new`);
+              setLoadingCompany(false);
             });
           });
         });
@@ -107,12 +109,14 @@ const Purchasing = () => {
       orderedItems,
     };
     setFormData(formData);
-    dispatch(listVendor({ selectedCompany })).then(() => {
-      dispatch(listDepartment({ selectedCompany })).then(() => {
-        dispatch(listArea({ selectedCompany })).then(() => {
-          dispatch(listUnit({ selectedCompany })).then(() => {
-            dispatch(listPR({ selectedCompany })).then(() => {
+    setLoadingCompany(true);
+    dispatch(listVendor({ company: selectedCompany })).then(() => {
+      dispatch(listDepartment({ company: selectedCompany })).then(() => {
+        dispatch(listArea({ company: selectedCompany })).then(() => {
+          dispatch(listUnit({ company: selectedCompany })).then(() => {
+            dispatch(listPR({ company: selectedCompany })).then(() => {
               history.push(`${path}/${data.id}`);
+              setLoadingCompany(false);
             });
           });
         });
@@ -124,7 +128,7 @@ const Purchasing = () => {
     dispatch(deletePO(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listPO({ selectedCompany })).then(() => {
+        dispatch(listPO({ company: selectedCompany })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
@@ -184,7 +188,7 @@ const Purchasing = () => {
     dispatch(addPO(payload)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listPO({ selectedCompany })).then((response) => {
+        dispatch(listPO({ company: selectedCompany })).then((response) => {
           setLoading(false);
           history.goBack();
           if (formMode === 'edit') {

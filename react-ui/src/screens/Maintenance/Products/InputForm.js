@@ -108,14 +108,17 @@ const InputForm = (props) => {
 
   const FormItem = ({ item }) => {
     if (item.type === 'select') {
-      if (typeof item.selectName === 'undefined') {
-        item.selectName = 'name';
+      if (typeof item.render === 'undefined') {
+        if (typeof item.selectName === 'undefined') {
+          item.selectName = 'name';
+        }
+        item.render = (choice) => choice[item.selectName];
       }
       return (
         <Item label={item.label} name={item.name} rules={item.rules}>
           <Select style={{ textAlign: 'left' }} placeholder={item.placeholder}>
             {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
+              <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
             ))}
           </Select>
         </Item>

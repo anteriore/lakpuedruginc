@@ -29,6 +29,11 @@ export const tableHeader = [
     align: 'center',
     defaultSortOrder: 'ascend',
     sorter: (a, b) => a.unit - b.unit,
+    render: (object) => {
+      if (object !== null) {
+        return object.code;
+      }
+    },
   },
 ];
 
@@ -70,6 +75,14 @@ export const formDetails = {
       name: 'code',
       rules: [{ required: true, message: 'Please provide a proper finished goods code' }],
       placeholder: 'Finished goods code',
+    },
+    {
+      label: 'Unit',
+      name: 'unit',
+      rules: [{ required: true, message: 'Please select a unit' }],
+      placeholder: 'Units code',
+      type: 'select',
+      choices: [],
     },
   ],
 };

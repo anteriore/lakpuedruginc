@@ -58,7 +58,8 @@ const FormScreen = (props) => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    message.error(errorInfo);
+    //console.log(errorInfo)
+    message.error("An error has occurred. Please double check the information you've provided.");
   };
 
   const handleTableChange = (item, index, event) => {
@@ -78,7 +79,12 @@ const FormScreen = (props) => {
         if (typeof item.selectName === 'undefined') {
           item.selectName = 'name';
         }
-        item.render = (choice) => choice[item.selectName];
+
+        if (item.selectName === 'codename') {
+          item.render = (choice) => `[${choice.code}] ${choice.name}`;
+        } else {
+          item.render = (choice) => choice[item.selectName];
+        }
       }
 
       if (item.choices === null || item.choices.length === 0) {
