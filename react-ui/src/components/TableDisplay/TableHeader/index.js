@@ -35,7 +35,7 @@ const TableSearch = (columnHeaders) => {
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : '#545454' }} />
     ),
     onFilter: (value, record) => {
       if (record[dataIndex] === null) {
@@ -91,7 +91,7 @@ const TableSearch = (columnHeaders) => {
       </div>
     ),
     filterIcon: (filtered) => (
-      <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+      <FilterOutlined style={{ color: filtered ? '#1890ff' : '#545454' }} />
     ),
     onFilter: (value, record) => {
       return (
