@@ -74,7 +74,13 @@ const classificationSlice = createSlice({
       }
     },
     [listC.rejected]: (state) => {
-      state.status = 'failed';
+      Message.error(message.ITEMS_GET_REJECTED)
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

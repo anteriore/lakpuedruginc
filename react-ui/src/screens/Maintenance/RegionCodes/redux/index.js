@@ -49,7 +49,7 @@ const regionCodeSlice = createSlice({
     [listRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
@@ -95,7 +95,7 @@ const regionCodeSlice = createSlice({
     [createRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -119,7 +119,7 @@ const regionCodeSlice = createSlice({
     [updateRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -143,7 +143,7 @@ const regionCodeSlice = createSlice({
     [deleteRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };

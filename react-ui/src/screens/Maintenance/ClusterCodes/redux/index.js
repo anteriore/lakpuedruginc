@@ -47,7 +47,7 @@ const clusterCodeSlice = createSlice({
     [listCluster.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
@@ -85,7 +85,7 @@ const clusterCodeSlice = createSlice({
       return {
         ...state,
         clusterList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -93,7 +93,7 @@ const clusterCodeSlice = createSlice({
     [createCluster.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -109,7 +109,7 @@ const clusterCodeSlice = createSlice({
     [createCluster.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
@@ -117,7 +117,7 @@ const clusterCodeSlice = createSlice({
     [updateCluster.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -133,7 +133,7 @@ const clusterCodeSlice = createSlice({
     [updateCluster.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
@@ -141,7 +141,7 @@ const clusterCodeSlice = createSlice({
     [deleteCluster.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -157,7 +157,7 @@ const clusterCodeSlice = createSlice({
     [deleteCluster.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };

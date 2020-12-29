@@ -49,7 +49,7 @@ const zipCodeSlice = createSlice({
     [listZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
@@ -95,7 +95,7 @@ const zipCodeSlice = createSlice({
     [createZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -119,7 +119,7 @@ const zipCodeSlice = createSlice({
     [updateZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -143,7 +143,7 @@ const zipCodeSlice = createSlice({
     [deleteZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };

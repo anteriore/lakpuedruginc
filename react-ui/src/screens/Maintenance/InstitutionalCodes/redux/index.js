@@ -65,7 +65,7 @@ const institutionalCodesSlice = createSlice({
     [listInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
@@ -103,7 +103,7 @@ const institutionalCodesSlice = createSlice({
       return {
         ...state,
         institutionList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -111,7 +111,7 @@ const institutionalCodesSlice = createSlice({
     [createInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -127,7 +127,7 @@ const institutionalCodesSlice = createSlice({
     [createInstitution.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
@@ -135,7 +135,7 @@ const institutionalCodesSlice = createSlice({
     [updateInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -143,7 +143,7 @@ const institutionalCodesSlice = createSlice({
     [updateInstitution.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
@@ -151,7 +151,7 @@ const institutionalCodesSlice = createSlice({
     [updateInstitution.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
@@ -159,7 +159,7 @@ const institutionalCodesSlice = createSlice({
     [deleteInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -167,7 +167,7 @@ const institutionalCodesSlice = createSlice({
     [deleteInstitution.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
@@ -175,7 +175,7 @@ const institutionalCodesSlice = createSlice({
     [deleteInstitution.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };

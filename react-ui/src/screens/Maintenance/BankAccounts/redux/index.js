@@ -61,7 +61,7 @@ const bankAccountSlice = createSlice({
     [listBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
@@ -99,7 +99,7 @@ const bankAccountSlice = createSlice({
       return {
         ...state,
         bankAccountList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -107,7 +107,7 @@ const bankAccountSlice = createSlice({
     [createBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -115,7 +115,7 @@ const bankAccountSlice = createSlice({
     [createBankAccount.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
@@ -123,7 +123,7 @@ const bankAccountSlice = createSlice({
     [createBankAccount.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
@@ -131,7 +131,7 @@ const bankAccountSlice = createSlice({
     [updateBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -147,7 +147,7 @@ const bankAccountSlice = createSlice({
     [updateBankAccount.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
@@ -155,7 +155,7 @@ const bankAccountSlice = createSlice({
     [deleteBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -163,7 +163,7 @@ const bankAccountSlice = createSlice({
     [deleteBankAccount.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
@@ -171,7 +171,7 @@ const bankAccountSlice = createSlice({
     [deleteBankAccount.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };

@@ -61,7 +61,7 @@ const provinceCodeSlice = createSlice({
     [listProvinceCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
@@ -107,7 +107,7 @@ const provinceCodeSlice = createSlice({
     [createProvinceCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -131,7 +131,7 @@ const provinceCodeSlice = createSlice({
     [updateProvinceCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -155,7 +155,7 @@ const provinceCodeSlice = createSlice({
     [deleteProvinceCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };

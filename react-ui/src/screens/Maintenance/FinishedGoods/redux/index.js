@@ -62,7 +62,7 @@ const finishedGoodsSlice = createSlice({
   },
   extraReducers: {
     [getFGList.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
+      return { ...state, status: 'loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
     },
     [getFGList.fulfilled]: (state, action) => {
       if(typeof action.payload !== 'undefined' && action.payload.status === 200){
@@ -93,19 +93,19 @@ const finishedGoodsSlice = createSlice({
       }
     },
     [getFGList.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'get', statusMessage: ITEMS_GET_REJECTED };
+      return { ...state, status: 'failed', action: 'get', statusMessage: ITEMS_GET_REJECTED };
     },
     [createFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_ADD_PENDING };
+      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_ADD_PENDING };
     },
     [createFG.fulfilled]: (state) => {
       return { ...state, status: 'Fulfilled', action: 'post', statusMessage: ITEM_ADD_FULFILLED };
     },
     [createFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_ADD_REJECTED };
+      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_ADD_REJECTED };
     },
     [updateFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_UPDATE_PENDING };
+      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_UPDATE_PENDING };
     },
     [updateFG.fulfilled]: (state) => {
       return {
@@ -116,10 +116,10 @@ const finishedGoodsSlice = createSlice({
       };
     },
     [updateFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_UPDATE_REJECTED };
+      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_UPDATE_REJECTED };
     },
     [deleteFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_DELETE_PENDING };
+      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_DELETE_PENDING };
     },
     [deleteFG.fulfilled]: (state) => {
       return {
@@ -130,7 +130,7 @@ const finishedGoodsSlice = createSlice({
       };
     },
     [deleteFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_DELETE_REJECTED };
+      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_DELETE_REJECTED };
     },
   },
 });

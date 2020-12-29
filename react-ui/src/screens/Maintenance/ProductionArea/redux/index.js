@@ -70,7 +70,7 @@ const productionAreaSlice = createSlice({
     [listProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
@@ -116,7 +116,7 @@ const productionAreaSlice = createSlice({
     [createProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -140,7 +140,7 @@ const productionAreaSlice = createSlice({
     [updateProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -164,7 +164,7 @@ const productionAreaSlice = createSlice({
     [deleteProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
