@@ -23,10 +23,16 @@ const BankAccounts = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listBankAccount());
+    var isCancelled = false
+    dispatch(listBankAccount()).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
     
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch]);
 

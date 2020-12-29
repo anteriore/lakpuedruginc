@@ -25,8 +25,12 @@ const Product = (props) => {
   const { productList, action, statusMessage } = useSelector((state) => state.maintenance.products);
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listProduct(company)).then(() => {
       setContenctLoading(false);
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
@@ -37,6 +41,7 @@ const Product = (props) => {
       dispatch(clearDivisions());
       dispatch(clearUnits());
       dispatch(clearFinishedGoods());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

@@ -89,11 +89,18 @@ const DepartmentArea = (props) => {
   const areaData = useSelector((state) => state.maintenance.departmentArea.areaList);
 
   useEffect(() => {
-    dispatch(listD({ company }));
-    dispatch(listA({ company }));
+    var isCancelled = false
+    dispatch(listD({ company })).then(() => {
+      dispatch(listA({ company })).then(() => {
+        if(isCancelled) {
+          dispatch(clearData());
+        }
+      })
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

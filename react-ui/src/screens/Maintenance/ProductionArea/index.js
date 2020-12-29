@@ -29,10 +29,16 @@ const ProductionArea = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listProductionArea());
+    var isCancelled = false
+    dispatch(listProductionArea()).then(() => { 
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch]);
 

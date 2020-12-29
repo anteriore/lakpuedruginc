@@ -29,10 +29,17 @@ const ProvinceCode = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(listProvinceCode({ company }));
+    var isCancelled = false
+    dispatch(listProvinceCode({ company })).then(() => {
+      
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

@@ -45,11 +45,15 @@ const Purchasing = () => {
   const { formDetails, tableDetails } = FormDetails();
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
       dispatch(listPO({ company: selectedCompany })).then(() => {
         setLoading(false);
         setSelectedPO(null);
+        if(isCancelled) {
+          dispatch(clearData());
+        }
       });
     });
     return function cleanup() {
@@ -58,6 +62,7 @@ const Purchasing = () => {
       dispatch(clearDA());
       dispatch(clearPR());
       dispatch(clearUnit());
+      isCancelled = true
     };
   }, [dispatch]);
 

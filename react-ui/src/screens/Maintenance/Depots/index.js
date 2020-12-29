@@ -70,13 +70,19 @@ const Depots = (props) => {
   };
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listDepot({ company })).then((response) => {
       setLoading(false);
+
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearArea());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

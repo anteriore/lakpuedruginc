@@ -23,10 +23,16 @@ const InstitutionalCodes = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listInstitution());
+    var isCancelled = false
+    dispatch(listInstitution()).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch]);
 

@@ -117,15 +117,20 @@ const Vendors = (props) => {
   };
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listVendor({ company })).then((response) => {
       setFormData(null);
       setLoading(false);
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearA());
       dispatch(clearG());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

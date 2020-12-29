@@ -98,14 +98,19 @@ const SalesReps = (props) => {
   };
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listS({ company })).then(() => {
       setLoading(false);
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearC());
       dispatch(clearRegionCode());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

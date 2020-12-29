@@ -27,8 +27,12 @@ const SalesOrders = (props) => {
   const { id } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listSalesOrder(company)).then(() => {
       setContentLoading(false);
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
@@ -36,6 +40,7 @@ const SalesOrders = (props) => {
       dispatch(clearDepot());
       dispatch(clearClient());
       dispatch(clearPI());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

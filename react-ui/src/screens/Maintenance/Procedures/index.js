@@ -28,11 +28,17 @@ const Procedures = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listProcedure());
+    var isCancelled = false
+    dispatch(listProcedure()).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearProductionArea());
+      isCancelled = true
     };
   }, [dispatch]);
 

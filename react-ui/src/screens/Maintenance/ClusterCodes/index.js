@@ -23,10 +23,16 @@ const ClusterCodes = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listCluster());
+    var isCancelled = false
+    dispatch(listCluster()).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch]);
 

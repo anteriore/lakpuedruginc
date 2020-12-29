@@ -28,12 +28,19 @@ const ZipCodes = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(listZipCode());
+    var isCancelled = false
+    dispatch(listZipCode()).then(() => {
+      
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearProvinceCode());
       dispatch(clearRegionCode());
+      isCancelled = true
     };
   }, [dispatch]);
 

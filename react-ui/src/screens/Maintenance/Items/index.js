@@ -81,11 +81,17 @@ const ItemTypes = (props) => {
   };
 
   useEffect(() => {
-    dispatch(listI({ company }));
+    var isCancelled = false
+    dispatch(listI({ company })).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearIT());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

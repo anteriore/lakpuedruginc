@@ -23,10 +23,17 @@ const RegionCodes = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listRegionCode());
+    var isCancelled = false
+    dispatch(listRegionCode()).then(() => {
+      
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch]);
 

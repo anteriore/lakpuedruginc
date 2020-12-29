@@ -26,14 +26,19 @@ const OrderSlips = (props) => {
   const { id } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listOrderSlips(company)).then(() => {
       setContentLoading(false);
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearSO());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

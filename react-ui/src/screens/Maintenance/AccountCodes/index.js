@@ -22,13 +22,18 @@ const AccountCodes = (props) => {
   const data = useSelector((state) => state.maintenance.accountCodes.list);
 
   useEffect(() => {
-    dispatch(listAC({ company }))
-      .then(() => {
-        setLoading(false)
-      })
+    var isCancelled = false
+    dispatch(listAC({ company })).then(() => {
+      setLoading(false)
+
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

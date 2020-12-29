@@ -24,11 +24,17 @@ const FinishedGoods = (props) => {
   const { unitList } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
-    dispatch(getFGList({ company }));
+    var isCancelled = false
+    dispatch(getFGList({ company })).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearUnit());
+      isCancelled = true
     };
   }, [dispatch, company]);
 
