@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listRegionCode = createAsyncThunk('listRegionCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -31,15 +32,19 @@ export const deleteRegionCode = createAsyncThunk('deleteRegionCode', async (payl
   return response;
 });
 
+const initialState = {
+  regionCodeList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const regionCodeSlice = createSlice({
   name: 'regionCodes',
-  initialState: {
-    regionCodeList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listRegionCode.pending]: (state) => {
       return {
@@ -50,14 +55,32 @@ const regionCodeSlice = createSlice({
       };
     },
     [listRegionCode.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        regionCodeList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for region codes"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          regionCodeList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listRegionCode.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -144,4 +167,5 @@ const regionCodeSlice = createSlice({
   },
 });
 
+export const { clearData } = regionCodeSlice.actions;
 export default regionCodeSlice.reducer;

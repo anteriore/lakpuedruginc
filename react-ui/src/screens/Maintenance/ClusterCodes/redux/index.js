@@ -165,4 +165,5 @@ const clusterCodeSlice = createSlice({
   },
 });
 
+export const { clearData } = clusterCodeSlice.actions;
 export default clusterCodeSlice.reducer;

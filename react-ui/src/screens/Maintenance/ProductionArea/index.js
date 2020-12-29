@@ -11,6 +11,7 @@ import {
   createProductionArea,
   updateProductionArea,
   deleteProductionArea,
+  clearData
 } from './redux';
 
 const { Title } = Typography;
@@ -29,6 +30,10 @@ const ProductionArea = (props) => {
 
   useEffect(() => {
     dispatch(listProductionArea());
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch]);
 
   useEffect(() => {

@@ -7,8 +7,8 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listProductionArea } from '../ProductionArea/redux';
-import { listProcedure, createProcedure, updateProcedure, deleteProcedure } from './redux';
+import { listProductionArea, clearData as clearProductionArea } from '../ProductionArea/redux';
+import { listProcedure, createProcedure, updateProcedure, deleteProcedure, clearData } from './redux';
 import { formatProcedurePayload } from './helper';
 
 const { Title } = Typography;
@@ -29,6 +29,11 @@ const Procedures = (props) => {
 
   useEffect(() => {
     dispatch(listProcedure());
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearProductionArea());
+    };
   }, [dispatch]);
 
   useEffect(() => {

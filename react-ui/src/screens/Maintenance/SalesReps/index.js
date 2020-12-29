@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TableDisplay from '../../../components/TableDisplay';
 import { listS, addS, deleteS, clearData } from './redux';
 import { listC, clearData as clearC } from '../GroupsCategories/redux';
-import { listRegionCode } from '../RegionCodes/redux';
+import { listRegionCode, clearData as clearRegionCode } from '../RegionCodes/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -105,6 +105,7 @@ const SalesReps = (props) => {
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearC());
+      dispatch(clearRegionCode());
     };
   }, [dispatch, company]);
 

@@ -11,6 +11,7 @@ import {
   createProvinceCode,
   updateProvinceCode,
   deleteProvinceCode,
+  clearData
 } from './redux';
 
 const { Title } = Typography;
@@ -29,6 +30,10 @@ const ProvinceCode = (props) => {
 
   useEffect(() => {
     dispatch(listProvinceCode({ company }));
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

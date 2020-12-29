@@ -5,7 +5,13 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
-import { listProduct, createProduct, updateProduct, deleteProduct } from './redux';
+import { listProduct, createProduct, updateProduct, deleteProduct, clearData } from './redux';
+import { clearData as clearDepots } from '../Depots/redux';
+import { clearData as clearClassification } from '../Classification/redux';
+import { clearData as clearCategories } from '../ProductCategories/redux';
+import { clearData as clearDivisions } from '../ProductDivisions/redux';
+import { clearData as clearUnits } from '../Units/redux';
+import { clearData as clearFinishedGoods } from '../FinishedGoods/redux';
 import { tableHeader } from './data';
 
 const { Title } = Typography;
@@ -22,6 +28,16 @@ const Product = (props) => {
     dispatch(listProduct(company)).then(() => {
       setContenctLoading(false);
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearDepots());
+      dispatch(clearClassification());
+      dispatch(clearCategories());
+      dispatch(clearDivisions());
+      dispatch(clearUnits());
+      dispatch(clearFinishedGoods());
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

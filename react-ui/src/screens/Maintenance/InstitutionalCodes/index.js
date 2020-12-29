@@ -6,7 +6,7 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { createInstitution, deleteInstitution, listInstitution, updateInstitution } from './redux';
+import { createInstitution, deleteInstitution, listInstitution, updateInstitution, clearData } from './redux';
 
 const { Title } = Typography;
 
@@ -24,6 +24,10 @@ const InstitutionalCodes = (props) => {
 
   useEffect(() => {
     dispatch(listInstitution());
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch]);
 
   useEffect(() => {

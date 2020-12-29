@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -31,15 +32,19 @@ export const deleteZipCode = createAsyncThunk('deleteZipCode', async (payload, t
   return response;
 });
 
+const initialState = {
+  zipCodeList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const zipCodeSlice = createSlice({
   name: 'zipCodes',
-  initialState: {
-    zipCodeList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState, 
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listZipCode.pending]: (state) => {
       return {
@@ -50,14 +55,32 @@ const zipCodeSlice = createSlice({
       };
     },
     [listZipCode.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        zipCodeList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for zip codes"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          zipCodeList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listZipCode.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -144,4 +167,5 @@ const zipCodeSlice = createSlice({
   },
 });
 
+export const { clearData } = zipCodeSlice.actions;
 export default zipCodeSlice.reducer;

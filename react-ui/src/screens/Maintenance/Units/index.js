@@ -5,7 +5,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import GeneralStyles from '../../../data/styles/styles.general';
 import { tableHeader, formDetails } from './data';
 import SimpleForm from '../../../components/forms/FormModal';
-import { listUnit, createUnit, updateUnit, deleteUnit } from './redux';
+import { listUnit, createUnit, updateUnit, deleteUnit, clearData } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
 
 const { Title } = Typography;
@@ -22,6 +22,10 @@ const Units = (props) => {
 
   useEffect(() => {
     dispatch(listUnit({ company }));
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

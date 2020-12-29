@@ -4,10 +4,10 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { tableHeader, formDetails } from './data';
-import { getFGList, createFG, deleteFG, updateFG } from './redux';
+import { getFGList, createFG, deleteFG, updateFG, clearData } from './redux';
+import { listUnit, clearData as clearUnit } from '../Units/redux';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
-import { listUnit } from '../Units/redux';
 
 const { Title } = Typography;
 
@@ -25,6 +25,11 @@ const FinishedGoods = (props) => {
 
   useEffect(() => {
     dispatch(getFGList({ company }));
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearUnit());
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

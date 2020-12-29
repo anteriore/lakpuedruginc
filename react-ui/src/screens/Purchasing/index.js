@@ -17,7 +17,7 @@ import {
   listA as listArea,
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
-import { listUnit } from '../Maintenance/Units/redux';
+import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
 import { listPR, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
@@ -57,6 +57,7 @@ const Purchasing = () => {
       dispatch(clearVendor());
       dispatch(clearDA());
       dispatch(clearPR());
+      dispatch(clearUnit());
     };
   }, [dispatch]);
 

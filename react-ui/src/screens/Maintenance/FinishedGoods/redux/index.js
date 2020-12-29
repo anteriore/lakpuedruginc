@@ -135,4 +135,5 @@ const finishedGoodsSlice = createSlice({
   },
 });
 
+export const { clearData } = finishedGoodsSlice.actions;
 export default finishedGoodsSlice.reducer;

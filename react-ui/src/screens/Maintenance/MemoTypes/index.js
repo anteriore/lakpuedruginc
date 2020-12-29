@@ -6,7 +6,7 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { listMemo, createMemo, updateMemo, deleteMemo } from './redux';
+import { listMemo, createMemo, updateMemo, deleteMemo, clearData } from './redux';
 
 const { Title } = Typography;
 
@@ -22,6 +22,10 @@ const MemoTypes = (props) => {
 
   useEffect(() => {
     dispatch(listMemo());
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch]);
 
   useEffect(() => {

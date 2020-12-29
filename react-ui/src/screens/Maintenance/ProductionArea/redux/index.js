@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listProductionArea = createAsyncThunk(
   'listProductionArea',
@@ -52,15 +53,19 @@ export const deleteProductionArea = createAsyncThunk(
   }
 );
 
+const initialState = {
+  productionAreaList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const productionAreaSlice = createSlice({
   name: 'productionArea',
-  initialState: {
-    productionAreaList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listProductionArea.pending]: (state) => {
       return {
@@ -71,14 +76,32 @@ const productionAreaSlice = createSlice({
       };
     },
     [listProductionArea.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        productionAreaList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for production areas"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          productionAreaList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listProductionArea.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -165,4 +188,5 @@ const productionAreaSlice = createSlice({
   },
 });
 
+export const { clearData } = productionAreaSlice.actions;
 export default productionAreaSlice.reducer;

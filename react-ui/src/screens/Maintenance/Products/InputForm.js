@@ -18,8 +18,8 @@ import {
 } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
-import { getFGList } from '../FinishedGoods/redux';
 import { tableHeaderFinishedGoods, formDetails } from './data';
+import { getFGList } from '../FinishedGoods/redux';
 import { listDepot } from '../Depots/redux';
 import { listC as listClass } from '../Classification/redux';
 import { listPC } from '../ProductCategories/redux';

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -31,15 +32,19 @@ export const deleteUnit = createAsyncThunk('deleteUnit', async (payload, thunkAP
   return response;
 });
 
+const initialState = {
+  unitList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const unitsSlice = createSlice({
   name: 'Units',
-  initialState: {
-    unitList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listUnit.pending]: (state) => {
       return {
@@ -50,14 +55,32 @@ const unitsSlice = createSlice({
       };
     },
     [listUnit.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        unitList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for units"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          unitList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listUnit.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -144,4 +167,5 @@ const unitsSlice = createSlice({
   },
 });
 
+export const { clearData } = unitsSlice.actions;
 export default unitsSlice.reducer;

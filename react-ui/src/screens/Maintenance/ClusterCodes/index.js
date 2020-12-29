@@ -6,7 +6,7 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { listCluster, createCluster, updateCluster, deleteCluster } from './redux';
+import { listCluster, createCluster, updateCluster, deleteCluster, clearData } from './redux';
 
 const { Title } = Typography;
 
@@ -24,6 +24,10 @@ const ClusterCodes = (props) => {
 
   useEffect(() => {
     dispatch(listCluster());
+
+    return function cleanup() {
+      dispatch(clearData());
+    };
   }, [dispatch]);
 
   useEffect(() => {

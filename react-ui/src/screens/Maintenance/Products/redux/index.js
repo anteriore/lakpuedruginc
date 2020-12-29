@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listProduct = createAsyncThunk('listProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -33,15 +34,19 @@ export const deleteProduct = createAsyncThunk('deleteProduct', async (payload, t
   return response;
 });
 
+const initialState = {
+  productList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const productSlice = createSlice({
   name: 'products',
-  initialState: {
-    productList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listProduct.pending]: (state) => {
       return {
@@ -52,14 +57,32 @@ const productSlice = createSlice({
       };
     },
     [listProduct.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        productList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for products"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          productList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listProduct.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -146,4 +169,5 @@ const productSlice = createSlice({
   },
 });
 
+export const { clearData } = productSlice.actions;
 export default productSlice.reducer;

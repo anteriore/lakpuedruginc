@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
 import { getPR, listPR, deletePR, resetItemData, clearData } from './redux';
-import { listD } from '../../Maintenance/DepartmentArea/redux';
+import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
+import { listI, clearData as clearItem } from '../../Maintenance/Items/redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
@@ -106,8 +107,9 @@ const PurchaseRequests = (props) => {
     });
 
     return function cleanup() {
-      dispatch(resetItemData());
       dispatch(clearData());
+      dispatch(clearItem());
+      dispatch(clearDepartment());
     };
   }, [dispatch, company]);
 

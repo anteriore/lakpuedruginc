@@ -183,4 +183,5 @@ const institutionalCodesSlice = createSlice({
   },
 });
 
+export const { clearData } = institutionalCodesSlice.actions;
 export default institutionalCodesSlice.reducer;

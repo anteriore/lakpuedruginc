@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -31,15 +32,19 @@ export const deleteMemo = createAsyncThunk('deleteMemo', async (payload, thunkAP
   return response;
 });
 
+const initialState = {
+  memoList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const memoSlice = createSlice({
   name: 'memoTypes',
-  initialState: {
-    memoList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listMemo.pending]: (state) => {
       return {
@@ -50,14 +55,32 @@ const memoSlice = createSlice({
       };
     },
     [listMemo.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        memoList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for memo types"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          memoList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listMemo.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -144,4 +167,5 @@ const memoSlice = createSlice({
   },
 });
 
+export const { clearData } = memoSlice.actions;
 export default memoSlice.reducer;

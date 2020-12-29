@@ -7,9 +7,9 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listProvinceCode } from '../ProvinceCode/redux';
-import { listRegionCode } from '../RegionCodes/redux';
-import { listZipCode, createZipCode, updateZipCode, deleteZipCode } from './redux';
+import { listProvinceCode, clearData as clearProvinceCode } from '../ProvinceCode/redux';
+import { listRegionCode, clearData as clearRegionCode } from '../RegionCodes/redux';
+import { listZipCode, createZipCode, updateZipCode, deleteZipCode, clearData } from './redux';
 import { formatZipPayload } from './helper';
 
 const { Title } = Typography;
@@ -29,6 +29,12 @@ const ZipCodes = (props) => {
 
   useEffect(() => {
     dispatch(listZipCode());
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearProvinceCode());
+      dispatch(clearRegionCode());
+    };
   }, [dispatch]);
 
   useEffect(() => {
