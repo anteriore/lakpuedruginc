@@ -6,9 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader } from './data';
-import { listOrderSlips, createOrderSlips, updateOrderSlips, deleteOrderSlips } from './redux';
 import InputForm from './InputForm';
 import { formatPayload } from './helpers';
+
+import { listOrderSlips, createOrderSlips, updateOrderSlips, deleteOrderSlips, clearData } from './redux';
+import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearSO } from '../SalesOrders/redux';
 
 const { Title } = Typography;
 
@@ -26,6 +29,12 @@ const OrderSlips = (props) => {
     dispatch(listOrderSlips(company)).then(() => {
       setContentLoading(false);
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearSO());
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

@@ -6,9 +6,13 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader } from './data';
-import { listSalesOrder, createSalesOrder, updateSalesOrder, deleteSalesOrder } from './redux';
 import { formatPayload } from './helpers';
 import InputForm from './InputForm';
+
+import { listSalesOrder, createSalesOrder, updateSalesOrder, deleteSalesOrder, clearData } from './redux';
+import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { clearData as clearPI } from '../../Maintenance/redux/productInventory';
 
 const { Title } = Typography;
 
@@ -26,6 +30,13 @@ const SalesOrders = (props) => {
     dispatch(listSalesOrder(company)).then(() => {
       setContentLoading(false);
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearClient());
+      dispatch(clearPI());
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

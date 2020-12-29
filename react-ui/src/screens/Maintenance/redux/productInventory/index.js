@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listProductInventory = createAsyncThunk(
   'listProductInventory',
@@ -12,15 +13,19 @@ export const listProductInventory = createAsyncThunk(
   }
 );
 
+const initialState = {
+  list: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const productInventorySlice = createSlice({
   name: 'productInventory',
-  initialState: {
-    list: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listProductInventory.pending]: (state) => {
       return {
@@ -31,14 +36,32 @@ const productInventorySlice = createSlice({
       };
     },
     [listProductInventory.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        list: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for product inventory"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          list: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listProductInventory.rejected]: (state) => {
       return {
@@ -52,4 +75,5 @@ const productInventorySlice = createSlice({
   },
 });
 
+export const { clearData } = productInventorySlice.actions;
 export default productInventorySlice.reducer;
