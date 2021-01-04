@@ -1,4 +1,4 @@
-import { AutoComplete } from "antd";
+import { AutoComplete } from 'antd';
 
 export const tableHeader = [
   {
@@ -89,7 +89,7 @@ export const tableProductInventory = [
   {
     title: 'Lot #',
     dataindex: 'product',
-    render: (object) =>  object.product.lotNumber
+    render: (object) => object.product.lotNumber,
   },
   {
     title: 'FG Code',
@@ -181,8 +181,8 @@ export const formDetails = {
       choices: [
         { id: 'pending', name: 'Pending' },
         { id: 'complete', name: 'Complete' },
-        { id: 'approved', name: 'Approved' }
-    ],
+        { id: 'approved', name: 'Approved' },
+      ],
     },
     {
       label: 'Remarks',

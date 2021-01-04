@@ -25,10 +25,10 @@ const Product = (props) => {
   const { productList, action, statusMessage } = useSelector((state) => state.maintenance.products);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listProduct(company)).then(() => {
       setContenctLoading(false);
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -41,7 +41,7 @@ const Product = (props) => {
       dispatch(clearDivisions());
       dispatch(clearUnits());
       dispatch(clearFinishedGoods());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

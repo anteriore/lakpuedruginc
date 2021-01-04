@@ -9,7 +9,13 @@ import { tableHeader } from './data';
 import { formatPayload } from './helpers';
 import InputForm from './InputForm';
 
-import { listSalesOrder, createSalesOrder, updateSalesOrder, deleteSalesOrder, clearData } from './redux';
+import {
+  listSalesOrder,
+  createSalesOrder,
+  updateSalesOrder,
+  deleteSalesOrder,
+  clearData,
+} from './redux';
 import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { clearData as clearPI } from '../../Maintenance/redux/productInventory';
@@ -27,10 +33,10 @@ const SalesOrders = (props) => {
   const { id } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listSalesOrder(company)).then(() => {
       setContentLoading(false);
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -40,7 +46,7 @@ const SalesOrders = (props) => {
       dispatch(clearDepot());
       dispatch(clearClient());
       dispatch(clearPI());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

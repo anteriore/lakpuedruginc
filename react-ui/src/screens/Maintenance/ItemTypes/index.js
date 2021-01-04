@@ -53,16 +53,16 @@ const ItemTypes = (props) => {
   const data = useSelector((state) => state.maintenance.itemTypes.list);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listIT({ company })).then(() => {
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

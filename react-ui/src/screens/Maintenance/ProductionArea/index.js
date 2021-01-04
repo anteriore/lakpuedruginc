@@ -11,7 +11,7 @@ import {
   createProductionArea,
   updateProductionArea,
   deleteProductionArea,
-  clearData
+  clearData,
 } from './redux';
 
 const { Title } = Typography;
@@ -29,16 +29,16 @@ const ProductionArea = (props) => {
   );
 
   useEffect(() => {
-    var isCancelled = false
-    dispatch(listProductionArea()).then(() => { 
-      if(isCancelled) {
+    let isCancelled = false;
+    dispatch(listProductionArea()).then(() => {
+      if (isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 

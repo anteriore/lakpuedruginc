@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import {
   ITEMS_GET_PENDING,
@@ -14,7 +15,6 @@ import {
   ITEM_DELETE_FULFILLED,
   ITEM_DELETE_REJECTED,
 } from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 // Async Actions API section
 export const getFGList = createAsyncThunk('getFGList', async (payload, thunkAPI) => {
@@ -51,27 +51,27 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 // Reducer Store section
 const finishedGoodsSlice = createSlice({
   name: 'finishedGoods',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [getFGList.pending]: (state) => {
       return { ...state, status: 'loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
     },
     [getFGList.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
         const { data } = action.payload;
-        var statusMessage = ITEMS_GET_FULFILLED
+        let statusMessage = ITEMS_GET_FULFILLED;
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for finished goods"
-          Message.warning(statusMessage)
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for finished goods';
+          Message.warning(statusMessage);
         }
 
         return {
@@ -79,18 +79,17 @@ const finishedGoodsSlice = createSlice({
           list: data,
           status: 'succeeded',
           action: 'get',
-          statusMessage: statusMessage,
+          statusMessage,
         };
       }
-      else {
-        Message.error(ITEMS_GET_REJECTED)
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: ITEMS_GET_REJECTED,
-        };
-      }
+
+      Message.error(ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: ITEMS_GET_REJECTED,
+      };
     },
     [getFGList.rejected]: (state) => {
       return { ...state, status: 'failed', action: 'get', statusMessage: ITEMS_GET_REJECTED };

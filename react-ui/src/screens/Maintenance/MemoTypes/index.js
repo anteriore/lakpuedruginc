@@ -21,16 +21,16 @@ const MemoTypes = (props) => {
   const { memoList, action, statusMessage } = useSelector((state) => state.maintenance.memoTypes);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listMemo()).then(() => {
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 

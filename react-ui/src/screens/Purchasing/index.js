@@ -45,13 +45,13 @@ const Purchasing = () => {
   const { formDetails, tableDetails } = FormDetails();
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
       dispatch(listPO({ company: selectedCompany })).then(() => {
         setLoading(false);
         setSelectedPO(null);
-        if(isCancelled) {
+        if (isCancelled) {
           dispatch(clearData());
         }
       });
@@ -62,7 +62,7 @@ const Purchasing = () => {
       dispatch(clearDA());
       dispatch(clearPR());
       dispatch(clearUnit());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 
