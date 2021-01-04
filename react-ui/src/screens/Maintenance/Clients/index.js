@@ -33,7 +33,7 @@ const Clients = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(listClient({ company })).then(() => {
+    dispatch(listClient({ company, message })).then(() => {
       setFormData(null);
       setLoading(false);
 
@@ -56,9 +56,9 @@ const Clients = (props) => {
     setFormTitle('Add Client');
     setFormMode('add');
     setFormData(null);
-    dispatch(listCluster({ company })).then(() => {
-      dispatch(listInstitution({ company })).then(() => {
-        dispatch(listS({ company })).then(() => {
+    dispatch(listCluster({ company, message })).then(() => {
+      dispatch(listInstitution({ company, message })).then(() => {
+        dispatch(listS({ company, message })).then(() => {
           history.push(`${path}/new`);
         });
       });
@@ -78,9 +78,9 @@ const Clients = (props) => {
     };
     console.log(formData);
     setFormData(formData);
-    dispatch(listCluster({ company })).then(() => {
-      dispatch(listInstitution({ company })).then(() => {
-        dispatch(listS({ company })).then(() => {
+    dispatch(listCluster({ company, message })).then(() => {
+      dispatch(listInstitution({ company, message })).then(() => {
+        dispatch(listS({ company, message })).then(() => {
           history.push(`${path}/${data.id}`);
         });
       });
@@ -91,7 +91,7 @@ const Clients = (props) => {
     dispatch(deleteClient(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listClient({ company })).then(() => {
+        dispatch(listClient({ company, message })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.name}`);
         });
@@ -137,7 +137,7 @@ const Clients = (props) => {
       dispatch(addClient(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listClient({ company })).then(() => {
+          dispatch(listClient({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.name}`);
@@ -163,11 +163,10 @@ const Clients = (props) => {
           id: data.institutionalCode,
         },
       };
-      console.log(payload);
       dispatch(addClient(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listClient({ company })).then(() => {
+          dispatch(listClient({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${data.name}`);

@@ -24,7 +24,7 @@ const InstitutionalCodes = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(listInstitution()).then(() => {
+    dispatch(listInstitution({message})).then(() => {
       if(isCancelled) {
         dispatch(clearData());
       }
@@ -65,7 +65,7 @@ const InstitutionalCodes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteInstitution(row))
       .then(() => {
-        dispatch(listInstitution());
+        dispatch(listInstitution({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -83,11 +83,11 @@ const InstitutionalCodes = (props) => {
       newValues.id = currentID;
 
       dispatch(updateInstitution(newValues)).then(() => {
-        dispatch(listInstitution());
+        dispatch(listInstitution({message}));
       });
     } else if (mode === 'add') {
       dispatch(createInstitution(values)).then(() => {
-        dispatch(listInstitution());
+        dispatch(listInstitution({message}));
       });
     }
     setFormValues('');

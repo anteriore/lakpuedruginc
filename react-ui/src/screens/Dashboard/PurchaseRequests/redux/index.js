@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   listData: [],
@@ -25,6 +26,17 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
   const response = await axiosInstance.get(
     `rest/purchase-requests/company/${payload.company}?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for purchase requests")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -138,12 +150,30 @@ const purchaseRequestSlice = createSlice({
       state.status = 'loading';
     },
     [listPR.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.listData = processData(action.payload.data, action.type);
-        state.list = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for sales orders"
+        }
+
+        return {
+          ...state,
+          listData: processData(data, action.type),
+          list: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listPR.rejected]: (state, action) => {

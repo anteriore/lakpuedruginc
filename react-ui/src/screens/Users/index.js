@@ -166,9 +166,9 @@ const Users = () => {
     setFormMode('add');
     setFormData(null);
     setCompanyLoading(true);
-    dispatch(listD({ company: selectedCompany })).then(() => {
-      dispatch(listDepot({ company: selectedCompany })).then(() => {
-        dispatch(listPermission({ company: selectedCompany })).then(() => {
+    dispatch(listD({ company: selectedCompany, message })).then(() => {
+      dispatch(listDepot({ company: selectedCompany, message })).then(() => {
+        dispatch(listPermission({ company: selectedCompany, message })).then(() => {
           history.push(`${path}/new`);
           setCompanyLoading(false);
         });
@@ -202,9 +202,9 @@ const Users = () => {
     };
     setFormData(formData);
     setCompanyLoading(true);
-    dispatch(listD({ company: selectedCompany })).then(() => {
-      dispatch(listDepot({ company: selectedCompany })).then(() => {
-        dispatch(listPermission({ company: selectedCompany })).then(() => {
+    dispatch(listD({ company: selectedCompany, message })).then(() => {
+      dispatch(listDepot({ company: selectedCompany, message })).then(() => {
+        dispatch(listPermission({ company: selectedCompany, message })).then(() => {
           history.push(`${path}/${data.id}`);
           setCompanyLoading(false);
         });
@@ -300,7 +300,7 @@ const Users = () => {
   };
 
   const updateUserDepartments = (companyID) => {
-    dispatch(listD({ company: companyID })).then((response) => {
+    dispatch(listD({ company: companyID, message })).then((response) => {
       if (response.payload.status === 200) {
         const userDepartmentList = [];
         response.payload.data.forEach((department) => {
@@ -309,7 +309,7 @@ const Users = () => {
             users: [],
           });
         });
-        dispatch(listUser({ company: companyID })).then((response) => {
+        dispatch(listUser({ company: companyID, message })).then((response) => {
           if (response.payload.status === 200) {
             response.payload.data.forEach((user) => {
               const usersPerDept = userDepartmentList.find(
@@ -485,7 +485,7 @@ const Users = () => {
                           >
                             {formDetails.form_items.map((item) => {
                               if (!item.writeOnly) {
-                                if (item.type === 'select') {
+                                if (item.type === 'select' || item.type === 'selectSearch') {
                                   const itemData = selectedUser[item.name];
                                   return (
                                     <Descriptions.Item label={item.label}>

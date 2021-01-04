@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../utils/axios-instance';
 import * as message from '../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 const initialState = {
   list: null,
@@ -18,6 +17,17 @@ export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI) => {
   const response = await axiosInstance.get(
     `rest/purchase-orders/company/${payload.company}/?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for purchase orders")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -64,7 +74,6 @@ const purchaseOrderSlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for purchase orders"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -76,7 +85,6 @@ const purchaseOrderSlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',

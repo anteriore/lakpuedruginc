@@ -24,7 +24,7 @@ const BankAccounts = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(listBankAccount()).then(() => {
+    dispatch(listBankAccount({message})).then(() => {
       if(isCancelled) {
         dispatch(clearData());
       }
@@ -65,7 +65,7 @@ const BankAccounts = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteBankAccount(row))
       .then(() => {
-        dispatch(listBankAccount());
+        dispatch(listBankAccount({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -83,11 +83,11 @@ const BankAccounts = (props) => {
       newValues.id = currentID;
 
       dispatch(updateBankAccount(newValues)).then(() => {
-        dispatch(listBankAccount());
+        dispatch(listBankAccount({message}));
       });
     } else if (mode === 'add') {
       dispatch(createBankAccount(values)).then(() => {
-        dispatch(listBankAccount());
+        dispatch(listBankAccount({message}));
       });
     }
     setFormValues('');

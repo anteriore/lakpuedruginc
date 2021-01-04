@@ -14,12 +14,22 @@ import {
   ITEM_DELETE_FULFILLED,
   ITEM_DELETE_REJECTED,
 } from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 // Async Actions API section
 export const getFGList = createAsyncThunk('getFGList', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for finished goods")
+    }
+  }
+  else {
+    payload.message.error(ITEMS_GET_REJECTED)
+  }
+
 
   return response;
 });
@@ -71,7 +81,6 @@ const finishedGoodsSlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for finished goods"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -83,7 +92,6 @@ const finishedGoodsSlice = createSlice({
         };
       }
       else {
-        Message.error(ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',

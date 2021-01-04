@@ -25,7 +25,7 @@ const FinishedGoods = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(getFGList({ company })).then(() => {
+    dispatch(getFGList({ company, message })).then(() => {
       if(isCancelled) {
         dispatch(clearData());
       }

@@ -101,8 +101,8 @@ const PurchaseRequests = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(listPR({ company })).then(() => {
-      dispatch(listD({ company })).then(() => {
+    dispatch(listPR({ company, message })).then(() => {
+      dispatch(listD({ company, message })).then(() => {
         setLoading(false);
         if(isCancelled) {
           dispatch(clearData());
@@ -135,7 +135,7 @@ const PurchaseRequests = (props) => {
   const handleDelete = (data) => {
     setLoading(true);
     dispatch(deletePR(data.id)).then((response) => {
-      dispatch(listPR({ company })).then(() => {
+      dispatch(listPR({ company, message })).then(() => {
         setLoading(false);
         message.success(`Successfully deleted Purchase Request ${data.number}`);
       });

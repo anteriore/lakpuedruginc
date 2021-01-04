@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 const initialState = {
   deptList: null,
@@ -18,6 +17,17 @@ export const listD = createAsyncThunk('listD', async (payload, thunkAPI) => {
   const response = await axiosInstance.get(
     `rest/departments/company/${payload.company}?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for departments")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -44,6 +54,17 @@ export const listA = createAsyncThunk('listA', async (payload, thunkAPI) => {
   const response = await axiosInstance.get(
     `rest/areas/company/${payload.company}?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for areas")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -78,7 +99,6 @@ const departmentAreaSlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for departments"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -90,7 +110,6 @@ const departmentAreaSlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',
@@ -113,7 +132,6 @@ const departmentAreaSlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for areas"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -125,7 +143,6 @@ const departmentAreaSlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../utils/axios-instance';
+import * as message from '../../../data/constants/response-message.constant';
 
 const initialState = {
   listUser: null,
@@ -13,6 +14,17 @@ export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI) =
   const response = await axiosInstance.get(
     `rest/users/company/${payload.company}/?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for users")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -30,7 +42,7 @@ export const deleteUser = createAsyncThunk('deleteUser', async (payload, thunkAP
   return response;
 });
 
-export const listPermission = createAsyncThunk('listUser', async (payload, thunkAPI) => {
+export const listPermission = createAsyncThunk('listPermission', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/permissions/?token=${accessToken}`);
@@ -41,10 +53,7 @@ const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    clearData(state, action) {
-      state.listUser = null;
-      state.listPermission = null;
-    },
+    clearData: () => initialState
   },
   extraReducers: {
     [listUser.pending]: (state, action) => {

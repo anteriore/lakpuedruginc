@@ -101,7 +101,7 @@ const InputForm = (props) => {
   const history = useHistory();
 
   useEffect(() => {
-    dispatch(listD({ company: props.company })).then((response) => {
+    dispatch(listD({ company: props.company, message })).then((response) => {
       if (typeof id !== 'undefined' && id != null) {
         dispatch(getPR({ id })).then((response) => {
           setLoading(false);
@@ -174,7 +174,7 @@ const InputForm = (props) => {
     dispatch(addPR(data)).then((response) => {
       if (response.payload.status === 200) {
         message.success('Successfully saved');
-        dispatch(listPR({ company: props.company })).then(() => {
+        dispatch(listPR({ company: props.company, message })).then(() => {
           history.goBack();
         });
       } else {
@@ -242,7 +242,7 @@ const InputForm = (props) => {
   const selectItems = () => {
     setDisplayModal(true);
     setLoadingItems(true);
-    dispatch(listI()).then((response) => {
+    dispatch(listI({message})).then((response) => {
       setLoadingItems(false);
     });
   };

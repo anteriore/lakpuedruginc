@@ -23,7 +23,7 @@ const AccountCodes = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(listAC({ company })).then(() => {
+    dispatch(listAC({ company, message })).then(() => {
       setLoading(false)
 
       if(isCancelled) {
@@ -54,7 +54,7 @@ const AccountCodes = (props) => {
   const handleDelete = (val) => {
     const { id, code } = val;
     dispatch(deleteAC(id)).then(() => {
-      dispatch(listAC({ company }));
+      dispatch(listAC({ company, message }));
       message.success(`Successfully deleted Account Code ${code}`);
     });
   };
@@ -77,7 +77,7 @@ const AccountCodes = (props) => {
       };
 
       dispatch(addAC(payload)).then(() => {
-        dispatch(listAC({ company }));
+        dispatch(listAC({ company, message }));
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -87,7 +87,7 @@ const AccountCodes = (props) => {
         },
       };
       dispatch(addAC(payload)).then(() => {
-        dispatch(listAC({ company }));
+        dispatch(listAC({ company, message }));
       });
     }
 

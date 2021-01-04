@@ -1,11 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 export const listRegionCode = createAsyncThunk('listRegionCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/region-codes?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for region codes")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
 
   return response;
 });
@@ -61,7 +71,6 @@ const regionCodeSlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for region codes"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -73,7 +82,6 @@ const regionCodeSlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',

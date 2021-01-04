@@ -29,7 +29,7 @@ const ZipCodes = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(listZipCode()).then(() => {
+    dispatch(listZipCode({message})).then(() => {
       
       if(isCancelled) {
         dispatch(clearData());
@@ -81,8 +81,8 @@ const ZipCodes = (props) => {
   const handleAddButton = () => {
     setModalTitle('Add New Zip Code');
     setMode('add');
-    dispatch(listRegionCode()).then(() => {
-      dispatch(listProvinceCode()).then(() => {
+    dispatch(listRegionCode({message})).then(() => {
+      dispatch(listProvinceCode({message})).then(() => {
         setIsOpenForm(!isOpenForm);
       });
     });
@@ -92,8 +92,8 @@ const ZipCodes = (props) => {
     setCurrentID(row.id);
     setModalTitle('Edit Zip Code');
     setMode('edit');
-    dispatch(listRegionCode()).then(() => {
-      dispatch(listProvinceCode())
+    dispatch(listRegionCode({message})).then(() => {
+      dispatch(listProvinceCode({message}))
         .then(() => {
           setFormValues({
             ...row,
@@ -110,7 +110,7 @@ const ZipCodes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteZipCode(row))
       .then(() => {
-        dispatch(listZipCode());
+        dispatch(listZipCode({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -127,12 +127,12 @@ const ZipCodes = (props) => {
       const newValues = formatZipPayload(values, provinceCodeList, regionCodeList);
       newValues.id = currentID;
       dispatch(updateZipCode(newValues)).then(() => {
-        dispatch(listZipCode());
+        dispatch(listZipCode({message}));
       });
     } else if (mode === 'add') {
       dispatch(createZipCode(formatZipPayload(values, provinceCodeList, regionCodeList))).then(
         () => {
-          dispatch(listZipCode());
+          dispatch(listZipCode({message}));
         }
       );
     }

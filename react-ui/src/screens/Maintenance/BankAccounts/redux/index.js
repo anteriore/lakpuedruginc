@@ -6,6 +6,16 @@ import { message as Message } from 'antd';
 export const listBankAccount = createAsyncThunk('listBankAccount', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/bank-accounts?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for bank accounts")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
 
   return response;
 });

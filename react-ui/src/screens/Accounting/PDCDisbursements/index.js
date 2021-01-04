@@ -31,7 +31,7 @@ const PDCDisbursements = (props) => {
   const pdcDisbursements = useSelector((state) => state.accounting.PDCDisbursements.list);
 
   useEffect(() => {
-    dispatch(listPDCDisbursement({ company })).then(() => {
+    dispatch(listPDCDisbursement({ company, message })).then(() => {
       setLoading(false);
     });
 
@@ -46,7 +46,7 @@ const PDCDisbursements = (props) => {
     setFormTitle('Create PDC Disbursement');
     setFormMode('add');
     setFormData(null);
-    dispatch(listVendor({ company })).then(() => {
+    dispatch(listVendor({ company, message })).then(() => {
       history.push(`${path}/new`);
     });
   };
@@ -69,7 +69,7 @@ const PDCDisbursements = (props) => {
       cheques,
     };
     setFormData(formData);
-    dispatch(listVendor({ company })).then(() => {
+    dispatch(listVendor({ company, message })).then(() => {
       history.push(`${path}/${data.id}`);
     });
   };
@@ -78,7 +78,7 @@ const PDCDisbursements = (props) => {
     dispatch(deletePDCDisbursement(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listPDCDisbursement({ company })).then(() => {
+        dispatch(listPDCDisbursement({ company, message })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
@@ -112,7 +112,7 @@ const PDCDisbursements = (props) => {
       dispatch(addPDCDisbursement(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listPDCDisbursement({ company })).then(() => {
+          dispatch(listPDCDisbursement({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.number}`);
@@ -126,7 +126,7 @@ const PDCDisbursements = (props) => {
       dispatch(addPDCDisbursement(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listPDCDisbursement({ company })).then(() => {
+          dispatch(listPDCDisbursement({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${response.payload.data.number}`);

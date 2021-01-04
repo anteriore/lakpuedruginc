@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 const initialState = {
   list: null,
@@ -15,6 +14,17 @@ export const listIT = createAsyncThunk('listIT', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/item-types?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for item types")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -49,7 +59,6 @@ const itemTypeSlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for item types"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -61,7 +70,6 @@ const itemTypeSlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',

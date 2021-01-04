@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 const initialState = {
   list: null,
@@ -13,11 +12,21 @@ const initialState = {
 
 export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  console.log(`rest/vendors/${payload.company}?token=${accessToken}`);
 
   const response = await axiosInstance.get(
     `rest/vendors/company/${payload.company}/?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for vendors")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -59,7 +68,6 @@ const vendorSlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for vendors"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -71,7 +79,6 @@ const vendorSlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',

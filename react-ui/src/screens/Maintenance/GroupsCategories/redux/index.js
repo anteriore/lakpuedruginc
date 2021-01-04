@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 const initialState = {
   groupList: null,
@@ -18,6 +17,17 @@ export const listG = createAsyncThunk('listG', async (payload, thunkAPI) => {
   const response = await axiosInstance.get(
     `rest/group/company/${payload.company}?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for groups")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -39,6 +49,17 @@ export const listC = createAsyncThunk('listC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/category/?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for categories")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+  }
+
   return response;
 });
 
@@ -73,7 +94,6 @@ const groupCategorySlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for groups"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -85,7 +105,6 @@ const groupCategorySlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',
@@ -108,7 +127,6 @@ const groupCategorySlice = createSlice({
 
         if( data.length === 0){
           statusMessage = "No data retrieved for categories"
-          Message.warning(statusMessage)
         }
 
         return {
@@ -120,7 +138,6 @@ const groupCategorySlice = createSlice({
         };
       }
       else {
-        Message.error(message.ITEMS_GET_REJECTED)
         return {
           ...state,
           status: 'failed',
