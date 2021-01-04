@@ -222,7 +222,7 @@ const InputForm = (props) => {
                   <Table
                     components={component}
                     columns={modProductColumn}
-                    rowClassName={() => 'editable-row'}
+                    rowClassName={() => styles.editableRow}
                     dataSource={requestedProductList}
                     pagination={false}
                   />
