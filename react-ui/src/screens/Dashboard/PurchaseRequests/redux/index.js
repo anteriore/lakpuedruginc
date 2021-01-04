@@ -110,27 +110,6 @@ const processData = (data, action) => {
       requestedItems,
     };
   }
-  /* else if(action === "listItems/fulfilled"){
-        var processedData = []
-        for(const [index, value] of data.entries()){
-            var item = {
-                id: value.id,
-                name: value.name,
-                code: value.code,
-                type: value.type,
-                unit: {
-                    id: value.unit.id,
-                    name: value.unit.name,
-                },
-                type: {
-                    id: value.type.id,
-                    code: value.type.code,
-                    name: value.type.name,
-                }
-            }
-            processedData.push(item)
-        }
-    } */
 
   return processedData;
 };

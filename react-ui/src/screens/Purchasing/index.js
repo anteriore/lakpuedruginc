@@ -64,7 +64,7 @@ const Purchasing = () => {
       dispatch(clearUnit());
       isCancelled = true
     };
-  }, [dispatch]);
+  }, [dispatch, selectedCompany]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));

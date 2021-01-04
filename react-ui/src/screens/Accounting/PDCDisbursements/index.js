@@ -9,7 +9,7 @@ import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
 import FormScreen from '../../../components/forms/FormScreen';
 
-import { listPDCDisbursement, addPDCDisbursement, deletePDCDisbursement } from './redux';
+import { listPDCDisbursement, addPDCDisbursement, deletePDCDisbursement, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 
 const { Title, Text } = Typography;
@@ -34,6 +34,12 @@ const PDCDisbursements = (props) => {
     dispatch(listPDCDisbursement({ company })).then(() => {
       setLoading(false);
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearVendor());
+    };
+
   }, [dispatch, company]);
 
   const handleAdd = () => {

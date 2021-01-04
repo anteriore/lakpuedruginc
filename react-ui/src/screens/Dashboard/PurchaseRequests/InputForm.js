@@ -291,11 +291,7 @@ const InputForm = (props) => {
                 <Select
                   showSearch
                   placeholder={"Department"}
-                  filterOption={
-                    (input, option) => {
-                      return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  }
+                  optionFilterProp="children"
                 >
                   {departments.map((department) => (
                     <Select.Option value={department.id}>{department.name}</Select.Option>
