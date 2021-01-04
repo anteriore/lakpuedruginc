@@ -288,7 +288,15 @@ const InputForm = (props) => {
               </Form.Item>
 
               <Form.Item label="Department" name="department" rules={[{ required: true }]}>
-                <Select>
+                <Select
+                  showSearch
+                  placeholder={"Department"}
+                  filterOption={
+                    (input, option) => {
+                      return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  }
+                >
                   {departments.map((department) => (
                     <Select.Option value={department.id}>{department.name}</Select.Option>
                   ))}

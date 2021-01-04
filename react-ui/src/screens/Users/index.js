@@ -136,7 +136,7 @@ const Users = () => {
       {
         label: 'Department',
         name: 'department',
-        type: 'select',
+        type: 'selectSearch',
         selectName: 'name',
         choices: departments,
         rules: [{ required: true }],
@@ -165,9 +165,9 @@ const Users = () => {
     setFormMode('add');
     setFormData(null);
     setCompanyLoading(true);
-    dispatch(listD({ selectedCompany })).then(() => {
-      dispatch(listDepot({ selectedCompany })).then(() => {
-        dispatch(listPermission({ selectedCompany })).then(() => {
+    dispatch(listD({ company: selectedCompany })).then(() => {
+      dispatch(listDepot({ company: selectedCompany })).then(() => {
+        dispatch(listPermission({ company: selectedCompany })).then(() => {
           history.push(`${path}/new`);
           setCompanyLoading(false);
         });
@@ -201,9 +201,9 @@ const Users = () => {
     };
     setFormData(formData);
     setCompanyLoading(true);
-    dispatch(listD({ selectedCompany })).then(() => {
-      dispatch(listDepot({ selectedCompany })).then(() => {
-        dispatch(listPermission({ selectedCompany })).then(() => {
+    dispatch(listD({ company: selectedCompany })).then(() => {
+      dispatch(listDepot({ company: selectedCompany })).then(() => {
+        dispatch(listPermission({ company: selectedCompany })).then(() => {
           history.push(`${path}/${data.id}`);
           setCompanyLoading(false);
         });
