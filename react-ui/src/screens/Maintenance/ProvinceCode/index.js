@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
@@ -11,6 +11,7 @@ import {
   createProvinceCode,
   updateProvinceCode,
   deleteProvinceCode,
+  clearData
 } from './redux';
 
 const { Title } = Typography;
@@ -28,7 +29,18 @@ const ProvinceCode = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(listProvinceCode({ company }));
+    var isCancelled = false
+    dispatch(listProvinceCode({ company })).then(() => {
+      
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
+
+    return function cleanup() {
+      dispatch(clearData());
+      isCancelled = true
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

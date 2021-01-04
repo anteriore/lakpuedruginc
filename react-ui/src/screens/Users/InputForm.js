@@ -44,6 +44,30 @@ const InputForm = (props) => {
         </Form.Item>
       );
     }
+    if (item.type === 'selectSearch') {
+      if (typeof item.selectName === 'undefined') {
+        item.selectName = 'name';
+      }
+      return (
+        <Form.Item label={item.label} name={item.name} rules={item.rules}>
+          <Select 
+            showSearch
+            placeholder={item.placeholder}
+            filterOption={
+              (input, option) => {
+                console.log(option)
+                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            }
+          >
+            {item.choices.map((choice) => (
+              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      );
+
+    }
     if (item.type === 'textArea') {
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>

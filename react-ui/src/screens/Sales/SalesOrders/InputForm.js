@@ -19,12 +19,13 @@ import { useHistory, useParams } from 'react-router-dom';
 import _ from 'lodash';
 import { formDetails, tableProduct, tableProductInventory, initValueForm } from './data';
 import FormItem from '../../../components/forms/FormItem';
-import { listDepot } from '../../Maintenance/Depots/redux';
-import { listClient } from '../../Maintenance/Clients/redux';
-import { listProductInventory } from '../../Maintenance/redux/productInventory';
 import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList, fromatInitForm } from '../../../helpers/general-helper';
 import { formatProduct, formatProductCalc } from './helpers';
+
+import { listDepot } from '../../Maintenance/Depots/redux';
+import { listClient } from '../../Maintenance/Clients/redux';
+import { listProductInventory } from '../../Maintenance/redux/productInventory';
 
 const { Title } = Typography;
 

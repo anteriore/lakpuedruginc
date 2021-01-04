@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listIT, addIT, deleteIT } from './redux';
+import { listIT, addIT, deleteIT, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -53,7 +53,17 @@ const ItemTypes = (props) => {
   const data = useSelector((state) => state.maintenance.itemTypes.list);
 
   useEffect(() => {
-    dispatch(listIT({ company }));
+    var isCancelled = false
+    dispatch(listIT({ company })).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
+
+    return function cleanup() {
+      dispatch(clearData());
+      isCancelled = true
+    };
   }, [dispatch, company]);
 
   const handleAdd = () => {

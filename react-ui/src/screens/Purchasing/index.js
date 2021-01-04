@@ -17,7 +17,7 @@ import {
   listA as listArea,
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
-import { listUnit } from '../Maintenance/Units/redux';
+import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
 import { listPR, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
@@ -45,11 +45,15 @@ const Purchasing = () => {
   const { formDetails, tableDetails } = FormDetails();
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
       dispatch(listPO({ company: selectedCompany })).then(() => {
         setLoading(false);
         setSelectedPO(null);
+        if(isCancelled) {
+          dispatch(clearData());
+        }
       });
     });
     return function cleanup() {
@@ -57,6 +61,8 @@ const Purchasing = () => {
       dispatch(clearVendor());
       dispatch(clearDA());
       dispatch(clearPR());
+      dispatch(clearUnit());
+      isCancelled = true
     };
   }, [dispatch]);
 

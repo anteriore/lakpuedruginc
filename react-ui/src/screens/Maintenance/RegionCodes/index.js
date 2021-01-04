@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import SimpleForm from '../../../components/forms/FormModal';
-import { listRegionCode, createRegionCode, updateRegionCode, deleteRegionCode } from './redux';
+import { listRegionCode, createRegionCode, updateRegionCode, deleteRegionCode, clearData } from './redux';
 
 const { Title } = Typography;
 
@@ -23,7 +23,18 @@ const RegionCodes = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listRegionCode());
+    var isCancelled = false
+    dispatch(listRegionCode()).then(() => {
+      
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
+
+    return function cleanup() {
+      dispatch(clearData());
+      isCancelled = true
+    };
   }, [dispatch]);
 
   useEffect(() => {

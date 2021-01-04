@@ -54,14 +54,19 @@ const GroupsCategories = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listG({ company })).then((response) => {
       setLoading(false);
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
     dispatch(listC({ company }));
     return () => {
       setselectedCategory(null);
       setselectedGroup(null);
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

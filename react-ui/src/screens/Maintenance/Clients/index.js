@@ -7,8 +7,8 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listClient, addClient, getClient, deleteClient, clearData } from './redux';
-import { listCluster } from '../ClusterCodes/redux';
-import { listInstitution } from '../InstitutionalCodes/redux';
+import { listCluster, clearData as clearCluster } from '../ClusterCodes/redux';
+import { listInstitution, clearData as clearInstitution } from '../InstitutionalCodes/redux';
 import { listS, clearData as clearS } from '../SalesReps/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 
@@ -32,14 +32,23 @@ const Clients = (props) => {
   const { formDetails } = FormDetails();
 
   useEffect(() => {
-    dispatch(listClient({ company })).then((response) => {
+    var isCancelled = false
+    dispatch(listClient({ company })).then(() => {
       setFormData(null);
       setLoading(false);
+
+      if(isCancelled){
+        dispatch(clearData());
+      }
+
     });
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearCluster());
+      dispatch(clearInstitution());
       dispatch(clearS());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

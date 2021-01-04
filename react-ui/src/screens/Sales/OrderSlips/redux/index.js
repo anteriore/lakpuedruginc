@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -33,39 +34,61 @@ export const deleteOrderSlips = createAsyncThunk('deleteOrderSlips', async (payl
   return response;
 });
 
+const initialState = {
+  orderSlipsList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const orderSlipsSlice = createSlice({
   name: 'orderSlips',
-  initialState: {
-    orderSlipsList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listOrderSlips.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listOrderSlips.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        orderSlipsList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for order slips"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          orderSlipsList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listOrderSlips.rejected]: (state) => {
       return {
         ...state,
         orderSlipsList: [],
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -73,7 +96,7 @@ const orderSlipsSlice = createSlice({
     [createOrderSlips.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -81,7 +104,7 @@ const orderSlipsSlice = createSlice({
     [createOrderSlips.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
@@ -89,7 +112,7 @@ const orderSlipsSlice = createSlice({
     [createOrderSlips.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
@@ -97,7 +120,7 @@ const orderSlipsSlice = createSlice({
     [updateOrderSlips.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -105,7 +128,7 @@ const orderSlipsSlice = createSlice({
     [updateOrderSlips.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
@@ -113,7 +136,7 @@ const orderSlipsSlice = createSlice({
     [updateOrderSlips.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
@@ -121,7 +144,7 @@ const orderSlipsSlice = createSlice({
     [deleteOrderSlips.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -129,7 +152,7 @@ const orderSlipsSlice = createSlice({
     [deleteOrderSlips.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
@@ -137,7 +160,7 @@ const orderSlipsSlice = createSlice({
     [deleteOrderSlips.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
@@ -145,4 +168,5 @@ const orderSlipsSlice = createSlice({
   },
 });
 
+export const { clearData } = orderSlipsSlice.actions;
 export default orderSlipsSlice.reducer;

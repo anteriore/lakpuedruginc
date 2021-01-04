@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listBankAccount = createAsyncThunk('listBankAccount', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -43,40 +44,62 @@ export const deleteBankAccount = createAsyncThunk(
   }
 );
 
+const initialState = {
+  bankAccountList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const bankAccountSlice = createSlice({
   name: 'bankAccount',
-  initialState: {
-    bankAccountList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listBankAccount.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        bankAccountList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for bank accounts"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          bankAccountList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listBankAccount.rejected]: (state, action) => {
       const { data } = action.payload;
       return {
         ...state,
         bankAccountList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -84,7 +107,7 @@ const bankAccountSlice = createSlice({
     [createBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -92,7 +115,7 @@ const bankAccountSlice = createSlice({
     [createBankAccount.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_ADD_FULFILLED,
       };
@@ -100,7 +123,7 @@ const bankAccountSlice = createSlice({
     [createBankAccount.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
@@ -108,7 +131,7 @@ const bankAccountSlice = createSlice({
     [updateBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -124,7 +147,7 @@ const bankAccountSlice = createSlice({
     [updateBankAccount.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
@@ -132,7 +155,7 @@ const bankAccountSlice = createSlice({
     [deleteBankAccount.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -140,7 +163,7 @@ const bankAccountSlice = createSlice({
     [deleteBankAccount.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
@@ -148,7 +171,7 @@ const bankAccountSlice = createSlice({
     [deleteBankAccount.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
@@ -156,4 +179,5 @@ const bankAccountSlice = createSlice({
   },
 });
 
+export const { clearData } = bankAccountSlice.actions;
 export default bankAccountSlice.reducer;

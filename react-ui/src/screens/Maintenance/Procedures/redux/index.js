@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listProcedure = createAsyncThunk('listProcedure', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -31,33 +32,55 @@ export const deleteProcedure = createAsyncThunk('deleteProcedure', async (payloa
   return response;
 });
 
+const initialState = {
+  procedureList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
+
 const proceduresSlice = createSlice({
   name: 'procedures',
-  initialState: {
-    procedureList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listProcedure.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listProcedure.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        procedureList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for procedures"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          procedureList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listProcedure.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -72,7 +95,7 @@ const proceduresSlice = createSlice({
     [createProcedure.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -96,7 +119,7 @@ const proceduresSlice = createSlice({
     [updateProcedure.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -120,7 +143,7 @@ const proceduresSlice = createSlice({
     [deleteProcedure.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -144,4 +167,5 @@ const proceduresSlice = createSlice({
   },
 });
 
+export const { clearData } = proceduresSlice.actions;
 export default proceduresSlice.reducer;
