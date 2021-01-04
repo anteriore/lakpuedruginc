@@ -100,11 +100,11 @@ const PurchaseRequests = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listPR({ company })).then(() => {
       dispatch(listD({ company })).then(() => {
         setLoading(false);
-        if(isCancelled) {
+        if (isCancelled) {
           dispatch(clearData());
         }
       });
@@ -114,7 +114,7 @@ const PurchaseRequests = (props) => {
       dispatch(clearData());
       dispatch(clearItem());
       dispatch(clearDepartment());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

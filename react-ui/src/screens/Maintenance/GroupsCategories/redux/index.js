@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 const initialState = {
   groupList: null,
@@ -60,20 +60,20 @@ const groupCategorySlice = createSlice({
   name: 'groupsCategories',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listG.pending]: (state) => {
       state.status = 'loading';
     },
     [listG.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
         const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+        let statusMessage = message.ITEMS_GET_FULFILLED;
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for groups"
-          Message.warning(statusMessage)
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for groups';
+          Message.warning(statusMessage);
         }
 
         return {
@@ -81,18 +81,17 @@ const groupCategorySlice = createSlice({
           groupList: data,
           status: 'succeeded',
           action: 'get',
-          statusMessage: statusMessage,
+          statusMessage,
         };
       }
-      else {
-        Message.error(message.ITEMS_GET_REJECTED)
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+
+      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
     [listG.rejected]: (state) => {
       state.status = 'failed';
@@ -102,13 +101,13 @@ const groupCategorySlice = createSlice({
       state.status = 'loading';
     },
     [listC.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
         const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+        let statusMessage = message.ITEMS_GET_FULFILLED;
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for categories"
-          Message.warning(statusMessage)
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for categories';
+          Message.warning(statusMessage);
         }
 
         return {
@@ -116,18 +115,17 @@ const groupCategorySlice = createSlice({
           categoryList: data,
           status: 'succeeded',
           action: 'get',
-          statusMessage: statusMessage,
+          statusMessage,
         };
       }
-      else {
-        Message.error(message.ITEMS_GET_REJECTED)
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+
+      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
     [listC.rejected]: (state) => {
       state.status = 'failed';

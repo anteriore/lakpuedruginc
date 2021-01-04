@@ -21,17 +21,16 @@ const Units = (props) => {
   const { unitList, action, statusMessage } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listUnit({ company })).then(() => {
-      
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

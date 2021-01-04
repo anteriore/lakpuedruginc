@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 export const listBankAccount = createAsyncThunk('listBankAccount', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -49,13 +49,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const bankAccountSlice = createSlice({
   name: 'bankAccount',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listBankAccount.pending]: (state) => {
@@ -67,13 +67,13 @@ const bankAccountSlice = createSlice({
       };
     },
     [listBankAccount.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
         const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+        let statusMessage = message.ITEMS_GET_FULFILLED;
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for bank accounts"
-          Message.warning(statusMessage)
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for bank accounts';
+          Message.warning(statusMessage);
         }
 
         return {
@@ -81,18 +81,17 @@ const bankAccountSlice = createSlice({
           bankAccountList: data,
           status: 'succeeded',
           action: 'get',
-          statusMessage: statusMessage,
+          statusMessage,
         };
       }
-      else {
-        Message.error(message.ITEMS_GET_REJECTED)
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+
+      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
     [listBankAccount.rejected]: (state, action) => {
       const { data } = action.payload;

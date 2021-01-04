@@ -58,7 +58,7 @@ const FormScreen = (props) => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    //console.log(errorInfo)
+    // console.log(errorInfo)
     message.error("An error has occurred. Please double check the information you've provided.");
   };
 
@@ -94,14 +94,12 @@ const FormScreen = (props) => {
 
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select 
+          <Select
             showSearch={item.type === 'selectSearch'}
             placeholder={item.placeholder}
-            filterOption={
-              (input, option) => {
-                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            }
+            filterOption={(input, option) => {
+              return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            }}
           >
             {item.choices.map((choice) => (
               <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>

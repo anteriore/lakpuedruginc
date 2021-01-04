@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 export const listProductionArea = createAsyncThunk(
   'listProductionArea',
@@ -58,13 +58,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const productionAreaSlice = createSlice({
   name: 'productionArea',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listProductionArea.pending]: (state) => {
@@ -76,13 +76,13 @@ const productionAreaSlice = createSlice({
       };
     },
     [listProductionArea.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
         const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+        let statusMessage = message.ITEMS_GET_FULFILLED;
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for production areas"
-          Message.warning(statusMessage)
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for production areas';
+          Message.warning(statusMessage);
         }
 
         return {
@@ -90,18 +90,17 @@ const productionAreaSlice = createSlice({
           productionAreaList: data,
           status: 'succeeded',
           action: 'get',
-          statusMessage: statusMessage,
+          statusMessage,
         };
       }
-      else {
-        Message.error(message.ITEMS_GET_REJECTED)
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+
+      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
     [listProductionArea.rejected]: (state, action) => {
       const { data } = action.payload;

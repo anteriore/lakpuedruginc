@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 export const listProduct = createAsyncThunk('listProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -39,13 +39,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const productSlice = createSlice({
   name: 'products',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listProduct.pending]: (state) => {
@@ -57,13 +57,13 @@ const productSlice = createSlice({
       };
     },
     [listProduct.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
         const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+        let statusMessage = message.ITEMS_GET_FULFILLED;
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for products"
-          Message.warning(statusMessage)
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for products';
+          Message.warning(statusMessage);
         }
 
         return {
@@ -71,18 +71,17 @@ const productSlice = createSlice({
           productList: data,
           status: 'succeeded',
           action: 'get',
-          statusMessage: statusMessage,
+          statusMessage,
         };
       }
-      else {
-        Message.error(message.ITEMS_GET_REJECTED)
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+
+      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
     [listProduct.rejected]: (state, action) => {
       const { data } = action.payload;

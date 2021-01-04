@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { message as Message } from 'antd';
 
 const initialState = {
   list: null,
@@ -36,20 +36,20 @@ const itemSlice = createSlice({
   name: 'items',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listI.pending]: (state, action) => {
       state.status = 'loading';
     },
     [listI.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
         const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+        let statusMessage = message.ITEMS_GET_FULFILLED;
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for items"
-          Message.warning(statusMessage)
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for items';
+          Message.warning(statusMessage);
         }
 
         return {
@@ -57,18 +57,17 @@ const itemSlice = createSlice({
           list: data,
           status: 'succeeded',
           action: 'get',
-          statusMessage: statusMessage,
+          statusMessage,
         };
       }
-      else {
-        Message.error(message.ITEMS_GET_REJECTED)
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+
+      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
     [listI.rejected]: (state, action) => {
       state.status = 'failed';

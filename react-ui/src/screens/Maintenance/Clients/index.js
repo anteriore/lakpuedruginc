@@ -32,15 +32,14 @@ const Clients = (props) => {
   const { formDetails } = FormDetails();
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listClient({ company })).then(() => {
       setFormData(null);
       setLoading(false);
 
-      if(isCancelled){
+      if (isCancelled) {
         dispatch(clearData());
       }
-
     });
 
     return function cleanup() {
@@ -48,7 +47,7 @@ const Clients = (props) => {
       dispatch(clearCluster());
       dispatch(clearInstitution());
       dispatch(clearS());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

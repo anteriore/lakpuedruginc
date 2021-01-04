@@ -18,13 +18,11 @@ const SimpleForm = (props) => {
           item.selectName = 'name';
         }
 
-        if(item.selectName === 'codename'){
+        if (item.selectName === 'codename') {
           item.render = (choice) => `[${choice.code}] ${choice.name}`;
-        }
-        else {
+        } else {
           item.render = (choice) => choice[item.selectName];
         }
-
       }
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>

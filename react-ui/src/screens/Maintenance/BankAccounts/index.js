@@ -6,7 +6,13 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { listBankAccount, createBankAccount, updateBankAccount, deleteBankAccount, clearData } from './redux';
+import {
+  listBankAccount,
+  createBankAccount,
+  updateBankAccount,
+  deleteBankAccount,
+  clearData,
+} from './redux';
 
 const { Title } = Typography;
 
@@ -23,16 +29,16 @@ const BankAccounts = (props) => {
   );
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listBankAccount()).then(() => {
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
-    })
-    
+    });
+
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 

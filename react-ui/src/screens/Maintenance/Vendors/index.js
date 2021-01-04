@@ -117,11 +117,11 @@ const Vendors = (props) => {
   };
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listVendor({ company })).then((response) => {
       setFormData(null);
       setLoading(false);
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -130,7 +130,7 @@ const Vendors = (props) => {
       dispatch(clearData());
       dispatch(clearA());
       dispatch(clearG());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 
