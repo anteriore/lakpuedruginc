@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listC, addC, deleteC, clearData } from './redux';
+import { listClassification, addClassification, deleteClassification, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -54,7 +54,7 @@ const Classification = (props) => {
 
   useEffect(() => {
     var isCancelled = false
-    dispatch(listC({ company })).then(() => {
+    dispatch(listClassification({ company })).then(() => {
       if(isCancelled) {
         dispatch(clearData());
       }})
@@ -81,8 +81,8 @@ const Classification = (props) => {
 
   const handleDelete = (val) => {
     const { id, code } = val;
-    dispatch(deleteC(id)).then(() => {
-      dispatch(listC({ company }));
+    dispatch(deleteClassification(id)).then(() => {
+      dispatch(listClassification({ company }));
       message.success(`Successfully deleted Classification ${code}`);
     });
   };
@@ -104,8 +104,8 @@ const Classification = (props) => {
         },
       };
 
-      dispatch(addC(payload)).then(() => {
-        dispatch(listC({ company }));
+      dispatch(addClassification(payload)).then(() => {
+        dispatch(listClassification({ company }));
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -114,8 +114,8 @@ const Classification = (props) => {
           id: company,
         },
       };
-      dispatch(addC(payload)).then(() => {
-        dispatch(listC({ company }));
+      dispatch(addClassification(payload)).then(() => {
+        dispatch(listClassification({ company }));
       });
     }
 

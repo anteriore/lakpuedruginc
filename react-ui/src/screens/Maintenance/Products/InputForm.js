@@ -21,7 +21,7 @@ import _ from 'lodash';
 import { tableHeaderFinishedGoods, formDetails } from './data';
 import { getFGList } from '../FinishedGoods/redux';
 import { listDepot } from '../Depots/redux';
-import { listC as listClass } from '../Classification/redux';
+import { listClassification } from '../Classification/redux';
 import { listPC } from '../ProductCategories/redux';
 import { listPD } from '../ProductDivisions/redux';
 import { listUnit } from '../Units/redux';
@@ -57,7 +57,7 @@ const InputForm = (props) => {
   useEffect(() => {
     dispatch(listDepot()).then(() => {
       dispatch(listPC()).then(() => {
-        dispatch(listClass()).then(() => {
+        dispatch(listClassification()).then(() => {
           dispatch(listPD()).then(() => {
             dispatch(listUnit()).then(() => {
               setContentLoading(false);
