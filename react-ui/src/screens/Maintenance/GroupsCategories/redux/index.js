@@ -1,10 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 const initialState = {
   groupList: null,
   categoryList: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
 export const listG = createAsyncThunk('listG', async (payload, thunkAPI) => {
@@ -55,21 +60,38 @@ const groupCategorySlice = createSlice({
   name: 'groupsCategories',
   initialState,
   reducers: {
-    clearData(state, action) {
-      state.groupList = null;
-      state.categoryList = null;
-    },
+    clearData: () => initialState
   },
   extraReducers: {
     [listG.pending]: (state) => {
       state.status = 'loading';
     },
     [listG.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.groupList = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for groups"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          groupList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listG.rejected]: (state) => {
@@ -80,11 +102,31 @@ const groupCategorySlice = createSlice({
       state.status = 'loading';
     },
     [listC.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.categoryList = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for categories"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          categoryList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listC.rejected]: (state) => {

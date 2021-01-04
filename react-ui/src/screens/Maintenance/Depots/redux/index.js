@@ -1,9 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 const initialState = {
   list: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
 export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI) => {
@@ -31,20 +36,38 @@ const depotSlice = createSlice({
   name: 'depots',
   initialState,
   reducers: {
-    clearData(state) {
-      state.list = null;
-    },
+    clearData: () => initialState
   },
   extraReducers: {
     [listDepot.pending]: (state) => {
       state.status = 'loading';
     },
     [listDepot.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.list = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for depots"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          list: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listDepot.rejected]: (state) => {

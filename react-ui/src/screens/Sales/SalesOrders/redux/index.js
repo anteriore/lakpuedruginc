@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -44,16 +45,19 @@ export const listSalesOrderByDepot = createAsyncThunk(
     return response;
   }
 );
+const initialState = {
+  salesOrderList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+}
 
 const salesOrdersSlice = createSlice({
   name: 'salesOrders',
-  initialState: {
-    salesOrderList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState: initialState,
+  reducers: {
+    clearData: () => initialState
   },
-  reducers: {},
   extraReducers: {
     [listSalesOrder.pending]: (state) => {
       return {
@@ -64,14 +68,32 @@ const salesOrdersSlice = createSlice({
       };
     },
     [listSalesOrder.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        salesOrderList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for sales orders"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          salesOrderList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listSalesOrder.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -92,14 +114,32 @@ const salesOrdersSlice = createSlice({
       };
     },
     [listSalesOrderByDepot.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      return {
-        ...state,
-        salesOrderList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
-      };
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for sales orders"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          salesOrderList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
+      }
     },
     [listSalesOrderByDepot.rejected]: (state, action) => {
       const { data } = action.payload;
@@ -186,4 +226,5 @@ const salesOrdersSlice = createSlice({
   },
 });
 
+export const { clearData } = salesOrdersSlice.actions;
 export default salesOrdersSlice.reducer;

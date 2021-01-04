@@ -1,9 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
-
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
+ 
 const initialState = {
   list: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
 export const listAC = createAsyncThunk('listAC', async (payload, thunkAPI) => {
@@ -34,24 +39,53 @@ const accountCodeSlice = createSlice({
   name: 'accountCodes',
   initialState,
   reducers: {
-    clearData(state) {
-      state.list = null;
-    },
+    clearData: () => initialState
   },
   extraReducers: {
     [listAC.pending]: (state) => {
-      state.status = 'loading';
+      return {
+        ...state,
+        status: 'loading',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_PENDING,
+      };
     },
     [listAC.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.list = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for account codes"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          list: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listAC.rejected]: (state) => {
-      state.status = 'failed';
+      Message.error(message.ITEMS_GET_REJECTED)
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

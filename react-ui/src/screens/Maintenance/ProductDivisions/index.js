@@ -65,10 +65,16 @@ const ProductDivisions = (props) => {
   const data = useSelector((state) => state.maintenance.productDivisions.list);
 
   useEffect(() => {
-    dispatch(listPD({ company }));
+    var isCancelled = false
+    dispatch(listPD({ company })).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
 
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

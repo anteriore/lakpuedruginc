@@ -82,15 +82,20 @@ const Depots = (props) => {
   };
 
   useEffect(() => {
-    dispatch(listPC({ company })).then((response) => {
-      dispatch(listPD({ company })).then((response) => {
+    var isCancelled = false
+    dispatch(listPC({ company })).then(() => {
+      dispatch(listPD({ company })).then(() => {
         setLoading(false);
+        if(isCancelled) {
+          dispatch(clearData());
+        }
       });
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearPD());
+      isCancelled = true
     };
   }, [dispatch, company]);
 

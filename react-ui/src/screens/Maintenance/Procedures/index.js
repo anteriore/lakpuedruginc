@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listProductionArea } from '../ProductionArea/redux';
-import { listProcedure, createProcedure, updateProcedure, deleteProcedure } from './redux';
+import { listProductionArea, clearData as clearProductionArea } from '../ProductionArea/redux';
+import { listProcedure, createProcedure, updateProcedure, deleteProcedure, clearData } from './redux';
 import { formatProcedurePayload } from './helper';
 
 const { Title } = Typography;
@@ -28,7 +28,18 @@ const Procedures = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listProcedure());
+    var isCancelled = false
+    dispatch(listProcedure()).then(() => {
+      if(isCancelled) {
+        dispatch(clearData());
+      }
+    })
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearProductionArea());
+      isCancelled = true
+    };
   }, [dispatch]);
 
   useEffect(() => {

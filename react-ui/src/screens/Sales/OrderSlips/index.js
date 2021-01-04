@@ -3,12 +3,15 @@ import { Row, Typography, Col, Button, Skeleton, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader } from './data';
-import { listOrderSlips, createOrderSlips, updateOrderSlips, deleteOrderSlips } from './redux';
 import InputForm from './InputForm';
 import { formatPayload } from './helpers';
+
+import { listOrderSlips, createOrderSlips, updateOrderSlips, deleteOrderSlips, clearData } from './redux';
+import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearSO } from '../SalesOrders/redux';
 
 const { Title } = Typography;
 
@@ -23,9 +26,20 @@ const OrderSlips = (props) => {
   const { id } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
+    var isCancelled = false
     dispatch(listOrderSlips(company)).then(() => {
       setContentLoading(false);
+      if(isCancelled) {
+        dispatch(clearData());
+      }
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearSO());
+      isCancelled = true
+    };
   }, [dispatch, company]);
 
   useEffect(() => {

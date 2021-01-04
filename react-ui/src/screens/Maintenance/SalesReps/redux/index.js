@@ -1,9 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 const initialState = {
   list: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
 export const listS = createAsyncThunk('listS', async (payload, thunkAPI) => {
@@ -31,20 +36,38 @@ const salesRepSlice = createSlice({
   name: 'salesReps',
   initialState,
   reducers: {
-    clearData(state, action) {
-      state.list = null;
-    },
+    clearData: () => initialState
   },
   extraReducers: {
     [listS.pending]: (state, action) => {
       state.status = 'loading';
     },
     [listS.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.list = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for sales reps"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          list: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listS.rejected]: (state, action) => {

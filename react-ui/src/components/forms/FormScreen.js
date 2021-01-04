@@ -74,7 +74,7 @@ const FormScreen = (props) => {
   };
 
   const FormItem = ({ item }) => {
-    if (item.type === 'select') {
+    if (item.type === 'select' || item.type === 'selectSearch') {
       if (typeof item.render === 'undefined') {
         if (typeof item.selectName === 'undefined') {
           item.selectName = 'name';
@@ -94,7 +94,15 @@ const FormScreen = (props) => {
 
       return (
         <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select placeholder={item.placeholder}>
+          <Select 
+            showSearch={item.type === 'selectSearch'}
+            placeholder={item.placeholder}
+            filterOption={
+              (input, option) => {
+                return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            }
+          >
             {item.choices.map((choice) => (
               <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
             ))}

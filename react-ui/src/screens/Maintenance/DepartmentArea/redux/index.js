@@ -1,10 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
+import { message as Message } from 'antd';
 
 const initialState = {
   deptList: null,
   areaList: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
 export const listD = createAsyncThunk('listD', async (payload, thunkAPI) => {
@@ -60,21 +65,38 @@ const departmentAreaSlice = createSlice({
   name: 'departmentArea',
   initialState,
   reducers: {
-    clearData(state, action) {
-      state.deptList = null;
-      state.areaList = null;
-    },
+    clearData: () => initialState
   },
   extraReducers: {
     [listD.pending]: (state) => {
       state.status = 'loading';
     },
     [listD.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.deptList = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for departments"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          deptList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listD.rejected]: (state) => {
@@ -85,11 +107,31 @@ const departmentAreaSlice = createSlice({
       state.status = 'loading';
     },
     [listA.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.areaList = action.payload.data;
-      } else {
-        state.status = 'failed';
+      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
+        const { data } = action.payload;
+        var statusMessage = message.ITEMS_GET_FULFILLED
+
+        if( data.length === 0){
+          statusMessage = "No data retrieved for areas"
+          Message.warning(statusMessage)
+        }
+
+        return {
+          ...state,
+          areaList: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage: statusMessage,
+        };
+      }
+      else {
+        Message.error(message.ITEMS_GET_REJECTED)
+        return {
+          ...state,
+          status: 'failed',
+          action: 'get',
+          statusMessage: message.ITEMS_GET_REJECTED,
+        };
       }
     },
     [listA.rejected]: (state) => {
