@@ -19,7 +19,6 @@ const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
   const history = useHistory();
-  const { path } = useRouteMatch();
   const permissions = useSelector((state) => state.users.listPermission);
 
   useEffect(() => {

@@ -134,7 +134,7 @@ const PurchaseRequests = (props) => {
 
   const handleDelete = (data) => {
     setLoading(true);
-    dispatch(deletePR(data.id)).then((response) => {
+    dispatch(deletePR(data.id)).then(() => {
       dispatch(listPR({ company, message })).then(() => {
         setLoading(false);
         message.success(`Successfully deleted Purchase Request ${data.number}`);
