@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI) => {
+export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/memo-types?token=${accessToken}`);
   
@@ -14,6 +14,7 @@ export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI) =
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
 
@@ -65,37 +66,25 @@ const memoSlice = createSlice({
       };
     },
     [listMemo.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
-
-        if( data.length === 0){
-          statusMessage = "No data retrieved for memo types"
-        }
-
-        return {
-          ...state,
-          memoList: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
-    },
-    [listMemo.rejected]: (state, action) => {
       const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
+
+      if( data.length === 0){
+        statusMessage = "No data retrieved for memo types"
+      }
+
       return {
         ...state,
         memoList: data,
-        status: 'Error',
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
+    },
+    [listMemo.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };

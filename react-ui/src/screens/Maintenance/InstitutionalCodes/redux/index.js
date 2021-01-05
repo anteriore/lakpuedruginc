@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI) => {
+export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
   
@@ -14,6 +14,7 @@ export const listInstitution = createAsyncThunk('listInstitution', async (payloa
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
 
@@ -81,30 +82,20 @@ const institutionalCodesSlice = createSlice({
       };
     },
     [listInstitution.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for institutional codes"
-        }
+      if( data.length === 0){
+        statusMessage = "No data retrieved for institutional codes"
+      }
 
-        return {
-          ...state,
-          institutionList: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+      return {
+        ...state,
+        institutionList: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
     [listInstitution.rejected]: (state, action) => {
       const { data } = action.payload;

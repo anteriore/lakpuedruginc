@@ -11,7 +11,7 @@ const initialState = {
   action: '',
 };
 
-export const listG = createAsyncThunk('listG', async (payload, thunkAPI) => {
+export const listG = createAsyncThunk('listG', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
@@ -26,6 +26,7 @@ export const listG = createAsyncThunk('listG', async (payload, thunkAPI) => {
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
   return response;
@@ -45,7 +46,7 @@ export const deleteG = createAsyncThunk('deleteG', async (payload, thunkAPI) => 
   return response;
 });
 
-export const listC = createAsyncThunk('listC', async (payload, thunkAPI) => {
+export const listC = createAsyncThunk('listC', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/category/?token=${accessToken}`);
@@ -58,6 +59,7 @@ export const listC = createAsyncThunk('listC', async (payload, thunkAPI) => {
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
   return response;
@@ -88,66 +90,56 @@ const groupCategorySlice = createSlice({
       state.status = 'loading';
     },
     [listG.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for groups"
-        }
+      if( data.length === 0){
+        statusMessage = "No data retrieved for groups"
+      }
 
-        return {
-          ...state,
-          groupList: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+      return {
+        ...state,
+        groupList: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
     [listG.rejected]: (state) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
 
     [listC.pending]: (state) => {
       state.status = 'loading';
     },
     [listC.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for categories"
-        }
+      if( data.length === 0){
+        statusMessage = "No data retrieved for categories"
+      }
 
-        return {
-          ...state,
-          categoryList: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+      return {
+        ...state,
+        categoryList: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
     [listC.rejected]: (state) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

@@ -10,7 +10,7 @@ const initialState = {
   action: '',
 };
 
-export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI) => {
+export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   console.log(`rest/clients/${payload.company}?token=${accessToken}`);
 
@@ -26,6 +26,7 @@ export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI) => {
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
   return response;
@@ -68,33 +69,28 @@ const purchaseOrderSlice = createSlice({
       state.status = 'loading';
     },
     [listPO.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for purchase orders"
-        }
+      if( data.length === 0){
+        statusMessage = "No data retrieved for purchase orders"
+      }
 
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
-    [listPO.rejected]: (state, action) => {
-      state.status = 'failed';
+    [listPO.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

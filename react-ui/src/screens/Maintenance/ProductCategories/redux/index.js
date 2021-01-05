@@ -10,7 +10,7 @@ const initialState = {
   action: '',
 };
 
-export const listPC = createAsyncThunk('listPC', async (payload, thunkAPI) => {
+export const listPC = createAsyncThunk('listPC', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/product-categories?token=${accessToken}`);
@@ -23,6 +23,7 @@ export const listPC = createAsyncThunk('listPC', async (payload, thunkAPI) => {
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
   return response;
@@ -59,33 +60,28 @@ const productCategorySlice = createSlice({
       state.status = 'loading';
     },
     [listPC.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for product categories"
-        }
+      if( data.length === 0){
+        statusMessage = "No data retrieved for product categories"
+      }
 
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
     [listPC.rejected]: (state, action) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

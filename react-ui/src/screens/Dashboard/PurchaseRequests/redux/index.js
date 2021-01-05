@@ -20,7 +20,7 @@ const initialState = {
   list: null,
 };
 
-export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
+export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
@@ -35,6 +35,7 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
   return response;
@@ -150,34 +151,29 @@ const purchaseRequestSlice = createSlice({
       state.status = 'loading';
     },
     [listPR.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for sales orders"
-        }
+      if( data.length === 0){
+        statusMessage = "No data retrieved for sales orders"
+      }
 
-        return {
-          ...state,
-          listData: processData(data, action.type),
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+      return {
+        ...state,
+        listData: processData(data, action.type),
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
     [listPR.rejected]: (state, action) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
 
     [getPR.pending]: (state, action) => {

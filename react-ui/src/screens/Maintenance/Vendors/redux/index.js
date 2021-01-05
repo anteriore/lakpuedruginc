@@ -10,7 +10,7 @@ const initialState = {
   action: '',
 };
 
-export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAPI) => {
+export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
@@ -25,6 +25,7 @@ export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAP
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
   return response;
@@ -62,33 +63,28 @@ const vendorSlice = createSlice({
       state.status = 'loading';
     },
     [listVendor.fulfilled]: (state, action) => {
-      if(typeof action.payload !== 'undefined' && action.payload.status === 200){
-        const { data } = action.payload;
-        var statusMessage = message.ITEMS_GET_FULFILLED
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if( data.length === 0){
-          statusMessage = "No data retrieved for vendors"
-        }
+      if( data.length === 0){
+        statusMessage = "No data retrieved for vendors"
+      }
 
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage: statusMessage,
-        };
-      }
-      else {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
-        };
-      }
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
-    [listVendor.rejected]: (state, action) => {
-      state.status = 'failed';
+    [listVendor.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

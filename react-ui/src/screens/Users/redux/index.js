@@ -8,7 +8,7 @@ const initialState = {
   listPermission: null,
 };
 
-export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI) => {
+export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
@@ -23,6 +23,7 @@ export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI) =
   }
   else {
     payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
   }
 
   return response;
