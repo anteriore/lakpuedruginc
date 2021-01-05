@@ -31,7 +31,7 @@ const InputForm = (props) => {
   };
 
   const onFail = () => {
-    history.push(`/${path.split('/')[1]}`);
+    history.push(`/users`);
   }
   return (
     <>
