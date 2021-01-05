@@ -60,6 +60,25 @@ export const addPR = createAsyncThunk('addPR', async (payload, thunkAPI) => {
   return response;
 });
 
+
+export const approvePR = createAsyncThunk('approvePR', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.post(
+    `rest/purchase-requests/approve/${payload.id}?token=${accessToken}`
+  );
+  return response;
+});
+
+export const rejectPR = createAsyncThunk('rejectPR', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.post(
+    `rest/purchase-requests/reject/${payload.id}?token=${accessToken}`
+  );
+  return response;
+});
+
 export const deletePR = createAsyncThunk('deletePR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
