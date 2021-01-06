@@ -1,5 +1,3 @@
-import { AutoComplete } from 'antd';
-
 export const tableHeader = [
   {
     title: 'Date',

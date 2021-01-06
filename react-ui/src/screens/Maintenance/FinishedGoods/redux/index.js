@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import {
   ITEMS_GET_PENDING,
