@@ -32,7 +32,7 @@ const FormItem = ({ item, onFail, formMode }) => {
       }
     }
 
-    if (item.choices === null || item.choices.length === 0) {
+    if (item.choices === null || typeof item.choices === 'undefined' || item.choices.length === 0) {
       onFail()
       return null;
     }
@@ -212,7 +212,7 @@ const FormItem = ({ item, onFail, formMode }) => {
 
   return (
     <Item label={item.label} name={item.name} rules={item.rules}>
-      <Input disabled={item.type === 'readOnly'} placeholder={item.placeholder} />
+      <Input disabled={item.type === 'readOnly'} placeholder={item.placeholder} readOnly={item.readOnly}/>
     </Item>
   );
 };
