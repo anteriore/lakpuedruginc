@@ -120,12 +120,12 @@ const PurchaseRequests = (props) => {
 
   useEffect(() => {
     setDisplayData(itemData);
-    setLoadingItem(false);
   }, [itemData]);
 
   const closeModal = () => {
     setDisplayModal(false);
     setDisplayData(null);
+    setLoadingItem(true);
   };
 
   const handleUpdate = (data) => {
@@ -245,7 +245,7 @@ const PurchaseRequests = (props) => {
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Seleted." /> }}
               />
-              { displayData !== null && displayData.status === 'Pending' && 
+              { displayData.status === 'Pending' && //add approval permissions here
                 <>
                   <Text>{"Actions: "}</Text>
                   <Space>
