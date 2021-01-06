@@ -91,7 +91,6 @@ const PDCDisbursements = (props) => {
 
   const handleRetrieve = (data) => {
     setSelectedPDC(data);
-    console.log(data);
     setDisplayModal(true);
   };
 
