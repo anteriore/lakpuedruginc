@@ -1,67 +1,213 @@
 import React from 'react';
-import { Form, Select, Input, InputNumber, DatePicker } from 'antd';
+import {
+  Form,
+  Button,
+  Input,
+  InputNumber,
+  DatePicker,
+  Select,
+  Checkbox,
+  Row,
+  Typography,
+  Space,
+} from 'antd';
+import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
 const { Item } = Form;
+const { Title } = Typography;
 const { TextArea } = Input;
+const dateFormat = 'YYYY/MM/DD';
 
-const FormItem = ({ item }) => {
+const FormItem = ({ item, onFail, formMode }) => {
   if (item.type === 'select' || item.type === 'selectSearch') {
-    if (typeof item.selectName === 'undefined') {
-      item.selectName = 'name';
+    if (typeof item.render === 'undefined') {
+      if (typeof item.selectName === 'undefined') {
+        item.selectName = 'name';
+      }
+
+      if (item.selectName === 'codename') {
+        item.render = (choice) => `[${choice.code}] ${choice.name}`;
+      } else {
+        item.render = (choice) => choice[item.selectName];
+      }
     }
+
+    if (item.choices === null || item.choices.length === 0) {
+      onFail()
+      return null;
+    }
+
     return (
-      <Item label={item.label} name={item.name} rules={item.rules}>
-        <Select
-          onChange={item.onChange}
-          optionFilterProp="children"
+      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+        <Select 
           showSearch={item.type === 'selectSearch'}
-          style={{ textAlign: 'left' }}
           placeholder={item.placeholder}
+          optionFilterProp="children"
         >
           {item.choices.map((choice) => (
-            <Select.Option key={choice.id} value={choice.id}>
-              {choice[item.selectName]}
-            </Select.Option>
+            <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
           ))}
         </Select>
-      </Item>
+      </Form.Item>
     );
   }
-
+  if (item.type === 'textArea') {
+    return (
+      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+        <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
+      </Form.Item>
+    );
+  }
   if (item.type === 'number') {
     return (
-      <Item
-        label={item.label}
-        name={item.name}
-        wrapperCol={{
-          span: 2,
-          offset: 2,
-        }}
-      >
-        <InputNumber style={{ width: '10rem' }} min={1} max={50} placeholder={item.placeholder} />
-      </Item>
+      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+        <InputNumber
+          style={styles.inputNumber}
+          min={item.min}
+          max={item.max}
+          readOnly={item.readOnly}
+        />
+      </Form.Item>
     );
   }
-
   if (item.type === 'date') {
     return (
-      <Item
-        label={item.label}
-        name={item.name}
-        rules={item.rules}
-        wrapperCol={{ span: 4, offset: 2 }}
-      >
-        <DatePicker style={{ float: 'left', width: '25rem' }} />
-      </Item>
+      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+        <DatePicker format={dateFormat} style={styles.datePicker} />
+      </Form.Item>
     );
   }
+  if (item.type === 'password') {
+    if (formMode === 'add') {
+      return (
+        <Form.Item
+          label={item.label}
+          name={item.name}
+          rules={item.rules}
+          dependencies={item.dependencies}
+          hasFeedback
+        >
+          <Input.Password />
+        </Form.Item>
+      );
+    }
 
-  if (item.type === 'textarea') {
+    return null;
+  }
+  if (item.type === 'checkList') {
     return (
-      <Item label={item.label} name={item.name} rules={item.rules}>
-        <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
-      </Item>
+      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+        <Checkbox.Group style={styles.inputCheckList}>
+          {item.choices.map((choice) => (
+            <Row>
+              <Checkbox value={choice.id}>{item.render(choice)}</Checkbox>
+            </Row>
+          ))}
+        </Checkbox.Group>
+      </Form.Item>
     );
+  }
+  if (item.type === 'list' || item.type === 'listForm') {
+    return (
+      <div style={styles.formList}>
+        <Form.List label={item.label} name={item.name} rules={item.rules}>
+          {(fields, { add, remove, errors }) => (
+            <>
+              <div
+                {...styles.listTailLayout}
+                type="dashed"
+                style={{ display: 'flex', justifyContent: 'flex-end' }}
+              >
+                <Title level={5} style={{ marginRight: 'auto' }}>
+                  {item.label}
+                </Title>
+                <Form.Item>
+                  <Button onClick={() => add()} icon={<PlusOutlined />}>
+                    Add
+                  </Button>
+                </Form.Item>
+
+                {item.type === 'selectList' && (
+                  <Form.Item>
+                    <Button onClick={() => add()} icon={<SelectOutlined />}>
+                      Select
+                    </Button>
+                  </Form.Item>
+                )}
+              </div>
+              {fields.map((field) => (
+                <Space key={field.key} style={styles.listLayout} align="baseline">
+                  {item.fields.map((itemField) => {
+                    if (itemField.type === 'hidden') {
+                      return (
+                        <Form.Item
+                          {...field}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          hidden
+                        >
+                          <Input />
+                        </Form.Item>
+                      );
+                    }
+                    if (itemField.type === 'number') {
+                      return (
+                        <Form.Item
+                          {...field}
+                          {...styles.listItems}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          rules={itemField.rules}
+                        >
+                          <InputNumber
+                            placeholder={itemField.placeholder}
+                            prefix={item.prefix}
+                            suffix={item.suffix}
+                          />
+                        </Form.Item>
+                      );
+                    }
+                    if (itemField.type === 'date') {
+                      return (
+                        <Form.Item
+                          {...field}
+                          {...styles.listItems}
+                          name={[field.name, itemField.name]}
+                          fieldKey={[field.fieldKey, itemField.name]}
+                          rules={itemField.rules}
+                        >
+                          <DatePicker format={dateFormat} />
+                        </Form.Item>
+                      );
+                    }
+                    return (
+                      <Form.Item
+                        {...field}
+                        {...styles.listItems}
+                        name={[field.name, itemField.name]}
+                        fieldKey={[field.fieldKey, itemField.name]}
+                        rules={itemField.rules}
+                      >
+                        <Input
+                          placeholder={itemField.placeholder}
+                          prefix={item.prefix}
+                          suffix={item.suffix}
+                        />
+                      </Form.Item>
+                    );
+                  })}
+                  <MinusCircleOutlined onClick={() => remove(field.name)} />
+                </Space>
+              ))}
+              <Form.ErrorList errors={errors} />
+            </>
+          )}
+        </Form.List>
+      </div>
+    );
+  }
+  if (item.type === 'custom' || item.type === 'customList') {
+    return null;
   }
 
   return (
@@ -72,3 +218,56 @@ const FormItem = ({ item }) => {
 };
 
 export default FormItem;
+const styles = {
+  layout: {
+    labelCol: {
+      span: 6,
+    },
+    wrapperCol: {
+      span: 15,
+    },
+  },
+  listItems: {
+    labelCol: {
+      span: 24,
+    },
+    wrapperCol: {
+      span: 24,
+    },
+  },
+  listLayout: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginBottom: '2%',
+  },
+  tailLayout: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    width: '87.5%',
+  },
+  listTailLayout: {
+    labelCol: {
+      span: 24,
+    },
+    wrapperCol: {
+      span: 24,
+    },
+  },
+  formList: {
+    borderStyle: 'solid',
+    borderWidth: 1,
+    padding: '2%',
+    // backgroundColor: "#FAFAFA",
+    width: '87.5%',
+    marginBottom: '2%',
+  },
+  datePicker: {
+    float: 'left',
+  },
+  inputNumber: {
+    float: 'left',
+  },
+  inputCheckList: {
+    float: 'left',
+  },
+};

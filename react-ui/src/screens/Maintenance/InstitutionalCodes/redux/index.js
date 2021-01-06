@@ -1,11 +1,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { message as Message } from 'antd';
+
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI) => {
+export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for institutional codes")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
 
   return response;
 });
@@ -71,30 +83,19 @@ const institutionalCodesSlice = createSlice({
       };
     },
     [listInstitution.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for institutional codes';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          institutionList: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for institutional codes"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
-        status: 'failed',
+        institutionList: data,
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusMessage: statusMessage,
       };
     },
     [listInstitution.rejected]: (state, action) => {

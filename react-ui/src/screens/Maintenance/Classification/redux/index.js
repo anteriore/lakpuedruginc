@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
@@ -11,15 +10,24 @@ const initialState = {
   action: '',
 };
 
-export const listClassification = createAsyncThunk(
-  'listClassification',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const listClassification = createAsyncThunk('listClassification', async (payload, thunkAPI, rejectWithValue) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.get(`rest/classifications?token=${accessToken}`);
-    return response;
+  const response = await axiosInstance.get(`rest/classifications?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for classification")
+    }
   }
-);
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
+  return response;
+});
 
 export const addClassification = createAsyncThunk(
   'addClassification',
@@ -58,34 +66,22 @@ const classificationSlice = createSlice({
       state.status = 'loading';
     },
     [listClassification.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for classifications';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for classifications"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
-        status: 'failed',
+        list: data,
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusMessage: statusMessage,
       };
     },
     [listClassification.rejected]: (state) => {
-      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
         status: 'failed',

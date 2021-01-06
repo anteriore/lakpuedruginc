@@ -1,13 +1,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload, thunkAPI) => {
+export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(
-    `/rest/order-slips/company/${payload}?token=${accessToken}`
+    `/rest/order-slips/company/${payload.company}?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for order slips")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
 
   return response;
 });
@@ -57,36 +68,24 @@ const orderSlipsSlice = createSlice({
       };
     },
     [listOrderSlips.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for order slips';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          orderSlipsList: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for order slips"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
-        status: 'failed',
+        orderSlipsList: data,
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusMessage: statusMessage,
       };
     },
     [listOrderSlips.rejected]: (state) => {
       return {
         ...state,
-        orderSlipsList: [],
         status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,

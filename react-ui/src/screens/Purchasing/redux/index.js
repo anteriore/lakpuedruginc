@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { message as Message } from 'antd';
 import axiosInstance from '../../../utils/axios-instance';
 import * as message from '../../../data/constants/response-message.constant';
 
@@ -11,13 +10,25 @@ const initialState = {
   action: '',
 };
 
-export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI) => {
+export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   console.log(`rest/clients/${payload.company}?token=${accessToken}`);
 
   const response = await axiosInstance.get(
     `rest/purchase-orders/company/${payload.company}/?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for purchase orders")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
   return response;
 });
 
@@ -58,34 +69,28 @@ const purchaseOrderSlice = createSlice({
       state.status = 'loading';
     },
     [listPO.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for purchase orders';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for purchase orders"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
+    },
+    [listPO.rejected]: (state) => {
       return {
         ...state,
         status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
-    },
-    [listPO.rejected]: (state, action) => {
-      state.status = 'failed';
     },
   },
 });

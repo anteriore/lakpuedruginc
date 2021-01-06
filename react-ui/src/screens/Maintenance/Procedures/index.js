@@ -34,9 +34,9 @@ const Procedures = (props) => {
   );
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listProcedure()).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listProcedure({message})).then(() => {
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -78,7 +78,7 @@ const Procedures = (props) => {
   const handleAddButton = () => {
     setModalTitle('Add New Zip Code');
     setMode('add');
-    dispatch(listProductionArea()).then(() => {
+    dispatch(listProductionArea({message})).then(() => {
       setIsOpenForm(!isOpenForm);
     });
   };
@@ -87,7 +87,7 @@ const Procedures = (props) => {
     setCurrentID(row.id);
     setModalTitle('Edit Zip Code');
     setMode('edit');
-    dispatch(listProductionArea()).then(() => {
+    dispatch(listProductionArea({message})).then(() => {
       setFormValues({
         ...row,
         procedureArea: row.procedureArea.id,
@@ -99,7 +99,7 @@ const Procedures = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteProcedure(row))
       .then(() => {
-        dispatch(listProcedure());
+        dispatch(listProcedure({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -116,11 +116,11 @@ const Procedures = (props) => {
       const newValues = formatProcedurePayload(values, productionAreaList);
       newValues.id = currentID;
       dispatch(updateProcedure(newValues)).then(() => {
-        dispatch(listProcedure());
+        dispatch(listProcedure({message}));
       });
     } else if (mode === 'add') {
       dispatch(createProcedure(formatProcedurePayload(values, productionAreaList))).then(() => {
-        dispatch(listProcedure());
+        dispatch(listProcedure({message}));
       });
     }
     setFormValues('');

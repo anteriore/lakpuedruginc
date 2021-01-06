@@ -98,8 +98,8 @@ const SalesReps = (props) => {
   };
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listS({ company })).then(() => {
+    var isCancelled = false
+    dispatch(listS({ company, message })).then(() => {
       setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
@@ -118,8 +118,8 @@ const SalesReps = (props) => {
     setFormTitle('Add Depot');
     setFormMode('add');
     setFormData(null);
-    dispatch(listC({ company })).then(() => {
-      dispatch(listRegionCode({ company })).then(() => {
+    dispatch(listC({ company, message })).then(() => {
+      dispatch(listRegionCode({ company, message })).then(() => {
         setDisplayForm(true);
       });
     });
@@ -134,8 +134,8 @@ const SalesReps = (props) => {
       regionCode: data.regionCode.id,
     };
     setFormData(formData);
-    dispatch(listC({ company })).then(() => {
-      dispatch(listRegionCode({ company })).then(() => {
+    dispatch(listC({ company, message })).then(() => {
+      dispatch(listRegionCode({ company, message })).then(() => {
         setDisplayForm(true);
       });
     });
@@ -146,7 +146,7 @@ const SalesReps = (props) => {
       setLoading(true);
       if (response.payload.status === 200) {
         message.success(`Successfully deleted ${data.name}`);
-        dispatch(listS({ company })).then(() => {
+        dispatch(listS({ company, message })).then(() => {
           setLoading(false);
         });
       } else {
@@ -182,7 +182,7 @@ const SalesReps = (props) => {
       dispatch(addS(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
-          dispatch(listS({ company })).then(() => {
+          dispatch(listS({ company, message })).then(() => {
             setLoading(false);
           });
         } else {
@@ -207,7 +207,7 @@ const SalesReps = (props) => {
         setLoading(true);
         if (response.payload.status === 200) {
           message.success(`Successfully added ${data.name}`);
-          dispatch(listS({ company })).then(() => {
+          dispatch(listS({ company, message })).then(() => {
             setLoading(false);
           });
         } else {

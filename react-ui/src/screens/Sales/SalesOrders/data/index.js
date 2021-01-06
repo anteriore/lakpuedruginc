@@ -1,5 +1,3 @@
-import { AutoComplete } from 'antd';
-
 export const tableHeader = [
   {
     title: 'Date',
@@ -189,7 +187,7 @@ export const formDetails = {
       name: 'remarks',
       rules: [{}],
       placeholder: 'Remarks (optional)',
-      type: 'textarea',
+      type: 'textArea',
     },
   ],
 };

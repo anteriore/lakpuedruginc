@@ -5,9 +5,9 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { getPR, listPR, deletePR, resetItemData, clearData } from './redux';
+import { getPR, listPR, deletePR, clearData } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
-import { listI, clearData as clearItem } from '../../Maintenance/Items/redux';
+import { clearData as clearItem } from '../../Maintenance/Items/redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
@@ -100,9 +100,9 @@ const PurchaseRequests = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listPR({ company })).then(() => {
-      dispatch(listD({ company })).then(() => {
+    var isCancelled = false
+    dispatch(listPR({ company, message })).then(() => {
+      dispatch(listD({ company, message })).then(() => {
         setLoading(false);
         if (isCancelled) {
           dispatch(clearData());
@@ -134,8 +134,8 @@ const PurchaseRequests = (props) => {
 
   const handleDelete = (data) => {
     setLoading(true);
-    dispatch(deletePR(data.id)).then((response) => {
-      dispatch(listPR({ company })).then(() => {
+    dispatch(deletePR(data.id)).then(() => {
+      dispatch(listPR({ company, message })).then(() => {
         setLoading(false);
         message.success(`Successfully deleted Purchase Request ${data.number}`);
       });

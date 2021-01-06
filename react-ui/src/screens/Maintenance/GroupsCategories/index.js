@@ -54,14 +54,14 @@ const GroupsCategories = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listG({ company })).then((response) => {
+    var isCancelled = false
+    dispatch(listG({ company, message })).then((response) => {
       setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
     });
-    dispatch(listC({ company }));
+    dispatch(listC({ company, message }));
     return () => {
       setselectedCategory(null);
       setselectedGroup(null);
@@ -91,7 +91,7 @@ const GroupsCategories = (props) => {
     dispatch(deleteG(data.id)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Group ${data.name}`);
-        dispatch(listG({ company })).then(() => {
+        dispatch(listG({ company, message })).then(() => {
           setLoading(false);
           setselectedGroup(null);
         });
@@ -106,7 +106,7 @@ const GroupsCategories = (props) => {
     setFormTitle('Add Category');
     setFormMode('add');
     setFormDataC(null);
-    dispatch(listG({ company })).then((response) => {
+    dispatch(listG({ company, message })).then((response) => {
       setDisplayFormC(true);
     });
     setDisplayFormG(false);
@@ -125,7 +125,7 @@ const GroupsCategories = (props) => {
     dispatch(deleteC(data.id)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Category ${data.name}`);
-        dispatch(listG({ company })).then(() => {
+        dispatch(listG({ company, message })).then(() => {
           setLoading(false);
           setselectedCategory(null);
         });
@@ -159,7 +159,7 @@ const GroupsCategories = (props) => {
         if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
           setselectedGroup(response.payload.data);
-          dispatch(listG({ company })).then(() => {
+          dispatch(listG({ company, message })).then(() => {
             setLoading(false);
             setselectedCategory(null);
           });
@@ -180,7 +180,7 @@ const GroupsCategories = (props) => {
         if (response.payload.status === 200) {
           message.success(`Successfully added ${data.name}`);
           setselectedGroup(response.payload.data);
-          dispatch(listG({ company })).then(() => {
+          dispatch(listG({ company, message })).then(() => {
             setLoading(false);
             setselectedCategory(null);
           });
@@ -209,7 +209,7 @@ const GroupsCategories = (props) => {
       dispatch(addC(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
-          dispatch(listG({ company })).then((response) => {
+          dispatch(listG({ company, message })).then((response) => {
             const group = response.payload.data.find((group) => group.id === selectedGroup.id);
             const category = group.categories.find(
               (category) => category.id === selectedCategory.id
@@ -241,7 +241,7 @@ const GroupsCategories = (props) => {
           };
           temp_workaround.categories.push(response.payload.data);
           dispatch(addG(temp_workaround)).then(() => {
-            dispatch(listG({ company })).then((response) => {
+            dispatch(listG({ company, message })).then((response) => {
               const group = response.payload.data.find((group) => group.id === selectedGroup.id);
               setselectedGroup(group);
               setLoading(false);

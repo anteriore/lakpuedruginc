@@ -15,6 +15,7 @@ import {
   Modal,
   Table,
   Skeleton,
+  message
 } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
@@ -51,15 +52,15 @@ const InputForm = (props) => {
   } = useSelector((state) => state.maintenance);
 
   useEffect(() => {
-    dispatch(getFGList());
+    dispatch(getFGList({message}));
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(listDepot()).then(() => {
-      dispatch(listPC()).then(() => {
-        dispatch(listClassification()).then(() => {
-          dispatch(listPD()).then(() => {
-            dispatch(listUnit()).then(() => {
+    dispatch(listDepot({message})).then(() => {
+      dispatch(listPC({message})).then(() => {
+        dispatch(listClassification({message})).then(() => {
+          dispatch(listPD({message})).then(() => {
+            dispatch(listUnit({message})).then(() => {
               setContentLoading(false);
             });
           });

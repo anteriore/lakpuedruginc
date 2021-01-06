@@ -23,9 +23,9 @@ const ClusterCodes = (props) => {
   );
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listCluster()).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listCluster({message})).then(() => {
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -65,7 +65,7 @@ const ClusterCodes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteCluster(row))
       .then(() => {
-        dispatch(listCluster());
+        dispatch(listCluster({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -83,11 +83,11 @@ const ClusterCodes = (props) => {
       newValues.id = currentID;
 
       dispatch(updateCluster(newValues)).then(() => {
-        dispatch(listCluster());
+        dispatch(listCluster({message}));
       });
     } else if (mode === 'add') {
       dispatch(createCluster(values)).then(() => {
-        dispatch(listCluster());
+        dispatch(listCluster({message}));
       });
     }
     setFormValues('');

@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   listData: [],
@@ -19,12 +20,24 @@ const initialState = {
   list: null,
 };
 
-export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
+export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
     `rest/purchase-requests/company/${payload.company}?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for purchase requests")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
   return response;
 });
 
@@ -110,27 +123,6 @@ const processData = (data, action) => {
       requestedItems,
     };
   }
-  /* else if(action === "listItems/fulfilled"){
-        var processedData = []
-        for(const [index, value] of data.entries()){
-            var item = {
-                id: value.id,
-                name: value.name,
-                code: value.code,
-                type: value.type,
-                unit: {
-                    id: value.unit.id,
-                    name: value.unit.name,
-                },
-                type: {
-                    id: value.type.id,
-                    code: value.type.code,
-                    name: value.type.name,
-                }
-            }
-            processedData.push(item)
-        }
-    } */
 
   return processedData;
 };
@@ -159,16 +151,29 @@ const purchaseRequestSlice = createSlice({
       state.status = 'loading';
     },
     [listPR.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.listData = processData(action.payload.data, action.type);
-        state.list = action.payload.data;
-      } else {
-        state.status = 'failed';
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
+
+      if( data.length === 0){
+        statusMessage = "No data retrieved for sales orders"
       }
+
+      return {
+        ...state,
+        listData: processData(data, action.type),
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
     },
     [listPR.rejected]: (state, action) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
 
     [getPR.pending]: (state, action) => {

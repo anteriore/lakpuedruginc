@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
@@ -11,10 +10,22 @@ const initialState = {
   action: '',
 };
 
-export const listPC = createAsyncThunk('listPC', async (payload, thunkAPI) => {
+export const listPC = createAsyncThunk('listPC', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/product-categories?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for product categories")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
   return response;
 });
 
@@ -49,34 +60,28 @@ const productCategorySlice = createSlice({
       state.status = 'loading';
     },
     [listPC.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for product categories';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for product categories"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
+    },
+    [listPC.rejected]: (state, action) => {
       return {
         ...state,
         status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
-    },
-    [listPC.rejected]: (state, action) => {
-      state.status = 'failed';
     },
   },
 });

@@ -29,9 +29,9 @@ const ProductionArea = (props) => {
   );
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listProductionArea()).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listProductionArea({message})).then(() => { 
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -71,7 +71,7 @@ const ProductionArea = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteProductionArea(row))
       .then(() => {
-        dispatch(listProductionArea());
+        dispatch(listProductionArea({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -89,11 +89,11 @@ const ProductionArea = (props) => {
       newValues.id = currentID;
 
       dispatch(updateProductionArea(newValues)).then(() => {
-        dispatch(listProductionArea());
+        dispatch(listProductionArea({message}));
       });
     } else if (mode === 'add') {
       dispatch(createProductionArea(values)).then(() => {
-        dispatch(listProductionArea());
+        dispatch(listProductionArea({message}));
       });
     }
     setFormValues('');

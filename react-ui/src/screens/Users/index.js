@@ -16,12 +16,12 @@ import {
 } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { UserAddOutlined, UserOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { UserAddOutlined, UserOutlined, EditOutlined, /*DeleteOutlined*/ } from '@ant-design/icons';
 
 import Container from '../../components/container';
 import InputForm from './InputForm';
 
-import { listUser, addUser, deleteUser, clearData, listPermission } from './redux';
+import { listUser, addUser, /*deleteUser,*/ clearData, listPermission } from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -63,6 +63,7 @@ const Users = () => {
       dispatch(clearDepot());
       dispatch(clearDepartment());
     };
+    // eslint-disable-next-line
   }, [dispatch]);
 
   const formDetails = {
@@ -165,9 +166,9 @@ const Users = () => {
     setFormMode('add');
     setFormData(null);
     setCompanyLoading(true);
-    dispatch(listD({ company: selectedCompany })).then(() => {
-      dispatch(listDepot({ company: selectedCompany })).then(() => {
-        dispatch(listPermission({ company: selectedCompany })).then(() => {
+    dispatch(listD({ company: selectedCompany, message })).then(() => {
+      dispatch(listDepot({ company: selectedCompany, message })).then(() => {
+        dispatch(listPermission({ company: selectedCompany, message })).then(() => {
           history.push(`${path}/new`);
           setCompanyLoading(false);
         });
@@ -201,9 +202,9 @@ const Users = () => {
     };
     setFormData(formData);
     setCompanyLoading(true);
-    dispatch(listD({ company: selectedCompany })).then(() => {
-      dispatch(listDepot({ company: selectedCompany })).then(() => {
-        dispatch(listPermission({ company: selectedCompany })).then(() => {
+    dispatch(listD({ company: selectedCompany, message })).then(() => {
+      dispatch(listDepot({ company: selectedCompany, message })).then(() => {
+        dispatch(listPermission({ company: selectedCompany, message })).then(() => {
           history.push(`${path}/${data.id}`);
           setCompanyLoading(false);
         });
@@ -211,7 +212,7 @@ const Users = () => {
     });
   };
 
-  const handleDelete = (data) => {
+  /*const handleDelete = (data) => {
     dispatch(deleteUser(data.id)).then((response) => {
       setContentLoading(true);
       if (response.payload.status === 200) {
@@ -224,7 +225,7 @@ const Users = () => {
         message.error(`Unable to delete ${data.firstName} ${data.lastName}`);
       }
     });
-  };
+  };*/
 
   const handleCancelButton = () => {
     setFormData(null);
@@ -244,9 +245,9 @@ const Users = () => {
         typeof data.permissions[key].actions !== 'undefined' &&
         data.permissions[key].actions !== null
       ) {
-        data.permissions[key].actions.forEach((action) => {
-          actionStr += action;
-        });
+        for( var i = 0; i < data.permissions[key].actions.length; i++){
+          actionStr = actionStr.concat(data.permissions[key].actions[i])
+        }
 
         if (typeof data.permissions[key].code === 'undefined') {
           data.permissions[key].code = key;
@@ -299,7 +300,7 @@ const Users = () => {
   };
 
   const updateUserDepartments = (companyID) => {
-    dispatch(listD({ company: companyID })).then((response) => {
+    dispatch(listD({ company: companyID, message })).then((response) => {
       if (response.payload.status === 200) {
         const userDepartmentList = [];
         response.payload.data.forEach((department) => {
@@ -308,7 +309,7 @@ const Users = () => {
             users: [],
           });
         });
-        dispatch(listUser({ company: companyID })).then((response) => {
+        dispatch(listUser({ company: companyID, message })).then((response) => {
           if (response.payload.status === 200) {
             response.payload.data.forEach((user) => {
               const usersPerDept = userDepartmentList.find(
@@ -484,7 +485,7 @@ const Users = () => {
                           >
                             {formDetails.form_items.map((item) => {
                               if (!item.writeOnly) {
-                                if (item.type === 'select') {
+                                if (item.type === 'select' || item.type === 'selectSearch') {
                                   const itemData = selectedUser[item.name];
                                   return (
                                     <Descriptions.Item label={item.label}>
