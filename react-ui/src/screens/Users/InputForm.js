@@ -3,20 +3,16 @@ import {
   Form,
   Button,
   Input,
-  InputNumber,
-  Select,
   Checkbox,
   Row,
   Col,
   Typography,
-  Space,
   message,
 } from 'antd';
-import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import FormItem from '../../components/forms/FormItem'
 
-const { TextArea } = Input;
 const { Title } = Typography;
 
 const InputForm = (props) => {
@@ -29,169 +25,13 @@ const InputForm = (props) => {
     form.setFieldsValue(values);
   }, [values, form]);
 
-  const FormItem = ({ item }) => {
-    if (item.type === 'select') {
-      if (typeof item.selectName === 'undefined') {
-        item.selectName = 'name';
-      }
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select placeholder={item.placeholder}>
-            {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-      );
-    }
-    if (item.type === 'selectSearch') {
-      if (typeof item.selectName === 'undefined') {
-        item.selectName = 'name';
-      }
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select
-            showSearch
-            placeholder={item.placeholder}
-            filterOption={(input, option) => {
-              console.log(option);
-              return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-            }}
-          >
-            {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-      );
-    }
-    if (item.type === 'textArea') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
-        </Form.Item>
-      );
-    }
-    if (item.type === 'number') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <InputNumber style={styles.inputNumber} />
-        </Form.Item>
-      );
-    }
-    if (item.type === 'password') {
-      if (formMode === 'add') {
-        return (
-          <Form.Item
-            label={item.label}
-            name={item.name}
-            rules={item.rules}
-            dependencies={item.dependencies}
-            hasFeedback
-          >
-            <Input.Password />
-          </Form.Item>
-        );
-      }
-
-      return null;
-    }
-    if (item.type === 'checkList') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Checkbox.Group style={styles.inputCheckList}>
-            {item.choices.map((choice) => (
-              <Row>
-                <Checkbox value={choice.id}>{item.render(choice)}</Checkbox>
-              </Row>
-            ))}
-          </Checkbox.Group>
-        </Form.Item>
-      );
-    }
-    if (item.type === 'list' || item.type === 'listForm') {
-      return (
-        <div style={styles.formList}>
-          <Form.List label={item.label} name={item.name} rules={item.rules}>
-            {(fields, { add, remove, errors }) => (
-              <>
-                <div
-                  {...styles.listTailLayout}
-                  type="dashed"
-                  style={{ display: 'flex', justifyContent: 'flex-end' }}
-                >
-                  <Title level={5} style={{ marginRight: 'auto' }}>
-                    {item.label}
-                  </Title>
-                  <Form.Item>
-                    <Button onClick={() => add()} icon={<PlusOutlined />}>
-                      Add
-                    </Button>
-                  </Form.Item>
-
-                  {item.type === 'selectList' && (
-                    <Form.Item>
-                      <Button onClick={() => add()} icon={<SelectOutlined />}>
-                        Select
-                      </Button>
-                    </Form.Item>
-                  )}
-                </div>
-                {fields.map((field) => (
-                  <Space key={field.key} style={styles.listLayout}>
-                    {item.fields.map((itemField) => {
-                      if (itemField.type === 'hidden') {
-                        return (
-                          <Form.Item
-                            {...field}
-                            name={[field.name, itemField.name]}
-                            fieldKey={[field.fieldKey, itemField.name]}
-                            hidden
-                          >
-                            <Input />
-                          </Form.Item>
-                        );
-                      }
-                      return (
-                        <Form.Item
-                          {...field}
-                          {...styles.listItems}
-                          name={[field.name, itemField.name]}
-                          fieldKey={[field.fieldKey, itemField.name]}
-                          rules={itemField.rules}
-                        >
-                          <Input placeholder={itemField.placeholder} />
-                        </Form.Item>
-                      );
-                    })}
-                    <MinusCircleOutlined
-                      style={{ alignSelf: 'center' }}
-                      onClick={() => remove(field.name)}
-                    />
-                  </Space>
-                ))}
-                <Form.ErrorList errors={errors} />
-              </>
-            )}
-          </Form.List>
-        </div>
-      );
-    }
-    if (item.type === 'custom' || item.type === 'customList') {
-      return null;
-    }
-
-    return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules}>
-        <Input placeholder={item.placeholder} maxLength={item.maxLength} />
-      </Form.Item>
-    );
-  };
-
   const onFinishFailed = (errorInfo) => {
     message.error(errorInfo);
   };
 
+  const onFail = () => {
+    history.push(`/users`);
+  }
   return (
     <>
       <Row>
@@ -208,7 +48,7 @@ const InputForm = (props) => {
             onFinishFailed={onFinishFailed}
           >
             {formDetails.form_items.map((item) => (
-              <FormItem item={item} />
+              <FormItem item={item} onFail={onFail} formMode={formMode} />
             ))}
 
             <Form.List

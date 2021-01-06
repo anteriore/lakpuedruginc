@@ -53,9 +53,9 @@ const Classification = (props) => {
   const data = useSelector((state) => state.maintenance.classification.list);
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listClassification({ company })).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listClassification({ company, message })).then(() => {
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -83,7 +83,7 @@ const Classification = (props) => {
   const handleDelete = (val) => {
     const { id, code } = val;
     dispatch(deleteClassification(id)).then(() => {
-      dispatch(listClassification({ company }));
+      dispatch(listClassification({ company, message }));
       message.success(`Successfully deleted Classification ${code}`);
     });
   };
@@ -106,7 +106,7 @@ const Classification = (props) => {
       };
 
       dispatch(addClassification(payload)).then(() => {
-        dispatch(listClassification({ company }));
+        dispatch(listClassification({ company, message }));
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -116,7 +116,7 @@ const Classification = (props) => {
         },
       };
       dispatch(addClassification(payload)).then(() => {
-        dispatch(listClassification({ company }));
+        dispatch(listClassification({ company, message }));
       });
     }
 

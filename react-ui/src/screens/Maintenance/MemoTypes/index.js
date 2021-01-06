@@ -21,9 +21,9 @@ const MemoTypes = (props) => {
   const { memoList, action, statusMessage } = useSelector((state) => state.maintenance.memoTypes);
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listMemo()).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listMemo({message})).then(() => {
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -63,7 +63,7 @@ const MemoTypes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteMemo(row))
       .then(() => {
-        dispatch(listMemo());
+        dispatch(listMemo({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -81,11 +81,11 @@ const MemoTypes = (props) => {
       newValues.id = currentID;
 
       dispatch(updateMemo(newValues)).then(() => {
-        dispatch(listMemo());
+        dispatch(listMemo({message}));
       });
     } else if (mode === 'add') {
       dispatch(createMemo(values)).then(() => {
-        dispatch(listMemo());
+        dispatch(listMemo({message}));
       });
     }
     setFormValues('');

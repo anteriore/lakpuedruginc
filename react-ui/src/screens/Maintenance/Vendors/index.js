@@ -117,8 +117,8 @@ const Vendors = (props) => {
   };
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listVendor({ company })).then((response) => {
+    var isCancelled = false
+    dispatch(listVendor({ company, message })).then((response) => {
       setFormData(null);
       setLoading(false);
       if (isCancelled) {
@@ -138,9 +138,9 @@ const Vendors = (props) => {
     setFormTitle('Add Vendor');
     setFormMode('add');
     setFormData(null);
-    dispatch(listA({ company })).then(() => {
-      dispatch(listD({ company })).then(() => {
-        dispatch(listG({ company })).then(() => {
+    dispatch(listA({ company, message })).then(() => {
+      dispatch(listD({ company, message })).then(() => {
+        dispatch(listG({ company, message })).then(() => {
           history.push(`${path}/new`);
         });
       });
@@ -159,9 +159,9 @@ const Vendors = (props) => {
     };
     console.log(formData);
     setFormData(formData);
-    dispatch(listA({ company })).then(() => {
-      dispatch(listD({ company })).then(() => {
-        dispatch(listG({ company })).then(() => {
+    dispatch(listA({ company, message })).then(() => {
+      dispatch(listD({ company, message })).then(() => {
+        dispatch(listG({ company, message })).then(() => {
           history.push(`${path}/${data.id}`);
         });
       });
@@ -172,7 +172,7 @@ const Vendors = (props) => {
     dispatch(deleteVendor(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listVendor({ company })).then(() => {
+        dispatch(listVendor({ company, message })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.name}`);
         });
@@ -224,7 +224,7 @@ const Vendors = (props) => {
       dispatch(addVendor(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listVendor({ company })).then(() => {
+          dispatch(listVendor({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.name}`);
@@ -253,7 +253,7 @@ const Vendors = (props) => {
       dispatch(addVendor(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listVendor({ company })).then(() => {
+          dispatch(listVendor({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${data.name}`);

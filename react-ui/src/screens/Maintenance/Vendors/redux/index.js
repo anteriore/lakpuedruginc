@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
@@ -11,13 +10,24 @@ const initialState = {
   action: '',
 };
 
-export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAPI) => {
+export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
-  console.log(`rest/vendors/${payload.company}?token=${accessToken}`);
 
   const response = await axiosInstance.get(
     `rest/vendors/company/${payload.company}/?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for vendors")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
   return response;
 });
 
@@ -53,34 +63,28 @@ const vendorSlice = createSlice({
       state.status = 'loading';
     },
     [listVendor.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for vendors';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for vendors"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
+    },
+    [listVendor.rejected]: (state) => {
       return {
         ...state,
         status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
-    },
-    [listVendor.rejected]: (state, action) => {
-      state.status = 'failed';
     },
   },
 });

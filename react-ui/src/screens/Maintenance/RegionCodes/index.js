@@ -29,9 +29,10 @@ const RegionCodes = (props) => {
   );
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listRegionCode()).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listRegionCode({message})).then(() => {
+      
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -71,7 +72,7 @@ const RegionCodes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteRegionCode(row))
       .then(() => {
-        dispatch(listRegionCode());
+        dispatch(listRegionCode({message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -89,11 +90,11 @@ const RegionCodes = (props) => {
       newValues.id = currentID;
 
       dispatch(updateRegionCode(newValues)).then(() => {
-        dispatch(listRegionCode());
+        dispatch(listRegionCode({message}));
       });
     } else if (mode === 'add') {
       dispatch(createRegionCode(values)).then(() => {
-        dispatch(listRegionCode());
+        dispatch(listRegionCode({message}));
       });
     }
     setFormValues('');

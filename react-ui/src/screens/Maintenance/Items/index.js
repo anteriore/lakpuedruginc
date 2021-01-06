@@ -81,9 +81,9 @@ const ItemTypes = (props) => {
   };
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listI({ company })).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listI({ company, message })).then(() => {
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -99,8 +99,8 @@ const ItemTypes = (props) => {
     setFormTitle('Add Item');
     setFormMode('add');
     setFormData(null);
-    dispatch(listIT({ company })).then((response) => {
-      dispatch(listUnit()).then((response) => {
+    dispatch(listIT({ company, message })).then((response) => {
+      dispatch(listUnit({message})).then((response) => {
         setDisplayForm(true);
       });
     });
@@ -115,8 +115,8 @@ const ItemTypes = (props) => {
       type: data.type.id,
     };
     setFormData(formData);
-    dispatch(listIT({ company })).then((response) => {
-      dispatch(listUnit()).then((response) => {
+    dispatch(listIT({ company, message })).then((response) => {
+      dispatch(listUnit({message})).then((response) => {
         setDisplayForm(true);
       });
     });
@@ -124,7 +124,7 @@ const ItemTypes = (props) => {
 
   const handleDelete = (data) => {
     dispatch(deleteI(data.id)).then((response) => {
-      dispatch(listI({ company }));
+      dispatch(listI({ company, message }));
       message.success(`Successfully deleted Item ${data.name}`);
     });
   };
@@ -153,11 +153,11 @@ const ItemTypes = (props) => {
       payload.id = formData.id;
 
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company }));
+        dispatch(listI({ company, message }));
       });
     } else if (formMode === 'add') {
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company }));
+        dispatch(listI({ company, message }));
       });
     }
 

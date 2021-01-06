@@ -53,9 +53,9 @@ const ItemTypes = (props) => {
   const data = useSelector((state) => state.maintenance.itemTypes.list);
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listIT({ company })).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listIT({ company, message })).then(() => {
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -83,7 +83,7 @@ const ItemTypes = (props) => {
   const handleDelete = (val) => {
     const { id, code } = val;
     dispatch(deleteIT(id)).then(() => {
-      dispatch(listIT({ company }));
+      dispatch(listIT({ company, message }));
       message.success(`Successfully deleted Item Type ${code}`);
     });
   };
@@ -106,7 +106,7 @@ const ItemTypes = (props) => {
       };
 
       dispatch(addIT(payload)).then(() => {
-        dispatch(listIT({ company }));
+        dispatch(listIT({ company, message }));
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -116,7 +116,7 @@ const ItemTypes = (props) => {
         },
       };
       dispatch(addIT(payload)).then(() => {
-        dispatch(listIT({ company }));
+        dispatch(listIT({ company, message }));
       });
     }
 

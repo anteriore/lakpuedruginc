@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import {
   ITEMS_GET_PENDING,
@@ -17,9 +16,21 @@ import {
 } from '../../../../data/constants/response-message.constant';
 
 // Async Actions API section
-export const getFGList = createAsyncThunk('getFGList', async (payload, thunkAPI) => {
+export const getFGList = createAsyncThunk('getFGList', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for finished goods")
+    }
+  }
+  else {
+    payload.message.error(ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
 
   return response;
 });
@@ -65,34 +76,28 @@ const finishedGoodsSlice = createSlice({
       return { ...state, status: 'loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
     },
     [getFGList.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for finished goods';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for finished goods"
       }
 
-      Message.error(ITEMS_GET_REJECTED);
       return {
         ...state,
-        status: 'failed',
+        list: data,
+        status: 'succeeded',
         action: 'get',
-        statusMessage: ITEMS_GET_REJECTED,
+        statusMessage: statusMessage,
       };
     },
     [getFGList.rejected]: (state) => {
-      return { ...state, status: 'failed', action: 'get', statusMessage: ITEMS_GET_REJECTED };
+      return { 
+        ...state, 
+        status: 'failed', 
+        action: 'get', 
+        statusMessage: ITEMS_GET_REJECTED 
+      };
     },
     [createFG.pending]: (state) => {
       return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_ADD_PENDING };

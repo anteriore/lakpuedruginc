@@ -1,11 +1,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI) => {
+export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/units?token=${accessToken}`);
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for units")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
 
   return response;
 });
@@ -55,38 +66,25 @@ const unitsSlice = createSlice({
       };
     },
     [listUnit.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for units';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          unitList: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for units"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
-      return {
-        ...state,
-        status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
-      };
-    },
-    [listUnit.rejected]: (state, action) => {
-      const { data } = action.payload;
       return {
         ...state,
         unitList: data,
-        status: 'Error',
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
+    },
+    [listUnit.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };

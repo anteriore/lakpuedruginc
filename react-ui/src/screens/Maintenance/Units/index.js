@@ -21,9 +21,10 @@ const Units = (props) => {
   const { unitList, action, statusMessage } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listUnit({ company })).then(() => {
-      if (isCancelled) {
+    var isCancelled = false
+    dispatch(listUnit({ company, message })).then(() => {
+      
+      if(isCancelled) {
         dispatch(clearData());
       }
     });
@@ -63,7 +64,7 @@ const Units = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteUnit(row))
       .then(() => {
-        dispatch(listUnit());
+        dispatch(listUnit({company, message}));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -81,11 +82,11 @@ const Units = (props) => {
       newValues.id = currentID;
 
       dispatch(updateUnit(newValues)).then(() => {
-        dispatch(listUnit());
+        dispatch(listUnit({message}));
       });
     } else if (mode === 'add') {
       dispatch(createUnit(values)).then(() => {
-        dispatch(listUnit());
+        dispatch(listUnit({message}));
       });
     }
     setFormValues('');

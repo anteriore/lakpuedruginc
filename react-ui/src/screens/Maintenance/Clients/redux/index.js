@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
@@ -11,11 +10,23 @@ const initialState = {
   action: '',
 };
 
-export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
+export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(
     `rest/clients/company/${payload.company}/?token=${accessToken}`
   );
+  
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning("No data retrieved for clients")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return rejectWithValue(response)
+  }
+
   return response;
 });
 
@@ -51,34 +62,22 @@ const clientSlice = createSlice({
       state.status = 'loading';
     },
     [listClient.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for clients';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
+      if( data.length === 0){
+        statusMessage = "No data retrieved for clients"
       }
 
-      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
-        status: 'failed',
+        list: data,
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusMessage: statusMessage,
       };
     },
     [listClient.rejected]: (state, action) => {
-      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
         status: 'failed',

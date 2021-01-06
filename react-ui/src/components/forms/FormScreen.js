@@ -2,24 +2,21 @@ import React, { useEffect, useState } from 'react';
 import {
   Form,
   Button,
-  Input,
   InputNumber,
-  DatePicker,
   Select,
   Checkbox,
   Modal,
   Row,
   Col,
   Typography,
-  Space,
   Table,
   Empty,
   message,
 } from 'antd';
-import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
+import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import FormItem from './FormItem';
 
-const { TextArea } = Input;
 const { Title } = Typography;
 
 const FormScreen = (props) => {
@@ -28,7 +25,6 @@ const FormScreen = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [tableData, setTableData] = useState(null);
-  const dateFormat = 'YYYY/MM/DD';
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [loadingModal, setLoadingModal] = useState(true);
@@ -39,6 +35,7 @@ const FormScreen = (props) => {
     if (hasTable && values !== null) {
       setTableData(values[formTable.name]);
     }
+  // eslint-disable-next-line
   }, [values, form]);
 
   const onFinish = (data) => {
@@ -57,8 +54,8 @@ const FormScreen = (props) => {
     onSubmit(data);
   };
 
-  const onFinishFailed = (errorInfo) => {
-    // console.log(errorInfo)
+  const onFinishFailed = () => {
+    //console.log(errorInfo)
     message.error("An error has occurred. Please double check the information you've provided.");
   };
 
@@ -67,191 +64,10 @@ const FormScreen = (props) => {
     const row = data[index];
     row[item] = event;
     const dataArray = [];
-    for (const [key, value] of Object.entries(data)) {
+    for (const [, value] of Object.entries(data)) {
       dataArray.push(value);
     }
     setTableData(dataArray);
-  };
-
-  const FormItem = ({ item }) => {
-    if (item.type === 'select' || item.type === 'selectSearch') {
-      if (typeof item.render === 'undefined') {
-        if (typeof item.selectName === 'undefined') {
-          item.selectName = 'name';
-        }
-
-        if (item.selectName === 'codename') {
-          item.render = (choice) => `[${choice.code}] ${choice.name}`;
-        } else {
-          item.render = (choice) => choice[item.selectName];
-        }
-      }
-
-      if (item.choices === null || item.choices.length === 0) {
-        history.push(`/${path.split('/')[1]}`);
-        return null;
-      }
-
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select
-            showSearch={item.type === 'selectSearch'}
-            placeholder={item.placeholder}
-            filterOption={(input, option) => {
-              return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-            }}
-          >
-            {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-      );
-    }
-    if (item.type === 'textArea') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
-        </Form.Item>
-      );
-    }
-    if (item.type === 'number') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <InputNumber
-            style={styles.inputNumber}
-            min={item.min}
-            max={item.max}
-            readOnly={item.readOnly}
-          />
-        </Form.Item>
-      );
-    }
-    if (item.type === 'date') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <DatePicker format={dateFormat} style={styles.datePicker} />
-        </Form.Item>
-      );
-    }
-    if (item.type === 'checkList') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Checkbox.Group style={styles.inputCheckList}>
-            {item.choices.map((choice) => (
-              <Row>
-                <Checkbox value={choice.id}>{item.render(choice)}</Checkbox>
-              </Row>
-            ))}
-          </Checkbox.Group>
-        </Form.Item>
-      );
-    }
-    if (item.type === 'list' || item.type === 'listForm') {
-      return (
-        <div style={styles.formList}>
-          <Form.List label={item.label} name={item.name} rules={item.rules}>
-            {(fields, { add, remove, errors }) => (
-              <>
-                <div
-                  {...styles.listTailLayout}
-                  type="dashed"
-                  style={{ display: 'flex', justifyContent: 'flex-end' }}
-                >
-                  <Title level={5} style={{ marginRight: 'auto' }}>
-                    {item.label}
-                  </Title>
-                  <Form.Item>
-                    <Button onClick={() => add()} icon={<PlusOutlined />}>
-                      Add
-                    </Button>
-                  </Form.Item>
-
-                  {item.type === 'selectList' && (
-                    <Form.Item>
-                      <Button onClick={() => add()} icon={<SelectOutlined />}>
-                        Select
-                      </Button>
-                    </Form.Item>
-                  )}
-                </div>
-                {fields.map((field) => (
-                  <Space key={field.key} style={styles.listLayout} align="baseline">
-                    {item.fields.map((itemField) => {
-                      if (itemField.type === 'hidden') {
-                        return (
-                          <Form.Item
-                            {...field}
-                            name={[field.name, itemField.name]}
-                            fieldKey={[field.fieldKey, itemField.name]}
-                            hidden
-                          >
-                            <Input />
-                          </Form.Item>
-                        );
-                      }
-                      if (itemField.type === 'number') {
-                        return (
-                          <Form.Item
-                            {...field}
-                            {...styles.listItems}
-                            name={[field.name, itemField.name]}
-                            fieldKey={[field.fieldKey, itemField.name]}
-                            rules={itemField.rules}
-                          >
-                            <InputNumber
-                              placeholder={itemField.placeholder}
-                              prefix={item.prefix}
-                              suffix={item.suffix}
-                            />
-                          </Form.Item>
-                        );
-                      }
-                      if (itemField.type === 'date') {
-                        return (
-                          <Form.Item
-                            {...field}
-                            {...styles.listItems}
-                            name={[field.name, itemField.name]}
-                            fieldKey={[field.fieldKey, itemField.name]}
-                            rules={itemField.rules}
-                          >
-                            <DatePicker format={dateFormat} />
-                          </Form.Item>
-                        );
-                      }
-                      return (
-                        <Form.Item
-                          {...field}
-                          {...styles.listItems}
-                          name={[field.name, itemField.name]}
-                          fieldKey={[field.fieldKey, itemField.name]}
-                          rules={itemField.rules}
-                        >
-                          <Input
-                            placeholder={itemField.placeholder}
-                            prefix={item.prefix}
-                            suffix={item.suffix}
-                          />
-                        </Form.Item>
-                      );
-                    })}
-                    <MinusCircleOutlined onClick={() => remove(field.name)} />
-                  </Space>
-                ))}
-                <Form.ErrorList errors={errors} />
-              </>
-            )}
-          </Form.List>
-        </div>
-      );
-    }
-
-    return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules}>
-        <Input placeholder={item.placeholder} maxLength={item.maxLength} readOnly={item.readOnly} />
-      </Form.Item>
-    );
   };
 
   // for rendering tables
@@ -346,11 +162,6 @@ const FormScreen = (props) => {
         setTableData(selectedItems);
       } else if (tableData !== null && typeof tableData !== 'undefined') {
         selectedItems = tableData;
-        // process the new data if necessary
-        var processedData = data;
-        if (typeof formTable.processData === 'function') {
-          processedData = formTable.processData(data);
-        }
 
         // key for the selected item
         if (typeof formTable.selectedKey === 'undefined') {
@@ -406,6 +217,10 @@ const FormScreen = (props) => {
     }
   };
 
+  const onFail = () => {
+    history.push(`/${path.split('/')[1]}`);
+  }
+
   return (
     <>
       <Row>
@@ -422,7 +237,7 @@ const FormScreen = (props) => {
             onFinishFailed={onFinishFailed}
           >
             {formDetails.form_items.map((item) => (
-              <FormItem item={item} />
+              <FormItem item={item} onFail={onFail} />
             ))}
           </Form>
           {hasTable && (
