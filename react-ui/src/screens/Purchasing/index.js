@@ -18,7 +18,7 @@ import {
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
 import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
-import { listPR, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
+import { listPR, listPRByStatus, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -83,6 +83,7 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
+            //dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
             dispatch(listPR({ company: selectedCompany, message })).then(() => {
               history.push(`${path}/new`);
               setLoadingCompany(false);
@@ -120,6 +121,7 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
+            //dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
             dispatch(listPR({ company: selectedCompany, message })).then(() => {
               history.push(`${path}/${data.id}`);
               setLoadingCompany(false);
@@ -305,51 +307,51 @@ const Purchasing = () => {
 
                         return null;
                       })}
-                      <Title
-                        level={5}
-                        style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
-                      >
-                        Ordered Items:
-                      </Title>
-                      {selectedPO[tableDetails.name].map((item) => {
-                        return (
-                          <Descriptions
-                            title={`[${item.item.code}] ${item.item.name}`}
-                            size="default"
-                          >
-                            {tableDetails.fields.map((field) => {
-                              if (field.type === 'hidden' || field.type === 'hiddenNumber') {
-                                return null;
-                              }
-                              if (typeof field.render === 'function') {
-                                return (
-                                  <Descriptions.Item label={field.label}>
-                                    {field.render(item)}
-                                  </Descriptions.Item>
-                                );
-                              }
-                              if (field.type === 'select') {
-                                if (typeof field.selectName === 'undefined') {
-                                  field.selectName = 'name';
-                                }
-                                const fieldData = item[field.name];
-                                return (
-                                  <Descriptions.Item label={field.label}>
-                                    {fieldData[field.selectName]}
-                                  </Descriptions.Item>
-                                );
-                              }
-
+                    </Descriptions>
+                    <Title
+                      level={5}
+                      style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
+                    >
+                      Ordered Items:
+                    </Title>
+                    {selectedPO[tableDetails.name].map((item) => {
+                      return (
+                        <Descriptions
+                          title={`[${item.item.code}] ${item.item.name}`}
+                          size="default"
+                        >
+                          {tableDetails.fields.map((field) => {
+                            if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+                              return null;
+                            }
+                            if (typeof field.render === 'function') {
                               return (
                                 <Descriptions.Item label={field.label}>
-                                  {item[field.name]}
+                                  {field.render(item)}
                                 </Descriptions.Item>
                               );
-                            })}
-                          </Descriptions>
-                        );
-                      })}
-                    </Descriptions>
+                            }
+                            if (field.type === 'select') {
+                              if (typeof field.selectName === 'undefined') {
+                                field.selectName = 'name';
+                              }
+                              const fieldData = item[field.name];
+                              return (
+                                <Descriptions.Item label={field.label}>
+                                  {fieldData[field.selectName]}
+                                </Descriptions.Item>
+                              );
+                            }
+
+                            return (
+                              <Descriptions.Item label={field.label}>
+                                {item[field.name]}
+                              </Descriptions.Item>
+                            );
+                          })}
+                        </Descriptions>
+                      );
+                    })}
                   </>
                 )}
               </Modal>
