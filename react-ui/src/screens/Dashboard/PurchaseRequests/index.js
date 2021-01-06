@@ -104,7 +104,7 @@ const PurchaseRequests = (props) => {
     dispatch(listPR({ company, message })).then(() => {
       dispatch(listD({ company, message })).then(() => {
         setLoading(false);
-        if(isCancelled) {
+        if (isCancelled) {
           dispatch(clearData());
         }
       });
@@ -114,7 +114,7 @@ const PurchaseRequests = (props) => {
       dispatch(clearData());
       dispatch(clearItem());
       dispatch(clearDepartment());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

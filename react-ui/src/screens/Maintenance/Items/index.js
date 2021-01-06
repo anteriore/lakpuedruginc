@@ -86,12 +86,12 @@ const ItemTypes = (props) => {
       if(isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearIT());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

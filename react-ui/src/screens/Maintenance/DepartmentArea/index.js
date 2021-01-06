@@ -89,18 +89,18 @@ const DepartmentArea = (props) => {
   const areaData = useSelector((state) => state.maintenance.departmentArea.areaList);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listD({ company })).then(() => {
       dispatch(listA({ company })).then(() => {
-        if(isCancelled) {
+        if (isCancelled) {
           dispatch(clearData());
         }
-      })
-    })
+      });
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 
@@ -249,7 +249,7 @@ const DepartmentArea = (props) => {
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdateD}
             handleDelete={handleDeleteD}
-            pagination={{ size: "small" }}
+            pagination={{ size: 'small' }}
           />
         </Col>
         <Col span={12}>
@@ -271,7 +271,7 @@ const DepartmentArea = (props) => {
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdateA}
             handleDelete={handleDeleteA}
-            pagination={{ size: "small" }}
+            pagination={{ size: 'small' }}
           />
         </Col>
         <SimpleForm

@@ -6,7 +6,13 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { createInstitution, deleteInstitution, listInstitution, updateInstitution, clearData } from './redux';
+import {
+  createInstitution,
+  deleteInstitution,
+  listInstitution,
+  updateInstitution,
+  clearData,
+} from './redux';
 
 const { Title } = Typography;
 
@@ -28,11 +34,11 @@ const InstitutionalCodes = (props) => {
       if(isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 

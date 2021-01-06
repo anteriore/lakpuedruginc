@@ -121,7 +121,7 @@ const Vendors = (props) => {
     dispatch(listVendor({ company, message })).then((response) => {
       setFormData(null);
       setLoading(false);
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -130,7 +130,7 @@ const Vendors = (props) => {
       dispatch(clearData());
       dispatch(clearA());
       dispatch(clearG());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

@@ -41,6 +41,7 @@ public class ProductData {
 		Product product = new Product();
 		Company company = companyRepository.getOne(1L);
 		Classification classification = classificationRepository.getOne(1L);
+
 		product.setBigUnit(unitRepository.findByCode("g"));
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
@@ -54,5 +55,22 @@ public class ProductData {
 		product.setUnitPrice(50D);
 		product.setFinishedGood(fg);
 		productRepository.save(product);
+
+
+
+
+		
+		//BUOM
+		//(no classification)
+		//USID DIVISION ID
+		//(no category)
+		//company number
+		//expiration (fit expire(but its like just one integer))
+		//FIT_LOTNO-lot number
+		//FIT_QPB-quantity per box
+		//OSCH-reorder level
+		//SUOM
+		//FITUNITP-unitprice
+		//FITCODE-finished good
 	}
 }

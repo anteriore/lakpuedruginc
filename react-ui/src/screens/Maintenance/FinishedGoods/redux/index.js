@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import {
   ITEMS_GET_PENDING,
@@ -62,14 +63,14 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 // Reducer Store section
 const finishedGoodsSlice = createSlice({
   name: 'finishedGoods',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [getFGList.pending]: (state) => {

@@ -8,7 +8,13 @@ import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import { listProductionArea, clearData as clearProductionArea } from '../ProductionArea/redux';
-import { listProcedure, createProcedure, updateProcedure, deleteProcedure, clearData } from './redux';
+import {
+  listProcedure,
+  createProcedure,
+  updateProcedure,
+  deleteProcedure,
+  clearData,
+} from './redux';
 import { formatProcedurePayload } from './helper';
 
 const { Title } = Typography;
@@ -33,12 +39,12 @@ const Procedures = (props) => {
       if(isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearProductionArea());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 

@@ -57,7 +57,7 @@ const GroupsCategories = (props) => {
     var isCancelled = false
     dispatch(listG({ company, message })).then((response) => {
       setLoading(false);
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -66,7 +66,7 @@ const GroupsCategories = (props) => {
       setselectedCategory(null);
       setselectedGroup(null);
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

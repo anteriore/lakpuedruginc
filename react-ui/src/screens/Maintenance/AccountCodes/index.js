@@ -26,14 +26,14 @@ const AccountCodes = (props) => {
     dispatch(listAC({ company, message })).then(() => {
       setLoading(false)
 
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

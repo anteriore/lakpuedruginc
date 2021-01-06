@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
@@ -29,28 +30,37 @@ export const listClassification = createAsyncThunk('listClassification', async (
   return response;
 });
 
-export const addClassification = createAsyncThunk('addClassification', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const addClassification = createAsyncThunk(
+  'addClassification',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/classifications/?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/classifications/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-export const deleteClassification = createAsyncThunk('deleteClassification', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const deleteClassification = createAsyncThunk(
+  'deleteClassification',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/classifications/delete?token=${accessToken}`,
-    payload
-  );
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/classifications/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const classificationSlice = createSlice({
   name: 'classification',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listClassification.pending]: (state) => {

@@ -6,7 +6,13 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import SimpleForm from '../../../components/forms/FormModal';
-import { listRegionCode, createRegionCode, updateRegionCode, deleteRegionCode, clearData } from './redux';
+import {
+  listRegionCode,
+  createRegionCode,
+  updateRegionCode,
+  deleteRegionCode,
+  clearData,
+} from './redux';
 
 const { Title } = Typography;
 
@@ -29,11 +35,11 @@ const RegionCodes = (props) => {
       if(isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 

@@ -144,7 +144,7 @@ const purchaseRequestSlice = createSlice({
         requestedItems: [],
       };
     },
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listPR.pending]: (state, action) => {

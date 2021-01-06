@@ -19,10 +19,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
 
-
+/*
 @Modifying
 @Query("update User u set u.first_name = :first_name where u.id = :id")
 String updatefirstname(@Param("first_name") String first_name, 
   @Param("id") int id);
-
+*/
 }
