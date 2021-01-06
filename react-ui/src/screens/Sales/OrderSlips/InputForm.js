@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, message, Layout } from 'antd';
+import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, message, Layout, Checkbox } from 'antd';
 import _ from 'lodash';
 import { useForm } from 'antd/lib/form/Form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,8 +9,9 @@ import { fromatInitForm, updateList } from '../../../helpers/general-helper';
 import FormItem from '../../../components/forms/FormItem';
 import { listDepot } from '../../Maintenance/Depots/redux';
 import { listSalesOrderByDepot } from '../SalesOrders/redux';
+import { listProductInventory } from '../../Maintenance/redux/productInventory';
 
-import { formatSOList, formatSalesProduct, formatSalesInfo } from './helpers';
+import { formatSOList, formatLotProducts, formatOrderedProducts } from './helpers';
 
 const { Title } = Typography;
 
@@ -22,7 +23,9 @@ const InputForm = (props) => {
   const [showSalesSection, setShowSalesSection] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [selectedSales, setSelectedSales] = useState(null);
+  const [selectedLot, setSelectedLot] = useState([]);
   const { user } = useSelector((state) => state.auth);
+  const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
   const { orderSlipsList } = useSelector((state) => state.sales.orderSlips);
@@ -37,20 +40,22 @@ const InputForm = (props) => {
 
       form.setFieldsValue(fromatInitForm(selectedOrderSlips, initValueForm));
       dispatch(listSalesOrderByDepot(selectedOrderSlips.depot.id)).then(() => {
-        setSelectedSales(selectedOrderSlips.salesOrder);
-        setShowSalesSection(true);
+          setSelectedSales(selectedOrderSlips.salesOrder);
+          setShowSalesSection(true);
       });
     }
   }, [dispatch, orderSlipsList, id, form]);
 
   useEffect(() => {
     dispatch(listDepot()).then(() => {
-      form.setFieldsValue({
-        preparedBy: `${user.firstName} ${user.lastName}`,
-        releasedBy: `${user.firstName} ${user.lastName}`,
-        checkedBy: `${user.firstName} ${user.lastName}`,
+      dispatch(listProductInventory()).then(() => {
+        form.setFieldsValue({
+          preparedBy: `${user.firstName} ${user.lastName}`,
+          releasedBy: `${user.firstName} ${user.lastName}`,
+          checkedBy: `${user.firstName} ${user.lastName}`,
+        });
+        setContentLoading(false);
       });
-      setContentLoading(false);
     });
   }, [dispatch, form, user]);
 
@@ -95,12 +100,46 @@ const InputForm = (props) => {
     }
   }, [salesOrderList, tempFormDetails, form]);
 
-  const expandedRowRender = (row) => {
-    return <Table columns={salesInfoHeader} dataSource={formatSalesInfo(row)} pagination={false} />;
-  };
+  const onItemSelect = (data, selected) => {
+    if (selected) {
+      setSelectedLot(selectedLot.concat(data))
+    } else {
+      const selectedItems = selectedLot.slice();
+      selectedItems.pop(data);
+      setSelectedLot(selectedItems)
+    }
+  }
+  const renderLotColumns = (rawColumns) => {
+    let filteredColumn = [
+      {
+        title: 'Action',
+        key: 'select',
+        render: (row) => {
+          return (
+            <Checkbox
+              onChange={(e) => {
+                onItemSelect(row, e.target.checked);
+              }}
+              checked={
+                !!selectedLot.some((item) => {
+                  return item.id === row.id;
+                })
+              }
+            />
+          );
+        },
+      },
+    ];
+
+    const inputColumn = rawColumns.slice();
+
+    filteredColumn = filteredColumn.concat(inputColumn);
+
+    return filteredColumn;
+  }
 
   const onFinish = (value) => {
-    onSubmit(value, selectedSales);
+    // onSubmit(value, selectedSales);
     history.goBack();
   };
 
@@ -126,13 +165,20 @@ const InputForm = (props) => {
                   : ''}
                 {showSalesSection ? (
                   <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
-                    <Table
-                      columns={salesOrderHeader}
-                      dataSource={formatSalesProduct(selectedSales)}
-                      expandable={{
-                        expandedRowRender,
-                      }}
-                    />
+                    <Form.Item>
+                      <Table
+                        columns={renderLotColumns(salesOrderHeader)}
+                        dataSource={formatLotProducts(selectedSales, productInvList)}
+                        pagination={false}
+                      />
+                    </Form.Item>
+                    <Form.Item>
+                      <Table
+                        columns={salesInfoHeader}
+                        dataSource={formatOrderedProducts(selectedLot,selectedSales)}
+                        pagination={false}
+                      />
+                    </Form.Item>
                   </Form.Item>
                 ) : (
                   ''

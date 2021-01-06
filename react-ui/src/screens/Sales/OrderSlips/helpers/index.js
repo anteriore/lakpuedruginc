@@ -1,4 +1,4 @@
-import moment from 'moment';
+import _, { result } from 'lodash';
 
 export const formatSOList = (salesOrders) => {
   const newList = [];
@@ -14,25 +14,41 @@ export const formatSOList = (salesOrders) => {
   return newList;
 };
 
-export const formatSalesProduct = (sales) => {
-  const formatedList = [];
-  if (sales !== null && sales !== undefined) {
-    sales.products.forEach((product, i) => {
-      const { product: salesProduct, quantity } = product.product;
+export const formatOrderedProducts = ( lotProducts, salesProducts) => {
+  if(salesProducts !== null && lotProducts !== null ){
+    const { products } = salesProducts;
+    let orderedProducts = []; 
+  
+    lotProducts.forEach(lotProduct => {
+      const mtchdProduct = _.find(products, (o) => o.product.id === lotProduct.id && o.product.product.finishedGood.id === lotProduct.product.finishedGood.id)
+      orderedProducts.push(mtchdProduct);
+    })
 
-      formatedList.push({
-        key: i,
-        product,
-        lotNumber: salesProduct.lotNumber,
-        expiration: moment(new Date(salesProduct.expiration)).format('DD/MM/YYYY'),
-        stockOnHand: product.product.quantity,
-        quantity,
-      });
-    });
+    console.log(orderedProducts)
+    return orderedProducts;
+  }else{
+    return null;
   }
+}
 
-  return formatedList;
-};
+export const formatLotProducts = (salesProducts, inventoryProducts) => {
+  if (salesProducts !== null ) {
+    let listLotProducts = [];
+    salesProducts.products.forEach( soProduct => {
+      const { product } = soProduct;
+      const results = _.filter(inventoryProducts, (o) => {
+        return o.product.finishedGood.id === product.product.finishedGood.id && o.quantity !== 0
+      })
+      results.forEach(result => {
+        listLotProducts.push(result)
+      })
+    });
+    
+    return _.uniqBy(listLotProducts, 'id');
+  } else {
+    return null;
+  }
+}
 
 export const formatSalesInfo = (sales) => {
   if (sales !== null && sales !== undefined) {
