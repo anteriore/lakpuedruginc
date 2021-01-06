@@ -34,13 +34,13 @@ const ZipCodes = (props) => {
       if(isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearProvinceCode());
       dispatch(clearRegionCode());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 
@@ -62,14 +62,14 @@ const ZipCodes = (props) => {
       if (form.name === 'regionCode') {
         regionCodeList.forEach((regionCode) => {
           const { id, code, area } = regionCode;
-          form.choices.push({ id, code: code, area: area });
+          form.choices.push({ id, code, area });
         });
       }
 
       if (form.name === 'provinceCode') {
         provinceCodeList.forEach((provinceCode) => {
           const { id, code, area } = provinceCode;
-          form.choices.push({ id, code: code, area: area });
+          form.choices.push({ id, code, area });
         });
       }
 

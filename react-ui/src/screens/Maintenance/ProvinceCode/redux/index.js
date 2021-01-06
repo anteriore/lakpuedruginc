@@ -60,13 +60,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const provinceCodeSlice = createSlice({
   name: 'provinceCodes',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listProvinceCode.pending]: (state) => {

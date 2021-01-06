@@ -26,11 +26,11 @@ const MemoTypes = (props) => {
       if(isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch]);
 

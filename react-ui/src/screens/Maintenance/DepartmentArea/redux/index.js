@@ -88,7 +88,7 @@ const departmentAreaSlice = createSlice({
   name: 'departmentArea',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listD.pending]: (state) => {

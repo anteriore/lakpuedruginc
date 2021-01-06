@@ -48,13 +48,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const zipCodeSlice = createSlice({
   name: 'zipCodes',
-  initialState: initialState, 
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listZipCode.pending]: (state) => {

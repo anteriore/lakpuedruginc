@@ -57,11 +57,12 @@ const Classification = (props) => {
     dispatch(listClassification({ company, message })).then(() => {
       if(isCancelled) {
         dispatch(clearData());
-      }})
+      }
+    });
 
     return function cleanup() {
       dispatch(clearData());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

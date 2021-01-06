@@ -50,13 +50,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const orderSlipsSlice = createSlice({
   name: 'orderSlips',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listOrderSlips.pending]: (state) => {

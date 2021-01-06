@@ -85,6 +85,11 @@ export const tableProduct = [
 
 export const tableProductInventory = [
   {
+    title: 'Lot #',
+    dataindex: 'product',
+    render: (object) => object.product.lotNumber,
+  },
+  {
     title: 'FG Code',
     dataIndex: 'product',
     render: (object) => object.finishedGood.code,
@@ -164,6 +169,18 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please login a valid user' }],
       placeholder: '',
       type: 'readOnly',
+    },
+    {
+      label: 'Status',
+      name: 'status',
+      rules: [{ required: true, message: 'Please provide a sales order status' }],
+      placeholder: 'Sales order status',
+      type: 'select',
+      choices: [
+        { id: 'pending', name: 'Pending' },
+        { id: 'complete', name: 'Complete' },
+        { id: 'approved', name: 'Approved' },
+      ],
     },
     {
       label: 'Remarks',

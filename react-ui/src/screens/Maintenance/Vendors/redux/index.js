@@ -56,7 +56,7 @@ const vendorSlice = createSlice({
   name: 'vendors',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listVendor.pending]: (state, action) => {

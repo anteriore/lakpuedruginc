@@ -62,7 +62,7 @@ const purchaseOrderSlice = createSlice({
   name: 'purchaseOrders',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listPO.pending]: (state, action) => {

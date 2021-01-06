@@ -28,7 +28,7 @@ const Product = (props) => {
     var isCancelled = false
     dispatch(listProduct({company, message})).then(() => {
       setContenctLoading(false);
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -41,7 +41,7 @@ const Product = (props) => {
       dispatch(clearDivisions());
       dispatch(clearUnits());
       dispatch(clearFinishedGoods());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

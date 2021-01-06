@@ -48,13 +48,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const regionCodeSlice = createSlice({
   name: 'regionCodes',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listRegionCode.pending]: (state) => {

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
@@ -65,12 +66,12 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 const institutionalCodesSlice = createSlice({
   name: 'institutionalCodes',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listInstitution.pending]: (state) => {

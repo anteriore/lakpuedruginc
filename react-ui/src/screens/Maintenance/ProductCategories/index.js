@@ -86,7 +86,7 @@ const Depots = (props) => {
     dispatch(listPC({ company, message })).then(() => {
       dispatch(listPD({ company, message })).then(() => {
         setLoading(false);
-        if(isCancelled) {
+        if (isCancelled) {
           dispatch(clearData());
         }
       });
@@ -95,7 +95,7 @@ const Depots = (props) => {
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearPD());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

@@ -70,11 +70,11 @@ const Depots = (props) => {
   };
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listDepot({ company })).then((response) => {
       setLoading(false);
 
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -82,7 +82,7 @@ const Depots = (props) => {
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearArea());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

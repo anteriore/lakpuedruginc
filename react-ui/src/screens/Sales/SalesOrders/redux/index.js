@@ -73,13 +73,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const salesOrdersSlice = createSlice({
   name: 'salesOrders',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listSalesOrder.pending]: (state) => {

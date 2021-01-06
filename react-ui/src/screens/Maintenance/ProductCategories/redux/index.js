@@ -53,7 +53,7 @@ const productCategorySlice = createSlice({
   name: 'productCategories',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listPC.pending]: (state, action) => {

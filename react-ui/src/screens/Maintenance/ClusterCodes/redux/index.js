@@ -47,12 +47,12 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 const clusterCodeSlice = createSlice({
   name: 'clusterCode',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listCluster.pending]: (state) => {

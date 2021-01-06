@@ -59,13 +59,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const bankAccountSlice = createSlice({
   name: 'bankAccount',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listBankAccount.pending]: (state) => {

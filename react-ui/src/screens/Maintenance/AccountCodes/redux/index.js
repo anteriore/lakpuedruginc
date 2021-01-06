@@ -49,7 +49,7 @@ const accountCodeSlice = createSlice({
   name: 'accountCodes',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listAC.pending]: (state) => {

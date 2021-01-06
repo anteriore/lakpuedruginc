@@ -55,7 +55,7 @@ const clientSlice = createSlice({
   name: 'clients',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listClient.pending]: (state, action) => {

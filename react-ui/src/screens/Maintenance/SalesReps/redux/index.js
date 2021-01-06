@@ -47,7 +47,7 @@ const salesRepSlice = createSlice({
   name: 'salesReps',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listS.pending]: (state, action) => {

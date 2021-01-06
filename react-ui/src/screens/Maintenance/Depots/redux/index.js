@@ -47,7 +47,7 @@ const depotSlice = createSlice({
   name: 'depots',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listDepot.pending]: (state) => {

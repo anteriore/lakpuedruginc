@@ -69,13 +69,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const productionAreaSlice = createSlice({
   name: 'productionArea',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listProductionArea.pending]: (state) => {

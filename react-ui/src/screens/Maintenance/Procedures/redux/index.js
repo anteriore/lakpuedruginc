@@ -48,13 +48,13 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 const proceduresSlice = createSlice({
   name: 'procedures',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listProcedure.pending]: (state) => {

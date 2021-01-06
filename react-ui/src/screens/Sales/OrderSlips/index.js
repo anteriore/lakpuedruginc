@@ -9,7 +9,13 @@ import { tableHeader } from './data';
 import InputForm from './InputForm';
 import { formatPayload } from './helpers';
 
-import { listOrderSlips, createOrderSlips, updateOrderSlips, deleteOrderSlips, clearData } from './redux';
+import {
+  listOrderSlips,
+  createOrderSlips,
+  updateOrderSlips,
+  deleteOrderSlips,
+  clearData,
+} from './redux';
 import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO } from '../SalesOrders/redux';
 
@@ -29,7 +35,7 @@ const OrderSlips = (props) => {
     var isCancelled = false
     dispatch(listOrderSlips({company, message})).then(() => {
       setContentLoading(false);
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -38,7 +44,7 @@ const OrderSlips = (props) => {
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearSO());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

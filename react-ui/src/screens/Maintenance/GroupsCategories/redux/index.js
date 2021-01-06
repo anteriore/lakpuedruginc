@@ -83,7 +83,7 @@ const groupCategorySlice = createSlice({
   name: 'groupsCategories',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listG.pending]: (state) => {

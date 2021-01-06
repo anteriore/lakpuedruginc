@@ -29,12 +29,12 @@ const FinishedGoods = (props) => {
       if(isCancelled) {
         dispatch(clearData());
       }
-    })
+    });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearUnit());
-      isCancelled = true
+      isCancelled = true;
     };
   }, [dispatch, company]);
 

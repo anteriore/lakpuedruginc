@@ -6,7 +6,15 @@ import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-desig
 import TableHeader from './TableHeader';
 
 const TableDisplay = (props) => {
-  const { columns: col, handleDelete, handleRetrieve, handleUpdate, data, deleteEnabled, pagination } = props;
+  const {
+    columns: col,
+    handleDelete,
+    handleRetrieve,
+    handleUpdate,
+    data,
+    deleteEnabled,
+    pagination,
+  } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,7 +115,7 @@ const TableDisplay = (props) => {
         onShowSizeChange: (current, size) => {
           onChangePageSize(current, size);
         },
-        size: pagination ? pagination.size : "default",
+        size: pagination ? pagination.size : 'default',
         current: currentPage,
         showQuickJumper: true,
         defaultPageSize: defaultpageSize,

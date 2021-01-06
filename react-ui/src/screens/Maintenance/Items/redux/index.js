@@ -47,7 +47,7 @@ const itemSlice = createSlice({
   name: 'items',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listI.pending]: (state, action) => {

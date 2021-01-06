@@ -53,7 +53,7 @@ const productDivisionSlice = createSlice({
   name: 'productDivisions',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listPD.pending]: (state) => {

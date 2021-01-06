@@ -62,14 +62,14 @@ const initialState = {
   status: '',
   statusMessage: '',
   action: '',
-}
+};
 
 // Reducer Store section
 const finishedGoodsSlice = createSlice({
   name: 'finishedGoods',
-  initialState: initialState,
+  initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [getFGList.pending]: (state) => {
