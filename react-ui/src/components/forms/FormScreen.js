@@ -218,7 +218,7 @@ const FormScreen = (props) => {
   };
 
   const onFail = () => {
-    history.push(`${path.replace(new RegExp('\/new|[0-9]'), '')}`);
+    history.push(`${path.replace(new RegExp('\/new|[0-9]|:id'), '')}`);
   }
 
   return (
