@@ -54,6 +54,7 @@ const FormDetails = () => {
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
+    toggle_name: 'terms',
     form_items: [
       {
         label: 'AR Number',
@@ -109,6 +110,14 @@ const FormDetails = () => {
         label: 'Cheque Number',
         name: 'chequeNumber',
         toggle: true,
+        toggleCondition: (value) => {
+          if(value === "CHEQUE"){
+            return true
+          }
+          else{
+            return false
+          }
+        },
         initialValue: null,
         rules: [{ required: true }],
       },
@@ -117,6 +126,14 @@ const FormDetails = () => {
         name: 'chequeDate',
         type: 'date',
         toggle: true,
+        toggleCondition: (value) => {
+          if(value === "CHEQUE"){
+            return true
+          }
+          else{
+            return false
+          }
+        },
         initialValue: null,
         rules: [{ required: true }],
       },
@@ -131,6 +148,14 @@ const FormDetails = () => {
         name: 'cutOffDate',
         type: 'date',
         toggle: true,
+        toggleCondition: (value) => {
+          if(value === "CHEQUE"){
+            return true
+          }
+          else{
+            return false
+          }
+        },
         initialValue: null,
         rules: [{ required: true }],
       },

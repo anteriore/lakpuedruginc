@@ -7,7 +7,7 @@ import moment from 'moment';
 import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
-import InputForm from './InputForm';
+import FormScreen from '../../../components/forms/FormScreen';
 
 import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
@@ -155,7 +155,7 @@ const AcknowledgementReceipts = (props) => {
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <InputForm
+        <FormScreen
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -166,7 +166,7 @@ const AcknowledgementReceipts = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <InputForm
+        <FormScreen
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
