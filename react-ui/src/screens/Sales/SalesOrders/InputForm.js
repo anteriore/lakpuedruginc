@@ -161,9 +161,9 @@ const InputForm = (props) => {
                 onItemSelect(row, e.target.checked);
               }}
               checked={
-                !!requestedProductList.some((item) => {
-                  return item.id === row.id;
-                })
+                _.some(requestedProductList, (o) => {
+                  return o.id === row.id
+                })      
               }
             />
           );
@@ -187,10 +187,11 @@ const InputForm = (props) => {
         message.warning('Cannot add requested product with empty stock on hand');
       }
     } else {
-      const selectedItems = requestedProductList.slice();
-      selectedItems.pop(formatProduct(data));
-      form.setFieldsValue({ product: selectedItems });
-      setRequestedProductList(selectedItems);
+      const removedList = _.remove(requestedProductList, (o) => {
+        return o.id !== data.id
+      })
+      form.setFieldsValue({ product: removedList });
+      setRequestedProductList(removedList);
     }
   };
 
