@@ -24,6 +24,7 @@ const InputForm = (props) => {
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [selectedSales, setSelectedSales] = useState(null);
   const [selectedLot, setSelectedLot] = useState([]);
+  const [orderedProducts, setOrderedProducts] = useState([]);
   const { user } = useSelector((state) => state.auth);
   const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
@@ -65,7 +66,6 @@ const InputForm = (props) => {
       depot: depotList,
     };
     const formItem = _.find(newForm.form_items, { name: 'depot' });
-
     const handleDepotChange = (value) => {
       form.setFieldsValue({ salesOrder: '' });
       setSelectedSales(null);
@@ -74,6 +74,7 @@ const InputForm = (props) => {
     };
 
     formItem.onChange = (e) => handleDepotChange(e);
+    console.log(formItem, "Form Item depot with onChange")
     setTempFormDetails(updateList(newForm, masterList));
   }, [dispatch, depotList, tempFormDetails, form]);
 
@@ -100,13 +101,20 @@ const InputForm = (props) => {
     }
   }, [salesOrderList, tempFormDetails, form]);
 
+  useEffect(() => {
+    const newOrderedProducts = formatOrderedProducts(selectedLot,selectedSales);
+    setOrderedProducts(newOrderedProducts);
+  },[selectedLot, selectedSales])
+
   const onItemSelect = (data, selected) => {
     if (selected) {
       setSelectedLot(selectedLot.concat(data))
     } else {
-      const selectedItems = selectedLot.slice();
-      selectedItems.pop(data);
-      setSelectedLot(selectedItems)
+      const removedList = _.remove(selectedLot, (o) => {
+        return o.id !== data.id
+      })
+      
+      setSelectedLot(removedList)
     }
   }
   const renderLotColumns = (rawColumns) => {
@@ -121,9 +129,7 @@ const InputForm = (props) => {
                 onItemSelect(row, e.target.checked);
               }}
               checked={
-                !!selectedLot.some((item) => {
-                  return item.id === row.id;
-                })
+                _.some(selectedLot, (o) => o.id === row.id)
               }
             />
           );
@@ -139,8 +145,8 @@ const InputForm = (props) => {
   }
 
   const onFinish = (value) => {
-    // onSubmit(value, selectedSales);
-    history.goBack();
+    onSubmit(value, selectedSales, orderedProducts);
+    // history.goBack();
   };
 
   return (

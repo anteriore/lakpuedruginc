@@ -1,4 +1,4 @@
-import _, { result } from 'lodash';
+import _ from 'lodash';
 
 export const formatSOList = (salesOrders) => {
   const newList = [];
@@ -24,7 +24,6 @@ export const formatOrderedProducts = ( lotProducts, salesProducts) => {
       orderedProducts.push(mtchdProduct);
     })
 
-    console.log(orderedProducts)
     return orderedProducts;
   }else{
     return null;

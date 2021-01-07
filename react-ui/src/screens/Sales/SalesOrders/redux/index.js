@@ -48,6 +48,8 @@ export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payl
 export const listSalesOrderByDepot = createAsyncThunk(
   'listSalesOrderByDepot',
   async (payload, thunkAPI, rejectWithValue) => {
+
+    console.log(payload, "Getting Payload")
     const accessToken = thunkAPI.getState().auth.token;
     const response = await axiosInstance.get(
       `/rest/sales-orders/depot/${payload}?token=${accessToken}`
