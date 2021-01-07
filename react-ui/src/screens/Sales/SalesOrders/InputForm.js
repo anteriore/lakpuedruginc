@@ -160,11 +160,9 @@ const InputForm = (props) => {
               onChange={(e) => {
                 onItemSelect(row, e.target.checked);
               }}
-              checked={
-                _.some(requestedProductList, (o) => {
-                  return o.id === row.id
-                })      
-              }
+              checked={_.some(requestedProductList, (o) => {
+                return o.id === row.id;
+              })}
             />
           );
         },
@@ -188,8 +186,8 @@ const InputForm = (props) => {
       }
     } else {
       const removedList = _.remove(requestedProductList, (o) => {
-        return o.id !== data.id
-      })
+        return o.id !== data.id;
+      });
       form.setFieldsValue({ product: removedList });
       setRequestedProductList(removedList);
     }

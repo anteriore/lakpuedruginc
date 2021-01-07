@@ -53,9 +53,9 @@ const Classification = (props) => {
   const data = useSelector((state) => state.maintenance.classification.list);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listClassification({ company, message })).then(() => {
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });

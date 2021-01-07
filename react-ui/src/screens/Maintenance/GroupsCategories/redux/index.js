@@ -17,16 +17,15 @@ export const listG = createAsyncThunk('listG', async (payload, thunkAPI, rejectW
   const response = await axiosInstance.get(
     `rest/group/company/${payload.company}?token=${accessToken}`
   );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
+
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for groups")
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for groups');
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
   }
 
   return response;
@@ -50,16 +49,15 @@ export const listC = createAsyncThunk('listC', async (payload, thunkAPI, rejectW
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/category/?token=${accessToken}`);
-  
-  if(typeof response !== 'undefined' && response.status === 200){
+
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for categories")
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for categories');
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
   }
 
   return response;
@@ -91,10 +89,10 @@ const groupCategorySlice = createSlice({
     },
     [listG.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for groups"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for groups';
       }
 
       return {
@@ -102,7 +100,7 @@ const groupCategorySlice = createSlice({
         groupList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listG.rejected]: (state) => {
@@ -119,10 +117,10 @@ const groupCategorySlice = createSlice({
     },
     [listC.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for categories"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for categories';
       }
 
       return {
@@ -130,7 +128,7 @@ const groupCategorySlice = createSlice({
         categoryList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listC.rejected]: (state) => {

@@ -28,10 +28,9 @@ const ZipCodes = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    var isCancelled = false
-    dispatch(listZipCode({message})).then(() => {
-      
-      if(isCancelled) {
+    let isCancelled = false;
+    dispatch(listZipCode({ message })).then(() => {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -81,8 +80,8 @@ const ZipCodes = (props) => {
   const handleAddButton = () => {
     setModalTitle('Add New Zip Code');
     setMode('add');
-    dispatch(listRegionCode({message})).then(() => {
-      dispatch(listProvinceCode({message})).then(() => {
+    dispatch(listRegionCode({ message })).then(() => {
+      dispatch(listProvinceCode({ message })).then(() => {
         setIsOpenForm(!isOpenForm);
       });
     });
@@ -92,8 +91,8 @@ const ZipCodes = (props) => {
     setCurrentID(row.id);
     setModalTitle('Edit Zip Code');
     setMode('edit');
-    dispatch(listRegionCode({message})).then(() => {
-      dispatch(listProvinceCode({message}))
+    dispatch(listRegionCode({ message })).then(() => {
+      dispatch(listProvinceCode({ message }))
         .then(() => {
           setFormValues({
             ...row,
@@ -110,7 +109,7 @@ const ZipCodes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteZipCode(row))
       .then(() => {
-        dispatch(listZipCode({message}));
+        dispatch(listZipCode({ message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -127,12 +126,12 @@ const ZipCodes = (props) => {
       const newValues = formatZipPayload(values, provinceCodeList, regionCodeList);
       newValues.id = currentID;
       dispatch(updateZipCode(newValues)).then(() => {
-        dispatch(listZipCode({message}));
+        dispatch(listZipCode({ message }));
       });
     } else if (mode === 'add') {
       dispatch(createZipCode(formatZipPayload(values, provinceCodeList, regionCodeList))).then(
         () => {
-          dispatch(listZipCode({message}));
+          dispatch(listZipCode({ message }));
         }
       );
     }

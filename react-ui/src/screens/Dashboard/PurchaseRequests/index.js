@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Table, Typography, Button, Modal, Skeleton, Empty, Descriptions, Space, message } from 'antd';
+import {
+  Row,
+  Col,
+  Table,
+  Typography,
+  Button,
+  Modal,
+  Skeleton,
+  Empty,
+  Descriptions,
+  Space,
+  message,
+} from 'antd';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -100,7 +112,7 @@ const PurchaseRequests = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listPR({ company, message })).then(() => {
       dispatch(listD({ company, message })).then(() => {
         setLoading(false);
@@ -144,27 +156,24 @@ const PurchaseRequests = (props) => {
   const handleRetrieve = (data) => {
     setLoadingItem(true);
     dispatch(getPR({ id: data.id })).then(() => {
-      setLoadingItem(false)
-      setDisplayModal(true)
-    })
+      setLoadingItem(false);
+      setDisplayModal(true);
+    });
   };
 
   const handleApprove = (data) => {
-    dispatch(approvePR({id: data.id})).then(() => {
-      closeModal()
-      dispatch(listPR({ company, message })).then(() => {
-      })
-    })
-  }
+    dispatch(approvePR({ id: data.id })).then(() => {
+      closeModal();
+      dispatch(listPR({ company, message })).then(() => {});
+    });
+  };
 
   const handleReject = (data) => {
-    dispatch(rejectPR({id: data.id})).then(() => {
-      closeModal()
-      dispatch(listPR({ company, message })).then(() => {
-      })
-    })
-
-  }
+    dispatch(rejectPR({ id: data.id })).then(() => {
+      closeModal();
+      dispatch(listPR({ company, message })).then(() => {});
+    });
+  };
 
   return (
     <Switch>
@@ -217,53 +226,59 @@ const PurchaseRequests = (props) => {
           {loadingItem ? (
             <Skeleton />
           ) : (
-            <Space direction="vertical" style={{width: "100%"}} size="middle">
+            <Space direction="vertical" style={{ width: '100%' }} size="middle">
               <Descriptions bordered size="default" layout="vertical">
-                <Descriptions.Item label={"Number"}>
+                <Descriptions.Item label="Number">
                   {displayData !== null ? displayData.number : 'No data'}
                 </Descriptions.Item>
-                <Descriptions.Item label={"Date"}>
-                  {displayData !== null ? moment(new Date(displayData.date)).format('DD/MM/YYYY'): 'No data'}
+                <Descriptions.Item label="Date">
+                  {displayData !== null
+                    ? moment(new Date(displayData.date)).format('DD/MM/YYYY')
+                    : 'No data'}
                 </Descriptions.Item>
-                <Descriptions.Item label={"Date Needed"}>
-                  {displayData !== null ? moment(new Date(displayData.dateNeeded)).format('DD/MM/YYYY') : 'No data'}
+                <Descriptions.Item label="Date Needed">
+                  {displayData !== null
+                    ? moment(new Date(displayData.dateNeeded)).format('DD/MM/YYYY')
+                    : 'No data'}
                 </Descriptions.Item>
-                <Descriptions.Item label={"Department"}>
-                  {displayData !== null && displayData.department !== null ? displayData.department.name : 'No data'}
+                <Descriptions.Item label="Department">
+                  {displayData !== null && displayData.department !== null
+                    ? displayData.department.name
+                    : 'No data'}
                 </Descriptions.Item>
-                <Descriptions.Item label={"Status"}>
+                <Descriptions.Item label="Status">
                   {displayData !== null ? displayData.status : ''}
                 </Descriptions.Item>
-                <Descriptions.Item label={"Remarks"}>
+                <Descriptions.Item label="Remarks">
                   {displayData !== null ? displayData.remarks : ''}
                 </Descriptions.Item>
               </Descriptions>
-              <Text>{"Requested Items: "}</Text>
+              <Text>{'Requested Items: '}</Text>
               <Table
                 dataSource={displayData !== null ? displayData.requestedItems : []}
                 columns={itemColumns}
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Seleted." /> }}
               />
-              { displayData.status === 'Pending' && //add approval permissions here
+              {displayData.status === 'Pending' && ( // add approval permissions here
                 <>
-                  <Text>{"Actions: "}</Text>
+                  <Text>{'Actions: '}</Text>
                   <Space>
                     <Button
-                      style={{ backgroundColor: "#3fc380", marginRight: '1%' }}
+                      style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
                       icon={<CheckOutlined />}
                       onClick={(e) => {
-                        handleApprove(displayData)
+                        handleApprove(displayData);
                       }}
                       type="primary"
                     >
                       Approve
                     </Button>
                     <Button
-                      style={{  marginRight: '1%' }}
+                      style={{ marginRight: '1%' }}
                       icon={<CloseOutlined />}
                       onClick={(e) => {
-                        handleReject(displayData)
+                        handleReject(displayData);
                       }}
                       type="primary"
                       danger
@@ -272,7 +287,7 @@ const PurchaseRequests = (props) => {
                     </Button>
                   </Space>
                 </>
-              }
+              )}
             </Space>
           )}
         </Modal>

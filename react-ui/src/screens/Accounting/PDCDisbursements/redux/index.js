@@ -10,22 +10,23 @@ const initialState = {
   action: '',
 };
 
-export const listPDCDisbursement = createAsyncThunk('listPDCDisbursement', async (payload, thunkAPI, rejectWithValue) => {
+export const listPDCDisbursement = createAsyncThunk(
+  'listPDCDisbursement',
+  async (payload, thunkAPI, rejectWithValue) => {
     const accessToken = thunkAPI.getState().auth.token;
 
     const response = await axiosInstance.get(`rest/pdc-disbursements?token=${accessToken}`);
-  
-    if(typeof response !== 'undefined' && response.status === 200){
+
+    if (typeof response !== 'undefined' && response.status === 200) {
       const { data } = response;
-      if( data.length === 0){
-        payload.message.warning("No data retrieved for PDC disbursements")
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for PDC disbursements');
       }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
     }
-    else {
-      payload.message.error(message.ITEMS_GET_REJECTED)
-      return rejectWithValue(response)
-    }
-  
+
     return response;
   }
 );
@@ -60,7 +61,7 @@ const PDCDisbursementSlice = createSlice({
   name: 'PDCDisbursements',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listPDCDisbursement.pending]: (state) => {
@@ -68,10 +69,10 @@ const PDCDisbursementSlice = createSlice({
     },
     [listPDCDisbursement.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for PDC Disbursements"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for PDC Disbursements';
       }
 
       return {
@@ -79,7 +80,7 @@ const PDCDisbursementSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listPDCDisbursement.rejected]: (state) => {

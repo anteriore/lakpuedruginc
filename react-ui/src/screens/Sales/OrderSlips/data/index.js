@@ -47,20 +47,20 @@ export const salesOrderHeader = [
     title: 'Lot #',
     dataIndex: 'product',
     key: 'lotNumber',
-    render: (object) => object.lotNumber
+    render: (object) => object.lotNumber,
   },
   {
     title: 'FG Code',
     dataIndex: 'product',
     key: 'fgCode',
-    render: (object) => object.finishedGood.code
+    render: (object) => object.finishedGood.code,
   },
   {
     title: 'Expiration',
     dataIndex: 'product',
     key: 'expiration',
     render: (object) => moment(new Date(object.expiration)).format('DD/MM/YYYY'),
-    datatype: 'date'
+    datatype: 'date',
   },
   {
     title: 'Stock on Hand',
@@ -79,23 +79,23 @@ export const salesInfoHeader = [
     title: 'FG',
     dataIndex: 'finishedGood',
     key: 'finishedGood',
-    render: object => object.code
+    render: (object) => object.code,
   },
   {
     title: 'Requested',
     dataIndex: 'quantiyRequested',
     key: 'quantityRequested',
     render: (_, row) => {
-      return row.quantityRequested
-    }
+      return row.quantityRequested;
+    },
   },
   {
     title: 'Remaining',
     dataIndex: 'quantityRemaining',
     key: 'quantityRemaining',
     render: (_, row) => {
-      return row.quantity - row.quantityRequested
-    }
+      return row.quantity - row.quantityRequested;
+    },
   },
   {
     title: 'Unit Price',
@@ -107,8 +107,8 @@ export const salesInfoHeader = [
     dataIndex: 'amount',
     key: 'amount',
     render: (_, row) => {
-      return row.quantityRequested * row.unitPrice
-    }
+      return row.quantityRequested * row.unitPrice;
+    },
   },
 ];
 

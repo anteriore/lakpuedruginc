@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, message, Layout, Checkbox } from 'antd';
+import {
+  Row,
+  Col,
+  Typography,
+  Form,
+  Table,
+  Space,
+  Button,
+  Skeleton,
+  message,
+  Layout,
+  Checkbox,
+} from 'antd';
 import _ from 'lodash';
 import { useForm } from 'antd/lib/form/Form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,8 +53,8 @@ const InputForm = (props) => {
 
       form.setFieldsValue(fromatInitForm(selectedOrderSlips, initValueForm));
       dispatch(listSalesOrderByDepot(selectedOrderSlips.depot.id)).then(() => {
-          setSelectedSales(selectedOrderSlips.salesOrder);
-          setShowSalesSection(true);
+        setSelectedSales(selectedOrderSlips.salesOrder);
+        setShowSalesSection(true);
       });
     }
   }, [dispatch, orderSlipsList, id, form]);
@@ -74,7 +86,7 @@ const InputForm = (props) => {
     };
 
     formItem.onChange = (e) => handleDepotChange(e);
-    console.log(formItem, "Form Item depot with onChange")
+    console.log(formItem, 'Form Item depot with onChange');
     setTempFormDetails(updateList(newForm, masterList));
   }, [dispatch, depotList, tempFormDetails, form]);
 
@@ -102,21 +114,21 @@ const InputForm = (props) => {
   }, [salesOrderList, tempFormDetails, form]);
 
   useEffect(() => {
-    const newOrderedProducts = formatOrderedProducts(selectedLot,selectedSales);
+    const newOrderedProducts = formatOrderedProducts(selectedLot, selectedSales);
     setOrderedProducts(newOrderedProducts);
-  },[selectedLot, selectedSales])
+  }, [selectedLot, selectedSales]);
 
   const onItemSelect = (data, selected) => {
     if (selected) {
-      setSelectedLot(selectedLot.concat(data))
+      setSelectedLot(selectedLot.concat(data));
     } else {
       const removedList = _.remove(selectedLot, (o) => {
-        return o.id !== data.id
-      })
-      
-      setSelectedLot(removedList)
+        return o.id !== data.id;
+      });
+
+      setSelectedLot(removedList);
     }
-  }
+  };
   const renderLotColumns = (rawColumns) => {
     let filteredColumn = [
       {
@@ -128,9 +140,7 @@ const InputForm = (props) => {
               onChange={(e) => {
                 onItemSelect(row, e.target.checked);
               }}
-              checked={
-                _.some(selectedLot, (o) => o.id === row.id)
-              }
+              checked={_.some(selectedLot, (o) => o.id === row.id)}
             />
           );
         },
@@ -142,7 +152,7 @@ const InputForm = (props) => {
     filteredColumn = filteredColumn.concat(inputColumn);
 
     return filteredColumn;
-  }
+  };
 
   const onFinish = (value) => {
     onSubmit(value, selectedSales, orderedProducts);
@@ -181,7 +191,7 @@ const InputForm = (props) => {
                     <Form.Item>
                       <Table
                         columns={salesInfoHeader}
-                        dataSource={formatOrderedProducts(selectedLot,selectedSales)}
+                        dataSource={formatOrderedProducts(selectedLot, selectedSales)}
                         pagination={false}
                       />
                     </Form.Item>

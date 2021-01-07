@@ -24,9 +24,9 @@ const FinishedGoods = (props) => {
   const { unitList } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(getFGList({ company, message })).then(() => {
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });

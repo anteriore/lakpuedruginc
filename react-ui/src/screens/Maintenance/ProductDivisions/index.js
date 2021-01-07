@@ -65,9 +65,9 @@ const ProductDivisions = (props) => {
   const data = useSelector((state) => state.maintenance.productDivisions.list);
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listPD({ company, message })).then(() => {
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });

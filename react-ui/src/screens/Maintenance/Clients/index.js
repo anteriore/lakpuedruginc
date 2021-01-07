@@ -32,7 +32,7 @@ const Clients = (props) => {
   const { formDetails } = FormDetails();
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listClient({ company, message })).then(() => {
       setFormData(null);
       setLoading(false);
