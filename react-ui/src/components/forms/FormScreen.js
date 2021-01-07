@@ -115,7 +115,7 @@ const FormScreen = (props) => {
               }
 
               if (field.choices === null || field.choices.length === 0) {
-                history.push(`/${path.split('/')[1]}`);
+                onFail()
                 return null;
               }
               return (
@@ -237,7 +237,7 @@ const FormScreen = (props) => {
             onFinishFailed={onFinishFailed}
           >
             {formDetails.form_items.map((item) => (
-              <FormItem item={item} onFail={onFail} />
+              <FormItem item={item} onFail={onFail}/>
             ))}
           </Form>
           {hasTable && (

@@ -50,10 +50,7 @@ export const columns = [
 
 const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
-  const clients = {
-    list : useSelector((state) => state.maintenance.clients.list),
-    message: useSelector((state) => state.maintenance.clients.statusMessage),
-  }
+  const clients = useSelector((state) => state.maintenance.clients.list);
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -86,15 +83,55 @@ const FormDetails = () => {
         name: 'client',
         type: 'selectSearch',
         selectName: 'name',
-        choices: clients.list,
-        message: clients.message,
+        choices: clients,
         render: (client) => `[${client.code}] ${client.name}`,
+        rules: [{ required: true }],
+      },
+      {
+        label: 'Terms of Payment',
+        name: 'terms',
+        type: 'radioGroup',
+        selectName: 'name',
+        initialValue: "CASH",
+        choices: [
+          {
+            id: "CASH",
+            name: "Cash",
+          },
+          {
+            id: "CHEQUE",
+            name: "Cheque",
+          },
+        ],
+        rules: [{ required: true }],
+      },
+      {
+        label: 'Cheque Number',
+        name: 'chequeNumber',
+        toggle: true,
+        initialValue: null,
+        rules: [{ required: true }],
+      },
+      {
+        label: 'Cheque Date',
+        name: 'chequeDate',
+        type: 'date',
+        toggle: true,
+        initialValue: null,
         rules: [{ required: true }],
       },
       {
         label: 'Amount Paid',
         name: 'amountPaid',
         type: 'number',
+        rules: [{ required: true }],
+      },
+      {
+        label: 'Cut Off Date',
+        name: 'cutOffDate',
+        type: 'date',
+        toggle: true,
+        initialValue: null,
         rules: [{ required: true }],
       },
     ],

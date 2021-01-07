@@ -7,7 +7,7 @@ import moment from 'moment';
 import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
-import FormScreen from '../../../components/forms/FormScreen';
+import InputForm from './InputForm';
 
 import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
@@ -66,6 +66,8 @@ const AcknowledgementReceipts = (props) => {
     const formData = {
       ...itemData,
       date: moment(new Date(data.date)) || moment(),
+      chequeDate: data.cutOffDate !== null ? moment(new Date(data.chequeDate)) : null,
+      cutOffDate: data.cutOffDate !== null ? moment(new Date(data.cutOffDate)) : null,
       client: itemData.client !== null ? itemData.client.id : null,
       depot: itemData.depot !== null ? itemData.depot.id : null,
     };
@@ -94,7 +96,6 @@ const AcknowledgementReceipts = (props) => {
   };
 
   const handleRetrieve = (data) => {
-    console.log(data)
     setSelectedAR(data);
     setDisplayModal(true);
   };
@@ -116,7 +117,6 @@ const AcknowledgementReceipts = (props) => {
       },
       payments: [],
     };
-
     if (formMode === 'edit') {
       payload.id = formData.id;
       dispatch(addAReceipt(payload)).then((response) => {
@@ -155,7 +155,7 @@ const AcknowledgementReceipts = (props) => {
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -166,7 +166,7 @@ const AcknowledgementReceipts = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -233,6 +233,9 @@ const AcknowledgementReceipts = (props) => {
                 >
                   {formDetails.form_items.map((item) => {
                     if (!item.writeOnly) {
+                      if(selectedAR[item.name] === null && item.toggle){
+                        return null
+                      }
                       if (item.type === 'select' || item.type === 'selectSearch') {
                         const itemData = selectedAR[item.name];
                         return (
