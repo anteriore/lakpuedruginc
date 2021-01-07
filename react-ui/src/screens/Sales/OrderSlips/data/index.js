@@ -82,9 +82,12 @@ export const salesInfoHeader = [
     render: object => object.code
   },
   {
-    title: 'Quantity',
-    dataIndex: 'quantity',
-    key: 'quantity',
+    title: 'Requested',
+    dataIndex: 'quantiyRequested',
+    key: 'quantityRequested',
+    render: (_, row) => {
+      return row.quantityRequested
+    }
   },
   {
     title: 'Remaining',

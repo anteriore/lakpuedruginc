@@ -69,7 +69,7 @@ export const formatSalesInfo = (sales) => {
   return null;
 };
 
-export const formatPayload = (approvalId, company, value, salesOrder) => {
+export const formatPayload = (approvalId, company, value, salesOrder, orderedProducts) => {
   let formattedValue = {};
   formattedValue = {
     ...formattedValue,
@@ -84,9 +84,24 @@ export const formatPayload = (approvalId, company, value, salesOrder) => {
     company: { id: company },
     depot: { id: salesOrder.depot.id },
     remarks: value.remarks,
+    totalAmount: _.sumBy(orderedProducts, (o) => {
+      return o.unitPrice * o.quantityRequested; 
+    }),
     type: 'OS',
     orderedProducts: [],
   };
+
+  orderedProducts.forEach(orderedProduct => {
+    formattedValue.orderedProducts.push({
+      orderSlipNo: value.number,
+      quantity: orderedProduct.quantityRequested,
+      salesOrderProductId: orderedProduct.id,
+      status: salesOrder.status,
+      unitPrice: orderedProduct.quantity,
+      depot: {id: salesOrder.depot.id},
+      product: {id: orderedProduct.product.id}
+    })
+  })
 
   return formattedValue;
 };

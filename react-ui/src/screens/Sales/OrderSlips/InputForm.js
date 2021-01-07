@@ -146,7 +146,7 @@ const InputForm = (props) => {
 
   const onFinish = (value) => {
     onSubmit(value, selectedSales, orderedProducts);
-    // history.goBack();
+    history.goBack();
   };
 
   return (

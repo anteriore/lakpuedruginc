@@ -81,11 +81,10 @@ const OrderSlips = (props) => {
   };
 
   const onCreate = (value, salesOrder, orderedProducts) => {
-    console.log(orderedProducts);
-    console.log(formatPayload(id, company, value, salesOrder));
-    // dispatch(createOrderSlips(formatPayload(id, company, value, salesOrder))).then(() => {
-    //   dispatch(listOrderSlips({company, message}));
-    // });
+    const payload = formatPayload(id, company, value, salesOrder, orderedProducts)
+    dispatch(createOrderSlips(payload)).then(() => {
+      dispatch(listOrderSlips({company, message}));
+    });
   };
 
   const onUpdate = (value, salesOrder) => {
