@@ -29,10 +29,9 @@ const ProvinceCode = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listProvinceCode({ company, message })).then(() => {
-      
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -72,7 +71,7 @@ const ProvinceCode = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteProvinceCode(row))
       .then(() => {
-        dispatch(listProvinceCode({message}));
+        dispatch(listProvinceCode({ message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -90,11 +89,11 @@ const ProvinceCode = (props) => {
       newValues.id = currentID;
 
       dispatch(updateProvinceCode(newValues)).then(() => {
-        dispatch(listProvinceCode({message}));
+        dispatch(listProvinceCode({ message }));
       });
     } else if (mode === 'add') {
       dispatch(createProvinceCode(values)).then(() => {
-        dispatch(listProvinceCode({message}));
+        dispatch(listProvinceCode({ message }));
       });
     }
     setFormValues('');

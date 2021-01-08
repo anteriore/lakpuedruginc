@@ -10,25 +10,27 @@ const initialState = {
   action: '',
 };
 
-export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI, rejectWithValue) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(
-    `rest/clients/company/${payload.company}/?token=${accessToken}`
-  );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
-    const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for clients")
-    }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
-  }
+export const listClient = createAsyncThunk(
+  'listClient',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `rest/clients/company/${payload.company}/?token=${accessToken}`
+    );
 
-  return response;
-});
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for clients');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
 
 export const addClient = createAsyncThunk('addClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -63,10 +65,10 @@ const clientSlice = createSlice({
     },
     [listClient.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for clients"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for clients';
       }
 
       return {
@@ -74,7 +76,7 @@ const clientSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listClient.rejected]: (state, action) => {

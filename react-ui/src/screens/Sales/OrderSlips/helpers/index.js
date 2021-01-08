@@ -1,4 +1,4 @@
-import moment from 'moment';
+import _ from 'lodash';
 
 export const formatSOList = (salesOrders) => {
   const newList = [];
@@ -14,24 +14,42 @@ export const formatSOList = (salesOrders) => {
   return newList;
 };
 
-export const formatSalesProduct = (sales) => {
-  const formatedList = [];
-  if (sales !== null && sales !== undefined) {
-    sales.products.forEach((product, i) => {
-      const { product: salesProduct, quantity } = product.product;
+export const formatOrderedProducts = (lotProducts, salesProducts) => {
+  if (salesProducts !== null && lotProducts !== null) {
+    const { products } = salesProducts;
+    const orderedProducts = [];
 
-      formatedList.push({
-        key: i,
-        product,
-        lotNumber: salesProduct.lotNumber,
-        expiration: moment(new Date(salesProduct.expiration)).format('DD/MM/YYYY'),
-        stockOnHand: product.product.quantity,
-        quantity,
+    lotProducts.forEach((lotProduct) => {
+      const mtchdProduct = _.find(
+        products,
+        (o) =>
+          o.product.id === lotProduct.id &&
+          o.product.product.finishedGood.id === lotProduct.product.finishedGood.id
+      );
+      orderedProducts.push(mtchdProduct);
+    });
+
+    return orderedProducts;
+  }
+  return null;
+};
+
+export const formatLotProducts = (salesProducts, inventoryProducts) => {
+  if (salesProducts !== null) {
+    const listLotProducts = [];
+    salesProducts.products.forEach((soProduct) => {
+      const { product } = soProduct;
+      const results = _.filter(inventoryProducts, (o) => {
+        return o.product.finishedGood.id === product.product.finishedGood.id && o.quantity !== 0;
+      });
+      results.forEach((result) => {
+        listLotProducts.push(result);
       });
     });
-  }
 
-  return formatedList;
+    return _.uniqBy(listLotProducts, 'id');
+  }
+  return null;
 };
 
 export const formatSalesInfo = (sales) => {
@@ -54,7 +72,7 @@ export const formatSalesInfo = (sales) => {
   return null;
 };
 
-export const formatPayload = (approvalId, company, value, salesOrder) => {
+export const formatPayload = (approvalId, company, value, salesOrder, orderedProducts) => {
   let formattedValue = {};
   formattedValue = {
     ...formattedValue,
@@ -69,9 +87,24 @@ export const formatPayload = (approvalId, company, value, salesOrder) => {
     company: { id: company },
     depot: { id: salesOrder.depot.id },
     remarks: value.remarks,
+    totalAmount: _.sumBy(orderedProducts, (o) => {
+      return o.unitPrice * o.quantityRequested;
+    }),
     type: 'OS',
     orderedProducts: [],
   };
+
+  orderedProducts.forEach((orderedProduct) => {
+    formattedValue.orderedProducts.push({
+      orderSlipNo: value.number,
+      quantity: orderedProduct.quantityRequested,
+      salesOrderProductId: orderedProduct.id,
+      status: salesOrder.status,
+      unitPrice: orderedProduct.quantity,
+      depot: { id: salesOrder.depot.id },
+      product: { id: orderedProduct.product.id },
+    });
+  });
 
   return formattedValue;
 };

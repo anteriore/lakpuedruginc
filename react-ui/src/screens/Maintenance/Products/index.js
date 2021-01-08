@@ -25,8 +25,8 @@ const Product = (props) => {
   const { productList, action, statusMessage } = useSelector((state) => state.maintenance.products);
 
   useEffect(() => {
-    var isCancelled = false
-    dispatch(listProduct({company, message})).then(() => {
+    let isCancelled = false;
+    dispatch(listProduct({ company, message })).then(() => {
       setContenctLoading(false);
       if (isCancelled) {
         dispatch(clearData());
@@ -64,7 +64,7 @@ const Product = (props) => {
   const handleDelete = (row) => {
     dispatch(deleteProduct(row))
       .then(() => {
-        dispatch(listProduct({company, message}));
+        dispatch(listProduct({ company, message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -74,14 +74,14 @@ const Product = (props) => {
   const onCreate = (values) => {
     values.company = { id: company };
     dispatch(createProduct(values)).then(() => {
-      dispatch(listProduct({company, message}));
+      dispatch(listProduct({ company, message }));
     });
   };
 
   const onUpdate = (values) => {
     values.company = { id: company };
     dispatch(updateProduct(values)).then(() => {
-      dispatch(listProduct({company, message}));
+      dispatch(listProduct({ company, message }));
     });
   };
 

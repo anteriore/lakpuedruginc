@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const tableHeader = [
   {
     title: 'Date',
@@ -43,17 +45,26 @@ export const tableHeader = [
 export const salesOrderHeader = [
   {
     title: 'Lot #',
-    dataIndex: 'lotNumber',
+    dataIndex: 'product',
     key: 'lotNumber',
+    render: (object) => object.lotNumber,
+  },
+  {
+    title: 'FG Code',
+    dataIndex: 'product',
+    key: 'fgCode',
+    render: (object) => object.finishedGood.code,
   },
   {
     title: 'Expiration',
-    dataIndex: 'expiration',
+    dataIndex: 'product',
     key: 'expiration',
+    render: (object) => moment(new Date(object.expiration)).format('DD/MM/YYYY'),
+    datatype: 'date',
   },
   {
     title: 'Stock on Hand',
-    dataIndex: 'stockOnHand',
+    dataIndex: 'quantity',
     key: 'stockOnHand',
   },
   {
@@ -66,18 +77,25 @@ export const salesOrderHeader = [
 export const salesInfoHeader = [
   {
     title: 'FG',
-    dataIndex: 'fgCode',
-    key: 'fgCode',
+    dataIndex: 'finishedGood',
+    key: 'finishedGood',
+    render: (object) => object.code,
   },
   {
-    title: 'Quantity',
-    dataIndex: 'quantity',
-    key: 'quantity',
+    title: 'Requested',
+    dataIndex: 'quantiyRequested',
+    key: 'quantityRequested',
+    render: (_, row) => {
+      return row.quantityRequested;
+    },
   },
   {
     title: 'Remaining',
     dataIndex: 'quantityRemaining',
     key: 'quantityRemaining',
+    render: (_, row) => {
+      return row.quantity - row.quantityRequested;
+    },
   },
   {
     title: 'Unit Price',
@@ -88,6 +106,9 @@ export const salesInfoHeader = [
     title: 'Amount',
     dataIndex: 'amount',
     key: 'amount',
+    render: (_, row) => {
+      return row.quantityRequested * row.unitPrice;
+    },
   },
 ];
 

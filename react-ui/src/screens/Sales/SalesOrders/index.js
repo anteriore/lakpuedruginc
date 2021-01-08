@@ -33,8 +33,8 @@ const SalesOrders = (props) => {
   const { id } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    var isCancelled = false
-    dispatch(listSalesOrder({company, message})).then(() => {
+    let isCancelled = false;
+    dispatch(listSalesOrder({ company, message })).then(() => {
       setContentLoading(false);
       if (isCancelled) {
         dispatch(clearData());
@@ -75,7 +75,7 @@ const SalesOrders = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteSalesOrder(row))
       .then(() => {
-        dispatch(listSalesOrder({company, message}));
+        dispatch(listSalesOrder({ company, message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -84,7 +84,7 @@ const SalesOrders = (props) => {
 
   const onCreate = (value) => {
     dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
-      dispatch(listSalesOrder({company, message}));
+      dispatch(listSalesOrder({ company, message }));
     });
   };
 
@@ -92,7 +92,7 @@ const SalesOrders = (props) => {
     const order = formatPayload(id, company, value);
     order.id = orderId;
     dispatch(updateSalesOrder(order)).then(() => {
-      dispatch(listSalesOrder({company, message}));
+      dispatch(listSalesOrder({ company, message }));
     });
   };
 

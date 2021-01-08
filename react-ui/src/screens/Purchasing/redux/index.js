@@ -17,16 +17,15 @@ export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI, rejec
   const response = await axiosInstance.get(
     `rest/purchase-orders/company/${payload.company}/?token=${accessToken}`
   );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
+
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for purchase orders")
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for purchase orders');
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
   }
 
   return response;
@@ -70,10 +69,10 @@ const purchaseOrderSlice = createSlice({
     },
     [listPO.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for purchase orders"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for purchase orders';
       }
 
       return {
@@ -81,7 +80,7 @@ const purchaseOrderSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listPO.rejected]: (state) => {

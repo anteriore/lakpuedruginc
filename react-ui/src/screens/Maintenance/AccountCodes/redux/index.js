@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
- 
+
 const initialState = {
   list: null,
   status: '',
@@ -10,20 +10,19 @@ const initialState = {
   action: '',
 };
 
-export const listAC = createAsyncThunk('listAC', async (payload, thunkAPI, rejectWithValue ) => {
+export const listAC = createAsyncThunk('listAC', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/account-codes?token=${accessToken}`);
-  
-  if(typeof response !== 'undefined' && response.status === 200){
+
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for account codes")
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for account codes');
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
   }
   return response;
 });
@@ -62,10 +61,10 @@ const accountCodeSlice = createSlice({
     },
     [listAC.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for account codes"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for account codes';
       }
 
       return {
@@ -73,7 +72,7 @@ const accountCodeSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listAC.rejected]: (state) => {

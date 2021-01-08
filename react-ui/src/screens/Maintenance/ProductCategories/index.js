@@ -82,7 +82,7 @@ const Depots = (props) => {
   };
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listPC({ company, message })).then(() => {
       dispatch(listPD({ company, message })).then(() => {
         setLoading(false);

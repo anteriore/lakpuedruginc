@@ -35,7 +35,7 @@ const FormScreen = (props) => {
     if (hasTable && values !== null) {
       setTableData(values[formTable.name]);
     }
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [values, form]);
 
   const onFinish = (data) => {
@@ -55,7 +55,7 @@ const FormScreen = (props) => {
   };
 
   const onFinishFailed = () => {
-    //console.log(errorInfo)
+    // console.log(errorInfo)
     message.error("An error has occurred. Please double check the information you've provided.");
   };
 
@@ -154,7 +154,7 @@ const FormScreen = (props) => {
         }
 
         // process the new data before adding if necessary
-        var processedData = data;
+        let processedData = data;
         if (typeof formTable.processData === 'function') {
           processedData = formTable.processData(data);
         }
@@ -219,7 +219,7 @@ const FormScreen = (props) => {
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}`);
-  }
+  };
 
   return (
     <>

@@ -33,14 +33,15 @@ const FormItem = ({ item, onFail, formMode }) => {
     }
 
     if (item.choices === null || item.choices.length === 0) {
-      onFail()
+      onFail();
       return null;
     }
 
     return (
       <Form.Item label={item.label} name={item.name} rules={item.rules}>
-        <Select 
+        <Select
           showSearch={item.type === 'selectSearch'}
+          onChange={item.onChange}
           placeholder={item.placeholder}
           optionFilterProp="children"
         >

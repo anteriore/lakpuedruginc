@@ -2,26 +2,27 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI, rejectWithValue) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(
-    `/rest/sales-orders/company/${payload.company}?token=${accessToken}`
-  );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
-    const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for sales orders")
+export const listSalesOrder = createAsyncThunk(
+  'listSalesOrder',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `/rest/sales-orders/company/${payload.company}?token=${accessToken}`
+    );
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for sales orders');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
-  }
 
-
-  return response;
-});
+    return response;
+  }
+);
 
 export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -48,22 +49,21 @@ export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payl
 export const listSalesOrderByDepot = createAsyncThunk(
   'listSalesOrderByDepot',
   async (payload, thunkAPI, rejectWithValue) => {
+    console.log(payload, 'Getting Payload');
     const accessToken = thunkAPI.getState().auth.token;
     const response = await axiosInstance.get(
       `/rest/sales-orders/depot/${payload}?token=${accessToken}`
     );
-  
-    if(typeof response !== 'undefined' && response.status === 200){
+
+    if (typeof response !== 'undefined' && response.status === 200) {
       const { data } = response;
-      if( data.length === 0){
-        payload.message.warning("No data retrieved for sales orders")
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for sales orders');
       }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
     }
-    else {
-      payload.message.error(message.ITEMS_GET_REJECTED)
-      return rejectWithValue(response)
-    }
-  
 
     return response;
   }
@@ -92,10 +92,10 @@ const salesOrdersSlice = createSlice({
     },
     [listSalesOrder.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for sales orders"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for sales orders';
       }
 
       return {
@@ -103,7 +103,7 @@ const salesOrdersSlice = createSlice({
         salesOrderList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listSalesOrder.rejected]: (state) => {
@@ -124,10 +124,10 @@ const salesOrdersSlice = createSlice({
     },
     [listSalesOrderByDepot.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for sales orders"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for sales orders';
       }
 
       return {
@@ -135,7 +135,7 @@ const salesOrdersSlice = createSlice({
         salesOrderList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listSalesOrderByDepot.rejected]: (state, action) => {

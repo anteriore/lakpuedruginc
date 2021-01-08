@@ -16,12 +16,16 @@ import {
 } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { UserAddOutlined, UserOutlined, EditOutlined, /*DeleteOutlined*/ } from '@ant-design/icons';
+import {
+  UserAddOutlined,
+  UserOutlined,
+  EditOutlined /* DeleteOutlined */,
+} from '@ant-design/icons';
 
 import Container from '../../components/container';
 import InputForm from './InputForm';
 
-import { listUser, addUser, /*deleteUser,*/ clearData, listPermission } from './redux';
+import { listUser, addUser, /* deleteUser, */ clearData, listPermission } from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -212,7 +216,7 @@ const Users = () => {
     });
   };
 
-  /*const handleDelete = (data) => {
+  /* const handleDelete = (data) => {
     dispatch(deleteUser(data.id)).then((response) => {
       setContentLoading(true);
       if (response.payload.status === 200) {
@@ -225,7 +229,7 @@ const Users = () => {
         message.error(`Unable to delete ${data.firstName} ${data.lastName}`);
       }
     });
-  };*/
+  }; */
 
   const handleCancelButton = () => {
     setFormData(null);
@@ -240,13 +244,13 @@ const Users = () => {
     });
     const permissionData = {};
     for (const key in data.permissions) {
-      var actionStr = '';
+      let actionStr = '';
       if (
         typeof data.permissions[key].actions !== 'undefined' &&
         data.permissions[key].actions !== null
       ) {
-        for( var i = 0; i < data.permissions[key].actions.length; i++){
-          actionStr = actionStr.concat(data.permissions[key].actions[i])
+        for (let i = 0; i < data.permissions[key].actions.length; i++) {
+          actionStr = actionStr.concat(data.permissions[key].actions[i]);
         }
 
         if (typeof data.permissions[key].code === 'undefined') {

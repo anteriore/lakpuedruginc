@@ -98,7 +98,7 @@ const SalesReps = (props) => {
   };
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listS({ company, message })).then(() => {
       setLoading(false);
       if (isCancelled) {
