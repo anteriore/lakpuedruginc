@@ -39,6 +39,8 @@ public class FinishedGoodData {
 		softDrinks.setCode("SD1");
 		softDrinks.setName("Soft Drinks");
 		finishedGoodRepository.save(softDrinks);
+
+		
 	}
 
 }

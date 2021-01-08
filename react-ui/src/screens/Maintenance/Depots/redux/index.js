@@ -10,24 +10,26 @@ const initialState = {
   action: '',
 };
 
-export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI, rejectWithValue) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const listDepot = createAsyncThunk(
+  'listDepot',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/depots?token=${accessToken}`);
-  
-  if(typeof response !== 'undefined' && response.status === 200){
-    const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for bank accounts")
+    const response = await axiosInstance.get(`rest/depots?token=${accessToken}`);
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for bank accounts');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
-  }
 
-  return response;
-});
+    return response;
+  }
+);
 
 export const addDepot = createAsyncThunk('addDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -55,10 +57,10 @@ const depotSlice = createSlice({
     },
     [listDepot.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for depots"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for depots';
       }
 
       return {
@@ -66,7 +68,7 @@ const depotSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listDepot.rejected]: (state) => {

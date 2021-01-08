@@ -2,26 +2,27 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload, thunkAPI, rejectWithValue) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(
-    `/rest/order-slips/company/${payload.company}?token=${accessToken}`
-  );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
-    const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for order slips")
+export const listOrderSlips = createAsyncThunk(
+  'listOrderSlips',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `/rest/order-slips/company/${payload.company}?token=${accessToken}`
+    );
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for order slips');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
-  }
 
-
-  return response;
-});
+    return response;
+  }
+);
 
 export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -69,10 +70,10 @@ const orderSlipsSlice = createSlice({
     },
     [listOrderSlips.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for order slips"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for order slips';
       }
 
       return {
@@ -80,7 +81,7 @@ const orderSlipsSlice = createSlice({
         orderSlipsList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listOrderSlips.rejected]: (state) => {

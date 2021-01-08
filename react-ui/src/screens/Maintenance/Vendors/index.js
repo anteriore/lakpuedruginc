@@ -117,7 +117,7 @@ const Vendors = (props) => {
   };
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listVendor({ company, message })).then((response) => {
       setFormData(null);
       setLoading(false);

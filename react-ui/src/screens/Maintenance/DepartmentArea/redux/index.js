@@ -17,16 +17,15 @@ export const listD = createAsyncThunk('listD', async (payload, thunkAPI, rejectW
   const response = await axiosInstance.get(
     `rest/departments/company/${payload.company}?token=${accessToken}`
   );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
+
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for departments")
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for departments');
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
   }
 
   return response;
@@ -55,16 +54,15 @@ export const listA = createAsyncThunk('listA', async (payload, thunkAPI, rejectW
   const response = await axiosInstance.get(
     `rest/areas/company/${payload.company}?token=${accessToken}`
   );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
+
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for areas")
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for areas');
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
   }
 
   return response;
@@ -96,10 +94,10 @@ const departmentAreaSlice = createSlice({
     },
     [listD.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for departments"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for departments';
       }
 
       return {
@@ -107,7 +105,7 @@ const departmentAreaSlice = createSlice({
         deptList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listD.rejected]: (state) => {
@@ -124,10 +122,10 @@ const departmentAreaSlice = createSlice({
     },
     [listA.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for areas"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for areas';
       }
 
       return {
@@ -135,7 +133,7 @@ const departmentAreaSlice = createSlice({
         areaList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listA.rejected]: (state) => {

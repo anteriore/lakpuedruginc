@@ -14,16 +14,15 @@ export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI, r
   const response = await axiosInstance.get(
     `rest/users/company/${payload.company}/?token=${accessToken}`
   );
-  
-  if(typeof response !== 'undefined' && response.status === 200){
+
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for users")
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for users');
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
   }
 
   return response;
@@ -54,7 +53,7 @@ const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listUser.pending]: (state, action) => {

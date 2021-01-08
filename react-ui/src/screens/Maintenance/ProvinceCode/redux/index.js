@@ -2,24 +2,25 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listProvinceCode = createAsyncThunk('listProvinceCode', async (payload, thunkAPI, rejectWithValue) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/province-codes?token=${accessToken}`);
-  
-  if(typeof response !== 'undefined' && response.status === 200){
-    const { data } = response;
-    if( data.length === 0){
-      payload.message.warning("No data retrieved for province codes")
+export const listProvinceCode = createAsyncThunk(
+  'listProvinceCode',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/province-codes?token=${accessToken}`);
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for province codes');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return rejectWithValue(response)
-  }
 
-
-  return response;
-});
+    return response;
+  }
+);
 
 export const createProvinceCode = createAsyncThunk(
   'createProvinceCode',
@@ -79,10 +80,10 @@ const provinceCodeSlice = createSlice({
     },
     [listProvinceCode.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for province codes"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for province codes';
       }
 
       return {
@@ -90,7 +91,7 @@ const provinceCodeSlice = createSlice({
         provinceCodeList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listProvinceCode.rejected]: (state) => {

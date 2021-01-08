@@ -42,6 +42,7 @@ const FormItem = ({ item, onFail, formMode }) => {
       <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
         <Select 
           showSearch={item.type === 'selectSearch'}
+          onChange={item.onChange}
           placeholder={item.placeholder}
           optionFilterProp="children"
         >

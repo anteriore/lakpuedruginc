@@ -32,8 +32,8 @@ const OrderSlips = (props) => {
   const { id } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    var isCancelled = false
-    dispatch(listOrderSlips({company, message})).then(() => {
+    let isCancelled = false;
+    dispatch(listOrderSlips({ company, message })).then(() => {
       setContentLoading(false);
       if (isCancelled) {
         dispatch(clearData());
@@ -73,16 +73,17 @@ const OrderSlips = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteOrderSlips(row))
       .then(() => {
-        dispatch(listOrderSlips({company, message}));
+        dispatch(listOrderSlips({ company, message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
       });
   };
 
-  const onCreate = (value, salesOrder) => {
-    dispatch(createOrderSlips(formatPayload(id, company, value, salesOrder))).then(() => {
-      dispatch(listOrderSlips({company, message}));
+  const onCreate = (value, salesOrder, orderedProducts) => {
+    const payload = formatPayload(id, company, value, salesOrder, orderedProducts);
+    dispatch(createOrderSlips(payload)).then(() => {
+      dispatch(listOrderSlips({ company, message }));
     });
   };
 
@@ -90,7 +91,7 @@ const OrderSlips = (props) => {
     const order = formatPayload(id, company, value, salesOrder);
     order.id = orderId;
     dispatch(updateOrderSlips(order)).then(() => {
-      dispatch(listOrderSlips({company, message}));
+      dispatch(listOrderSlips({ company, message }));
     });
   };
 

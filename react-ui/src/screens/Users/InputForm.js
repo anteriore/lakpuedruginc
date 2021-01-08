@@ -1,17 +1,8 @@
 import React, { useEffect } from 'react';
-import {
-  Form,
-  Button,
-  Input,
-  Checkbox,
-  Row,
-  Col,
-  Typography,
-  message,
-} from 'antd';
+import { Form, Button, Input, Checkbox, Row, Col, Typography, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import FormItem from '../../components/forms/FormItem'
+import FormItem from '../../components/forms/FormItem';
 
 const { Title } = Typography;
 
@@ -31,7 +22,7 @@ const InputForm = (props) => {
 
   const onFail = () => {
     history.push(`/users`);
-  }
+  };
   return (
     <>
       <Row>

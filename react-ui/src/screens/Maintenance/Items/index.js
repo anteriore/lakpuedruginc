@@ -81,9 +81,9 @@ const ItemTypes = (props) => {
   };
 
   useEffect(() => {
-    var isCancelled = false
+    let isCancelled = false;
     dispatch(listI({ company, message })).then(() => {
-      if(isCancelled) {
+      if (isCancelled) {
         dispatch(clearData());
       }
     });
@@ -100,7 +100,7 @@ const ItemTypes = (props) => {
     setFormMode('add');
     setFormData(null);
     dispatch(listIT({ company, message })).then((response) => {
-      dispatch(listUnit({message})).then((response) => {
+      dispatch(listUnit({ message })).then((response) => {
         setDisplayForm(true);
       });
     });
@@ -116,7 +116,7 @@ const ItemTypes = (props) => {
     };
     setFormData(formData);
     dispatch(listIT({ company, message })).then((response) => {
-      dispatch(listUnit({message})).then((response) => {
+      dispatch(listUnit({ message })).then((response) => {
         setDisplayForm(true);
       });
     });

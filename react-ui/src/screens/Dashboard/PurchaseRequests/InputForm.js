@@ -242,7 +242,7 @@ const InputForm = (props) => {
   const selectItems = () => {
     setDisplayModal(true);
     setLoadingItems(true);
-    dispatch(listI({message})).then((response) => {
+    dispatch(listI({ message })).then((response) => {
       setLoadingItems(false);
     });
   };
@@ -288,11 +288,7 @@ const InputForm = (props) => {
               </Form.Item>
 
               <Form.Item label="Department" name="department" rules={[{ required: true }]}>
-                <Select
-                  showSearch
-                  placeholder={"Department"}
-                  optionFilterProp="children"
-                >
+                <Select showSearch placeholder="Department" optionFilterProp="children">
                   {departments.map((department) => (
                     <Select.Option value={department.id}>{department.name}</Select.Option>
                   ))}
