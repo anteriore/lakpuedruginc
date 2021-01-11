@@ -10,7 +10,7 @@ const initialState = {
   action: '',
 };
 
-export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thunkAPI, rejectWithValue) => {
+export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
     const response = await axiosInstance.get(`rest/acknowledgement-receipts?token=${accessToken}`);
@@ -23,7 +23,7 @@ export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thu
     }
     else {
       payload.message.error(message.ITEMS_GET_REJECTED)
-      return rejectWithValue(response)
+      return thunkAPI.rejectWithValue(response)
     }
   
     return response;

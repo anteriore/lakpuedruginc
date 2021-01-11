@@ -12,6 +12,7 @@ import FormScreen from '../../../components/forms/FormScreen';
 import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
 
 const { Title, Text } = Typography;
 
@@ -27,7 +28,7 @@ const AcknowledgementReceipts = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedAR, setSelectedAR] = useState(null);
-  const { formDetails } = FormDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
   const listData = useSelector((state) => state.sales.acknowledgementReceipts.list);
   const user = useSelector((state) => state.auth.user);
@@ -52,13 +53,17 @@ const AcknowledgementReceipts = (props) => {
     setLoading(true);
     dispatch(listClient({ company, message })).then(() => {
         dispatch(listDepot({ company, message })).then(() => {
+          dispatch(listOrderSlips({ company, message })).then(() => {
             history.push(`${path}/new`);
             setLoading(false);
+          })
         })
     });
   };
 
   const handleUpdate = (data) => {
+    message.error("Unable to perform action.")
+    /*
     setFormTitle('Edit Acknowledgement Receipt');
     setFormMode('edit');
     setLoading(true);
@@ -74,10 +79,13 @@ const AcknowledgementReceipts = (props) => {
     setFormData(formData);
     dispatch(listClient({ company, message })).then(() => {
         dispatch(listDepot({ company, message })).then(() => {
+          dispatch(listOrderSlips({ company, message })).then(() => {
             history.push(`${path}/${data.id}`);
             setLoading(false);
+          })
         })
     });
+    */
   };
 
   const handleDelete = (data) => {
@@ -101,6 +109,16 @@ const AcknowledgementReceipts = (props) => {
   };
 
   const onSubmit = (data) => {
+    var payments = []
+    data.payments.forEach((payment) => {
+      payments.push({
+        reference: {
+          ...payment
+        },
+        appliedAmount: payment.appliedAmount
+      })
+    })
+
     const payload = {
       ...data,
       company: {
@@ -115,7 +133,7 @@ const AcknowledgementReceipts = (props) => {
       preparedBy: {
         id: user.id
       },
-      payments: [],
+      payments: payments
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -163,6 +181,7 @@ const AcknowledgementReceipts = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -174,6 +193,7 @@ const AcknowledgementReceipts = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>

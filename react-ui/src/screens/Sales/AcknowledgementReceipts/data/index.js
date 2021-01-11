@@ -1,4 +1,8 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
+import { Table, Typography } from 'antd';
+
+const { Text } = Typography;
 
 export const columns = [
   {
@@ -51,6 +55,7 @@ export const columns = [
 const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
+  const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -162,7 +167,127 @@ const FormDetails = () => {
     ],
   };
 
-  return { formDetails };
+  const tableDetails = {
+    label: 'Payments',
+    name: 'payments',
+    key: 'id',
+    rules: [{ required: true }],
+    fields: [
+      {
+        label: 'Type',
+        name: 'type',
+      },
+      {
+        label: 'Number',
+        name: 'number',
+      },
+      {
+        label: 'Total Amount',
+        name: 'totalAmount',
+      },
+      {
+        label: 'Remaining Balance',
+        name: 'remainingBalance',
+      },
+      {
+        label: 'Payment',
+        name: 'appliedAmount',
+        type: 'number',
+        rules: [{ required: true }],
+        min: 0,
+      },
+      {
+        label: 'Remaining',
+        name: 'remaining',
+        render: (object) => {
+          if(object.appliedAmount !== null && typeof object.appliedAmount !== 'undefined'){
+            return object.remainingBalance - object.appliedAmount;
+          }
+          else {
+            return object.remainingBalance || 0
+          }
+        },
+      },
+    ],
+    summary: (data) => {
+      let totalAppliedAmount = 0
+      let totalSIAmount = 0
+      data.forEach(({ totalAmount }) => {
+
+        if(data.type === 'DR_SI'){
+          totalSIAmount += totalAmount
+        }
+        else {
+          totalAppliedAmount += totalAmount;
+        }
+
+      });
+
+      return (
+        <Table.Summary.Row>
+          <Table.Summary.Cell>Total Applied Amount</Table.Summary.Cell>
+          <Table.Summary.Cell>
+            <Text>{totalAppliedAmount}</Text>
+          </Table.Summary.Cell>
+          <Table.Summary.Cell>Total SI Amount</Table.Summary.Cell>
+          <Table.Summary.Cell>
+            <Text>{totalSIAmount}</Text>
+          </Table.Summary.Cell>
+        </Table.Summary.Row>
+      );
+    },
+    foreignKey: 'number',
+    selectedKey: 'number',
+    selectData: orderSlips,
+    selectFields: [
+      {
+        title: 'Type',
+        dataIndex: 'type',
+        key: 'type',
+      },
+      {
+        title: 'Number',
+        dataIndex: 'number',
+        key: 'number',
+      },
+      {
+        title: 'Total Amount',
+        dataIndex: 'totalAmount',
+        key: 'totalAmount',
+      },
+      {
+        title: 'Remaining Balance',
+        dataIndex: 'remainingBalance',
+        key: 'remainingBalance',
+      },
+    ],
+    getValues: (values) => {
+      var payments = []
+      values.payments.forEach((payment) => {
+        payments.push({
+          ...payment.reference,
+          appliedAmount: payment.appliedAmount
+        })
+      })
+      return payments
+    },
+    processData: (data) => {
+      return data;
+    },
+    checkSelected: (selectedData, rowData) => {
+      if (
+        typeof selectedData !== 'undefined' &&
+        selectedData !== null &&
+        selectedData.some((item) => item.id === rowData.id)
+      ) {
+        return true;
+      }
+    },
+  }
+
+  return { formDetails, tableDetails };
 };
+
+
 
 export default FormDetails;
