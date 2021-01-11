@@ -32,23 +32,39 @@ const SalesOrders = (props) => {
   const { salesOrderList, action, statusMessage } = useSelector((state) => state.sales.salesOrders);
   const { id } = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    let isCancelled = false;
-    dispatch(listSalesOrder({ company, message })).then(() => {
-      setContentLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
-      }
-    });
+  // useEffect(() => {
+  //   let isCancelled = false;
+  //   dispatch(listSalesOrder({ company, message })).then(() => {
+  //     setContentLoading(false);
+  //     if (isCancelled) {
+  //       dispatch(clearData());
+  //     }
+  //   });
 
-    return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearClient());
-      dispatch(clearPI());
-      isCancelled = true;
-    };
-  }, [dispatch, company]);
+  //   return function cleanup() {
+  //     dispatch(clearData());
+  //     dispatch(clearDepot());
+  //     dispatch(clearClient());
+  //     dispatch(clearPI());
+  //     isCancelled = true;
+  //   };
+  // }, [dispatch, company]);
+
+  useEffect(() => {
+    dispatch(listSalesOrder({company, message})).then(({payload}) => {
+      const {status} = payload;
+      if ( status === 200) {
+        setContentLoading(false);
+      }else{
+        history.push({
+          pathname: `/error/${status}`,
+          state: {
+            moduleList: '/sales'
+          }
+        })
+      }
+    })
+  },[dispatch, company, history])
 
   useEffect(() => {
     if (action !== 'get' && action !== '') {
@@ -81,6 +97,11 @@ const SalesOrders = (props) => {
         message.error(`Something went wrong! details: ${err}`);
       });
   };
+
+  const handleRetrieve = (data) => {
+    console.log(data);
+    
+  }
 
   const onCreate = (value) => {
     dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
@@ -121,6 +142,7 @@ const SalesOrders = (props) => {
                 data={salesOrderList}
                 handleUpdate={handleEditButton}
                 handleDelete={handleDeleteButton}
+                handleRetrieve={handleRetrieve}
               />
             )}
           </Col>

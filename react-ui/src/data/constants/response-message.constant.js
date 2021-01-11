@@ -23,3 +23,9 @@ export const ITEM_UPDATE_REJECTED = 'Failed to update specified item';
 export const ITEM_DELETE_PENDING = 'Deleting specified item';
 export const ITEM_DELETE_FULFILLED = 'Successfully deleted specified item';
 export const ITEM_DELETE_REJECTED = 'Failed to delete specified item';
+
+
+// api errors
+
+export const API_401 = 'Sorry, you are not authorized to access this page.'
+export const API_500 = 'Sorry, something went wrong to the server.'

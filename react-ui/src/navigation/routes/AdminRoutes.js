@@ -1,5 +1,6 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, Link } from 'react-router-dom';
+import {Result, Button} from 'antd';
 
 import Dashboard from '../../screens/Dashboard';
 import Maintenance from '../../screens/Maintenance';
@@ -11,6 +12,7 @@ import Sales from '../../screens/Sales';
 import Purchasing from '../../screens/Purchasing';
 // import Costing from '../../screens/Costing/';
 import Account from '../../screens/Account';
+import ErrorPage from '../../screens/Errors/ErrorPage';
 
 const AdminRoutes = () => {
   return (
@@ -29,7 +31,15 @@ const AdminRoutes = () => {
         <Route exact path="/">
           <Redirect to="/dashboard" />
         </Route>
-        <Route path="*">Page not found</Route>
+        <Route path="/error/:errorCode" component={ErrorPage} />
+        <Route path="*">
+          <Result
+            status="404"
+            title="404"
+            subTitle="Sorry, the page you're looking for does not exist."
+            extra={<Button type="primary"><Link to="/dashboard">Return to Dashboard</Link></Button>}
+          />
+        </Route>
       </Switch>
     </div>
   );
