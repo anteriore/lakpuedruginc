@@ -12,7 +12,7 @@ const initialState = {
 
 export const listClient = createAsyncThunk(
   'listClient',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const response = await axiosInstance.get(
       `rest/clients/company/${payload.company}/?token=${accessToken}`
@@ -25,7 +25,7 @@ export const listClient = createAsyncThunk(
       }
     } else {
       payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(response);
     }
 
     return response;
