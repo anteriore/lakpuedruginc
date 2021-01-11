@@ -1,18 +1,33 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   deptList: null,
   areaList: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
-export const listD = createAsyncThunk('listD', async (payload, thunkAPI) => {
+export const listD = createAsyncThunk('listD', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
     `rest/departments/company/${payload.company}?token=${accessToken}`
   );
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for departments');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
+  }
+
   return response;
 });
 
@@ -33,12 +48,23 @@ export const deleteD = createAsyncThunk('deleteD', async (payload, thunkAPI) => 
   return response;
 });
 
-export const listA = createAsyncThunk('listA', async (payload, thunkAPI) => {
+export const listA = createAsyncThunk('listA', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
     `rest/areas/company/${payload.company}?token=${accessToken}`
   );
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for areas');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
+  }
+
   return response;
 });
 
@@ -60,40 +86,63 @@ const departmentAreaSlice = createSlice({
   name: 'departmentArea',
   initialState,
   reducers: {
-    clearData(state, action) {
-      state.deptList = null
-      state.areaList = null
-    },
+    clearData: () => initialState,
   },
   extraReducers: {
     [listD.pending]: (state) => {
       state.status = 'loading';
     },
     [listD.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.deptList = action.payload.data;
-      } else {
-        state.status = 'failed';
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for departments';
       }
+
+      return {
+        ...state,
+        deptList: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
     },
     [listD.rejected]: (state) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
 
     [listA.pending]: (state) => {
       state.status = 'loading';
     },
     [listA.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.areaList = action.payload.data;
-      } else {
-        state.status = 'failed';
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for areas';
       }
+
+      return {
+        ...state,
+        areaList: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
     },
     [listA.rejected]: (state) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

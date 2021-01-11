@@ -1,13 +1,27 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
 
-export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
+export const listInstitution = createAsyncThunk(
+  'listInstitution',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
 
-  return response;
-});
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for institutional codes');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
 
 export const createInstitution = createAsyncThunk(
   'createInstitution',
@@ -48,33 +62,41 @@ export const deleteInstitution = createAsyncThunk(
     return response;
   }
 );
-
+const initialState = {
+  institutionList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
 const institutionalCodesSlice = createSlice({
   name: 'institutionalCodes',
-  initialState: {
-    institutionList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [listInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listInstitution.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for institutional codes';
+      }
+
       return {
         ...state,
         institutionList: data,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusMessage,
       };
     },
     [listInstitution.rejected]: (state, action) => {
@@ -82,7 +104,7 @@ const institutionalCodesSlice = createSlice({
       return {
         ...state,
         institutionList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -90,7 +112,7 @@ const institutionalCodesSlice = createSlice({
     [createInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -106,7 +128,7 @@ const institutionalCodesSlice = createSlice({
     [createInstitution.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
@@ -114,7 +136,7 @@ const institutionalCodesSlice = createSlice({
     [updateInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -122,7 +144,7 @@ const institutionalCodesSlice = createSlice({
     [updateInstitution.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_UPDATE_FULFILLED,
       };
@@ -130,7 +152,7 @@ const institutionalCodesSlice = createSlice({
     [updateInstitution.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_UPDATE_REJECTED,
       };
@@ -138,7 +160,7 @@ const institutionalCodesSlice = createSlice({
     [deleteInstitution.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -146,7 +168,7 @@ const institutionalCodesSlice = createSlice({
     [deleteInstitution.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'post',
         statusMessage: message.ITEM_DELETE_FULFILLED,
       };
@@ -154,7 +176,7 @@ const institutionalCodesSlice = createSlice({
     [deleteInstitution.rejected]: (state) => {
       return {
         ...state,
-        status: 'Error',
+        status: 'failed',
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
@@ -162,4 +184,5 @@ const institutionalCodesSlice = createSlice({
   },
 });
 
+export const { clearData } = institutionalCodesSlice.actions;
 export default institutionalCodesSlice.reducer;

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import { tableHeader, formDetails } from './data';
 import SimpleForm from '../../../components/forms/FormModal';
-import { listUnit, createUnit, updateUnit, deleteUnit } from './redux';
+import { listUnit, createUnit, updateUnit, deleteUnit, clearData } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
 
 const { Title } = Typography;
@@ -21,7 +21,17 @@ const Units = (props) => {
   const { unitList, action, statusMessage } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
-    dispatch(listUnit({ company }));
+    let isCancelled = false;
+    dispatch(listUnit({ company, message })).then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
+
+    return function cleanup() {
+      dispatch(clearData());
+      isCancelled = true;
+    };
   }, [dispatch, company]);
 
   useEffect(() => {
@@ -53,7 +63,7 @@ const Units = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteUnit(row))
       .then(() => {
-        dispatch(listUnit());
+        dispatch(listUnit({ company, message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -71,11 +81,11 @@ const Units = (props) => {
       newValues.id = currentID;
 
       dispatch(updateUnit(newValues)).then(() => {
-        dispatch(listUnit());
+        dispatch(listUnit({ message }));
       });
     } else if (mode === 'add') {
       dispatch(createUnit(values)).then(() => {
-        dispatch(listUnit());
+        dispatch(listUnit({ message }));
       });
     }
     setFormValues('');

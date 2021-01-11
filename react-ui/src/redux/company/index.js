@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../utils/axios-instance';
-import * as message from '../../datas/constants/response-message.constant';
+import * as message from '../../data/constants/response-message.constant';
 
 export const listCompany = createAsyncThunk('listCompany', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -13,11 +13,16 @@ const companySlice = createSlice({
   name: 'company',
   initialState: {
     companyList: [],
+    selectedCompany: 1,
     status: '',
     statusMessage: '',
     action: '',
   },
-  reducers: {},
+  reducers: {
+    setCompany(state, selectedCompany) {
+      state.selectedCompany = selectedCompany.payload;
+    },
+  },
   extraReducers: {
     [listCompany.pending]: (state) => {
       return {
@@ -50,4 +55,5 @@ const companySlice = createSlice({
   },
 });
 
+export const { setCompany } = companySlice.actions;
 export default companySlice.reducer;

@@ -3,15 +3,23 @@ import React, { useState } from 'react';
 import { Table, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-import TableSearch from './TableSearch';
+import TableHeader from './TableHeader';
 
 const TableDisplay = (props) => {
-  const { columns: col, handleDelete, handleRetrieve, handleUpdate, data, deleteEnabled } = props;
+  const {
+    columns: col,
+    handleDelete,
+    handleRetrieve,
+    handleUpdate,
+    data,
+    deleteEnabled,
+    pagination,
+  } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataCount, setDataCount] = useState(0);
-  const [columns, setColumns] = useState(TableSearch(col));
+  const [columns, setColumns] = useState(TableHeader(col));
 
   /*
     columns must have an id
@@ -71,16 +79,18 @@ const TableDisplay = (props) => {
                 cancelText="No"
               >
                 {deleteEnabled ? (
-                   <Button
-                   icon={<DeleteOutlined />}
-                   type="text"
-                   onClick={(e) => {
-                     e.stopPropagation();
-                   }}
-                 >
-                   Delete
-                 </Button>
-                ) : ''}
+                  <Button
+                    icon={<DeleteOutlined />}
+                    type="text"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  ''
+                )}
               </Popconfirm>
             </div>
           );
@@ -105,6 +115,7 @@ const TableDisplay = (props) => {
         onShowSizeChange: (current, size) => {
           onChangePageSize(current, size);
         },
+        size: pagination ? pagination.size : 'default',
         current: currentPage,
         showQuickJumper: true,
         defaultPageSize: defaultpageSize,
@@ -115,10 +126,7 @@ const TableDisplay = (props) => {
       onRow={(record, rowIndex) => {
         return {
           onClick: () => {
-
-            if(typeof(handleRetrieve) === 'function')
-
-              handleRetrieve(record);
+            if (typeof handleRetrieve === 'function') handleRetrieve(record);
           }, // click row
         };
       }}
@@ -129,8 +137,8 @@ const TableDisplay = (props) => {
 export default TableDisplay;
 
 TableDisplay.defaultProps = {
-  deleteEnabled: true
-}
+  deleteEnabled: true,
+};
 
 const styles = {
   crudColumn: {

@@ -1,13 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
 
-export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/zip-codes?token=${accessToken}`);
+export const listZipCode = createAsyncThunk(
+  'listZipCode',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/zip-codes?token=${accessToken}`);
 
-  return response;
-});
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for zip codes');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
 
 export const createZipCode = createAsyncThunk('createZipCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -31,40 +44,48 @@ export const deleteZipCode = createAsyncThunk('deleteZipCode', async (payload, t
   return response;
 });
 
+const initialState = {
+  zipCodeList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
+
 const zipCodeSlice = createSlice({
   name: 'zipCodes',
-  initialState: {
-    zipCodeList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [listZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listZipCode.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for zip codes';
+      }
+
       return {
         ...state,
         zipCodeList: data,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusMessage,
       };
     },
-    [listZipCode.rejected]: (state, action) => {
-      const { data } = action.payload;
+    [listZipCode.rejected]: (state) => {
       return {
         ...state,
-        zipCodeList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -72,7 +93,7 @@ const zipCodeSlice = createSlice({
     [createZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -96,7 +117,7 @@ const zipCodeSlice = createSlice({
     [updateZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -120,7 +141,7 @@ const zipCodeSlice = createSlice({
     [deleteZipCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -144,4 +165,5 @@ const zipCodeSlice = createSlice({
   },
 });
 
+export const { clearData } = zipCodeSlice.actions;
 export default zipCodeSlice.reducer;

@@ -13,15 +13,28 @@ import {
   ITEM_DELETE_PENDING,
   ITEM_DELETE_FULFILLED,
   ITEM_DELETE_REJECTED,
-} from '../../../../datas/constants/response-message.constant';
+} from '../../../../data/constants/response-message.constant';
 
 // Async Actions API section
-export const getFGList = createAsyncThunk('getFGList', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
+export const getFGList = createAsyncThunk(
+  'getFGList',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
 
-  return response;
-});
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for finished goods');
+      }
+    } else {
+      payload.message.error(ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
 
 export const createFG = createAsyncThunk('createFG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -45,44 +58,59 @@ export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) =
   return response;
 });
 
+const initialState = {
+  list: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
+
 // Reducer Store section
 const finishedGoodsSlice = createSlice({
   name: 'finishedGoods',
-  initialState: {
-    list: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [getFGList.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
+      return { ...state, status: 'loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
     },
     [getFGList.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      let statusMessage = ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for finished goods';
+      }
+
       return {
         ...state,
         list: data,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'get',
-        statusMessage: ITEMS_GET_FULFILLED,
+        statusMessage,
       };
     },
     [getFGList.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'get', statusMessage: ITEMS_GET_REJECTED };
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: ITEMS_GET_REJECTED,
+      };
     },
     [createFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_ADD_PENDING };
+      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_ADD_PENDING };
     },
     [createFG.fulfilled]: (state) => {
       return { ...state, status: 'Fulfilled', action: 'post', statusMessage: ITEM_ADD_FULFILLED };
     },
     [createFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_ADD_REJECTED };
+      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_ADD_REJECTED };
     },
     [updateFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_UPDATE_PENDING };
+      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_UPDATE_PENDING };
     },
     [updateFG.fulfilled]: (state) => {
       return {
@@ -93,10 +121,10 @@ const finishedGoodsSlice = createSlice({
       };
     },
     [updateFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_UPDATE_REJECTED };
+      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_UPDATE_REJECTED };
     },
     [deleteFG.pending]: (state) => {
-      return { ...state, status: 'Loading', action: 'pending', statusMessage: ITEM_DELETE_PENDING };
+      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_DELETE_PENDING };
     },
     [deleteFG.fulfilled]: (state) => {
       return {
@@ -107,9 +135,10 @@ const finishedGoodsSlice = createSlice({
       };
     },
     [deleteFG.rejected]: (state) => {
-      return { ...state, status: 'Error', action: 'error', statusMessage: ITEM_DELETE_REJECTED };
+      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_DELETE_REJECTED };
     },
   },
 });
 
+export const { clearData } = finishedGoodsSlice.actions;
 export default finishedGoodsSlice.reducer;

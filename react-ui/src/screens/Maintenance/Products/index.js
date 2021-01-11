@@ -5,7 +5,13 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
-import { listProduct, createProduct, updateProduct } from './redux';
+import { listProduct, createProduct, updateProduct, deleteProduct, clearData } from './redux';
+import { clearData as clearDepots } from '../Depots/redux';
+import { clearData as clearClassification } from '../Classification/redux';
+import { clearData as clearCategories } from '../ProductCategories/redux';
+import { clearData as clearDivisions } from '../ProductDivisions/redux';
+import { clearData as clearUnits } from '../Units/redux';
+import { clearData as clearFinishedGoods } from '../FinishedGoods/redux';
 import { tableHeader } from './data';
 
 const { Title } = Typography;
@@ -19,9 +25,24 @@ const Product = (props) => {
   const { productList, action, statusMessage } = useSelector((state) => state.maintenance.products);
 
   useEffect(() => {
-    dispatch(listProduct(company)).then(() => {
+    let isCancelled = false;
+    dispatch(listProduct({ company, message })).then(() => {
       setContenctLoading(false);
+      if (isCancelled) {
+        dispatch(clearData());
+      }
     });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearDepots());
+      dispatch(clearClassification());
+      dispatch(clearCategories());
+      dispatch(clearDivisions());
+      dispatch(clearUnits());
+      dispatch(clearFinishedGoods());
+      isCancelled = true;
+    };
   }, [dispatch, company]);
 
   useEffect(() => {
@@ -41,23 +62,28 @@ const Product = (props) => {
   };
 
   const handleDelete = (row) => {
-    console.log("Delete Product APi is currently not available", row)
+    dispatch(deleteProduct(row))
+      .then(() => {
+        dispatch(listProduct({ company, message }));
+      })
+      .catch((err) => {
+        message.error(`Something went wrong! details: ${err}`);
+      });
   };
 
   const onCreate = (values) => {
-    values.company = {id: company};
+    values.company = { id: company };
     dispatch(createProduct(values)).then(() => {
-      dispatch(listProduct(company));
+      dispatch(listProduct({ company, message }));
     });
   };
 
   const onUpdate = (values) => {
-    values.company = {id: company};
+    values.company = { id: company };
     dispatch(updateProduct(values)).then(() => {
-      dispatch(listProduct(company));
+      dispatch(listProduct({ company, message }));
     });
   };
-
 
   return (
     <Switch>
@@ -84,7 +110,7 @@ const Product = (props) => {
                 data={productList}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                deleteEnabled={false}
+                deleteEnabled
               />
             </Col>
           </Row>

@@ -36,7 +36,7 @@ export const getUser = createAsyncThunk('getUser', async (args, thunkAPI) => {
 })
 */
 
-const processUserData = (data, action) => {
+const processUserData = (data) => {
   const processedData = {
     id: data.id,
     email: data.email,

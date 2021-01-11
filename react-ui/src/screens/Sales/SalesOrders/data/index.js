@@ -21,7 +21,10 @@ export const tableHeader = [
     align: 'center',
     defaultSortOrder: 'ascend',
     render: (object) => object.firstName.concat(` ${object.lastName}`),
-    sorter: (a, b) => a.preparedBy.firstName.concat(` ${a.preparedBy.lastName}`).localeCompare(b.preparedBy.firstName.concat(` ${b.preparedBy.lastName}`)),
+    sorter: (a, b) =>
+      a.preparedBy.firstName
+        .concat(` ${a.preparedBy.lastName}`)
+        .localeCompare(b.preparedBy.firstName.concat(` ${b.preparedBy.lastName}`)),
   },
   {
     title: 'Status',
@@ -35,19 +38,23 @@ export const tableHeader = [
 
 export const tableProduct = [
   {
-    title: 'FG ID',
+    title: 'ID',
     dataIndex: 'id',
-    render: (object) => object
+  },
+  {
+    title: 'FG ID',
+    dataIndex: 'finishedGoodID',
   },
   {
     title: 'Code',
     dataIndex: 'code',
-    render: (object) => object.code
+    render: (object) => object.code,
   },
   {
     title: 'Finished Good',
     dataIndex: 'finishedGood',
-    render: (object) => object.name
+    key: 'finishedGood',
+    render: (object) => object.name,
   },
   {
     title: 'Stock on Hand',
@@ -57,7 +64,7 @@ export const tableProduct = [
     title: 'Quantity',
     dataIndex: 'quantityRequested',
     editable: true,
-    limit: true
+    limit: true,
   },
   {
     title: 'Remaining',
@@ -67,31 +74,36 @@ export const tableProduct = [
     title: 'Unit Price',
     dataIndex: 'unitPrice',
     editable: true,
-    precisionEnabled: true, 
-    precision: 2
+    precisionEnabled: true,
+    precision: 2,
   },
   {
     title: 'Amount',
     dataIndex: 'amount',
   },
-]
+];
 
 export const tableProductInventory = [
   {
+    title: 'Lot #',
+    dataindex: 'product',
+    render: (object) => object.product.lotNumber,
+  },
+  {
     title: 'FG Code',
     dataIndex: 'product',
-    render: (object) => object.finishedGood.code
+    render: (object) => object.finishedGood.code,
   },
   {
     title: 'Finished Good',
     dataIndex: 'product',
-    render: (object) => object.finishedGood.name
+    render: (object) => object.finishedGood.name,
   },
   {
     title: 'Stock on Hand',
     dataIndex: 'quantity',
-  }
-]
+  },
+];
 
 export const formDetails = {
   form_name: 'sales_orders',
@@ -107,7 +119,7 @@ export const formDetails = {
       name: 'date',
       rules: [{ required: true, message: 'Please provide a sales order date' }],
       placeholder: 'Sales order number',
-      type: 'date'
+      type: 'date',
     },
     {
       label: 'Type',
@@ -115,7 +127,11 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please provide a sales order type' }],
       placeholder: 'Sales order type',
       type: 'select',
-      choices: [{id: "DR_SI", name: "DR/SI"},{id: "OS", name: "OS"},{id: "PS", name: "PS"}]
+      choices: [
+        { id: 'DR_SI', name: 'DR/SI' },
+        { id: 'OS', name: 'OS' },
+        { id: 'PS', name: 'PS' },
+      ],
     },
     {
       label: 'Depot',
@@ -123,7 +139,7 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please provide a sales order depot' }],
       placeholder: 'Sales order depot',
       type: 'select',
-      choices: []
+      choices: [],
     },
     {
       label: 'Client',
@@ -131,67 +147,78 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please provide a sales order client' }],
       placeholder: 'Sales order client',
       type: 'selectSearch',
-      choices: []
+      choices: [],
     },
     {
       label: 'Prepared By',
       name: 'preparedBy',
-      rules: [{ required: true, message: 'Please login a valid user'}],
+      rules: [{ required: true, message: 'Please login a valid user' }],
       placeholder: '',
-      type: 'readOnly'
+      type: 'readOnly',
     },
     {
       label: 'Approved By',
       name: 'approvedBy',
-      rules: [{ required: true, message: 'Please login a valid user'}],
+      rules: [{ required: true, message: 'Please login a valid user' }],
       placeholder: '',
-      type: 'readOnly'
+      type: 'readOnly',
     },
     {
       label: 'Requested By',
       name: 'requestedBy',
-      rules: [{ required: true, message: 'Please login a valid user'}],
+      rules: [{ required: true, message: 'Please login a valid user' }],
       placeholder: '',
-      type: 'readOnly'
+      type: 'readOnly',
+    },
+    {
+      label: 'Status',
+      name: 'status',
+      rules: [{ required: true, message: 'Please provide a sales order status' }],
+      placeholder: 'Sales order status',
+      type: 'select',
+      choices: [
+        { id: 'pending', name: 'Pending' },
+        { id: 'complete', name: 'Complete' },
+        { id: 'approved', name: 'Approved' },
+      ],
     },
     {
       label: 'Remarks',
       name: 'remarks',
       rules: [{}],
       placeholder: 'Remarks (optional)',
-      type: 'textarea'
+      type: 'textArea',
     },
   ],
 };
 
-
 export const initValueForm = [
   {
-    name: "number",
-    type: "input"
+    name: 'number',
+    type: 'input',
   },
   {
-    name: "number",
-    type: "input"
+    name: 'number',
+    type: 'input',
   },
   {
-    name: "type",
-    type: "input"
+    name: 'type',
+    type: 'input',
   },
   {
-    name: "date",
-    type: "date"
+    name: 'date',
+    type: 'date',
   },
   {
-    name: "depot",
-    type: "select"
+    name: 'depot',
+    type: 'select',
   },
   {
-    name: "client",
-    type: "select"
+    name: 'client',
+    type: 'select',
   },
   {
-    name: "remarks",
-    type: "input"
-  }
-]
+    name: 'remarks',
+    type: 'input',
+  },
+];

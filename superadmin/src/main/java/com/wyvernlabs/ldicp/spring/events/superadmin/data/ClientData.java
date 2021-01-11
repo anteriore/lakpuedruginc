@@ -116,7 +116,7 @@ public class ClientData {
 	
 
 
-		readCSV("APECSV.csv");
+		readCSV("x");
 
 
 
@@ -141,7 +141,8 @@ public class ClientData {
 
 	public void readCSV(String pathToCsv){
 		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/clientData.csv";
-        BufferedReader br = null;
+		BufferedReader br = null;
+		Company company = companyRepository.getOne(1L);
         String line = "";
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
@@ -156,7 +157,7 @@ public class ClientData {
 
 					Client tempclient = new Client();
 
-
+					tempclient.setCompany(company);
 					tempclient.setCode(data[0].replace("\"", ""));
 					tempclient.setName(data[1].replace("\"", ""));
 					tempclient.setBusinessAddress(data[2].replace("\"", ""));tempclient.setDeliveryAddress(data[2].replace("\"", ""));

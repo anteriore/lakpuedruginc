@@ -1,23 +1,31 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
 
-export const listProductInventory = createAsyncThunk('listProductInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/product-inventory?token=${accessToken}`);
+export const listProductInventory = createAsyncThunk(
+  'listProductInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/product-inventory?token=${accessToken}`);
 
-  return response;
-});
+    return response;
+  }
+);
+
+const initialState = {
+  list: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
 
 const productInventorySlice = createSlice({
   name: 'productInventory',
-  initialState: {
-    list: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [listProductInventory.pending]: (state) => {
       return {
@@ -28,13 +36,30 @@ const productInventorySlice = createSlice({
       };
     },
     [listProductInventory.fulfilled]: (state, action) => {
-      const { data } = action.payload;
+      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
+        const { data } = action.payload;
+        let statusMessage = message.ITEMS_GET_FULFILLED;
+
+        if (data.length === 0) {
+          statusMessage = 'No data retrieved for product inventory';
+          Message.warning(statusMessage);
+        }
+
+        return {
+          ...state,
+          list: data,
+          status: 'succeeded',
+          action: 'get',
+          statusMessage,
+        };
+      }
+
+      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
-        list: data,
-        status: 'Fulfilled',
+        status: 'failed',
         action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
     [listProductInventory.rejected]: (state) => {
@@ -45,8 +70,9 @@ const productInventorySlice = createSlice({
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
-    }
+    },
   },
 });
 
+export const { clearData } = productInventorySlice.actions;
 export default productInventorySlice.reducer;

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { listMemo, createMemo, updateMemo, deleteMemo } from './redux';
+import { listMemo, createMemo, updateMemo, deleteMemo, clearData } from './redux';
 
 const { Title } = Typography;
 
@@ -21,7 +21,17 @@ const MemoTypes = (props) => {
   const { memoList, action, statusMessage } = useSelector((state) => state.maintenance.memoTypes);
 
   useEffect(() => {
-    dispatch(listMemo());
+    let isCancelled = false;
+    dispatch(listMemo({ message })).then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
+
+    return function cleanup() {
+      dispatch(clearData());
+      isCancelled = true;
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -53,7 +63,7 @@ const MemoTypes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteMemo(row))
       .then(() => {
-        dispatch(listMemo());
+        dispatch(listMemo({ message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -71,11 +81,11 @@ const MemoTypes = (props) => {
       newValues.id = currentID;
 
       dispatch(updateMemo(newValues)).then(() => {
-        dispatch(listMemo());
+        dispatch(listMemo({ message }));
       });
     } else if (mode === 'add') {
       dispatch(createMemo(values)).then(() => {
-        dispatch(listMemo());
+        dispatch(listMemo({ message }));
       });
     }
     setFormValues('');

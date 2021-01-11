@@ -5,6 +5,7 @@ import moment from 'moment';
 
 const TableSearch = (columnHeaders) => {
   const newColumnHeaders = [];
+  const { hasOwnProperty } = Object.prototype;
 
   const columnSearch = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -36,29 +37,28 @@ const TableSearch = (columnHeaders) => {
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      if(record[dataIndex] === null){
-        return ''
+      if (record[dataIndex] === null) {
+        return '';
       }
-      else if (record[dataIndex].hasOwnProperty('name')) {
+      if (hasOwnProperty.call(record[dataIndex], 'name')) {
         return record[dataIndex].name
           ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      if (record[dataIndex].hasOwnProperty('title')) {
+      if (hasOwnProperty.call(record[dataIndex], 'title')) {
         return record[dataIndex].title
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      else if (record[dataIndex].hasOwnProperty('code')) {
+      if (hasOwnProperty.call(record[dataIndex], 'code')) {
         return record[dataIndex].code
           ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      else {
-        return record[dataIndex]
-          ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-          : '';
-      }
+
+      return record[dataIndex]
+        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+        : '';
     },
   });
   // eslint-disable-next-line no-unused-vars
@@ -79,8 +79,31 @@ const TableSearch = (columnHeaders) => {
           sorter: (a, b) => {
             a = a[header.key] || '';
             b = b[header.key] || '';
-            return a.localeCompare(b)
-          }
+            return a.localeCompare(b);
+          },
+        };
+      } else if (header.datatype === 'object') {
+        if (typeof header.name === 'undefined' || header.name === null) {
+          header.name = 'name';
+        }
+        header = {
+          ...header,
+          sorter: (a, b) => {
+            if (typeof a[header.key] !== 'undefined' && a[header.key] !== null) {
+              a = a[header.key];
+              a = a[header.name];
+            } else {
+              a = '';
+            }
+
+            if (typeof b[header.key] !== 'undefined' && b[header.key] !== null) {
+              b = b[header.key];
+              b = b[header.name];
+            } else {
+              b = '';
+            }
+            return a.localeCompare(b);
+          },
         };
       } else if (header.datatype === 'date') {
         header = {
@@ -96,34 +119,43 @@ const TableSearch = (columnHeaders) => {
     }
 
     // add filter/search bar
-    if (header.datatype === 'date') {
-      // TODO: Date Filter/Search Bar
 
-      if (typeof header.render === 'undefined') {
+    if (typeof header.render === 'undefined') {
+      if (header.datatype === 'date') {
+        // TODO: Date Filter/Search Bar
         header = {
           ...header,
           render: (text) => moment(new Date(text)).format('DD/MM/YYYY'),
         };
-      }
-    }
-    else if(header.datatype === 'boolean'){
-      if (typeof header.render === 'undefined') {
+      } else if (header.datatype === 'boolean') {
         header = {
           ...header,
           render: (data) => {
-            if(data){
-              return <CheckOutlined />
+            if (data) {
+              return <CheckOutlined />;
             }
-            else {
-              return <CloseOutlined />
+
+            return <CloseOutlined />;
+          },
+        };
+      } else if (header.datatype === 'object') {
+        header = {
+          ...header,
+          render: (object) => {
+            if (typeof object !== 'undefined' && object !== null) {
+              return object[header.name];
             }
+
+            return null;
           },
         };
       }
     }
-    else {
+
+    if (header.datatype !== 'boolean' && header.datatype !== 'date') {
       header = {
         ...header,
+        defaultSortOrder: header.defaultSortOrder || 'ascend',
         ...columnSearch(header.key),
       };
     }

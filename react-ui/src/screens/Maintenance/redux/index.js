@@ -51,7 +51,7 @@ const maintenance = combineReducers({
   clients,
   products,
   vendors,
-  productInventory
+  productInventory,
 });
 
 export default maintenance;

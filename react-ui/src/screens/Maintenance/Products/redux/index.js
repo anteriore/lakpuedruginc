@@ -1,15 +1,28 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
 
-export const listProduct = createAsyncThunk('listProduct', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(
-    `/rest/products/company/${payload}?token=${accessToken}`
-  );
+export const listProduct = createAsyncThunk(
+  'listProduct',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `/rest/products/company/${payload.company}?token=${accessToken}`
+    );
 
-  return response;
-});
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for products');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
 
 export const createProduct = createAsyncThunk('createProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -33,40 +46,48 @@ export const deleteProduct = createAsyncThunk('deleteProduct', async (payload, t
   return response;
 });
 
+const initialState = {
+  productList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
+
 const productSlice = createSlice({
   name: 'products',
-  initialState: {
-    productList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [listProduct.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listProduct.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for products';
+      }
+
       return {
         ...state,
         productList: data,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusMessage,
       };
     },
-    [listProduct.rejected]: (state, action) => {
-      const { data } = action.payload;
+    [listProduct.rejected]: (state) => {
       return {
         ...state,
-        productList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -74,7 +95,7 @@ const productSlice = createSlice({
     [createProduct.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -98,7 +119,7 @@ const productSlice = createSlice({
     [updateProduct.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -122,7 +143,7 @@ const productSlice = createSlice({
     [deleteProduct.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -146,4 +167,5 @@ const productSlice = createSlice({
   },
 });
 
+export const { clearData } = productSlice.actions;
 export default productSlice.reducer;

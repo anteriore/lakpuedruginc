@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
-import { createInstitution, deleteInstitution, listInstitution, updateInstitution } from './redux';
+import {
+  createInstitution,
+  deleteInstitution,
+  listInstitution,
+  updateInstitution,
+  clearData,
+} from './redux';
 
 const { Title } = Typography;
 
@@ -23,7 +29,17 @@ const InstitutionalCodes = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listInstitution());
+    let isCancelled = false;
+    dispatch(listInstitution({ message })).then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
+
+    return function cleanup() {
+      dispatch(clearData());
+      isCancelled = true;
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -55,7 +71,7 @@ const InstitutionalCodes = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteInstitution(row))
       .then(() => {
-        dispatch(listInstitution());
+        dispatch(listInstitution({ message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -73,11 +89,11 @@ const InstitutionalCodes = (props) => {
       newValues.id = currentID;
 
       dispatch(updateInstitution(newValues)).then(() => {
-        dispatch(listInstitution());
+        dispatch(listInstitution({ message }));
       });
     } else if (mode === 'add') {
       dispatch(createInstitution(values)).then(() => {
-        dispatch(listInstitution());
+        dispatch(listInstitution({ message }));
       });
     }
     setFormValues('');

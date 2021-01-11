@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TableDisplay from '../../../components/TableDisplay';
 import { listS, addS, deleteS, clearData } from './redux';
 import { listC, clearData as clearC } from '../GroupsCategories/redux';
-import { listRegionCode } from '../RegionCodes/redux';
+import { listRegionCode, clearData as clearRegionCode } from '../RegionCodes/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -47,17 +47,14 @@ const SalesReps = (props) => {
       title: 'Category',
       dataIndex: 'productCategory',
       key: 'productCategory',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.productCategory.name.localeCompare(b.productCategory.name),
+      datatype: 'object',
     },
     {
       title: 'Region Code',
       dataIndex: 'regionCode',
       key: 'regionCode',
-      datatype: 'string',
-      render: (object) => object.code,
-      sorter: (a, b) => a.regionCode.code.localeCompare(b.regionCode.code),
+      name: 'code',
+      datatype: 'object',
     },
   ];
 
@@ -101,25 +98,30 @@ const SalesReps = (props) => {
   };
 
   useEffect(() => {
-    dispatch(listS({ company })).then(() => {
-      setLoading(false)
+    let isCancelled = false;
+    dispatch(listS({ company, message })).then(() => {
+      setLoading(false);
+      if (isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearC());
+      dispatch(clearRegionCode());
+      isCancelled = true;
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
     setFormTitle('Add Depot');
     setFormMode('add');
     setFormData(null);
-    dispatch(listC({ company })).then(() => {
-      dispatch(listRegionCode({ company })).then(() => {
+    dispatch(listC({ company, message })).then(() => {
+      dispatch(listRegionCode({ company, message })).then(() => {
         setDisplayForm(true);
-      })
+      });
     });
   };
 
@@ -132,23 +134,22 @@ const SalesReps = (props) => {
       regionCode: data.regionCode.id,
     };
     setFormData(formData);
-    dispatch(listC({ company })).then(() => {
-      dispatch(listRegionCode({ company })).then(() => {
+    dispatch(listC({ company, message })).then(() => {
+      dispatch(listRegionCode({ company, message })).then(() => {
         setDisplayForm(true);
-      })
+      });
     });
   };
 
   const handleDelete = (data) => {
     dispatch(deleteS(data.id)).then((response) => {
       setLoading(true);
-      if(response.payload.status === 200){
+      if (response.payload.status === 200) {
         message.success(`Successfully deleted ${data.name}`);
-        dispatch(listS({ company })).then(() => {
+        dispatch(listS({ company, message })).then(() => {
           setLoading(false);
-        })
-      }
-      else {
+        });
+      } else {
         message.success(`Unable to delete ${data.name}`);
         setLoading(false);
       }
@@ -179,13 +180,12 @@ const SalesReps = (props) => {
       };
 
       dispatch(addS(payload)).then((response) => {
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
-          dispatch(listS({ company })).then(() => {
+          dispatch(listS({ company, message })).then(() => {
             setLoading(false);
-          })
-        }
-        else {
+          });
+        } else {
           message.success(`Unable to update ${data.name}`);
           setLoading(false);
         }
@@ -205,13 +205,12 @@ const SalesReps = (props) => {
       };
       dispatch(addS(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           message.success(`Successfully added ${data.name}`);
-          dispatch(listS({ company })).then(() => {
+          dispatch(listS({ company, message })).then(() => {
             setLoading(false);
-          })
-        }
-        else {
+          });
+        } else {
           message.success(`Unable to added ${data.name}`);
           setLoading(false);
         }

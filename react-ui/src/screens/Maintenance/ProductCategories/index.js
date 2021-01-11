@@ -45,9 +45,8 @@ const Depots = (props) => {
       title: 'Division',
       dataIndex: 'productDivision',
       key: 'productDivision',
-      datatype: 'string',
-      render: (object) => object.title,
-      sorter: (a, b) => a.productDivision.title.localeCompare(b.productDivision.title),
+      name: 'title',
+      datatype: 'object',
     },
   ];
 
@@ -83,15 +82,20 @@ const Depots = (props) => {
   };
 
   useEffect(() => {
-    dispatch(listPC({ company })).then((response) => {
-      dispatch(listPD({ company })).then((response) => {
+    let isCancelled = false;
+    dispatch(listPC({ company, message })).then(() => {
+      dispatch(listPD({ company, message })).then(() => {
         setLoading(false);
+        if (isCancelled) {
+          dispatch(clearData());
+        }
       });
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearPD());
+      isCancelled = true;
     };
   }, [dispatch, company]);
 
@@ -99,7 +103,7 @@ const Depots = (props) => {
     setFormTitle('Add Depot');
     setFormMode('add');
     setFormData(null);
-    dispatch(listPD({ company })).then((response) => {
+    dispatch(listPD({ company, message })).then((response) => {
       setDisplayForm(true);
     });
   };
@@ -112,7 +116,7 @@ const Depots = (props) => {
       division: data.productDivision.id,
     };
     setFormData(formData);
-    dispatch(listPD({ company })).then((response) => {
+    dispatch(listPD({ company, message })).then((response) => {
       setDisplayForm(true);
     });
   };
@@ -120,7 +124,7 @@ const Depots = (props) => {
   const handleDelete = (data) => {
     dispatch(deletePC(data.id)).then((response) => {
       setLoading(true);
-      dispatch(listPC({ company })).then(() => {
+      dispatch(listPC({ company, message })).then(() => {
         setLoading(false);
       });
       message.success(`Successfully deleted Product Category ${data.code}`);
@@ -149,7 +153,7 @@ const Depots = (props) => {
 
       dispatch(addPC(payload)).then(() => {
         setLoading(true);
-        dispatch(listPC({ company })).then(() => {
+        dispatch(listPC({ company, message })).then(() => {
           setLoading(false);
         });
       });
@@ -165,7 +169,7 @@ const Depots = (props) => {
       };
       dispatch(addPC(payload)).then(() => {
         setLoading(true);
-        dispatch(listPC({ company })).then(() => {
+        dispatch(listPC({ company, message })).then(() => {
           setLoading(false);
         });
       });

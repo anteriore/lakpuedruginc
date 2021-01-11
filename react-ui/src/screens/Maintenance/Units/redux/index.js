@@ -1,10 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
 
-export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI) => {
+export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.get(`/rest/units?token=${accessToken}`);
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for units');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
+  }
 
   return response;
 });
@@ -31,40 +41,48 @@ export const deleteUnit = createAsyncThunk('deleteUnit', async (payload, thunkAP
   return response;
 });
 
+const initialState = {
+  unitList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
+
 const unitsSlice = createSlice({
   name: 'Units',
-  initialState: {
-    unitList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [listUnit.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listUnit.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for units';
+      }
+
       return {
         ...state,
         unitList: data,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusMessage,
       };
     },
-    [listUnit.rejected]: (state, action) => {
-      const { data } = action.payload;
+    [listUnit.rejected]: (state) => {
       return {
         ...state,
-        unitList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -72,7 +90,7 @@ const unitsSlice = createSlice({
     [createUnit.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -96,7 +114,7 @@ const unitsSlice = createSlice({
     [updateUnit.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -120,7 +138,7 @@ const unitsSlice = createSlice({
     [deleteUnit.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -144,4 +162,5 @@ const unitsSlice = createSlice({
   },
 });
 
+export const { clearData } = unitsSlice.actions;
 export default unitsSlice.reducer;

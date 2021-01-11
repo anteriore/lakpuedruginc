@@ -65,12 +65,17 @@ const ProductDivisions = (props) => {
   const data = useSelector((state) => state.maintenance.productDivisions.list);
 
   useEffect(() => {
-    dispatch(listPD({ company }));
-    
+    let isCancelled = false;
+    dispatch(listPD({ company, message })).then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
+
     return function cleanup() {
       dispatch(clearData());
+      isCancelled = true;
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -90,7 +95,7 @@ const ProductDivisions = (props) => {
   const handleDelete = (val) => {
     const { id, code } = val;
     dispatch(deletePD(id)).then(() => {
-      dispatch(listPD({ company }));
+      dispatch(listPD({ company, message }));
       message.success(`Successfully deleted Product Division ${code}`);
     });
   };
@@ -113,7 +118,7 @@ const ProductDivisions = (props) => {
       };
 
       dispatch(addPD(payload)).then(() => {
-        dispatch(listPD({ company }));
+        dispatch(listPD({ company, message }));
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -123,7 +128,7 @@ const ProductDivisions = (props) => {
         },
       };
       dispatch(addPD(payload)).then(() => {
-        dispatch(listPD({ company }));
+        dispatch(listPD({ company, message }));
       });
     }
 

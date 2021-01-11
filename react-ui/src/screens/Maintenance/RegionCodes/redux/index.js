@@ -1,13 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
 
-export const listRegionCode = createAsyncThunk('listRegionCode', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/region-codes?token=${accessToken}`);
+export const listRegionCode = createAsyncThunk(
+  'listRegionCode',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(`/rest/region-codes?token=${accessToken}`);
 
-  return response;
-});
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for region codes');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
 
 export const createRegionCode = createAsyncThunk('createRegionCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -31,40 +44,48 @@ export const deleteRegionCode = createAsyncThunk('deleteRegionCode', async (payl
   return response;
 });
 
+const initialState = {
+  regionCodeList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
+
 const regionCodeSlice = createSlice({
   name: 'regionCodes',
-  initialState: {
-    regionCodeList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [listRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listRegionCode.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for region codes';
+      }
+
       return {
         ...state,
         regionCodeList: data,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusMessage,
       };
     },
-    [listRegionCode.rejected]: (state, action) => {
-      const { data } = action.payload;
+    [listRegionCode.rejected]: (state) => {
       return {
         ...state,
-        regionCodeList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -72,7 +93,7 @@ const regionCodeSlice = createSlice({
     [createRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -96,7 +117,7 @@ const regionCodeSlice = createSlice({
     [updateRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -120,7 +141,7 @@ const regionCodeSlice = createSlice({
     [deleteRegionCode.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -144,4 +165,5 @@ const regionCodeSlice = createSlice({
   },
 });
 
+export const { clearData } = regionCodeSlice.actions;
 export default regionCodeSlice.reducer;

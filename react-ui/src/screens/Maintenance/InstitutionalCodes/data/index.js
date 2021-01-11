@@ -11,16 +11,14 @@ export const tableHeader = [
     dataIndex: 'code',
     key: 'code',
     align: 'center',
-    defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.code.length - b.code.length,
+    datatype: 'string',
   },
   {
     title: 'Description',
     dataIndex: 'description',
     key: 'description',
     align: 'center',
-    defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.description.length - b.description.length,
+    datatype: 'string',
   },
 ];
 

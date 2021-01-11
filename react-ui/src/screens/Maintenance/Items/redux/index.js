@@ -1,15 +1,30 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   list: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
-export const listI = createAsyncThunk('listI', async (payload, thunkAPI) => {
+export const listI = createAsyncThunk('listI', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/items?token=${accessToken}`);
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for items');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return rejectWithValue(response);
+  }
+
   return response;
 });
 
@@ -31,24 +46,35 @@ const itemSlice = createSlice({
   name: 'items',
   initialState,
   reducers: {
-    clearData(state, action) {
-      state.list = null
-    },
+    clearData: () => initialState,
   },
   extraReducers: {
     [listI.pending]: (state, action) => {
       state.status = 'loading';
     },
     [listI.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.list = action.payload.data;
-      } else {
-        state.status = 'failed';
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for items';
       }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
     },
     [listI.rejected]: (state, action) => {
-      state.status = 'failed';
+      return {
+        ...state,
+        status: 'failed',
+        action: 'error',
+        statusMessage: message.ITEM_DELETE_REJECTED,
+      };
     },
   },
 });

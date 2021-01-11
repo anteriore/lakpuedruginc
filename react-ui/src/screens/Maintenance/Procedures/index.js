@@ -3,12 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import GeneralStyles from '../../../datas/styles/styles.general';
+import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
-import { listProductionArea } from '../ProductionArea/redux';
-import { listProcedure, createProcedure, updateProcedure, deleteProcedure } from './redux';
+import { listProductionArea, clearData as clearProductionArea } from '../ProductionArea/redux';
+import {
+  listProcedure,
+  createProcedure,
+  updateProcedure,
+  deleteProcedure,
+  clearData,
+} from './redux';
 import { formatProcedurePayload } from './helper';
 
 const { Title } = Typography;
@@ -28,7 +34,18 @@ const Procedures = (props) => {
   );
 
   useEffect(() => {
-    dispatch(listProcedure());
+    let isCancelled = false;
+    dispatch(listProcedure({ message })).then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearProductionArea());
+      isCancelled = true;
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -61,7 +78,7 @@ const Procedures = (props) => {
   const handleAddButton = () => {
     setModalTitle('Add New Zip Code');
     setMode('add');
-    dispatch(listProductionArea()).then(() => {
+    dispatch(listProductionArea({ message })).then(() => {
       setIsOpenForm(!isOpenForm);
     });
   };
@@ -70,7 +87,7 @@ const Procedures = (props) => {
     setCurrentID(row.id);
     setModalTitle('Edit Zip Code');
     setMode('edit');
-    dispatch(listProductionArea()).then(() => {
+    dispatch(listProductionArea({ message })).then(() => {
       setFormValues({
         ...row,
         procedureArea: row.procedureArea.id,
@@ -82,7 +99,7 @@ const Procedures = (props) => {
   const handleDeleteButton = (row) => {
     dispatch(deleteProcedure(row))
       .then(() => {
-        dispatch(listProcedure());
+        dispatch(listProcedure({ message }));
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -99,11 +116,11 @@ const Procedures = (props) => {
       const newValues = formatProcedurePayload(values, productionAreaList);
       newValues.id = currentID;
       dispatch(updateProcedure(newValues)).then(() => {
-        dispatch(listProcedure());
+        dispatch(listProcedure({ message }));
       });
     } else if (mode === 'add') {
       dispatch(createProcedure(formatProcedurePayload(values, productionAreaList))).then(() => {
-        dispatch(listProcedure());
+        dispatch(listProcedure({ message }));
       });
     }
     setFormValues('');

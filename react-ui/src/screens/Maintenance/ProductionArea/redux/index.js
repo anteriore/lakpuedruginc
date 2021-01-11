@@ -1,12 +1,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
-import * as message from '../../../../datas/constants/response-message.constant';
+import * as message from '../../../../data/constants/response-message.constant';
 
 export const listProductionArea = createAsyncThunk(
   'listProductionArea',
-  async (payload, thunkAPI) => {
+  async (payload, thunkAPI, rejectWithValue) => {
     const accessToken = thunkAPI.getState().auth.token;
     const response = await axiosInstance.get(`/rest/procedure-areas?token=${accessToken}`);
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for production areas');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
 
     return response;
   }
@@ -52,40 +62,48 @@ export const deleteProductionArea = createAsyncThunk(
   }
 );
 
+const initialState = {
+  productionAreaList: [],
+  status: '',
+  statusMessage: '',
+  action: '',
+};
+
 const productionAreaSlice = createSlice({
   name: 'productionArea',
-  initialState: {
-    productionAreaList: [],
-    status: '',
-    statusMessage: '',
-    action: '',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
   },
-  reducers: {},
   extraReducers: {
     [listProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'get',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listProductionArea.fulfilled]: (state, action) => {
       const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for production areas';
+      }
+
       return {
         ...state,
         productionAreaList: data,
-        status: 'Fulfilled',
+        status: 'succeeded',
         action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusMessage,
       };
     },
-    [listProductionArea.rejected]: (state, action) => {
-      const { data } = action.payload;
+    [listProductionArea.rejected]: (state) => {
       return {
         ...state,
-        productionAreaList: data,
-        status: 'Error',
+        status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
       };
@@ -93,7 +111,7 @@ const productionAreaSlice = createSlice({
     [createProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_ADD_PENDING,
       };
@@ -117,7 +135,7 @@ const productionAreaSlice = createSlice({
     [updateProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_UPDATE_PENDING,
       };
@@ -141,7 +159,7 @@ const productionAreaSlice = createSlice({
     [deleteProductionArea.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
+        status: 'loading',
         action: 'pending',
         statusMessage: message.ITEM_DELETE_PENDING,
       };
@@ -165,4 +183,5 @@ const productionAreaSlice = createSlice({
   },
 });
 
+export const { clearData } = productionAreaSlice.actions;
 export default productionAreaSlice.reducer;

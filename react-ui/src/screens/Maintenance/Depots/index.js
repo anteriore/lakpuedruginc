@@ -39,9 +39,8 @@ const Depots = (props) => {
       title: 'Area',
       dataIndex: 'area',
       key: 'area',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.area.name.localeCompare(b.area.name),
+      name: 'name',
+      datatype: 'object',
     },
   ];
 
@@ -65,21 +64,26 @@ const Depots = (props) => {
         name: 'area',
         type: 'select',
         choices: areas,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please select an Area' }],
       },
     ],
   };
 
   useEffect(() => {
+    let isCancelled = false;
     dispatch(listDepot({ company })).then((response) => {
       setLoading(false);
+
+      if (isCancelled) {
+        dispatch(clearData());
+      }
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearArea());
+      isCancelled = true;
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -107,13 +111,12 @@ const Depots = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteDepot(data.id)).then((response) => {
       setLoading(true);
-      if(response.payload.status === 200){
+      if (response.payload.status === 200) {
         dispatch(listDepot({ company })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.name}`);
-        })
-      }
-      else {
+        });
+      } else {
         setLoading(false);
         message.error(`Unable to delete ${data.name}`);
       }
@@ -142,13 +145,12 @@ const Depots = (props) => {
 
       dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           dispatch(listDepot({ company })).then(() => {
             setLoading(false);
             message.success(`Successfully updated ${data.name}`);
-          })
-        }
-        else {
+          });
+        } else {
           setLoading(false);
           message.error(`Unable to update ${data.name}`);
         }
@@ -165,13 +167,12 @@ const Depots = (props) => {
       };
       dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
-        if(response.payload.status === 200){
+        if (response.payload.status === 200) {
           dispatch(listDepot({ company })).then(() => {
             setLoading(false);
             message.success(`Successfully added ${data.name}`);
-          })
-        }
-        else {
+          });
+        } else {
           setLoading(false);
           message.error(`Unable to add ${data.name}`);
         }

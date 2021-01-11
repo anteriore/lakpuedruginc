@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listIT, addIT, deleteIT } from './redux';
+import { listIT, addIT, deleteIT, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -53,7 +53,17 @@ const ItemTypes = (props) => {
   const data = useSelector((state) => state.maintenance.itemTypes.list);
 
   useEffect(() => {
-    dispatch(listIT({ company }));
+    let isCancelled = false;
+    dispatch(listIT({ company, message })).then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
+
+    return function cleanup() {
+      dispatch(clearData());
+      isCancelled = true;
+    };
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -73,7 +83,7 @@ const ItemTypes = (props) => {
   const handleDelete = (val) => {
     const { id, code } = val;
     dispatch(deleteIT(id)).then(() => {
-      dispatch(listIT({ company }));
+      dispatch(listIT({ company, message }));
       message.success(`Successfully deleted Item Type ${code}`);
     });
   };
@@ -96,7 +106,7 @@ const ItemTypes = (props) => {
       };
 
       dispatch(addIT(payload)).then(() => {
-        dispatch(listIT({ company }));
+        dispatch(listIT({ company, message }));
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -106,7 +116,7 @@ const ItemTypes = (props) => {
         },
       };
       dispatch(addIT(payload)).then(() => {
-        dispatch(listIT({ company }));
+        dispatch(listIT({ company, message }));
       });
     }
 

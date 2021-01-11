@@ -1,139 +1,224 @@
-import React, { useEffect } from 'react';
-import { Form, Button, Input, InputNumber, Select, Checkbox, Row, Col, Typography, Space } from 'antd';
-import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import {
+  Form,
+  Button,
+  InputNumber,
+  Select,
+  Checkbox,
+  Modal,
+  Row,
+  Col,
+  Typography,
+  Table,
+  Empty,
+  message,
+} from 'antd';
+import { SelectOutlined } from '@ant-design/icons';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import FormItem from './FormItem';
 
-const { TextArea } = Input;
 const { Title } = Typography;
 
 const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails } = props;
+  const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
   const [form] = Form.useForm();
   const history = useHistory();
+  const { path } = useRouteMatch();
+  const [tableData, setTableData] = useState(null);
+  const hasTable = formTable !== null && typeof formTable !== 'undefined';
+
+  const [loadingModal, setLoadingModal] = useState(true);
+  const [displayModal, setDisplayModal] = useState(false);
 
   useEffect(() => {
     form.setFieldsValue(values);
+    if (hasTable && values !== null) {
+      setTableData(values[formTable.name]);
+    }
+    // eslint-disable-next-line
   }, [values, form]);
 
-  const FormItem = ({ item }) => {
-    if (item.type === 'select') {
-      if (typeof item.selectName === 'undefined') {
-        item.selectName = 'name'
+  const onFinish = (data) => {
+    formDetails.form_items.forEach((item) => {
+      if (item.type === 'date') {
+        data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format(
+          'HH:mm:ss'
+        )}`;
       }
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Select placeholder={item.placeholder}>
-            {item.choices.map((choice) => (
-              <Select.Option value={choice.id}>{choice[item.selectName]}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-      );
-    }
-    else if (item.type === 'textArea') {
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
-        </Form.Item>
-      );
-    }
-    else if(item.type === 'number'){
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <InputNumber style={styles.inputNumber}/>
-        </Form.Item>
-      );
-    }
-    else if(item.type === 'checkList'){
-      return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Checkbox.Group style={styles.inputCheckList}>
-              {item.choices.map((choice) => (
-                <Row>
-                  <Checkbox value={choice.id}>{item.render(choice)}</Checkbox>
-                </Row>
-              ))}
-          </Checkbox.Group>
-        </Form.Item>
-      )
-    }
-    else if(item.type === 'list' || item.type === 'listForm'){
-      return (
-        <div style={styles.formList}>
-        <Form.List label={item.label} name={item.name} rules={item.rules}>
-          {(fields, { add, remove, errors }) => (
-            <>
-              <div {...styles.listTailLayout} type="dashed" style={{display: 'flex', justifyContent: 'flex-end'}}>
-                <Title level={5} style={{marginRight:"auto"}}>{item.label}</Title>
-                <Form.Item>
-                  <Button onClick={() => add()} icon={<PlusOutlined />}>
-                    Add
-                  </Button>
-                </Form.Item>
+    });
 
-                {item.type === 'selectList' && 
-                  <Form.Item>
-                    <Button onClick={() => add()} icon={<SelectOutlined />}>
-                      Select
-                    </Button>
-                  </Form.Item>
-                }
-              </div>
-              {fields.map(field => (
-                 <Space key={field.key} style={styles.listLayout}>
-                   
-                  {item.fields.map(itemField => {
-                    if(itemField.type === 'hidden')
-                    {
-                      return (
-                        <Form.Item
-                          {...field}
-                          name={[field.name, itemField.name]}
-                          fieldKey={[field.fieldKey, itemField.name]}
-                          hidden={true}
-                        >
-                          <Input/>
-                        </Form.Item>
-                      )
-                    }
-                    else {
-                      return (
-                        <Form.Item
-                          {...field}
-                          {...styles.listItems}
-                          name={[field.name, itemField.name]}
-                          fieldKey={[field.fieldKey, itemField.name]}
-                          rules={itemField.rules}
-                        >
-                          <Input placeholder={itemField.placeholder} />
-                        </Form.Item>
-                      )
-                    }
-                    
-                  })}
-                  <MinusCircleOutlined style={{alignSelf: "center"}} onClick={() => remove(field.name)} />
-                </Space>
-              ))}
-              <Form.ErrorList errors={errors} />
-            </>
-          )}
-        </Form.List>
-        </div>
-      )
-      
+    if (hasTable) {
+      data[formTable.name] = tableData;
     }
-    else {
+
+    onSubmit(data);
+  };
+
+  const onFinishFailed = () => {
+    // console.log(errorInfo)
+    message.error("An error has occurred. Please double check the information you've provided.");
+  };
+
+  const handleTableChange = (item, index, event) => {
+    const data = { ...tableData };
+    const row = data[index];
+    row[item] = event;
+    const dataArray = [];
+    for (const [, value] of Object.entries(data)) {
+      dataArray.push(value);
+    }
+    setTableData(dataArray);
+  };
+
+  // for rendering tables
+  const renderTableColumns = (item) => {
+    const columns = [];
+    item.fields.forEach((field) => {
+      if (!field.readOnly) {
+        if (field.type === 'number') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              const rowData = tableData[index];
+              return (
+                <InputNumber
+                  min={field.min}
+                  max={field.max}
+                  defaultValue={rowData[field.name]}
+                  onChange={(e) => {
+                    handleTableChange(field.name, index, e);
+                  }}
+                />
+              );
+            },
+          });
+        } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+          columns.push({
+            key: field.name,
+            visible: false,
+          });
+        } else if (field.type === 'select') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            visible: false,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              const rowData = tableData[index];
+              if (typeof field.render === 'undefined') {
+                if (typeof field.selectName === 'undefined') {
+                  field.selectName = 'name';
+                }
+                field.render = (choice) => choice[field.selectName];
+              }
+
+              if (field.choices === null || field.choices.length === 0) {
+                history.push(`/${path.split('/')[1]}`);
+                return null;
+              }
+              return (
+                <Select placeholder={field.placeholder} defaultValue={rowData[field.name]}>
+                  {field.choices.map((choice) => (
+                    <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
+                  ))}
+                </Select>
+              );
+            },
+          });
+        } else {
+          if (typeof field.render === 'undefined' || field.render === null) {
+            field.render = (object) => object[field.name];
+          }
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (object) => field.render(object),
+          });
+        }
+      }
+    });
+
+    return columns;
+  };
+
+  // for selecting selecting a new row in a table
+  const onModalSelect = (data, isSelected) => {
+    let selectedItems = [];
+    if (hasTable) {
+      if (isSelected) {
+        // add existing data
+        if (tableData !== null && typeof tableData !== 'undefined') {
+          selectedItems = selectedItems.concat(tableData);
+        }
+
+        // process the new data before adding if necessary
+        let processedData = data;
+        if (typeof formTable.processData === 'function') {
+          processedData = formTable.processData(data);
+        }
+        selectedItems = selectedItems.concat(processedData);
+        setTableData(selectedItems);
+      } else if (tableData !== null && typeof tableData !== 'undefined') {
+        selectedItems = tableData;
+
+        // key for the selected item
+        if (typeof formTable.selectedKey === 'undefined') {
+          formTable.selectedKey = 'id';
+        }
+        // foreign key that corresponds to the selected item
+        if (typeof formTable.foreignKey === 'undefined') {
+          formTable.foreignKey = 'id';
+        }
+        selectedItems = selectedItems.filter(
+          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
+        );
+        setTableData(selectedItems);
+      }
+    }
+  };
+
+  // for rendering the columns inside the row selection modal
+  const renderModalColumns = (columns) => {
+    let modalColumns = [
+      {
+        key: 'select',
+        render: (row) => {
+          return (
+            <Checkbox
+              onChange={(e) => {
+                onModalSelect(row, e.target.checked);
+              }}
+              defaultChecked={formTable.checkSelected(tableData, row)}
+            />
+          );
+        },
+      },
+    ];
+
+    modalColumns = modalColumns.concat(columns);
+
+    return modalColumns;
+  };
+
+  const expandedRowRender = (row) => {
+    if (formTable.hasOwnProperty('nestedData')) {
       return (
-        <Form.Item label={item.label} name={item.name} rules={item.rules}>
-          <Input placeholder={item.placeholder} maxLength={item.maxLength} />
-        </Form.Item>
+        <>
+          <Title level={5}>{formTable.nestedData.label}</Title>
+          <Table
+            columns={formTable.nestedData.fields}
+            dataSource={row[formTable.nestedData.data]}
+            pagination={false}
+          />
+        </>
       );
     }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-    // message.error(errorInfo)
+  const onFail = () => {
+    history.push(`/${path.split('/')[1]}`);
   };
 
   return (
@@ -143,33 +228,82 @@ const FormScreen = (props) => {
       </Row>
       <Row>
         <Col span={20}>
-          <Form 
+          <Form
             {...styles.layout}
             form={form}
-            initialValues={values} 
+            initialValues={values}
             name={formDetails.form_name}
-            onFinish={onSubmit}
+            onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
             {formDetails.form_items.map((item) => (
-              <FormItem item={item} />
+              <FormItem item={item} onFail={onFail} />
             ))}
-            <div style={styles.tailLayout}>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-              <Button
-                style={{ marginRight: '2%' }}
-                onClick={() => {
-                  onCancel()
-                  history.goBack();
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
           </Form>
-          
+          {hasTable && (
+            <Col span={20} offset={1}>
+              <div style={{ float: 'right', marginBottom: '1%' }}>
+                <Button
+                  onClick={() => {
+                    setDisplayModal(true);
+                    setLoadingModal(false);
+                  }}
+                  icon={<SelectOutlined />}
+                >
+                  {`Select ${formTable.label}`}
+                </Button>
+              </div>
+              <Table
+                dataSource={tableData}
+                columns={renderTableColumns(formTable)}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                summary={formTable.summary}
+              />
+            </Col>
+          )}
+          <div style={styles.tailLayout}>
+            <Button type="primary" onClick={() => form.submit()}>
+              Submit
+            </Button>
+            <Button
+              style={{ marginRight: '2%' }}
+              onClick={() => {
+                onCancel();
+                history.goBack();
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+          {!loadingModal && hasTable && (
+            <Modal
+              visible={displayModal}
+              title="Modal"
+              onOk={() => setDisplayModal(false)}
+              onCancel={() => setDisplayModal(false)}
+              cancelButtonProps={{ style: { display: 'none' } }}
+              width={1000}
+            >
+              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
+                // for nested tables
+                <Table
+                  dataSource={formTable.selectData}
+                  columns={renderModalColumns(formTable.selectFields)}
+                  pagination={false}
+                  expandable={{ expandedRowRender }}
+                  rowKey={formTable.foreignKey}
+                />
+              ) : (
+                <Table
+                  dataSource={formTable.selectData}
+                  columns={renderModalColumns(formTable.selectFields)}
+                  pagination={false}
+                  rowKey={formTable.foreignKey}
+                />
+              )}
+            </Modal>
+          )}
         </Col>
       </Row>
     </>
@@ -195,8 +329,8 @@ const styles = {
       span: 24,
     },
   },
-  listLayout: { 
-    display: 'flex', 
+  listLayout: {
+    display: 'flex',
     justifyContent: 'flex-end',
     marginBottom: '2%',
   },
@@ -214,12 +348,12 @@ const styles = {
     },
   },
   formList: {
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderWidth: 1,
-    padding: "2%",
-    backgroundColor: "#FAFAFA",
+    padding: '2%',
+    // backgroundColor: "#FAFAFA",
     width: '87.5%',
-    marginBottom: "2%",
+    marginBottom: '2%',
   },
   datePicker: {
     float: 'left',

@@ -1,57 +1,95 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
+import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   list: null,
+  status: '',
+  statusMessage: '',
+  action: '',
 };
 
-export const listC = createAsyncThunk('listC', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const listClassification = createAsyncThunk(
+  'listClassification',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/classifications?token=${accessToken}`);
-  return response;
-});
+    const response = await axiosInstance.get(`rest/classifications?token=${accessToken}`);
 
-export const addC = createAsyncThunk('addC', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for classification');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
 
-  const response = await axiosInstance.post(`rest/classifications/?token=${accessToken}`, payload);
-  return response;
-});
+    return response;
+  }
+);
 
-export const deleteC = createAsyncThunk('deleteC', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const addClassification = createAsyncThunk(
+  'addClassification',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/classifications/delete?token=${accessToken}`,
-    payload
-  );
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/classifications/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
+
+export const deleteClassification = createAsyncThunk(
+  'deleteClassification',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+
+    const response = await axiosInstance.post(
+      `rest/classifications/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const classificationSlice = createSlice({
   name: 'classification',
   initialState,
   reducers: {
-    clearData(state, action) {
-      state.list = null
-    },
+    clearData: () => initialState,
   },
   extraReducers: {
-    [listC.pending]: (state) => {
+    [listClassification.pending]: (state) => {
       state.status = 'loading';
     },
-    [listC.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.list = action.payload.data;
-      } else {
-        state.status = 'failed';
+    [listClassification.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for classifications';
       }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
     },
-    [listC.rejected]: (state) => {
-      state.status = 'failed';
+    [listClassification.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
     },
   },
 });

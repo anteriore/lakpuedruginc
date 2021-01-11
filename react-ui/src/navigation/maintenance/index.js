@@ -52,7 +52,7 @@ export const routes = [
     component: GroupsCategories,
   },
   {
-    title: 'Department Area & Codes',
+    title: 'Department & Area Codes',
     path: '/department_area',
     component: DepartmentArea,
   },

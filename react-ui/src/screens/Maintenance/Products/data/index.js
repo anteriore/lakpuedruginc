@@ -25,14 +25,14 @@ export const tableHeader = [
     dataIndex: 'lotNumber',
     key: 'lotNumber',
     align: 'center',
+    datatype: 'string',
   },
   {
     title: 'Finished Goods',
     dataIndex: 'finishedGood',
     key: 'finishedGood',
     align: 'center',
-    render: (object) => object.code,
-    sorter: (a, b) => a.unit.code.localeCompare(b.unit.code),
+    datatype: 'object',
   },
   {
     title: 'Quantity Per Box',
@@ -51,16 +51,16 @@ export const tableHeader = [
     dataIndex: 'category',
     key: 'category',
     align: 'center',
-    render: (object) => object.code,
-    sorter: (a, b) => a.unit.code.localeCompare(b.unit.code),
+    name: 'code',
+    datatype: 'object',
   },
   {
     title: 'Division',
     dataIndex: 'division',
     key: 'division',
     align: 'center',
-    render: (object) => object.code,
-    sorter: (a, b) => a.unit.code.localeCompare(b.unit.code),
+    name: 'code',
+    datatype: 'object',
   },
 ];
 

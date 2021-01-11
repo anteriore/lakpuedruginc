@@ -133,4 +133,11 @@ public class PurchaseRequestRestController {
 		return purchaseRequestRepository.findByCompanyAndDepartment(company, d);
 	}
 
+	@GetMapping("/company/{companyId}/status/{status}")
+	public Set<PurchaseRequest> getPurchaseRequestsByCompanyAndStatus(@PathVariable Long companyId,
+			@PathVariable String status) {
+		Company company = companyRepository.getOne(companyId);
+		return purchaseRequestRepository.findByCompanyAndStatus(company, status);
+	}
+
 }

@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { routes } from '../../navigation/maintenance';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
-
-import { listCompany } from '../../redux/company';
+import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -17,10 +16,8 @@ const Maintenance = () => {
 
   const [company, setCompany] = useState(1);
   const [contentLoading, setContentLoading] = useState(true);
-  const [moduleRoutes, setModuleRoutes] = useState([]);
-
-  const { companyList } = useSelector((state) => state.company);
-  const { permissions } = useSelector((state) => state.auth);
+  const companies = useSelector((state) => state.company.companyList);
+  const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -47,7 +44,7 @@ const Maintenance = () => {
   }
 
   const handleChangeTab = (id) => {
-    setCompany(id);
+    dispatch(setCompany(id));
   };
 
   
@@ -65,29 +62,25 @@ const Maintenance = () => {
             ) : (
               <Row>
                 <Col span={24}>
-                  <Tabs defaultActiveKey="company.id" onChange={handleChangeTab}>
-                    {companyList.map((val) => {
-                      return (
-                        <TabPane tab={val.name} key={val.id}>
-                          <ModulesGrid company={val.name} modules={moduleRoutes} />
-                        </TabPane>
-                      )
-                    })}
+                  <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
+                    {companies.map((val) => (
+                      <TabPane tab={val.name} key={val.id}>
+                        <ModulesGrid company={val.name} modules={MaintenanceRoutes} />
+                      </TabPane>
+                    ))}
                   </Tabs>
                 </Col>
               </Row>
             )}
           </Container>
         </Route>
-        {!contentLoading && moduleRoutes.map((module) => {
-          return (
-            <Route path={path + module.path}>
-              <Container location={{ pathname: path + module.path }}>
-                <module.component title={module.title} company={company} />
-              </Container>
-            </Route>
-          )
-        })}
+        {MaintenanceRoutes.map((module) => (
+          <Route path={path + module.path}>
+            <Container location={{ pathname: path + module.path }}>
+              <module.component title={module.title} company={selectedCompany} />
+            </Container>
+          </Route>
+        ))}
       </Switch>
     </>
   );

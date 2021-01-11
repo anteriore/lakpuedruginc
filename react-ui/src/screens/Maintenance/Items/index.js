@@ -40,17 +40,13 @@ const ItemTypes = (props) => {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.type.name.localeCompare(b.type.name),
+      datatype: 'object',
     },
     {
       title: 'Unit',
       dataIndex: 'unit',
       key: 'unit',
-      datatype: 'string',
-      render: (object) => object.name,
-      sorter: (a, b) => a.unit.name.localeCompare(b.unit.name),
+      datatype: 'object',
     },
   ];
 
@@ -85,11 +81,17 @@ const ItemTypes = (props) => {
   };
 
   useEffect(() => {
-    dispatch(listI({ company }));
+    let isCancelled = false;
+    dispatch(listI({ company, message })).then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearIT());
+      isCancelled = true;
     };
   }, [dispatch, company]);
 
@@ -97,8 +99,8 @@ const ItemTypes = (props) => {
     setFormTitle('Add Item');
     setFormMode('add');
     setFormData(null);
-    dispatch(listIT({ company })).then((response) => {
-      dispatch(listUnit()).then((response) => {
+    dispatch(listIT({ company, message })).then((response) => {
+      dispatch(listUnit({ message })).then((response) => {
         setDisplayForm(true);
       });
     });
@@ -113,8 +115,8 @@ const ItemTypes = (props) => {
       type: data.type.id,
     };
     setFormData(formData);
-    dispatch(listIT({ company })).then((response) => {
-      dispatch(listUnit()).then((response) => {
+    dispatch(listIT({ company, message })).then((response) => {
+      dispatch(listUnit({ message })).then((response) => {
         setDisplayForm(true);
       });
     });
@@ -122,7 +124,7 @@ const ItemTypes = (props) => {
 
   const handleDelete = (data) => {
     dispatch(deleteI(data.id)).then((response) => {
-      dispatch(listI({ company }));
+      dispatch(listI({ company, message }));
       message.success(`Successfully deleted Item ${data.name}`);
     });
   };
@@ -135,7 +137,7 @@ const ItemTypes = (props) => {
   };
 
   const onSubmit = (values) => {
-    var payload = {
+    const payload = {
       ...values,
       company: {
         id: company,
@@ -148,14 +150,14 @@ const ItemTypes = (props) => {
       },
     };
     if (formMode === 'edit') {
-      payload.id = formData.id
+      payload.id = formData.id;
 
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company }));
+        dispatch(listI({ company, message }));
       });
     } else if (formMode === 'add') {
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company }));
+        dispatch(listI({ company, message }));
       });
     }
 
