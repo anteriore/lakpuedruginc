@@ -274,6 +274,7 @@ const Users = () => {
       depots: depotData,
       permissions: permissionData,
     };
+    
     if (formMode === 'edit') {
       payload.id = formData.id;
       dispatch(addUser(payload)).then((response) => {

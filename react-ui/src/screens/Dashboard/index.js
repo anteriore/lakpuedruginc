@@ -7,8 +7,6 @@ import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
 import { routes } from '../../navigation/dashboard';
 
-import { listCompany } from '../../redux/company';
-
 import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -17,16 +15,42 @@ const { Title } = Typography;
 const Dashboard = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-
-  const [contentLoading, setContentLoading] = useState(true);
+  
+  const [company, setCompany] = useState(1);
   const [moduleRoutes, setModuleRoutes] = useState([]);
-
+  const [contentLoading, setContentLoading] = useState(true);
+  
   const companies = useSelector((state) => state.company.companyList);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
+  const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
-      setModuleRoutes(modules);
+      setModuleRoutes(routes)
+      //setModuleRoutes(getPermittedRoutes())
+      setContentLoading(false);
+    });
+
+  }, [dispatch]);
+
+  const getPermittedRoutes = () => {
+    var routeList = []
+    routes.forEach((route) => {
+      if(typeof route.key !== 'undefined'){
+        if(typeof permissions[route.key] !== 'undefined'){
+          routeList.push(route)
+        }
+      }
+      else {
+        routeList.push(route)
+      }
+    })
+    return routeList
+  }
+
+  useEffect(() => {
+    dispatch(listCompany()).then(() => {
+      setModuleRoutes(routes);
       setContentLoading(false);
     });
   }, [dispatch]);

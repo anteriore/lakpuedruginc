@@ -14,15 +14,16 @@ const Maintenance = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
 
-  const [company, setCompany] = useState(1);
+  const [moduleRoutes, setModuleRoutes] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
   const companies = useSelector((state) => state.company.companyList);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
+  const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
-      setModuleRoutes(routes)
-      //setModuleRoutes(getPermittedRoutes())
+      //setModuleRoutes(routes)
+      setModuleRoutes(getPermittedRoutes())
       setContentLoading(false);
     });
 
@@ -31,12 +32,7 @@ const Maintenance = () => {
   const getPermittedRoutes = () => {
     var routeList = []
     routes.forEach((route) => {
-      if(typeof route.key !== 'undefined'){
-        if(typeof permissions[route.key] !== 'undefined'){
-          routeList.push(route)
-        }
-      }
-      else {
+      if(typeof permissions[route.path.split("/")[1]] !== 'undefined'){
         routeList.push(route)
       }
     })
@@ -65,7 +61,7 @@ const Maintenance = () => {
                   <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
                     {companies.map((val) => (
                       <TabPane tab={val.name} key={val.id}>
-                        <ModulesGrid company={val.name} modules={MaintenanceRoutes} />
+                        <ModulesGrid company={val.name} modules={moduleRoutes} />
                       </TabPane>
                     ))}
                   </Tabs>
@@ -74,7 +70,7 @@ const Maintenance = () => {
             )}
           </Container>
         </Route>
-        {MaintenanceRoutes.map((module) => (
+        {moduleRoutes.map((module) => (
           <Route path={path + module.path}>
             <Container location={{ pathname: path + module.path }}>
               <module.component title={module.title} company={selectedCompany} />

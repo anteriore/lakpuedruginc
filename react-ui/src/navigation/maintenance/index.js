@@ -26,14 +26,12 @@ import Vendors from '../../screens/Maintenance/Vendors';
 export const routes = [
   {
     title: 'Finished Goods',
-    path: '/finished_goods',
-    key: 'rnd-finished-good',
+    path: '/finished-goods',
     component: FinishedGoods,
   },
   {
     title: 'Client',
-    path: '/client',
-    key: 'mis-c',
+    path: 'client',
     component: Clients,
   },
   {
@@ -48,12 +46,12 @@ export const routes = [
   },
   {
     title: 'Group & Categories',
-    path: '/group_categories',
+    path: '/group-categories',
     component: GroupsCategories,
   },
   {
     title: 'Department & Area Codes',
-    path: '/department_area',
+    path: '/department-area',
     component: DepartmentArea,
   },
   {
@@ -68,7 +66,7 @@ export const routes = [
   },
   {
     title: 'Item Types',
-    path: '/items_types',
+    path: '/items-types',
     component: ItemTypes,
   },
   {
@@ -88,62 +86,62 @@ export const routes = [
   },
   {
     title: 'Production Area',
-    path: '/production_area',
+    path: '/production-area',
     component: ProductionArea,
   },
   {
     title: 'Memo Types',
-    path: '/memo_types',
+    path: '/memo-types',
     component: MemoTypes,
   },
   {
     title: 'Bank Accounts',
-    path: '/bank_accounts',
+    path: '/bank-accounts',
     component: BankAccounts,
   },
   {
     title: 'Product Divisions',
-    path: '/product_divisions',
+    path: '/product-divisions',
     component: ProductDivisions,
   },
   {
     title: 'Region Codes',
-    path: '/codes/region',
+    path: '/region-codes',
     component: RegionCodes,
   },
   {
     title: 'Cluster Codes',
-    path: '/codes/cluster',
+    path: '/cluster-codes',
     component: ClusterCodes,
   },
   {
     title: 'Institutional Codes',
-    path: '/codes/institutional',
+    path: '/institutional-codes',
     component: InstitutionalCodes,
   },
   {
     title: 'Account Codes',
-    path: '/codes/account',
+    path: '/account-codes',
     component: AccountCodes,
   },
   {
     title: 'Province Codes',
-    path: '/codes/province',
+    path: '/province-codes',
     component: ProvinceCode,
   },
   {
     title: 'Sales Reps',
-    path: '/codes/sales',
+    path: '/sales-reps',
     component: SalesReps,
   },
   {
     title: 'Zip Codes',
-    path: '/codes/zip',
+    path: '/zip-codes',
     component: ZipCodes,
   },
   {
     title: 'Product Categories',
-    path: '/product_categories',
+    path: '/product-categories',
     component: ProductCategories,
   },
 ];
