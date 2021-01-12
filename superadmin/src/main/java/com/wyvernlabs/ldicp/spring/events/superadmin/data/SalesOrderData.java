@@ -65,5 +65,7 @@ public class SalesOrderData {
 		salesOrder.setType(OrderSlipType.DR_SI);
 		salesOrder.setDepot(depot);
 		salesOrderService.saveSalesOrder(salesOrder);
+
+		
 	}
 }

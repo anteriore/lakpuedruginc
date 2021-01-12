@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -32,6 +34,9 @@ public class User {
     private Set<Depot> depots;
 
     private String[] roles;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapKey(name = "code")
@@ -98,7 +103,8 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+       
+        this.password =  passwordEncoder.encode(password);
     }
 
     public Company getCompany() {
@@ -141,10 +147,18 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleInitial="
-                + middleInitial + ", email=" + email + ", password=" + "XD" + ", company=" + company
-                + ", employeeType=" + employeeType + ", department=" + department + ", depots=" + depots + ", roles="
-                + Arrays.toString(roles) + ", permissions=" + permissions + "]";
+        return "User [id=" + id + 
+        ", firstName=" + firstName + 
+        ", lastName=" + lastName + 
+        ", middleInitial="  + middleInitial + 
+        ", email=" + email + 
+        ", password=" + "XD" + 
+        ", company=" + company  + 
+        ", employeeType=" + employeeType + 
+        ", department=" + department + 
+        ", depots=" + depots + 
+        ", roles="+ Arrays.toString(roles) + 
+        ", permissions=" + permissions + "]";
     }
 
 }
