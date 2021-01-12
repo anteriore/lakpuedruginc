@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Typography, Col, Button, Skeleton, message } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, message, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -16,9 +16,12 @@ import {
   deleteSalesOrder,
   clearData,
 } from './redux';
-import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearClient } from '../../Maintenance/Clients/redux';
-import { clearData as clearPI } from '../../Maintenance/redux/productInventory';
+// import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
+// import { clearData as clearClient } from '../../Maintenance/Clients/redux';
+// import { clearData as clearPI } from '../../Maintenance/redux/productInventory';
+import { listDepot } from '../../Maintenance/Depots/redux';
+import { listClient } from '../../Maintenance/Clients/redux';
+import { NO_DATA_FOUND, NO_DATA_FOUND_DESC } from '../../../data/constants/response-message.constant';
 
 const { Title } = Typography;
 
@@ -51,19 +54,34 @@ const SalesOrders = (props) => {
   // }, [dispatch, company]);
 
   useEffect(() => {
-    dispatch(listSalesOrder({company, message})).then(({payload}) => {
-      const {status} = payload;
-      if ( status === 200) {
-        setContentLoading(false);
-      }else{
-        history.push({
-          pathname: `/error/${status}`,
-          state: {
-            moduleList: '/sales'
-          }
-        })
+    const salesOrderPayload = {
+      company,
+      fnCallback: (response) => {
+        const {status} = response;
+        switch(status){
+          case 200:
+            if(response.data.length === 0){
+              message.warning(response.statusText);
+              setContentLoading(false);
+            }else{
+              setContentLoading(false);
+            }
+            break;
+          case 400:
+          case 500: 
+            history.push({
+              pathname: `/error/${status === 400 ? 403 : status}`,
+              state: {
+                moduleList: '/sales'
+              }
+            });
+            break;
+          default:
+            break;
+        }
       }
-    })
+    }
+    dispatch(listSalesOrder(salesOrderPayload));
   },[dispatch, company, history])
 
   useEffect(() => {
@@ -79,7 +97,47 @@ const SalesOrders = (props) => {
   }, [statusMessage, action]);
 
   const handleAddButton = () => {
-    history.push(`${path}/new`);
+    const payload = {
+      company,
+      fnCallback: (response) => {
+        const {status} = response;
+        switch(status){
+          case 200:
+            if(response.data.length === 0){
+              Modal.warning({
+                title: NO_DATA_FOUND,
+                content: NO_DATA_FOUND_DESC(response.config.url.split(/[\/?]/g)[1])
+              })
+            }
+            break;
+          case 400:
+          case 500:
+            history.push({
+              pathname: `/error/${status === 400 ? 403 : status}`,
+              state: {
+                moduleList: '/sales/sales-orders'
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    } 
+
+    dispatch(listDepot(payload)).then((data) => {
+      if(typeof data.payload !== 'undefined'){
+        if(data.payload.status === 200 && data.payload.data.length !== 0){
+          dispatch(listClient(payload)).then((data) => {
+            if(typeof data.payload !== 'undefined'){
+              if(data.payload.status === 200 && data.payload.data.length !== 0){
+                history.push(`${path}/new`);
+              }
+            }
+          })
+        }
+      }
+    })
   };
 
   const handleEditButton = (value) => {
