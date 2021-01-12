@@ -5,22 +5,22 @@ import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
 export const routes = [
   {
     title: 'Purchase Requests',
-    path: '/purchase',
+    path: '/purchase-requests',
     component: PurchaseRequests,
   },
   {
     title: 'Receiving Receipts',
-    path: '/receiving',
+    path: '/receiving-receipts',
     component: ReceivingReceipts,
   },
   {
     title: 'Approved Receipts',
-    path: '/approved',
+    path: '/approved-receipts',
     component: ApprovedReceipts,
   },
   {
     title: 'Material Re-evaluations',
-    path: '/material-reevaluation',
+    path: '/material-reevaluations',
     component: PurchaseRequests,
   },
   {
@@ -65,17 +65,17 @@ export const routes = [
   },
   {
     title: 'Depot Inventory',
-    path: '/depot',
+    path: '/depot-inventory',
     component: PurchaseRequests,
   },
   {
     title: 'Employee',
-    path: '/employee',
+    path: '/employees',
     component: PurchaseRequests,
   },
   {
     title: 'Job Order',
-    path: '/joborder',
+    path: '/job-orders',
     component: PurchaseRequests,
   },
   {
@@ -95,7 +95,7 @@ export const routes = [
   },
   {
     title: 'Sales Reports',
-    path: '/sales',
+    path: '/sales-reports',
     component: PurchaseRequests,
   },
 ];

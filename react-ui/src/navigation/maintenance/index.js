@@ -31,17 +31,17 @@ export const routes = [
   },
   {
     title: 'Client',
-    path: 'client',
+    path: 'clients',
     component: Clients,
   },
   {
     title: 'Vendor',
-    path: '/vendor',
+    path: '/vendors',
     component: Vendors,
   },
   {
     title: 'Classification',
-    path: '/classification',
+    path: '/classifications',
     component: Classification,
   },
   {
@@ -51,7 +51,7 @@ export const routes = [
   },
   {
     title: 'Department & Area Codes',
-    path: '/department-area',
+    path: '/department-areas',
     component: DepartmentArea,
   },
   {
@@ -81,12 +81,12 @@ export const routes = [
   },
   {
     title: 'Procedure',
-    path: '/procedure',
+    path: '/procedures',
     component: Procedures,
   },
   {
     title: 'Production Area',
-    path: '/production-area',
+    path: '/production-areas',
     component: ProductionArea,
   },
   {

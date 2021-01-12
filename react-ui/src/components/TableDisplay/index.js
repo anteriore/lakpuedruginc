@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 
 import TableHeader from './TableHeader';
 
@@ -14,12 +15,15 @@ const TableDisplay = (props) => {
     data,
     deleteEnabled,
     pagination,
+    name,
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataCount, setDataCount] = useState(0);
   const [columns, setColumns] = useState(TableHeader(col));
+
+  const { permissions } = useSelector((state) => state.auth);
 
   /*
     columns must have an id
@@ -55,43 +59,47 @@ const TableDisplay = (props) => {
         render: (row) => {
           return (
             <div style={styles.crudColumn}>
-              <Button
-                icon={<EditOutlined />}
-                type="text"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleUpdate(row);
-                }}
-              >
-                Edit
-              </Button>
-              <Popconfirm
-                title="Would you like to delete this item?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={(e) => {
-                  e.stopPropagation();
-                  handleDelete(row);
-                }}
-                onCancel={(e) => {
-                  e.stopPropagation();
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                {deleteEnabled ? (
-                  <Button
-                    icon={<DeleteOutlined />}
-                    type="text"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Delete
-                  </Button>
-                ) : (
-                  ''
-                )}
-              </Popconfirm>
+              {typeof permissions[name] !== 'undefined' && permissions[name].actions.search('u') !== -1 &&
+                <Button
+                  icon={<EditOutlined />}
+                  type="text"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpdate(row);
+                  }}
+                >
+                  Edit
+                </Button>
+              }
+              {typeof permissions[name] !== 'undefined' && permissions[name].actions.search('d') !== -1 &&
+                <Popconfirm
+                  title="Would you like to delete this item?"
+                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                  onConfirm={(e) => {
+                    e.stopPropagation();
+                    handleDelete(row);
+                  }}
+                  onCancel={(e) => {
+                    e.stopPropagation();
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  {deleteEnabled ? (
+                    <Button
+                      icon={<DeleteOutlined />}
+                      type="text"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  ) : (
+                    ''
+                  )}
+                </Popconfirm>
+              }
             </div>
           );
         },

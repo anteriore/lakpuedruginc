@@ -25,6 +25,7 @@ const GroupsCategories = (props) => {
   const [formDataG, setFormDataG] = useState(null);
   const [formDataC, setFormDataC] = useState(null);
   const groupData = useSelector((state) => state.maintenance.groupsCategories.groupList);
+  const { permissions } = useSelector((state) => state.auth);
 
   const formDetailG = {
     form_name: 'groups',
@@ -49,6 +50,9 @@ const GroupsCategories = (props) => {
       },
     ],
   };
+
+  
+  const tableName = "group-categories"
 
   const { company, title } = props;
   const dispatch = useDispatch();
@@ -284,15 +288,17 @@ const GroupsCategories = (props) => {
       ) : (
         <Row gutter={[16, 16]}>
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
-            <Button
-              style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAddG();
-              }}
-            >
-              Add Group
-            </Button>
+            {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('c') !== -1 &&
+              <Button
+                style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAddG();
+                }}
+              >
+                Add Group
+              </Button>
+            }
             <Select
               placeholder="Select a group"
               onChange={onSelectGroup}
@@ -305,45 +311,51 @@ const GroupsCategories = (props) => {
 
             {selectedGroup !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                <Popconfirm
-                  title="Would you like to delete this item?"
-                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                  onConfirm={() => {
-                    handleDeleteG(selectedGroup);
-                  }}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button style={{ width: '30%', marginLeft: '2%' }} icon={<DeleteOutlined />}>
-                    Delete
-                  </Button>
-                </Popconfirm>
+                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('d') !== -1 &&
+                  <Popconfirm
+                    title="Would you like to delete this item?"
+                    icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                    onConfirm={() => {
+                      handleDeleteG(selectedGroup);
+                    }}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button style={{ width: '30%', marginLeft: '2%' }} icon={<DeleteOutlined />}>
+                      Delete
+                    </Button>
+                  </Popconfirm>
+                }
 
-                <Button
-                  style={{ width: '30%' }}
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    handleUpdateG(selectedGroup);
-                  }}
-                >
-                  Rename
-                </Button>
+                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('u') !== -1 &&
+                  <Button
+                    style={{ width: '30%' }}
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      handleUpdateG(selectedGroup);
+                    }}
+                  >
+                    Rename
+                  </Button>
+                }
               </div>
             )}
           </Col>
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
             {selectedGroup !== null && (
               <>
-                <Button
-                  style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    // message.error(`Add category is not yet implemented`);
-                    handleAddC();
-                  }}
-                >
-                  Add Category
-                </Button>
+                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('c') !== -1 &&
+                  <Button
+                    style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      // message.error(`Add category is not yet implemented`);
+                      handleAddC();
+                    }}
+                  >
+                    Add Category
+                  </Button>
+                }               
                 <Select
                   placeholder="Select a category"
                   onChange={onSelectCategory}
@@ -359,24 +371,35 @@ const GroupsCategories = (props) => {
 
             {selectedCategory !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                <Button
-                  style={{ width: '30%', marginLeft: '2%' }}
-                  icon={<DeleteOutlined />}
-                  onClick={() => {
-                    handleDeleteC(selectedCategory);
-                  }}
-                >
-                  Delete
-                </Button>
-                <Button
-                  style={{ width: '30%' }}
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    handleUpdateC(selectedCategory);
-                  }}
-                >
-                  Rename
-                </Button>
+                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('d') !== -1 &&
+                  <Popconfirm
+                    title="Would you like to delete this item?"
+                    icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                    onConfirm={() => {
+                      handleDeleteC(selectedCategory);
+                    }}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button
+                      style={{ width: '30%', marginLeft: '2%' }}
+                      icon={<DeleteOutlined />}
+                    >
+                      Delete
+                    </Button>
+                  </Popconfirm>
+                }
+                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('u') !== -1 &&
+                  <Button
+                    style={{ width: '30%' }}
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      handleUpdateC(selectedCategory);
+                    }}
+                  >
+                    Rename
+                  </Button>
+                }
               </div>
             )}
           </Col>

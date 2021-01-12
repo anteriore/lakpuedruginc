@@ -32,6 +32,8 @@ const DepartmentArea = (props) => {
     },
   ];
 
+  const tableName = "department-areas"
+
   const areaColumns = [
     {
       title: 'Area Code',
@@ -244,6 +246,7 @@ const DepartmentArea = (props) => {
             Add
           </Button>
           <TableDisplay
+            name={tableName}
             columns={deptColumns}
             data={deptData}
             handleRetrieve={handleRetrieve}
@@ -266,6 +269,7 @@ const DepartmentArea = (props) => {
             Add
           </Button>
           <TableDisplay
+            name={tableName}
             columns={areaColumns}
             data={areaData}
             handleRetrieve={handleRetrieve}
