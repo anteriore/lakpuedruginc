@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Empty } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,8 +15,6 @@ const { Title } = Typography;
 const Dashboard = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  
-  const [company, setCompany] = useState(1);
   const [moduleRoutes, setModuleRoutes] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
   
@@ -26,8 +24,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
-      setModuleRoutes(routes)
-      //setModuleRoutes(getPermittedRoutes())
+      //setModuleRoutes(routes)
+      setModuleRoutes(getPermittedRoutes())
       setContentLoading(false);
     });
 
@@ -41,19 +39,9 @@ const Dashboard = () => {
           routeList.push(route)
         }
       }
-      else {
-        routeList.push(route)
-      }
     })
     return routeList
   }
-
-  useEffect(() => {
-    dispatch(listCompany()).then(() => {
-      setModuleRoutes(routes);
-      setContentLoading(false);
-    });
-  }, [dispatch]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
@@ -80,6 +68,7 @@ const Dashboard = () => {
                     );
                   })}
                 </Tabs>
+                {moduleRoutes.length === 0 && <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />}
               </Col>
             </Row>
           )}

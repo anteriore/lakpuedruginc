@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Empty } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { routes } from '../../navigation/maintenance';
@@ -24,6 +24,7 @@ const Maintenance = () => {
     dispatch(listCompany()).then(() => {
       //setModuleRoutes(routes)
       setModuleRoutes(getPermittedRoutes())
+      console.log(moduleRoutes)
       setContentLoading(false);
     });
 
@@ -65,12 +66,14 @@ const Maintenance = () => {
                       </TabPane>
                     ))}
                   </Tabs>
+                  {moduleRoutes.length === 0 && <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />}
                 </Col>
               </Row>
             )}
           </Container>
         </Route>
-        {moduleRoutes.map((module) => (
+        {
+          moduleRoutes.map((module) => (
           <Route path={path + module.path}>
             <Container location={{ pathname: path + module.path }}>
               <module.component title={module.title} company={selectedCompany} />

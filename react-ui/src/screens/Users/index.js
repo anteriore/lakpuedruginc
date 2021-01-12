@@ -542,7 +542,6 @@ const Users = () => {
                                 bordered
                                 dataSource={Object.entries(selectedUser["permissions"])}
                                 renderItem={(listItem) => {
-                                  console.log(listItem)
                                   return <List.Item>{listItem[1].code + " - " + listItem[1].actions}</List.Item>
                                 }}
                               />
