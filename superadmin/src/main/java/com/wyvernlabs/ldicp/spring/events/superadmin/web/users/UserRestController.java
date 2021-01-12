@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Company;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.User;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
@@ -23,6 +27,9 @@ public class UserRestController {
 
     private UserRepository userRepository;
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserRestController(UserRepository userRepository, CompanyRepository companyRepository) {
         this.userRepository = userRepository;
@@ -41,6 +48,7 @@ public class UserRestController {
 
     @PostMapping()
     public User upsert(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
