@@ -17,6 +17,7 @@ public class PermissionsData {
     }
 
     public void init() {
+        /*
         Permission p0 = new Permission();
         p0.setCategory("SUPERADMIN");
         p0.setSortOrder(0);
@@ -86,7 +87,6 @@ public class PermissionsData {
         p6.setPermissionSubs(p6Subs);
         permissionRepository.save(p6);
 
-        /*
         Permission p7 = new Permission();
         p7.setCategory("BUILDING1");
         p7.setSortOrder(7);
@@ -95,7 +95,45 @@ public class PermissionsData {
         p7Subs.add(new PermissionSub(null, "Reports", "building1-r", 2));
         p7.setPermissionSubs(p7Subs);
         permissionRepository.save(p7);
-
         */
+        
+        Permission p1 = new Permission();
+        p1.setCategory("DASHBOARD");
+        p1.setSortOrder(0);
+        ArrayList<PermissionSub> p1Subs = new ArrayList<>();
+        p1Subs.add(new PermissionSub(null, "Purchase Requests", "purchase-requests", 1));
+        p1.setPermissionSubs(p1Subs);
+        permissionRepository.save(p1);
+
+        p1 = new Permission();
+        p1.setCategory("MAINTENANCE");
+        p1.setSortOrder(1);
+        p1Subs = new ArrayList<>();
+        p1Subs.add(new PermissionSub(null, "Finished Goods", "finished-goods", 1));
+        p1Subs.add(new PermissionSub(null, "Client", "clients", 2));
+        p1Subs.add(new PermissionSub(null, "Vendor", "vendors", 3));
+        p1Subs.add(new PermissionSub(null, "Groups & Categories", "group-categories", 4));
+        p1Subs.add(new PermissionSub(null, "Department & Area Codes", "department-areas", 5));
+        p1Subs.add(new PermissionSub(null, "Items", "items", 6));
+        p1Subs.add(new PermissionSub(null, "Units", "units", 7));
+        p1Subs.add(new PermissionSub(null, "Item Types", "items-types", 8));
+        p1Subs.add(new PermissionSub(null, "Depots", "depots", 9));
+        p1Subs.add(new PermissionSub(null, "Products", "products", 10));
+        p1Subs.add(new PermissionSub(null, "Procedure", "procedures", 11));
+        p1Subs.add(new PermissionSub(null, "Production Area", "production-areas", 12));
+        p1Subs.add(new PermissionSub(null, "Memo Types", "memo-types", 13));
+        p1Subs.add(new PermissionSub(null, "Bank Accounts", "bank-accounts", 14));
+        p1Subs.add(new PermissionSub(null, "Product Divisions", "product-divisions", 15));
+        p1Subs.add(new PermissionSub(null, "Region Codes", "region-codes", 16));
+        p1Subs.add(new PermissionSub(null, "Cluster Codes", "cluster-codes", 17));
+        p1Subs.add(new PermissionSub(null, "Institutional Codes", "institutional-codes", 18));
+        p1Subs.add(new PermissionSub(null, "Account Codes", "account-codes", 19));
+        p1Subs.add(new PermissionSub(null, "Province Codes", "province-codes", 20));
+        p1Subs.add(new PermissionSub(null, "Sales Reps", "sales-reps", 21));
+        p1Subs.add(new PermissionSub(null, "Zip Codes", "zip-codes", 22));
+        p1Subs.add(new PermissionSub(null, "Product Categories", "product-categories", 23));
+        p1.setPermissionSubs(p1Subs);
+        permissionRepository.save(p1);
+        
     }
 }

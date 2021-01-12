@@ -53,19 +53,19 @@ public class UserData {
 
         Map<String, UserPermission> permissions = new HashMap<>();
         UserPermission p0 = new UserPermission();
-        p0.setCode("admin-dac");
+        p0.setCode("department-areas");
         p0.setActions("crud");
         permissions.put(p0.getCode(), p0);
 
         UserPermission p1 = new UserPermission();
-        p1.setCode("admin-gc");
+        p1.setCode("group-categories");
         p1.setActions("rud");
         permissions.put(p1.getCode(), p1);
 
-        UserPermission p2 = new UserPermission();
+        /*UserPermission p2 = new UserPermission();
         p2.setCode("superadmin");
         p2.setActions("crud");
-        permissions.put(p2.getCode(), p2);
+        permissions.put(p2.getCode(), p2);*/
 
         u.setPermissions(permissions);
         userRepository.save(u);

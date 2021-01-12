@@ -530,6 +530,24 @@ const Users = () => {
                               return null;
                             })}
                           </Descriptions>
+                          <Descriptions
+                            bordered
+                            //title={"Permissions"}
+                            size="default"
+                            layout="vertical"
+                          >
+                            <Descriptions.Item label={"Permissions"}>
+                              <List
+                                size="small"
+                                bordered
+                                dataSource={Object.entries(selectedUser["permissions"])}
+                                renderItem={(listItem) => {
+                                  console.log(listItem)
+                                  return <List.Item>{listItem[1].code + " - " + listItem[1].actions}</List.Item>
+                                }}
+                              />
+                            </Descriptions.Item>
+                          </Descriptions>
                         </>
                       )}
                     </Drawer>
