@@ -14,7 +14,7 @@ import { listClient, clearData as clearClient } from '../../Maintenance/Clients/
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const AcknowledgementReceipts = (props) => {
   const dispatch = useDispatch();
@@ -42,6 +42,7 @@ const AcknowledgementReceipts = (props) => {
       dispatch(clearData());
       dispatch(clearClient());
       dispatch(clearDepot());
+      dispatch(clearOrderSlips());
     };
 
   }, [dispatch, company]);
