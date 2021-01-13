@@ -16,11 +16,11 @@ export const listClient = createAsyncThunk(
     const accessToken = thunkAPI.getState().auth.token;
     const { company, fnCallback } = payload;
     const response = await axiosInstance.get(
-      `rest/clients/company/${company}/?token=${accessToken}`
+      `rest/clients/company/${company}?token=${accessToken}`
     );
 
     if (typeof response !== 'undefined'){
-      const { status } = response
+      const { status } = response;
       if (status === 200){        
         if (response.data.length === 0){
           response.statusText = `${message.API_200_EMPTY} in clients`
@@ -36,6 +36,11 @@ export const listClient = createAsyncThunk(
         return thunkAPI.rejectWithValue(response);
       }
     }else{
+      const newReponse = {
+        status: 500,
+        statusText: message.API_UNDEFINED
+      }
+      fnCallback(newReponse);
       return thunkAPI.rejectWithValue(response);
     }
   }

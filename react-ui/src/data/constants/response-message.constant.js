@@ -24,11 +24,12 @@ export const ITEM_DELETE_PENDING = 'Deleting specified item';
 export const ITEM_DELETE_FULFILLED = 'Successfully deleted specified item';
 export const ITEM_DELETE_REJECTED = 'Failed to delete specified item';
 
-// api errors
+// response messages
 export const API_401 = 'Sorry, you are not authorized to access this page.'
 export const API_500 = 'Sorry, something went wrong to the server.'
 export const API_200_EMPTY = 'There are no datas saved';
 export const API_200_SUCCESS = 'Success fetching list';
+export const API_UNDEFINED = 'Undefined response.'
 
 //Titles
 export const NO_DATA_FOUND = 'No Data Found!'

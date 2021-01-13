@@ -16,11 +16,12 @@ import {
   deleteSalesOrder,
   clearData,
 } from './redux';
-// import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
-// import { clearData as clearClient } from '../../Maintenance/Clients/redux';
-// import { clearData as clearPI } from '../../Maintenance/redux/productInventory';
+import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { clearData as clearPI } from '../../Maintenance/redux/productInventory';
 import { listDepot } from '../../Maintenance/Depots/redux';
 import { listClient } from '../../Maintenance/Clients/redux';
+import {listProductInventory} from '../../Maintenance/redux/productInventory';
 import { NO_DATA_FOUND, NO_DATA_FOUND_DESC } from '../../../data/constants/response-message.constant';
 
 const { Title } = Typography;
@@ -51,9 +52,10 @@ const SalesOrders = (props) => {
   //     dispatch(clearPI());
   //     isCancelled = true;
   //   };
-  // }, [dispatch, company]);
+  // }, [dispatch, company])
 
   useEffect(() => {
+    let isCancelled = false;
     const salesOrderPayload = {
       company,
       fnCallback: (response) => {
@@ -62,9 +64,6 @@ const SalesOrders = (props) => {
           case 200:
             if(response.data.length === 0){
               message.warning(response.statusText);
-              setContentLoading(false);
-            }else{
-              setContentLoading(false);
             }
             break;
           case 400:
@@ -81,7 +80,21 @@ const SalesOrders = (props) => {
         }
       }
     }
-    dispatch(listSalesOrder(salesOrderPayload));
+
+    dispatch(listSalesOrder(salesOrderPayload)).then(() => {
+      setContentLoading(false);
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    });
+
+    return function cleanup() {
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearClient());
+      dispatch(clearPI());
+      isCancelled = true;
+    };
   },[dispatch, company, history])
 
   useEffect(() => {
@@ -97,6 +110,7 @@ const SalesOrders = (props) => {
   }, [statusMessage, action]);
 
   const handleAddButton = () => {
+    setContentLoading(true)
     const payload = {
       company,
       fnCallback: (response) => {
@@ -106,7 +120,7 @@ const SalesOrders = (props) => {
             if(response.data.length === 0){
               Modal.warning({
                 title: NO_DATA_FOUND,
-                content: NO_DATA_FOUND_DESC(response.config.url.split(/[\/?]/g)[1])
+                content: NO_DATA_FOUND_DESC(response.config.url.split(/[/?]/g)[1])
               })
             }
             break;
@@ -129,12 +143,21 @@ const SalesOrders = (props) => {
       if(typeof data.payload !== 'undefined'){
         if(data.payload.status === 200 && data.payload.data.length !== 0){
           dispatch(listClient(payload)).then((data) => {
-            if(typeof data.payload !== 'undefined'){
-              if(data.payload.status === 200 && data.payload.data.length !== 0){
-                history.push(`${path}/new`);
-              }
+            if(data.payload.status === 200 && data.payload.data.length !== 0){
+              dispatch(listProductInventory(payload)).then((data) => {
+                if(data.payload.status === 200 && data.payload.data.length !== 0){
+                  history.push(`${path}/new`);
+                  setContentLoading(false);
+                } else if(data.payload.status === 200 && data.payload.data.length === 0) {
+                  setContentLoading(false);
+                }
+              })
+            } else if(data.payload.status === 200 && data.payload.data.length === 0) {
+              setContentLoading(false);
             }
           })
+        } else if(data.payload.status === 200 && data.payload.data.length === 0) {
+          setContentLoading(false);
         }
       }
     })
@@ -162,16 +185,72 @@ const SalesOrders = (props) => {
   }
 
   const onCreate = (value) => {
+    const salesOrderPayload = {
+      company,
+      fnCallback: (response) => {
+        const {status} = response;
+        switch(status){
+          case 200:
+            if(response.data.length === 0){
+              message.warning(response.statusText);
+              setContentLoading(false);
+            }else{
+              setContentLoading(false);
+            }
+            break;
+          case 400:
+          case 500: 
+            history.push({
+              pathname: `/error/${status === 400 ? 403 : status}`,
+              state: {
+                moduleList: '/sales'
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
     dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
-      dispatch(listSalesOrder({ company, message }));
+      dispatch(listSalesOrder(salesOrderPayload));
     });
   };
 
   const onUpdate = (value) => {
+    const salesOrderPayload = {
+      company,
+      fnCallback: (response) => {
+        const {status} = response;
+        switch(status){
+          case 200:
+            if(response.data.length === 0){
+              message.warning(response.statusText);
+              setContentLoading(false);
+            }else{
+              setContentLoading(false);
+            }
+            break;
+          case 400:
+          case 500: 
+            history.push({
+              pathname: `/error/${status === 400 ? 403 : status}`,
+              state: {
+                moduleList: '/sales'
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
     const order = formatPayload(id, company, value);
     order.id = orderId;
     dispatch(updateSalesOrder(order)).then(() => {
-      dispatch(listSalesOrder({ company, message }));
+      dispatch(listSalesOrder(salesOrderPayload));
     });
   };
 

@@ -6,7 +6,6 @@ const baseURL = 'http://18.222.158.28:9000/';
 
 const instance = axios.create({
   baseURL,
-  timeout: 5000,
 });
 
 instance.defaults.headers.post['Content-Type'] = 'application/json';

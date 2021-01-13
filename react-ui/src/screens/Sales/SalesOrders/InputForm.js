@@ -15,36 +15,39 @@ import {
 import Layout from 'antd/lib/layout/layout';
 import { useForm } from 'antd/lib/form/Form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash';
 import { formDetails, tableProduct, tableProductInventory, initValueForm } from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList, fromatInitForm } from '../../../helpers/general-helper';
 import { formatProduct, formatProductCalc } from './helpers';
-
-import { listDepot } from '../../Maintenance/Depots/redux';
-import { listClient } from '../../Maintenance/Clients/redux';
 import { listProductInventory } from '../../Maintenance/redux/productInventory';
 
 const { Title } = Typography;
 
 const InputForm = (props) => {
-  const { title, company, onSubmit } = props;
+  const { title, onSubmit } = props;
   const { id } = useParams();
   const [form] = useForm();
   const history = useHistory();
+  const { path } = useRouteMatch();
+  
   const [contentLoading, setContentLoading] = useState(true);
   const [modalContentLoading, setModalContentLoading] = useState(true);
   const [productModal, setProductModal] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
+  const [productInv, setProductInv] = useState([]);
   const [requestedProductList, setRequestedProductList] = useState([]);
+ 
   const { user } = useSelector((state) => state.auth);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
   const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
+
   const dispatch = useDispatch();
+
   const component = {
     body: {
       cell: EditableCell,
@@ -65,26 +68,34 @@ const InputForm = (props) => {
   }, [salesOrderList, id, form]);
 
   useEffect(() => {
-    dispatch(listDepot()).then(() => {
-      form.setFieldsValue({
-        preparedBy: `${user.firstName} ${user.lastName}`,
-        approvedBy: `${user.firstName} ${user.lastName}`,
-        requestedBy: `${user.firstName} ${user.lastName}`,
-      });
-      dispatch(listClient({ company })).then(() => {
-        setContentLoading(false);
-      });
+    form.setFieldsValue({
+      preparedBy: `${user.firstName} ${user.lastName}`,
+      approvedBy: `${user.firstName} ${user.lastName}`,
+      requestedBy: `${user.firstName} ${user.lastName}`,
     });
-  }, [dispatch, user, company, form]);
+    
+    setContentLoading(false);
+  }, [user, form]);
 
   useEffect(() => {
     const newForm = tempFormDetails;
+    const formItem = _.find(newForm.form_items, {name: 'depot'});
     const masterList = {
       depot: depotList,
       client: clientList,
     };
+
+    const handleDepotChange = (value) => {
+      form.setFieldsValue({product: []});
+      setRequestedProductList([]);
+      setProductInv(_.filter(productInventoryList, (o) => {
+        return o.depot.id === value;
+      }));
+    }
+
+    formItem.onChange = (e) => handleDepotChange(e);
     setTempFormDetails(updateList(newForm, masterList));
-  }, [depotList, clientList, tempFormDetails]);
+  }, [depotList, clientList, tempFormDetails, productInventoryList, form]);
 
   const selectProductItems = () => {
     setProductModal(true);
@@ -193,6 +204,11 @@ const InputForm = (props) => {
     }
   };
 
+  const onFail = () =>{
+    console.log("Failed")
+    history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
+  }
+  
   const onFinish = () => {
     onSubmit(form.getFieldsValue());
     history.goBack();
@@ -211,7 +227,7 @@ const InputForm = (props) => {
             <Layout style={styles.layout}>
               <Form form={form} onFinish={onFinish} {...styles.formLayout}>
                 {_.dropRight(tempFormDetails.form_items).map((item) => (
-                  <FormItem key={item.name} item={item} />
+                  <FormItem key={item.name} onFail={onFail} item={item} />
                 ))}
                 <Form.Item
                   wrapperCol={{ span: 15, offset: 4 }}
@@ -236,7 +252,7 @@ const InputForm = (props) => {
                     Select/Remove Product item(s)
                   </Button>
                 </Form.Item>
-                <FormItem item={_.last(formDetails.form_items)} />
+                <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
                     <Button htmlType="button" onClick={() => history.goBack()}>
@@ -264,7 +280,7 @@ const InputForm = (props) => {
           ) : (
             <Table
               columns={renderProductItemColumns(tableProductInventory)}
-              dataSource={productInventoryList}
+              dataSource={productInv}
               pagination={false}
             />
           )}
