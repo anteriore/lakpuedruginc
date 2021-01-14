@@ -52,6 +52,16 @@ public class UserRestController {
         return userRepository.save(user);
     }
 
+    @PostMapping("/permissions/{newuser}")
+    public User editPermissions(@PathVariable User newuser ) {
+        User user = userRepository.getOne(newuser.getId());
+
+        user.setPermissions(newuser.getPermissions());
+
+        return userRepository.save(user);
+ 
+    }
+
     @GetMapping("/company/{id}")
     public List<User> listByCompany(@PathVariable Long id) {
         Company company = companyRepository.getOne(id);
