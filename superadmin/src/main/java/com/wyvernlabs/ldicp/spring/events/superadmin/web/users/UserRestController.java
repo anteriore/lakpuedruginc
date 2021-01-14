@@ -52,8 +52,8 @@ public class UserRestController {
         return userRepository.save(user);
     }
 
-    @PostMapping("/permissions/{newuser}")
-    public User editPermissions(@PathVariable User newuser ) {
+    @PostMapping("/permissions/")
+    public User editPermissions(@RequestBody User newuser ) {
         User user = userRepository.getOne(newuser.getId());
 
         user.setPermissions(newuser.getPermissions());
