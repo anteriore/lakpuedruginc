@@ -10,7 +10,7 @@ import {
   Row,
   Typography,
   Space,
-  Radio
+  Radio,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
@@ -34,20 +34,27 @@ const FormItem = ({ item, onFail, formMode }) => {
     }
 
     if (item.choices === null || typeof item.choices === 'undefined' || item.choices.length === 0) {
-      onFail()
+      onFail();
       return null;
     }
 
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
-        <Select 
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        rules={item.rules}
+        initialValue={item.initialValue}
+      >
+        <Select
           showSearch={item.type === 'selectSearch'}
           onChange={item.onChange}
           placeholder={item.placeholder}
           optionFilterProp="children"
         >
           {item.choices.map((choice) => (
-            <Select.Option key={choice.id} value={choice.id}>{item.render(choice)}</Select.Option>
+            <Select.Option key={choice.id} value={choice.id}>
+              {item.render(choice)}
+            </Select.Option>
           ))}
         </Select>
       </Form.Item>
@@ -55,14 +62,24 @@ const FormItem = ({ item, onFail, formMode }) => {
   }
   if (item.type === 'textArea') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        rules={item.rules}
+        initialValue={item.initialValue}
+      >
         <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
       </Form.Item>
     );
   }
   if (item.type === 'number') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        rules={item.rules}
+        initialValue={item.initialValue}
+      >
         <InputNumber
           style={styles.inputNumber}
           min={item.min}
@@ -74,7 +91,12 @@ const FormItem = ({ item, onFail, formMode }) => {
   }
   if (item.type === 'date') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        rules={item.rules}
+        initialValue={item.initialValue}
+      >
         <DatePicker format={dateFormat} style={styles.datePicker} />
       </Form.Item>
     );
@@ -110,23 +132,33 @@ const FormItem = ({ item, onFail, formMode }) => {
     }
 
     if (item.choices === null || typeof item.choices === 'undefined' || item.choices.length === 0) {
-      onFail()
+      onFail();
       return null;
     }
 
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
-        <Radio.Group style={{float: 'left'}}>
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        rules={item.rules}
+        initialValue={item.initialValue}
+      >
+        <Radio.Group style={{ float: 'left' }}>
           {item.choices.map((choice) => (
             <Radio.Button value={choice.id}>{item.render(choice)}</Radio.Button>
           ))}
         </Radio.Group>
       </Form.Item>
-    )
+    );
   }
   if (item.type === 'checkList') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        rules={item.rules}
+        initialValue={item.initialValue}
+      >
         <Checkbox.Group style={styles.inputCheckList}>
           {item.choices.map((choice) => (
             <Row>
@@ -241,16 +273,8 @@ const FormItem = ({ item, onFail, formMode }) => {
   }
 
   return (
-    <Item 
-      label={item.label} 
-      name={item.name} 
-      rules={item.rules}
-      initialValue={item.initialValue}
-    >
-      <Input 
-        disabled={item.type === 'readOnly' || item.readOnly} 
-        placeholder={item.placeholder}
-      />
+    <Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
+      <Input disabled={item.type === 'readOnly' || item.readOnly} placeholder={item.placeholder} />
     </Item>
   );
 };

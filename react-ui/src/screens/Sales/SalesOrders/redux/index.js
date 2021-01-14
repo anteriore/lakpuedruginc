@@ -2,36 +2,35 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listSalesOrder = createAsyncThunk(
-  'listSalesOrder',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const {company, fnCallback} = payload;
-    const response = await axiosInstance.get(
-      `/rest/sales-orders/company/${company}?token=${accessToken}`
-    );
+export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, fnCallback } = payload;
+  const response = await axiosInstance.get(
+    `/rest/sales-orders/company/${company}?token=${accessToken}`
+  );
 
-    if (typeof response !== 'undefined') {
-      const { status } = response
-      if (status === 200){        
-        if (response.data.length === 0){
-          response.statusText = `${message.API_200_EMPTY} in sales order.`
-        }else{
-          response.statusText = `${message.API_200_SUCCESS} in sales order.`
-        }
-        fnCallback(response)
-        return response;
+  if (typeof response !== 'undefined') {
+    const { status } = response;
+    if (status === 200) {
+      if (response.data.length === 0) {
+        response.statusText = `${message.API_200_EMPTY} in sales order.`;
+      } else {
+        response.statusText = `${message.API_200_SUCCESS} in sales order.`;
       }
+      fnCallback(response);
+      return response;
+    }
 
-      if (status === 500 || status === 400) {
-        fnCallback(response);
-        return thunkAPI.rejectWithValue(response);
-      }
-    } else {
+    if (status === 500 || status === 400) {
+      fnCallback(response);
       return thunkAPI.rejectWithValue(response);
     }
+  } else {
+    return thunkAPI.rejectWithValue(response);
   }
-);
+
+  return response;
+});
 
 export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -55,24 +54,30 @@ export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payl
   return response;
 });
 
-export const approveSalesOrder = createAsyncThunk('approveSalesOrder', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/sales-orders/approve/${payload}?token=${accessToken}`);
+export const approveSalesOrder = createAsyncThunk(
+  'approveSalesOrder',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `/rest/sales-orders/approve/${payload}?token=${accessToken}`
+    );
 
-  return response;
-})
+    return response;
+  }
+);
 
 export const rejectSalesOrder = createAsyncThunk('rejectSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/sales-orders/reject/${payload}?token=${accessToken}`);
+  const response = await axiosInstance.post(
+    `/rest/sales-orders/reject/${payload}?token=${accessToken}`
+  );
 
   return response;
-})
+});
 
 export const listSalesOrderByDepot = createAsyncThunk(
   'listSalesOrderByDepot',
   async (payload, thunkAPI, rejectWithValue) => {
-    console.log(payload, 'Getting Payload');
     const accessToken = thunkAPI.getState().auth.token;
     const response = await axiosInstance.get(
       `/rest/sales-orders/depot/${payload}?token=${accessToken}`

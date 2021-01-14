@@ -155,7 +155,7 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please login a valid user' }],
       placeholder: '',
       type: 'readOnly',
-      writeOnly: true
+      writeOnly: true,
     },
     {
       label: 'Approved By',
@@ -163,7 +163,7 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please login a valid user' }],
       placeholder: '',
       type: 'readOnly',
-      writeOnly: true
+      writeOnly: true,
     },
     {
       label: 'Requested By',
@@ -171,7 +171,7 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please login a valid user' }],
       placeholder: '',
       type: 'readOnly',
-      writeOnly: true
+      writeOnly: true,
     },
     {
       label: 'Status',

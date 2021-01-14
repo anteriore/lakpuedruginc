@@ -25,14 +25,15 @@ export const ITEM_DELETE_FULFILLED = 'Successfully deleted specified item';
 export const ITEM_DELETE_REJECTED = 'Failed to delete specified item';
 
 // response messages
-export const API_401 = 'Sorry, you are not authorized to access this page.'
-export const API_500 = 'Sorry, something went wrong to the server.'
+export const API_401 = 'Sorry, you are not authorized to access this page.';
+export const API_500 = 'Sorry, something went wrong to the server.';
 export const API_200_EMPTY = 'There are no datas saved';
 export const API_200_SUCCESS = 'Success fetching list';
-export const API_UNDEFINED = 'Undefined response.'
+export const API_UNDEFINED = 'Undefined response.';
 
-//Titles
-export const NO_DATA_FOUND = 'No Data Found!'
+// Titles
+export const NO_DATA_FOUND = 'No Data Found!';
 
 // Description
-export const NO_DATA_FOUND_DESC = (tableName) => `Sorry, it appears that we can't retrieve any data from ${tableName} because the table is currently empty. Please go to ${tableName} page to create some data.`
+export const NO_DATA_FOUND_DESC = (tableName) =>
+  `Sorry, it appears that we can't retrieve any data from ${tableName} because the table is currently empty. Please go to ${tableName} page to create some data.`;

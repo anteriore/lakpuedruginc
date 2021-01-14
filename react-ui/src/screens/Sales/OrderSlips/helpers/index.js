@@ -93,15 +93,15 @@ export const formatPayload = (approvalId, company, value, salesOrder, orderedPro
     type: 'OS',
     orderedProducts: [],
   };
-  
+
   orderedProducts.forEach((orderedProduct) => {
     formattedValue.orderedProducts.push({
-      product: {id: orderedProduct.product.id},
+      product: { id: orderedProduct.product.id },
       quantity: orderedProduct.quantityRequested,
       salesOrderProductId: orderedProduct.id,
       unitPrice: orderedProduct.unitPrice,
-      depot: {id: salesOrder.depot.id},
-      amount: orderedProduct.quantityRequested * orderedProduct.unitPrice
+      depot: { id: salesOrder.depot.id },
+      amount: orderedProduct.quantityRequested * orderedProduct.unitPrice,
     });
   });
 

@@ -1,11 +1,7 @@
 import React from 'react';
 
 const ModalDescription = () => {
-  return(
-    <>
-      Modal Description
-    </>
-  )
-}
+  return <>Modal Description</>;
+};
 
 export default ModalDescription;

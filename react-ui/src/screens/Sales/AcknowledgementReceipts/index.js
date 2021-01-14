@@ -44,7 +44,6 @@ const AcknowledgementReceipts = (props) => {
       dispatch(clearDepot());
       dispatch(clearOrderSlips());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -53,17 +52,17 @@ const AcknowledgementReceipts = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          dispatch(listOrderSlips({ company, message })).then(() => {
-            history.push(`${path}/new`);
-            setLoading(false);
-          })
-        })
+      dispatch(listDepot({ company, message })).then(() => {
+        dispatch(listOrderSlips({ company, message })).then(() => {
+          history.push(`${path}/new`);
+          setLoading(false);
+        });
+      });
     });
   };
 
   const handleUpdate = (data) => {
-    message.error("Unable to perform action.")
+    message.error('Unable to perform action.');
     /*
     setFormTitle('Edit Acknowledgement Receipt');
     setFormMode('edit');
@@ -110,15 +109,15 @@ const AcknowledgementReceipts = (props) => {
   };
 
   const onSubmit = (data) => {
-    var payments = []
+    const payments = [];
     data.payments.forEach((payment) => {
       payments.push({
         reference: {
-          ...payment
+          ...payment,
         },
-        appliedAmount: payment.appliedAmount
-      })
-    })
+        appliedAmount: payment.appliedAmount,
+      });
+    });
 
     const payload = {
       ...data,
@@ -132,9 +131,9 @@ const AcknowledgementReceipts = (props) => {
         id: data.client,
       },
       preparedBy: {
-        id: user.id
+        id: user.id,
       },
-      payments: payments
+      payments,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -254,8 +253,8 @@ const AcknowledgementReceipts = (props) => {
                 >
                   {formDetails.form_items.map((item) => {
                     if (!item.writeOnly) {
-                      if(selectedAR[item.name] === null && item.toggle){
-                        return null
+                      if (selectedAR[item.name] === null && item.toggle) {
+                        return null;
                       }
                       if (item.type === 'select' || item.type === 'selectSearch') {
                         const itemData = selectedAR[item.name];

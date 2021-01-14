@@ -44,8 +44,6 @@ export const formatPayload = (approvalId, company, value) => {
   let totalQuantity = 0;
   let formattedValue = {};
 
-  console.log(value.status);
-
   formattedValue = {
     ...formattedValue,
     company: { id: company },

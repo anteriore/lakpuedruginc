@@ -9,16 +9,16 @@ export const listProductInventory = createAsyncThunk(
     const accessToken = thunkAPI.getState().auth.token;
     const { fnCallback } = payload;
     const response = await axiosInstance.get(`rest/product-inventory?token=${accessToken}`);
-    
-    if (typeof response !== 'undefined'){
+
+    if (typeof response !== 'undefined') {
       const { status } = response;
-      if (status === 200){        
-        if (response.data.length === 0){
-          response.statusText = `${message.API_200_EMPTY} in clients`
-        }else{
-          response.statusText = `${message.API_200_SUCCESS} in clients`
+      if (status === 200) {
+        if (response.data.length === 0) {
+          response.statusText = `${message.API_200_EMPTY} in clients`;
+        } else {
+          response.statusText = `${message.API_200_SUCCESS} in clients`;
         }
-        fnCallback(response)
+        fnCallback(response);
         return response;
       }
 
@@ -26,23 +26,28 @@ export const listProductInventory = createAsyncThunk(
         fnCallback(response);
         return thunkAPI.rejectWithValue(response);
       }
-    }else{
+    } else {
       const newReponse = {
         status: 500,
-        statusText: message.API_UNDEFINED
-      }
+        statusText: message.API_UNDEFINED,
+      };
       fnCallback(newReponse);
       return thunkAPI.rejectWithValue(response);
     }
   }
 );
 
-export const listProductInventoryByDepot = createAsyncThunk('listProductInventoryByDepot', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/product-inventory/depot/${payload}?token=${accessToken}`);
+export const listProductInventoryByDepot = createAsyncThunk(
+  'listProductInventoryByDepot',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `/rest/product-inventory/depot/${payload}?token=${accessToken}`
+    );
 
-  return response;
-});
+    return response;
+  }
+);
 
 const initialState = {
   list: [],

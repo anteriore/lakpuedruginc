@@ -271,7 +271,7 @@ const FormDetails = () => {
       data: 'requestedItems',
     },
     getValues: (values) => {
-      return values.orderedItems
+      return values.orderedItems;
     },
     processData: (data) => {
       const processedData = [];

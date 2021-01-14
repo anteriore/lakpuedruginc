@@ -23,7 +23,6 @@ import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList, fromatInitForm } from '../../../helpers/general-helper';
 import { formatProduct, formatProductCalc } from './helpers';
 
-
 const { Title } = Typography;
 
 const InputForm = (props) => {
@@ -32,13 +31,13 @@ const InputForm = (props) => {
   const [form] = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  
+
   const [contentLoading, setContentLoading] = useState(true);
   const [productModal, setProductModal] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [productInv, setProductInv] = useState([]);
   const [requestedProductList, setRequestedProductList] = useState([]);
- 
+
   const { user } = useSelector((state) => state.auth);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
@@ -61,9 +60,11 @@ const InputForm = (props) => {
       form.setFieldsValue(fromatInitForm(selectedSales, initValueForm));
       form.setFieldsValue({ product: formatProductCalc(selectedSales.products) });
       setRequestedProductList(formatProductCalc(selectedSales.products));
-      setProductInv(_.filter(productInventoryList, (o) => {
-        return o.depot.id === selectedSales.depot.id;
-      }));
+      setProductInv(
+        _.filter(productInventoryList, (o) => {
+          return o.depot.id === selectedSales.depot.id;
+        })
+      );
     }
   }, [salesOrderList, id, form, productInventoryList]);
 
@@ -73,25 +74,27 @@ const InputForm = (props) => {
       approvedBy: `${user.firstName} ${user.lastName}`,
       requestedBy: `${user.firstName} ${user.lastName}`,
     });
-    
+
     setContentLoading(false);
   }, [user, form]);
 
   useEffect(() => {
     const newForm = tempFormDetails;
-    const formItem = _.find(newForm.form_items, {name: 'depot'});
+    const formItem = _.find(newForm.form_items, { name: 'depot' });
     const masterList = {
       depot: depotList,
       client: clientList,
     };
 
     const handleDepotChange = (value) => {
-      form.setFieldsValue({product: []});
+      form.setFieldsValue({ product: [] });
       setRequestedProductList([]);
-      setProductInv(_.filter(productInventoryList, (o) => {
-        return o.depot.id === value;
-      }));
-    }
+      setProductInv(
+        _.filter(productInventoryList, (o) => {
+          return o.depot.id === value;
+        })
+      );
+    };
 
     formItem.onChange = (e) => handleDepotChange(e);
     setTempFormDetails(updateList(newForm, masterList));
@@ -204,11 +207,10 @@ const InputForm = (props) => {
     }
   };
 
-  const onFail = () =>{
-    console.log("Failed")
+  const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
-  }
-  
+  };
+
   const onFinish = () => {
     onSubmit(form.getFieldsValue());
     history.goBack();
