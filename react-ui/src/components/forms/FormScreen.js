@@ -24,23 +24,30 @@ const FormScreen = (props) => {
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const hasTable = (formTable !== null && typeof formTable !== 'undefined');
+
   const [tableData, setTableData] = useState(null);
-  const hasTable = formTable !== null && typeof formTable !== 'undefined';
+  const [toggleValue, setToggleValue] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
+  const toggleName = formDetails.toggle_name
+
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable && values !== null) {
-      setTableData(values[formTable.name]);
+      setTableData(formTable.getValues(values));
     }
-    // eslint-disable-next-line
+    if(values !== null && toggleName !== null && typeof toggleName !== 'undefined'){
+      setToggleValue(values[toggleName]);
+    }
+  // eslint-disable-next-line
   }, [values, form]);
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
-      if (item.type === 'date') {
+      if (item.type === 'date' && typeof data[item.name] !== 'undefined' && data[item.name] !== null) {
         data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format(
           'HH:mm:ss'
         )}`;
@@ -61,7 +68,7 @@ const FormScreen = (props) => {
 
   const handleTableChange = (item, index, event) => {
     const data = { ...tableData };
-    const row = data[index];
+    var row = data[index];
     row[item] = event;
     const dataArray = [];
     for (const [, value] of Object.entries(data)) {
@@ -115,7 +122,7 @@ const FormScreen = (props) => {
               }
 
               if (field.choices === null || field.choices.length === 0) {
-                history.push(`/${path.split('/')[1]}`);
+                onFail()
                 return null;
               }
               return (
@@ -218,8 +225,16 @@ const FormScreen = (props) => {
   };
 
   const onFail = () => {
-    history.push(`/${path.split('/')[1]}`);
-  };
+    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
+  }
+
+  const onValuesChange = (values) => {
+    if(toggleName !== null && typeof toggleName !== 'undefined'){
+      if(typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]){
+        setToggleValue(values[toggleName])
+      }
+    }
+  }
 
   return (
     <>
@@ -235,10 +250,19 @@ const FormScreen = (props) => {
             name={formDetails.form_name}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            onValuesChange={onValuesChange}
           >
-            {formDetails.form_items.map((item) => (
-              <FormItem item={item} onFail={onFail} />
-            ))}
+            {formDetails.form_items.map((item) => {
+              if(item.toggle){
+                if(item.toggleCondition(toggleValue)){
+                    return <FormItem item={item} onFail={onFail}/>
+                }
+                else return null
+              }
+              else {
+                  return <FormItem item={item} onFail={onFail}/>
+              }
+            })}
           </Form>
           {hasTable && (
             <Col span={20} offset={1}>

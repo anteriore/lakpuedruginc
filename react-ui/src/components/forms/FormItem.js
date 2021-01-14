@@ -10,6 +10,7 @@ import {
   Row,
   Typography,
   Space,
+  Radio
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
@@ -32,14 +33,14 @@ const FormItem = ({ item, onFail, formMode }) => {
       }
     }
 
-    if (item.choices === null || item.choices.length === 0) {
-      onFail();
+    if (item.choices === null || typeof item.choices === 'undefined' || item.choices.length === 0) {
+      onFail()
       return null;
     }
 
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules}>
-        <Select
+      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
+        <Select 
           showSearch={item.type === 'selectSearch'}
           onChange={item.onChange}
           placeholder={item.placeholder}
@@ -54,14 +55,14 @@ const FormItem = ({ item, onFail, formMode }) => {
   }
   if (item.type === 'textArea') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
         <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
       </Form.Item>
     );
   }
   if (item.type === 'number') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
         <InputNumber
           style={styles.inputNumber}
           min={item.min}
@@ -73,7 +74,7 @@ const FormItem = ({ item, onFail, formMode }) => {
   }
   if (item.type === 'date') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
         <DatePicker format={dateFormat} style={styles.datePicker} />
       </Form.Item>
     );
@@ -95,9 +96,37 @@ const FormItem = ({ item, onFail, formMode }) => {
 
     return null;
   }
+  if (item.type === 'radioGroup') {
+    if (typeof item.render === 'undefined') {
+      if (typeof item.selectName === 'undefined') {
+        item.selectName = 'name';
+      }
+
+      if (item.selectName === 'codename') {
+        item.render = (choice) => `[${choice.code}] ${choice.name}`;
+      } else {
+        item.render = (choice) => choice[item.selectName];
+      }
+    }
+
+    if (item.choices === null || typeof item.choices === 'undefined' || item.choices.length === 0) {
+      onFail()
+      return null;
+    }
+
+    return (
+      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
+        <Radio.Group style={{float: 'left'}}>
+          {item.choices.map((choice) => (
+            <Radio.Button value={choice.id}>{item.render(choice)}</Radio.Button>
+          ))}
+        </Radio.Group>
+      </Form.Item>
+    )
+  }
   if (item.type === 'checkList') {
     return (
-      <Form.Item label={item.label} name={item.name} rules={item.rules}>
+      <Form.Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
         <Checkbox.Group style={styles.inputCheckList}>
           {item.choices.map((choice) => (
             <Row>
@@ -212,8 +241,16 @@ const FormItem = ({ item, onFail, formMode }) => {
   }
 
   return (
-    <Item label={item.label} name={item.name} rules={item.rules}>
-      <Input disabled={item.type === 'readOnly'} placeholder={item.placeholder} />
+    <Item 
+      label={item.label} 
+      name={item.name} 
+      rules={item.rules}
+      initialValue={item.initialValue}
+    >
+      <Input 
+        disabled={item.type === 'readOnly' || item.readOnly} 
+        placeholder={item.placeholder}
+      />
     </Item>
   );
 };

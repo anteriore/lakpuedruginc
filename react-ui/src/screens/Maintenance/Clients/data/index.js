@@ -47,7 +47,7 @@ const FormDetails = () => {
   );
 
   const formDetails = {
-    form_name: 'pdc_disbursement',
+    form_name: 'client',
     form_items: [
       {
         label: 'Name',
