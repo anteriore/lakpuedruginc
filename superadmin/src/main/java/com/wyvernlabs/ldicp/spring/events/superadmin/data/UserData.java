@@ -41,6 +41,7 @@ public class UserData {
         u.setEmail("katharine@yahoo.com");
         u.setMiddleInitial("M");
         u.setPassword(passwordEncoder.encode("test"));
+        //u.setPassword("test");
         u.setActive(true);
         u.setCompany(c1);
         u.setDepartment(d1);
