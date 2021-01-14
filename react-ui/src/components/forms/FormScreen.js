@@ -264,7 +264,7 @@ const FormScreen = (props) => {
               }
             })}
           </Form>
-          {hasTable && (
+          {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
             <Col span={20} offset={1}>
               <div style={{ float: 'right', marginBottom: '1%' }}>
                 <Button

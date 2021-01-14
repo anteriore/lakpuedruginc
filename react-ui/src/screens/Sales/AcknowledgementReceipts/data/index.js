@@ -1,6 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Table, Typography } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { Table, Typography, message } from 'antd';
+import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
 
 const { Text } = Typography;
 
@@ -53,6 +54,7 @@ export const columns = [
 ];
 
 const FormDetails = () => {
+  const dispatch = useDispatch();
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
@@ -83,6 +85,9 @@ const FormDetails = () => {
         choices: depots,
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
+        onChange: (e) => {
+          dispatch(listOrderSlipsByDepot({message, depot: e}))
+        }
       },
       {
         label: 'Client',
@@ -146,6 +151,7 @@ const FormDetails = () => {
         label: 'Amount Paid',
         name: 'amountPaid',
         type: 'number',
+        min: 0,
         rules: [{ required: true }],
       },
       {
@@ -172,6 +178,7 @@ const FormDetails = () => {
     name: 'payments',
     key: 'id',
     rules: [{ required: true }],
+    isVisible: orderSlips.length > 0 ? true : false,
     fields: [
       {
         label: 'Type',
@@ -272,7 +279,7 @@ const FormDetails = () => {
       return payments
     },
     processData: (data) => {
-      return data;
+      return {...data, appliedAmount: 0};
     },
     checkSelected: (selectedData, rowData) => {
       if (
