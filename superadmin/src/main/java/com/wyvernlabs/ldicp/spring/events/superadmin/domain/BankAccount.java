@@ -18,12 +18,23 @@ public class BankAccount {
 	private String code;
 	private String name;
 	private String address;
+	private String accountNumber;
 
+	public BankAccount(){
+		
+	}
+
+	public BankAccount(String id, String code, String name) {
+		this.accountNumber =id;
+		this.code = code;
+		this.name = name;
+
+	}
 	public Long getId() {
 		return id;
 	}
 
-	public void setId(final Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

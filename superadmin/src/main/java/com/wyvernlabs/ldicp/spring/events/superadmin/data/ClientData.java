@@ -14,6 +14,14 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ClientRepository
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesRepRepository;
 
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+
+
 @Component
 public class ClientData {
 	private CompanyRepository companyRepository;
@@ -39,6 +47,9 @@ public class ClientData {
 		client1.setTin("1234567890");
 		client1.setSalesRep(salesRep1);
 		clientRepository.save(client1);
+
+
+		
 
 		
 		Client client2 = new Client();
@@ -93,7 +104,97 @@ public class ClientData {
 
 		client3.setClientReferencesList(referencesList);
 		clientRepository.save(client3);
+
+
+
+
+		//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
+	
+		//Client clientN = new Client("CM1","shollibee","Shmadress","SHmoprietor","teliphone1010101",30,"tin1020","vat1010");
+		//clientRepository.save(clientN);
+		
+	
+
+
+		readCSV("x");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
+
+
+
+
+
+
+	public void readCSV(String pathToCsv){
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/clientData.csv";
+		BufferedReader br = null;
+		Company company = companyRepository.getOne(1L);
+        String line = "";
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		
+        try {				
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
+
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+				//for (int i = 0; i < data.length; i++) {
+					//System.out.print(i+")["+ data[i].replace("\"", "")+"]" );
+					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
+
+					Client tempclient = new Client();
+
+					tempclient.setCompany(company);
+					tempclient.setCode(data[0].replace("\"", ""));
+					tempclient.setName(data[1].replace("\"", ""));
+					tempclient.setBusinessAddress(data[2].replace("\"", ""));tempclient.setDeliveryAddress(data[2].replace("\"", ""));
+					tempclient.setProprietor(data[3].replace("\"", ""));
+					tempclient.setTelephoneNumbers(data[4].replace("\"", ""));
+					tempclient.setTerms(Integer.parseInt( data[5].replace("\"", "")));
+					tempclient.setTin(data[6].replace("\"", ""));
+					tempclient.setVat(data[7].replace("\"", ""));
+					clientRepository.save(tempclient);
+
+
+
+
+				 // }
+				 // System.out.println("");
+              
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+	
+
+	}
+
+
+
 	
 	
 }

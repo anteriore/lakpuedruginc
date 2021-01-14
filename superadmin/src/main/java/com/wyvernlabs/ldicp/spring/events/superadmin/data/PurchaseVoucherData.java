@@ -58,7 +58,7 @@ public class PurchaseVoucherData {
 		accountTitleEntry.setAmount(50D);
 		accountTitleEntry.setDepartment(departmentRepository.getOne(2L));
 		accountTitleEntry.setArea(areaRepository.getOne(2L));
-		accountTitleEntry.setGroup(groupRepository.getOne(2L));
+		accountTitleEntry.setGroup(groupRepository.getOne(1L));
 		accountTitles.add(accountTitleEntry);
 
 		pv.setCompany(companyRepository.getOne(1L));
@@ -74,6 +74,8 @@ public class PurchaseVoucherData {
 		pv.setManual(false);
 
 		purchaseVoucherService.savePurchaseVoucher(pv);
-		purchaseVoucherService.approvePurchaseVoucher(pv.getId(), 0L);
+		purchaseVoucherService.approvePurchaseVoucher(pv.getId(), 1L);
+
+
 	}
 }

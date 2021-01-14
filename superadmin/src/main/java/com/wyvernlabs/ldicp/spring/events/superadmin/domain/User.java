@@ -1,11 +1,17 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 
+import java.util.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.*;
+import com.wyvernlabs.ldicp.spring.events.superadmin.domain.*;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.crypto.bcrypt.BCrypt;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,15 +28,19 @@ public class User {
     private String middleInitial;
     private String email;
     private String password;
+    private boolean active = true;
     @OneToOne
     private Company company;
     private String employeeType;
     @OneToOne
     private Department department;
-    @OneToMany
+    @ManyToMany
     private Set<Depot> depots;
 
     private String[] roles;
+
+   // @Autowired
+   // private PasswordEncoder passwordEncoder;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapKey(name = "code")
@@ -97,11 +107,19 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+       
+        //this.password =  passwordEncoder.encode(password);
+        this.password=password;
     }
 
     public Company getCompany() {
         return company;
+    }
+    public void setActive(boolean active){
+        this.active=active;
+    }
+    public boolean getActive(){
+        return active;
     }
 
     public void setCompany(Company company) {
@@ -134,10 +152,18 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", middleInitial="
-                + middleInitial + ", email=" + email + ", password=" + password + ", company=" + company
-                + ", employeeType=" + employeeType + ", department=" + department + ", depots=" + depots + ", roles="
-                + Arrays.toString(roles) + ", permissions=" + permissions + "]";
+        return "User [id=" + id + 
+        ", firstName=" + firstName + 
+        ", lastName=" + lastName + 
+        ", middleInitial="  + middleInitial + 
+        ", email=" + email + 
+        ", password=" + "XD" + 
+        ", company=" + company  + 
+        ", employeeType=" + employeeType + 
+        ", department=" + department + 
+        ", depots=" + depots + 
+        ", roles="+ Arrays.toString(roles) + 
+        ", permissions=" + permissions + "]";
     }
 
 }

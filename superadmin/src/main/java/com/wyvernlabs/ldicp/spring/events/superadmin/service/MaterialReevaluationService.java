@@ -18,7 +18,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepositor
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.InventoryRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MaterialReevaluationRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.StockCardRepository;
-import com.wyvernlabs.ldicp.spring.events.superadmin.web.MaterialReevaluationRestController;
+import com.wyvernlabs.ldicp.spring.events.superadmin.web.dashboard.MaterialReevaluationRestController;
 
 @Component
 public class MaterialReevaluationService {
