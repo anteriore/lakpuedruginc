@@ -54,10 +54,8 @@ const AcknowledgementReceipts = (props) => {
     setLoading(true);
     dispatch(listClient({ company, message })).then(() => {
         dispatch(listDepot({ company, message })).then(() => {
-          dispatch(listOrderSlips({ company, message })).then(() => {
-            history.push(`${path}/new`);
-            setLoading(false);
-          })
+          history.push(`${path}/new`);
+          setLoading(false);
         })
     });
   };

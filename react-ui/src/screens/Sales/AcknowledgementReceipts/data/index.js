@@ -178,6 +178,7 @@ const FormDetails = () => {
     name: 'payments',
     key: 'id',
     rules: [{ required: true }],
+    isVisible: orderSlips.length > 0 ? true : false,
     fields: [
       {
         label: 'Type',
