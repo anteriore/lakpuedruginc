@@ -43,10 +43,8 @@ const companySlice = createSlice({
       };
     },
     [listCompany.rejected]: (state, action) => {
-      const { data } = action.payload;
       return {
         ...state,
-        companyList: data,
         status: 'Error',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,

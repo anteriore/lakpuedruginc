@@ -14,7 +14,7 @@ import {
 } from 'antd';
 import Layout from 'antd/lib/layout/layout';
 import { useForm } from 'antd/lib/form/Form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash';
 import { formDetails, tableProduct, tableProductInventory, initValueForm } from './data';
@@ -22,7 +22,7 @@ import FormItem from '../../../components/forms/FormItem';
 import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList, fromatInitForm } from '../../../helpers/general-helper';
 import { formatProduct, formatProductCalc } from './helpers';
-import { listProductInventory } from '../../Maintenance/redux/productInventory';
+
 
 const { Title } = Typography;
 
@@ -34,7 +34,6 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   
   const [contentLoading, setContentLoading] = useState(true);
-  const [modalContentLoading, setModalContentLoading] = useState(true);
   const [productModal, setProductModal] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [productInv, setProductInv] = useState([]);
@@ -45,8 +44,6 @@ const InputForm = (props) => {
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
   const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
-
-  const dispatch = useDispatch();
 
   const component = {
     body: {
@@ -64,8 +61,11 @@ const InputForm = (props) => {
       form.setFieldsValue(fromatInitForm(selectedSales, initValueForm));
       form.setFieldsValue({ product: formatProductCalc(selectedSales.products) });
       setRequestedProductList(formatProductCalc(selectedSales.products));
+      setProductInv(_.filter(productInventoryList, (o) => {
+        return o.depot.id === selectedSales.depot.id;
+      }));
     }
-  }, [salesOrderList, id, form]);
+  }, [salesOrderList, id, form, productInventoryList]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -99,10 +99,10 @@ const InputForm = (props) => {
 
   const selectProductItems = () => {
     setProductModal(true);
-    setModalContentLoading(true);
-    dispatch(listProductInventory()).then(() => {
-      setModalContentLoading(false);
-    });
+    // setModalContentLoading(true);
+    // dispatch(listProductInventory()).then(() => {
+    //   setModalContentLoading(false);
+    // });
   };
 
   const modProductColumn = tableProduct.map((col) => {
@@ -275,15 +275,11 @@ const InputForm = (props) => {
           cancelButtonProps={{ style: { display: 'none' } }}
           width={1000}
         >
-          {modalContentLoading ? (
-            <Skeleton />
-          ) : (
-            <Table
-              columns={renderProductItemColumns(tableProductInventory)}
-              dataSource={productInv}
-              pagination={false}
-            />
-          )}
+          <Table
+            columns={renderProductItemColumns(tableProductInventory)}
+            dataSource={productInv}
+            pagination={false}
+          />
         </Modal>
       </Row>
     </>
