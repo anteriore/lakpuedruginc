@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Typography, Col, Button, Skeleton, message, Modal, Descriptions} from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Row, Typography, Col, Button, Skeleton, message, Modal, Descriptions, Space} from 'antd';
+import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
@@ -15,6 +15,8 @@ import {
   updateSalesOrder,
   deleteSalesOrder,
   clearData,
+  approveSalesOrder,
+  rejectSalesOrder
 } from './redux';
 import { clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearClient } from '../../Maintenance/Clients/redux';
@@ -248,7 +250,78 @@ const SalesOrders = (props) => {
   const handleRetrieve = (data) => {
     setDisplayModal(true);
     setSelectedSO(data)
-    console.log(data, "Checking Sales")
+  }
+
+  const handleApprove = (data) => {
+    const salesOrderPayload = {
+      company,
+      fnCallback: (response) => {
+        const {status} = response;
+        switch(status){
+          case 200:
+            if(response.data.length === 0){
+              message.warning(response.statusText);
+              setContentLoading(false);
+            }else{
+              setContentLoading(false);
+            }
+            break;
+          case 400:
+          case 500: 
+            history.push({
+              pathname: `/error/${status === 400 ? 403 : status}`,
+              state: {
+                moduleList: '/sales'
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    console.log(data.id)
+    dispatch(approveSalesOrder(data.id)).then(() => {
+      dispatch(listSalesOrder(salesOrderPayload)).then(() => {
+        setDisplayModal(false);
+      });
+    })
+  }
+
+  const handleReject = (data) => {
+    const salesOrderPayload = {
+      company,
+      fnCallback: (response) => {
+        const {status} = response;
+        switch(status){
+          case 200:
+            if(response.data.length === 0){
+              message.warning(response.statusText);
+              setContentLoading(false);
+            }else{
+              setContentLoading(false);
+            }
+            break;
+          case 400:
+          case 500: 
+            history.push({
+              pathname: `/error/${status === 400 ? 403 : status}`,
+              state: {
+                moduleList: '/sales'
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
+    dispatch(rejectSalesOrder(data.id)).then(() => {
+      dispatch(listSalesOrder(salesOrderPayload)).then(() => {
+        setDisplayModal(false);
+      });
+    })
   }
 
   const onCreate = (value) => {
@@ -388,14 +461,14 @@ const SalesOrders = (props) => {
   
                     if (item.type === 'date') {
                       return (
-                        <Descriptions.Item label={item.label}>
+                        <Descriptions.Item key={i} label={item.label}>
                           {moment(new Date(selectedSO[item.name])).format('DD/MM/YYYY')}
                         </Descriptions.Item>
                       );
                     }  
 
                     return (
-                      <Descriptions.Item label={item.label}>
+                      <Descriptions.Item key={i} label={item.label}>
                         { typeof selectedSO[item.name] === 'object' && selectedSO[item.name] !== null ? selectedSO[item.name]['code'] : selectedSO[item.name]}
                       </Descriptions.Item>
                     );
@@ -435,6 +508,29 @@ const SalesOrders = (props) => {
                   </Descriptions>
                 )
               })}
+              {selectedSO.status === 'pending' && (
+                <> 
+                  <Space>
+                    <Button
+                      style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
+                      icon={<CheckOutlined />}
+                      onClick={() => handleApprove(selectedSO)}
+                      type="primary"
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      style={{ marginRight: '1%' }}
+                      icon={<CloseOutlined />}
+                      onClick={() => handleReject(selectedSO)}
+                      type="primary"
+                      danger
+                    >
+                      Reject
+                    </Button>
+                  </Space>
+                </>
+              )}
             </>
           )}
         </Modal>

@@ -47,7 +47,7 @@ const FormItem = ({ item, onFail, formMode }) => {
           optionFilterProp="children"
         >
           {item.choices.map((choice) => (
-            <Select.Option value={choice.id}>{item.render(choice)}</Select.Option>
+            <Select.Option key={choice.id} value={choice.id}>{item.render(choice)}</Select.Option>
           ))}
         </Select>
       </Form.Item>

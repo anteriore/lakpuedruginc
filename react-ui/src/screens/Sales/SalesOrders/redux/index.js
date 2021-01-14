@@ -55,6 +55,20 @@ export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payl
   return response;
 });
 
+export const approveSalesOrder = createAsyncThunk('approveSalesOrder', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.post(`/rest/sales-orders/approve/${payload}?token=${accessToken}`);
+
+  return response;
+})
+
+export const rejectSalesOrder = createAsyncThunk('rejectSalesOrder', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.post(`/rest/sales-orders/reject/${payload}?token=${accessToken}`);
+
+  return response;
+})
+
 export const listSalesOrderByDepot = createAsyncThunk(
   'listSalesOrderByDepot',
   async (payload, thunkAPI, rejectWithValue) => {
