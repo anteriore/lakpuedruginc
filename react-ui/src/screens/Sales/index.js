@@ -56,7 +56,7 @@ const Sales = () => {
         </Container>
       </Route>
       {SalesRoutes.map((module) => (
-        <Route path={path + module.path}>
+        <Route key={module.title} path={path + module.path}>
           <Container location={{ pathname: path + module.path }}>
             <module.component title={module.title} company={selectedCompany} />
           </Container>

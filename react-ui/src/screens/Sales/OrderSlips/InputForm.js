@@ -86,7 +86,6 @@ const InputForm = (props) => {
     };
 
     formItem.onChange = (e) => handleDepotChange(e);
-    console.log(formItem, 'Form Item depot with onChange');
     setTempFormDetails(updateList(newForm, masterList));
   }, [dispatch, depotList, tempFormDetails, form]);
 
