@@ -24,6 +24,28 @@ export const listOrderSlips = createAsyncThunk(
   }
 );
 
+export const listOrderSlipsByDepot = createAsyncThunk(
+  'listOrderSlipsByDepot',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `/rest/order-slips/depot/${payload.depot}?token=${accessToken}`
+    );
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for order slips from the selected depot');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
+
 export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.post(`/rest/order-slips?token=${accessToken}`, payload);
@@ -85,6 +107,38 @@ const orderSlipsSlice = createSlice({
       };
     },
     [listOrderSlips.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listOrderSlipsByDepot.pending]: (state) => {
+      return {
+        ...state,
+        status: 'loading',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_PENDING,
+      };
+    },
+    [listOrderSlipsByDepot.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for order slips from the selected depot';
+      }
+
+      return {
+        ...state,
+        orderSlipsList: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listOrderSlipsByDepot.rejected]: (state) => {
       return {
         ...state,
         status: 'failed',

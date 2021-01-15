@@ -53,10 +53,8 @@ const AcknowledgementReceipts = (props) => {
     setLoading(true);
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listOrderSlips({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
-        });
+        history.push(`${path}/new`);
+        setLoading(false);
       });
     });
   };
@@ -285,6 +283,54 @@ const AcknowledgementReceipts = (props) => {
                     return null;
                   })}
                 </Descriptions>
+                <Title
+                  level={5}
+                  style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
+                >
+                  Payment Details:
+                </Title>
+                {selectedAR[tableDetails.name].map((item) => {
+                  return (
+                    <Descriptions title={`${item.reference.number}`} size="default">
+                      {tableDetails.fields.map((field) => {
+                        if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+                          return null;
+                        }
+                        if (typeof field.render === 'function') {
+                          return (
+                            <Descriptions.Item label={field.label}>
+                              {field.render(item.reference)}
+                            </Descriptions.Item>
+                          );
+                        }
+                        if (field.type === 'select') {
+                          if (typeof field.selectName === 'undefined') {
+                            field.selectName = 'name';
+                          }
+                          const fieldData = item.reference[field.name];
+                          return (
+                            <Descriptions.Item label={field.label}>
+                              {fieldData[field.selectName]}
+                            </Descriptions.Item>
+                          );
+                        }
+                        if (field.name === 'appliedAmount') {
+                          return (
+                            <Descriptions.Item label={field.label}>
+                              {item.appliedAmount}
+                            </Descriptions.Item>
+                          );
+                        }
+
+                        return (
+                          <Descriptions.Item label={field.label}>
+                            {item.reference[field.name]}
+                          </Descriptions.Item>
+                        );
+                      })}
+                    </Descriptions>
+                  );
+                })}
               </>
             )}
           </Modal>
