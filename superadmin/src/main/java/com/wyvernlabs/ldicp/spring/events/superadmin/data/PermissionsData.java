@@ -98,15 +98,33 @@ public class PermissionsData {
         */
         
         Permission p1 = new Permission();
-        p1.setCategory("DASHBOARD");
+        p1.setCategory("Dashboard");
         p1.setSortOrder(0);
         ArrayList<PermissionSub> p1Subs = new ArrayList<>();
         p1Subs.add(new PermissionSub(null, "Purchase Requests", "purchase-requests", 1));
+        p1Subs.add(new PermissionSub(null, "Receiving Receipts", "receiving-receipts", 2));
+        p1Subs.add(new PermissionSub(null, "Approved Receipts", "approved-receipts", 3));
+        p1Subs.add(new PermissionSub(null, "Material Re-evaluations", "material-reevaluations", 4));
+        p1Subs.add(new PermissionSub(null, "Inventory", "inventory", 5));
+        p1Subs.add(new PermissionSub(null, "Material Issuance Slips", "material-issueance", 6));
+        p1Subs.add(new PermissionSub(null, "Material Receiving Slips", "material-receiving", 7));
+        p1Subs.add(new PermissionSub(null, "Inventory Movement Slips", "inventory-movement", 8));
+        p1Subs.add(new PermissionSub(null, "Product Movements", "product-movement", 9));
+        p1Subs.add(new PermissionSub(null, "Product Inventory", "product-inventory", 10));
+        p1Subs.add(new PermissionSub(null, "FG-IS", "fgis", 11));
+        p1Subs.add(new PermissionSub(null, "FG-RS", "fgrs", 12));
+        p1Subs.add(new PermissionSub(null, "Depot Inventory", "depot-inventory", 13));
+        p1Subs.add(new PermissionSub(null, "Employee", "employees", 14));
+        p1Subs.add(new PermissionSub(null, "Job Order", "job-orders", 15));
+        p1Subs.add(new PermissionSub(null, "Engineering Items", "engineering-items", 16));
+        p1Subs.add(new PermissionSub(null, "Engineering Inventory", "engineering-inventory", 17));
+        p1Subs.add(new PermissionSub(null, "Account Summary Reports", "account-summary", 18));
+        p1Subs.add(new PermissionSub(null, "Sales Reports", "sales-reports", 19));
         p1.setPermissionSubs(p1Subs);
         permissionRepository.save(p1);
 
         p1 = new Permission();
-        p1.setCategory("MAINTENANCE");
+        p1.setCategory("Maintenance");
         p1.setSortOrder(1);
         p1Subs = new ArrayList<>();
         p1Subs.add(new PermissionSub(null, "Finished Goods", "finished-goods", 1));
@@ -134,6 +152,19 @@ public class PermissionsData {
         p1Subs.add(new PermissionSub(null, "Product Categories", "product-categories", 23));
         p1.setPermissionSubs(p1Subs);
         permissionRepository.save(p1);
+
+        p1 = new Permission();
+        p1.setCategory("Sales");
+        p1.setSortOrder(2);
+        p1Subs = new ArrayList<>();
+        p1Subs.add(new PermissionSub(null, "Sales Orders", "sales-orders", 1));
+        p1Subs.add(new PermissionSub(null, "Order Slips", "order-slips", 2));
+        p1Subs.add(new PermissionSub(null, "Sales Invoices", "sales-invoices", 3));
+        p1Subs.add(new PermissionSub(null, "Acknowledgement Receipts", "acknowledgement-receipts", 4));
+        p1Subs.add(new PermissionSub(null, "Return Slips", "return-slips", 5));
+        p1Subs.add(new PermissionSub(null, "Sales Journal Vouchers", "sales-journal-vouchers", 6));
+        p1Subs.add(new PermissionSub(null, "Official Receipts", "official-receipts", 7));
+
         
     }
 }
