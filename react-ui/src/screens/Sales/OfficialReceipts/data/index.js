@@ -1,6 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Table, Typography } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { Table, Typography, message } from 'antd';
+import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
 
 const { Text } = Typography;
 
@@ -17,9 +18,58 @@ export const columns = [
     key: 'date',
     datatype: 'date',
   },
+  {
+    title: 'AR Number',
+    dataIndex: 'acknowledgementReceipt',
+    key: 'acknowledgementReceipt',
+    datatype: 'object',
+    name: 'number',
+  },
+  {
+    title: 'Client',
+    dataIndex: 'acknowledgementReceipt',
+    key: 'client',
+    datatype: 'object',
+    sorter: (a, b) => {
+      if (typeof a.acknowledgementReceipt !== 'undefined' && a.acknowledgementReceipt !== null) {
+        a = `[${a.acknowledgementReceipt.client.code}] ${a.acknowledgementReceipt.client.name}`;
+      } else {
+        a = '';
+      }
+
+      if (typeof b.acknowledgementReceipt !== 'undefined' && b.acknowledgementReceipt !== null) {
+        b = `[${b.acknowledgementReceipt.client.code}] ${b.acknowledgementReceipt.client.name}`;
+      } else {
+        b = '';
+      }
+      return a.localeCompare(b);
+    },
+    render: (object) => {
+      if (typeof object !== 'undefined' && object !== null) {
+        return `[${object.client.code}] ${object.client.name}`;
+      }
+
+      return null;
+    },
+  },
+  {
+    title: 'SI Amount Paid',
+    dataIndex: 'acknowledgementReceipt',
+    key: 'siAmount',
+    datatype: 'object',
+    sorter: (a, b) => a.acknowledgementReceipt.siAmount - b.acknowledgementReceipt.siAmount,
+    render: (object) => {
+      if (typeof object !== 'undefined' && object !== null) {
+        return object.siAmount;
+      }
+
+      return null;
+    },
+  },
 ];
 
 const FormDetails = () => {
+  const dispatch = useDispatch();
   const depots = useSelector((state) => state.maintenance.depots.list);
 
   const formDetails = {
@@ -47,7 +97,7 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          console.log(e)
+          dispatch(listAReceiptWithSIByDepot({message, depot: e}))
         }
       },
     ]

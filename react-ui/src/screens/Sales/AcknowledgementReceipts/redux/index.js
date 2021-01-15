@@ -10,6 +10,8 @@ const initialState = {
   action: '',
 };
 
+const noDataMessage = "No data retrieved for acknowledgement receipts"
+
 export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
@@ -18,7 +20,7 @@ export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thu
     if(typeof response !== 'undefined' && response.status === 200){
       const { data } = response;
       if( data.length === 0){
-        payload.message.warning("No data retrieved for acknowledgement receipts")
+        payload.message.warning(noDataMessage)
       }
     }
     else {
@@ -38,7 +40,7 @@ export const listAReceiptByDepot = createAsyncThunk('listAReceiptByDepot', async
   if(typeof response !== 'undefined' && response.status === 200){
     const { data } = response;
     if( data.length === 0){
-      payload.message.warning("No data retrieved for acknowledgement receipts")
+      payload.message.warning(noDataMessage + " from the selected depot")
     }
   }
   else {
@@ -49,6 +51,25 @@ export const listAReceiptByDepot = createAsyncThunk('listAReceiptByDepot', async
   return response;
 }
 );
+
+export const listAReceiptWithSIByDepot = createAsyncThunk('listAReceiptWithSIByDepot', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.get(`rest/acknowledgement-receipts/depot/${payload.depot}/with-si?token=${accessToken}`);
+
+  if(typeof response !== 'undefined' && response.status === 200){
+    const { data } = response;
+    if( data.length === 0){
+      payload.message.warning(noDataMessage + " with an associated sales invoice from the selected depot")
+    }
+  }
+  else {
+    payload.message.error(message.ITEMS_GET_REJECTED)
+    return thunkAPI.rejectWithValue(response)
+  }
+
+  return response;
+});
 
 export const addAReceipt = createAsyncThunk(
   'addAReceipt',
@@ -91,7 +112,7 @@ const acknowledgementReceiptSlice = createSlice({
       var statusMessage = message.ITEMS_GET_FULFILLED
 
       if( data.length === 0){
-        statusMessage = "No data retrieved for acknowledgement receipts"
+        statusMessage = noDataMessage
       }
 
       return {
@@ -118,7 +139,7 @@ const acknowledgementReceiptSlice = createSlice({
       var statusMessage = message.ITEMS_GET_FULFILLED
 
       if( data.length === 0){
-        statusMessage = "No data retrieved for acknowledgement receipts"
+        statusMessage = noDataMessage + " from the selected depot"
       }
 
       return {
@@ -130,6 +151,33 @@ const acknowledgementReceiptSlice = createSlice({
       };
     },
     [listAReceiptByDepot.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listAReceiptWithSIByDepot.pending]: (state) => {
+      state.status = 'loading';
+    },
+    [listAReceiptWithSIByDepot.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      var statusMessage = message.ITEMS_GET_FULFILLED
+
+      if( data.length === 0){
+        statusMessage = noDataMessage + " with an associated sales invoice from the selected depot"
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage: statusMessage,
+      };
+    },
+    [listAReceiptWithSIByDepot.rejected]: (state) => {
       return {
         ...state,
         status: 'failed',
