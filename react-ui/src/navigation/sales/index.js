@@ -1,5 +1,6 @@
 import SalesOrders from '../../screens/Sales/SalesOrders';
 import OrderSlips from '../../screens/Sales/OrderSlips';
+import AcknowledgementReceipts from '../../screens/Sales/AcknowledgementReceipts';
 
 export const routes = [
   {
@@ -20,7 +21,7 @@ export const routes = [
   {
     title: 'Acknowledgement Receipts',
     path: '/acknowledgement-receipts',
-    component: '',
+    component: AcknowledgementReceipts,
   },
   {
     title: 'Return Slips',

@@ -10,27 +10,36 @@ const initialState = {
   action: '',
 };
 
-export const listClient = createAsyncThunk(
-  'listClient',
-  async (payload, thunkAPI, rejectWithValue) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(
-      `rest/clients/company/${payload.company}/?token=${accessToken}`
-    );
+export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, fnCallback } = payload;
+  const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for clients');
+  if (typeof response !== 'undefined') {
+    const { status } = response;
+    if (status === 200) {
+      if (response.data.length === 0) {
+        response.statusText = `${message.API_200_EMPTY} in clients`;
+      } else {
+        response.statusText = `${message.API_200_SUCCESS} in clients`;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      fnCallback(response);
+      return response;
     }
 
-    return response;
+    if (status === 500 || status === 400) {
+      fnCallback(response);
+      return thunkAPI.rejectWithValue(response);
+    }
+  } else {
+    const newReponse = {
+      status: 500,
+      statusText: message.API_UNDEFINED,
+    };
+    fnCallback(newReponse);
+    return thunkAPI.rejectWithValue(response);
   }
-);
+});
 
 export const addClient = createAsyncThunk('addClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;

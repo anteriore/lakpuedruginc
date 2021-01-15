@@ -9,12 +9,14 @@ import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
 import FormScreen from '../../../components/forms/FormScreen';
 
-import { listPDCDisbursement, addPDCDisbursement, deletePDCDisbursement, clearData } from './redux';
-import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
+import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
+import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
-const PDCDisbursements = (props) => {
+const AcknowledgementReceipts = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -25,59 +27,70 @@ const PDCDisbursements = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-  const [selectedPDC, setSelectedPDC] = useState(null);
-  const { formDetails } = FormDetails();
+  const [selectedAR, setSelectedAR] = useState(null);
+  const { formDetails, tableDetails } = FormDetails();
 
-  const pdcDisbursements = useSelector((state) => state.accounting.PDCDisbursements.list);
+  const listData = useSelector((state) => state.sales.acknowledgementReceipts.list);
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(listPDCDisbursement({ company, message })).then(() => {
+    dispatch(listAReceipt({ company, message })).then(() => {
       setLoading(false);
     });
 
     return function cleanup() {
       dispatch(clearData());
-      dispatch(clearVendor());
+      dispatch(clearClient());
+      dispatch(clearDepot());
+      dispatch(clearOrderSlips());
     };
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Create PDC Disbursement');
+    setFormTitle('Create Acknowledgement Receipt');
     setFormMode('add');
     setFormData(null);
-    dispatch(listVendor({ company, message })).then(() => {
-      history.push(`${path}/new`);
+    setLoading(true);
+    dispatch(listClient({ company, message })).then(() => {
+      dispatch(listDepot({ company, message })).then(() => {
+        history.push(`${path}/new`);
+        setLoading(false);
+      });
     });
   };
 
   const handleUpdate = (data) => {
-    setFormTitle('Edit PDC Disbursement');
+    message.error('Unable to perform action.');
+    /*
+    setFormTitle('Edit Acknowledgement Receipt');
     setFormMode('edit');
-    const pdcData = pdcDisbursements.find((pdc) => pdc.id === data.id);
-    const cheques = [];
-    pdcData.cheques.forEach((cheque) => {
-      cheques.push({
-        ...cheque,
-        date: moment(new Date(cheque.date)) || moment(),
-      });
-    });
+    setLoading(true);
+    const itemData = listData.find((item) => item.id === data.id);
     const formData = {
-      ...pdcData,
+      ...itemData,
       date: moment(new Date(data.date)) || moment(),
-      payee: pdcData.payee !== null ? pdcData.payee.id : null,
-      cheques,
+      chequeDate: data.cutOffDate !== null ? moment(new Date(data.chequeDate)) : null,
+      cutOffDate: data.cutOffDate !== null ? moment(new Date(data.cutOffDate)) : null,
+      client: itemData.client !== null ? itemData.client.id : null,
+      depot: itemData.depot !== null ? itemData.depot.id : null,
     };
     setFormData(formData);
-    dispatch(listVendor({ company, message })).then(() => {
-      history.push(`${path}/${data.id}`);
+    dispatch(listClient({ company, message })).then(() => {
+        dispatch(listDepot({ company, message })).then(() => {
+          dispatch(listOrderSlips({ company, message })).then(() => {
+            history.push(`${path}/${data.id}`);
+            setLoading(false);
+          })
+        })
     });
+    */
   };
 
   const handleDelete = (data) => {
-    dispatch(deletePDCDisbursement(data.id)).then((response) => {
+    dispatch(deleteAReceipt(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listPDCDisbursement({ company, message })).then(() => {
+        dispatch(listAReceipt({ company, message })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
@@ -89,28 +102,43 @@ const PDCDisbursements = (props) => {
   };
 
   const handleRetrieve = (data) => {
-    setSelectedPDC(data);
+    setSelectedAR(data);
     setDisplayModal(true);
   };
 
   const onSubmit = (data) => {
+    const payments = [];
+    data.payments.forEach((payment) => {
+      payments.push({
+        reference: {
+          ...payment,
+        },
+        appliedAmount: payment.appliedAmount,
+      });
+    });
+
     const payload = {
       ...data,
       company: {
         id: company,
       },
-      payee: {
-        id: data.payee,
+      depot: {
+        id: data.depot,
       },
+      client: {
+        id: data.client,
+      },
+      preparedBy: {
+        id: user.id,
+      },
+      payments,
     };
-    console.log(payload);
-
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addPDCDisbursement(payload)).then((response) => {
+      dispatch(addAReceipt(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listPDCDisbursement({ company, message })).then(() => {
+          dispatch(listAReceipt({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.number}`);
@@ -121,10 +149,10 @@ const PDCDisbursements = (props) => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addPDCDisbursement(payload)).then((response) => {
+      dispatch(addAReceipt(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listPDCDisbursement({ company, message })).then(() => {
+          dispatch(listAReceipt({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${response.payload.data.number}`);
@@ -132,7 +160,7 @@ const PDCDisbursements = (props) => {
         } else {
           setLoading(false);
           message.error(
-            `Unable to add PDC Disbursement. Please double check the provided information.`
+            `Unable to add Acknowledgement Receipt. Please double check the provided information.`
           );
         }
       });
@@ -151,6 +179,7 @@ const PDCDisbursements = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -162,6 +191,7 @@ const PDCDisbursements = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>
@@ -180,6 +210,7 @@ const PDCDisbursements = (props) => {
               onClick={() => {
                 handleAdd();
               }}
+              loading={loading}
             >
               Add
             </Button>
@@ -188,7 +219,7 @@ const PDCDisbursements = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={pdcDisbursements}
+                data={listData}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
@@ -199,29 +230,32 @@ const PDCDisbursements = (props) => {
             visible={displayModal}
             onOk={() => {
               setDisplayModal(false);
-              setSelectedPDC(null);
+              setSelectedAR(null);
             }}
             onCancel={() => {
               setDisplayModal(false);
-              setSelectedPDC(null);
+              setSelectedAR(null);
             }}
             width={1000}
             cancelButtonProps={{ style: { display: 'none' } }}
           >
-            {selectedPDC === null ? (
+            {selectedAR === null ? (
               <Skeleton />
             ) : (
               <>
                 <Descriptions
                   bordered
-                  title={`${selectedPDC.number} Details`}
+                  title={`${selectedAR.number} Details`}
                   size="default"
                   layout="vertical"
                 >
                   {formDetails.form_items.map((item) => {
                     if (!item.writeOnly) {
-                      if (item.type === 'select') {
-                        const itemData = selectedPDC[item.name];
+                      if (selectedAR[item.name] === null && item.toggle) {
+                        return null;
+                      }
+                      if (item.type === 'select' || item.type === 'selectSearch') {
+                        const itemData = selectedAR[item.name];
                         return (
                           <Descriptions.Item label={item.label}>
                             {itemData[item.selectName]}
@@ -231,7 +265,7 @@ const PDCDisbursements = (props) => {
                       if (item.type === 'date') {
                         return (
                           <Descriptions.Item label={item.label}>
-                            {moment(new Date(selectedPDC[item.name])).format('DD/MM/YYYY')}
+                            {moment(new Date(selectedAR[item.name])).format('DD/MM/YYYY')}
                           </Descriptions.Item>
                         );
                       }
@@ -241,7 +275,7 @@ const PDCDisbursements = (props) => {
 
                       return (
                         <Descriptions.Item label={item.label}>
-                          {selectedPDC[item.name]}
+                          {selectedAR[item.name]}
                         </Descriptions.Item>
                       );
                     }
@@ -253,37 +287,47 @@ const PDCDisbursements = (props) => {
                   level={5}
                   style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
                 >
-                  Cheques:
+                  Payment Details:
                 </Title>
-                {selectedPDC.cheques.map((item) => {
+                {selectedAR[tableDetails.name].map((item) => {
                   return (
-                    <Descriptions
-                      style={{ marginTop: '2%' }}
-                      bordered
-                      title={<Text>{item.number}</Text>}
-                      size="small"
-                      layout="vertical"
-                    >
-                      {formDetails.form_items
-                        .find((item) => item.name === 'cheques')
-                        .fields.map((field) => {
-                          if (field.type === 'hidden' || field.type === 'hiddenNumber') {
-                            return null;
-                          }
-                          if (field.type === 'date') {
-                            return (
-                              <Descriptions.Item label={field.label}>
-                                {moment(new Date(item[field.name])).format('DD/MM/YYYY')}
-                              </Descriptions.Item>
-                            );
-                          }
-
+                    <Descriptions title={`${item.reference.number}`} size="default">
+                      {tableDetails.fields.map((field) => {
+                        if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+                          return null;
+                        }
+                        if (typeof field.render === 'function') {
                           return (
                             <Descriptions.Item label={field.label}>
-                              {item[field.name]}
+                              {field.render(item.reference)}
                             </Descriptions.Item>
                           );
-                        })}
+                        }
+                        if (field.type === 'select') {
+                          if (typeof field.selectName === 'undefined') {
+                            field.selectName = 'name';
+                          }
+                          const fieldData = item.reference[field.name];
+                          return (
+                            <Descriptions.Item label={field.label}>
+                              {fieldData[field.selectName]}
+                            </Descriptions.Item>
+                          );
+                        }
+                        if (field.name === 'appliedAmount') {
+                          return (
+                            <Descriptions.Item label={field.label}>
+                              {item.appliedAmount}
+                            </Descriptions.Item>
+                          );
+                        }
+
+                        return (
+                          <Descriptions.Item label={field.label}>
+                            {item.reference[field.name]}
+                          </Descriptions.Item>
+                        );
+                      })}
                     </Descriptions>
                   );
                 })}
@@ -296,4 +340,4 @@ const PDCDisbursements = (props) => {
   );
 };
 
-export default PDCDisbursements;
+export default AcknowledgementReceipts;
