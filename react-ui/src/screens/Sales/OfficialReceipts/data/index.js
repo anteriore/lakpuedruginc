@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Typography, message } from 'antd';
-import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
+import { Table, Typography, Divider, message } from 'antd';
+import { listAReceiptWithSIByDepot, listAReceipt } from '../../AcknowledgementReceipts/redux';
 
 const { Text } = Typography;
 
@@ -71,6 +71,7 @@ export const columns = [
 const FormDetails = () => {
   const dispatch = useDispatch();
   const depots = useSelector((state) => state.maintenance.depots.list);
+  const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
 
   const formDetails = {
     form_name: 'official_receipt',
@@ -99,6 +100,15 @@ const FormDetails = () => {
         onChange: (e) => {
           dispatch(listAReceiptWithSIByDepot({message, depot: e}))
         }
+      },
+      {
+        label: 'Acknowledgement Receipt',
+        name: 'acknowledgementReceipt',
+        type: 'selectSearch',
+        choices: areceipts || [],
+        render: (areceipt) => `${areceipt.id}`,
+        rules: [{ required: true }],
+        allowEmpty: true
       },
     ]
   };

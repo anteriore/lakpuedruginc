@@ -33,7 +33,7 @@ const FormItem = ({ item, onFail, formMode }) => {
       }
     }
 
-    if (item.choices === null || typeof item.choices === 'undefined' || item.choices.length === 0) {
+    if (item.choices === null || typeof item.choices === 'undefined' || (item.choices.length === 0 && !item.allowEmpty)) {
       onFail();
       return null;
     }

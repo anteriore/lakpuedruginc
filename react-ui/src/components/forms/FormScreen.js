@@ -62,7 +62,13 @@ const FormScreen = (props) => {
       data[formTable.name] = tableData;
     }
 
-    onSubmit(data);
+    if(hasTable && typeof formTable.isVisible !== 'undefined' && !formTable.isVisible){
+      message.error(`An error has occurred. Please provide the necessary information for ${formTable.label}.`);
+    }
+    else {
+      onSubmit(data);
+    }
+
   };
 
   const onFinishFailed = () => {
