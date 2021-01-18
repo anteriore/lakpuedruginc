@@ -24,7 +24,6 @@ export const listOrderSlips = createAsyncThunk(
   }
 );
 
-
 export const listOrderSlipsByDepot = createAsyncThunk(
   'listOrderSlipsByDepot',
   async (payload, thunkAPI, rejectWithValue) => {

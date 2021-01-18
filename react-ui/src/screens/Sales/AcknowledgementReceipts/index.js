@@ -44,7 +44,6 @@ const AcknowledgementReceipts = (props) => {
       dispatch(clearDepot());
       dispatch(clearOrderSlips());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -53,15 +52,15 @@ const AcknowledgementReceipts = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
-        })
+      dispatch(listDepot({ company, message })).then(() => {
+        history.push(`${path}/new`);
+        setLoading(false);
+      });
     });
   };
 
   const handleUpdate = (data) => {
-    message.error("Unable to perform action.")
+    message.error('Unable to perform action.');
     /*
     setFormTitle('Edit Acknowledgement Receipt');
     setFormMode('edit');
@@ -108,15 +107,15 @@ const AcknowledgementReceipts = (props) => {
   };
 
   const onSubmit = (data) => {
-    var payments = []
+    const payments = [];
     data.payments.forEach((payment) => {
       payments.push({
         reference: {
-          ...payment
+          ...payment,
         },
-        appliedAmount: payment.appliedAmount
-      })
-    })
+        appliedAmount: payment.appliedAmount,
+      });
+    });
 
     const payload = {
       ...data,
@@ -130,9 +129,9 @@ const AcknowledgementReceipts = (props) => {
         id: data.client,
       },
       preparedBy: {
-        id: user.id
+        id: user.id,
       },
-      payments: payments
+      payments,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -252,8 +251,8 @@ const AcknowledgementReceipts = (props) => {
                 >
                   {formDetails.form_items.map((item) => {
                     if (!item.writeOnly) {
-                      if(selectedAR[item.name] === null && item.toggle){
-                        return null
+                      if (selectedAR[item.name] === null && item.toggle) {
+                        return null;
                       }
                       if (item.type === 'select' || item.type === 'selectSearch') {
                         const itemData = selectedAR[item.name];
@@ -292,22 +291,19 @@ const AcknowledgementReceipts = (props) => {
                 </Title>
                 {selectedAR[tableDetails.name].map((item) => {
                   return (
-                    <Descriptions
-                      title={`${item.reference.number}`}
-                      size="default"
-                    >
+                    <Descriptions title={`${item.reference.number}`} size="default">
                       {tableDetails.fields.map((field) => {
                         if (field.type === 'hidden' || field.type === 'hiddenNumber') {
                           return null;
                         }
-                        else if (typeof field.render === 'function') {
+                        if (typeof field.render === 'function') {
                           return (
                             <Descriptions.Item label={field.label}>
                               {field.render(item.reference)}
                             </Descriptions.Item>
                           );
                         }
-                        else if (field.type === 'select') {
+                        if (field.type === 'select') {
                           if (typeof field.selectName === 'undefined') {
                             field.selectName = 'name';
                           }
@@ -318,20 +314,19 @@ const AcknowledgementReceipts = (props) => {
                             </Descriptions.Item>
                           );
                         }
-                        else if (field.name === 'appliedAmount') {
+                        if (field.name === 'appliedAmount') {
                           return (
                             <Descriptions.Item label={field.label}>
                               {item.appliedAmount}
                             </Descriptions.Item>
                           );
                         }
-                        else {
-                          return (
-                            <Descriptions.Item label={field.label}>
-                              {item.reference[field.name]}
-                            </Descriptions.Item>
-                          );
-                        }
+
+                        return (
+                          <Descriptions.Item label={field.label}>
+                            {item.reference[field.name]}
+                          </Descriptions.Item>
+                        );
                       })}
                     </Descriptions>
                   );

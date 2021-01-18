@@ -24,7 +24,7 @@ const FormScreen = (props) => {
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const hasTable = (formTable !== null && typeof formTable !== 'undefined');
+  const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
   const [toggleValue, setToggleValue] = useState(null);
@@ -32,22 +32,26 @@ const FormScreen = (props) => {
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
-  const toggleName = formDetails.toggle_name
+  const toggleName = formDetails.toggle_name;
 
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable && values !== null) {
       setTableData(formTable.getValues(values));
     }
-    if(values !== null && toggleName !== null && typeof toggleName !== 'undefined'){
+    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [values, form]);
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
-      if (item.type === 'date' && typeof data[item.name] !== 'undefined' && data[item.name] !== null) {
+      if (
+        item.type === 'date' &&
+        typeof data[item.name] !== 'undefined' &&
+        data[item.name] !== null
+      ) {
         data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format(
           'HH:mm:ss'
         )}`;
@@ -68,7 +72,7 @@ const FormScreen = (props) => {
 
   const handleTableChange = (item, index, event) => {
     const data = { ...tableData };
-    var row = data[index];
+    const row = data[index];
     row[item] = event;
     const dataArray = [];
     for (const [, value] of Object.entries(data)) {
@@ -122,7 +126,7 @@ const FormScreen = (props) => {
               }
 
               if (field.choices === null || field.choices.length === 0) {
-                onFail()
+                onFail();
                 return null;
               }
               return (
@@ -226,15 +230,15 @@ const FormScreen = (props) => {
 
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
-  }
+  };
 
   const onValuesChange = (values) => {
-    if(toggleName !== null && typeof toggleName !== 'undefined'){
-      if(typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]){
-        setToggleValue(values[toggleName])
+    if (toggleName !== null && typeof toggleName !== 'undefined') {
+      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
+        setToggleValue(values[toggleName]);
       }
     }
-  }
+  };
 
   return (
     <>
@@ -253,15 +257,14 @@ const FormScreen = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if(item.toggle){
-                if(item.toggleCondition(toggleValue)){
-                    return <FormItem item={item} onFail={onFail}/>
+              if (item.toggle) {
+                if (item.toggleCondition(toggleValue)) {
+                  return <FormItem item={item} onFail={onFail} />;
                 }
-                else return null
+                return null;
               }
-              else {
-                  return <FormItem item={item} onFail={onFail}/>
-              }
+
+              return <FormItem item={item} onFail={onFail} />;
             })}
           </Form>
           {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (

@@ -35,22 +35,20 @@ export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thu
 export const listAReceiptByDepot = createAsyncThunk('listAReceiptByDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/acknowledgement-receipts/depot/${payload.depot}?token=${accessToken}`);
+  const response = await axiosInstance.get(`rest/acknowledgement-receipts?token=${accessToken}`);
 
-  if(typeof response !== 'undefined' && response.status === 200){
+  if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
     if( data.length === 0){
       payload.message.warning(noDataMessage + " from the selected depot")
     }
-  }
-  else {
-    payload.message.error(message.ITEMS_GET_REJECTED)
-    return thunkAPI.rejectWithValue(response)
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
   }
 
   return response;
-}
-);
+});
 
 export const listAReceiptWithSIByDepot = createAsyncThunk('listAReceiptWithSIByDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -71,37 +69,54 @@ export const listAReceiptWithSIByDepot = createAsyncThunk('listAReceiptWithSIByD
   return response;
 });
 
-export const addAReceipt = createAsyncThunk(
-  'addAReceipt',
+export const listAReceiptByDepot = createAsyncThunk(
+  'listAReceiptByDepot',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.post(
-      `rest/acknowledgement-receipts/?token=${accessToken}`,
-      payload
+    const response = await axiosInstance.get(
+      `rest/acknowledgement-receipts/depot/${payload.depot}?token=${accessToken}`
     );
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for acknowledgement receipts');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return thunkAPI.rejectWithValue(response);
+    }
+
     return response;
   }
 );
 
-export const deleteAReceipt = createAsyncThunk(
-  'deleteAReceipt',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const addAReceipt = createAsyncThunk('addAReceipt', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.post(
-      `rest/acknowledgement-receipts/delete?token=${accessToken}`,
-      payload
-    );
-    return response;
-  }
-);
+  const response = await axiosInstance.post(
+    `rest/acknowledgement-receipts/?token=${accessToken}`,
+    payload
+  );
+  return response;
+});
+
+export const deleteAReceipt = createAsyncThunk('deleteAReceipt', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.post(
+    `rest/acknowledgement-receipts/delete?token=${accessToken}`,
+    payload
+  );
+  return response;
+});
 
 const acknowledgementReceiptSlice = createSlice({
   name: 'acknowledgementReceipts',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listAReceipt.pending]: (state) => {
@@ -109,7 +124,7 @@ const acknowledgementReceiptSlice = createSlice({
     },
     [listAReceipt.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
       if( data.length === 0){
         statusMessage = noDataMessage
@@ -120,7 +135,7 @@ const acknowledgementReceiptSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listAReceipt.rejected]: (state) => {
@@ -136,7 +151,7 @@ const acknowledgementReceiptSlice = createSlice({
     },
     [listAReceiptByDepot.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
       if( data.length === 0){
         statusMessage = noDataMessage + " from the selected depot"
@@ -147,7 +162,7 @@ const acknowledgementReceiptSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listAReceiptByDepot.rejected]: (state) => {
