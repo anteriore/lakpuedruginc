@@ -71,6 +71,18 @@ public class UserRestController {
  
     }
 
+    @PostMapping("/edit/")
+    public User editUser(@RequestBody User newuser ) {
+        User usercontainer=newuser;
+        //get password from the old user
+        User olduser = userRepository.getOne(newuser.getId());
+        usercontainer.setPassword(passwordEncoder.encode(olduser.getPassword()));
+
+
+        return userRepository.save(usercontainer);
+ 
+    }
+
 
 
     @GetMapping("/company/{id}")
