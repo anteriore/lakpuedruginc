@@ -69,29 +69,6 @@ export const listAReceiptWithSIByDepot = createAsyncThunk('listAReceiptWithSIByD
   return response;
 });
 
-export const listAReceiptByDepot = createAsyncThunk(
-  'listAReceiptByDepot',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-
-    const response = await axiosInstance.get(
-      `rest/acknowledgement-receipts/depot/${payload.depot}?token=${accessToken}`
-    );
-
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for acknowledgement receipts');
-      }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return thunkAPI.rejectWithValue(response);
-    }
-
-    return response;
-  }
-);
-
 export const addAReceipt = createAsyncThunk('addAReceipt', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
