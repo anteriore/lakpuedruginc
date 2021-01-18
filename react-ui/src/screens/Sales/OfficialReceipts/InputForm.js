@@ -117,6 +117,51 @@ const FormScreen = (props) => {
           >
             <Input readOnly={true} placeholder={"Business Address"}/>
           </Form.Item>
+          
+          <Table
+            dataSource={tableData}
+            columns={formTable.columns}
+            pagination={false}
+            locale={{ emptyText: <Empty description="Please select an Acknowledgement Receipt." /> }}
+            summary={(data) => {
+              return(
+                <>
+                  <Table.Summary.Row>
+                    <Table.Summary.Cell>VATABLE Sales</Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text>{0}</Text>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell>Total Sales (Vat Inclusive)</Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text>{0}</Text>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                  <Table.Summary.Row>
+                    <Table.Summary.Cell>VAT Exempt Sales</Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text>{0}</Text>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell>less VAT</Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text>{0}</Text>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                  <Table.Summary.Row>
+                    <Table.Summary.Cell>Zero-Rated Sales</Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text>{0}</Text>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell>NET</Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text>{0}</Text>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                </>
+              )
+            }
+            }
+            style={{width: "87.5%"}}
+          />
 
           <div style={styles.tailLayout}>
             <Button type="primary" onClick={() => form.submit()}>

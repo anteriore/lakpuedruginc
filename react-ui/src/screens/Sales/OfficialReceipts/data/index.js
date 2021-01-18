@@ -113,7 +113,43 @@ const FormDetails = () => {
     ]
   };
 
-  return { formDetails };
+  //different format from other "tableDetails"
+  const tableDetails = {
+    columns: [
+      {
+        title: 'SI Number',
+        dataIndex: 'number',
+        key: 'number',
+      },
+      {
+        title: 'Amount',
+        dataIndex: 'totalAmount',
+        key: 'totalAmount',
+      },
+      {
+        title: 'Discount',
+        dataIndex: 'discount',
+        key: 'discount',
+      },
+      {
+        title: 'Others',
+        dataIndex: 'others',
+        key: 'others',
+      },
+      {
+        title: 'Withholding Tax',
+        dataIndex: 'tax',
+        key: 'tax',
+      },
+      {
+        title: 'NET',
+        dataIndex: 'totalAmount',
+        key: 'totalAmount',
+      },
+    ]
+  }
+
+  return { formDetails, tableDetails };
 };
 
 

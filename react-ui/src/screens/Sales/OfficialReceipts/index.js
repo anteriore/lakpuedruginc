@@ -26,7 +26,7 @@ const OfficialReceipts = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedAR, setSelectedAR] = useState(null);
-  const { formDetails } = FormDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
   const listData = useSelector((state) => state.sales.officialReceipts.list);
   const user = useSelector((state) => state.auth.user);
@@ -173,7 +173,7 @@ const OfficialReceipts = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          //formTable={tableDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -185,7 +185,7 @@ const OfficialReceipts = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          //formTable={tableDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>
