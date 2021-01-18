@@ -62,6 +62,17 @@ public class UserRestController {
  
     }
 
+    @PostMapping("/password/")
+    public User editPassword(@RequestBody User newuser ) {
+
+        User user = userRepository.getOne(newuser.getId());
+        user.setPassword(passwordEncoder.encode(newuser.getPassword()));
+        return userRepository.save(user);
+ 
+    }
+
+
+
     @GetMapping("/company/{id}")
     public List<User> listByCompany(@PathVariable Long id) {
         Company company = companyRepository.getOne(id);
