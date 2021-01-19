@@ -276,7 +276,8 @@ const Users = () => {
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addUser(payload)).then((response) => {
+      console.log(payload)
+      /*dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
           updateUserDepartments(selectedCompany);
@@ -286,7 +287,7 @@ const Users = () => {
           setContentLoading(false);
           message.error(`Unable to update ${data.firstName} ${data.lastName}`);
         }
-      });
+      });*/
     } else if (formMode === 'add') {
       dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
