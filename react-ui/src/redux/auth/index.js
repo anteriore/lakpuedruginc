@@ -119,19 +119,27 @@ const authSlice = createSlice({
     },
     [getUser.fulfilled]: (state, action) => {
       if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.user = processUserData(action.payload.data, action.type);
-      } else if (typeof action.payload === 'undefined') {
-        state.status = 'failed';
-        state.message = 'Unable get user info';
-      } else {
-        state.status = 'failed';
-        state.message = 'Unable get user info';
+        return {
+          ...state,
+          status: 'succeeded',
+          message: null,
+          user: processUserData(action.payload.data, action.type)
+        }
+      }
+      else {
+        return {
+          ...state,
+          status: 'failed',
+          message: 'Unable get user info'
+        }
       }
     },
     [getUser.rejected]: (state) => {
-      state.status = 'failed';
-      state.message = 'Unable get user info';
+      return {
+        ...state,
+        status: 'failed',
+        message: 'Unable get user info'
+      }
     },
 
     

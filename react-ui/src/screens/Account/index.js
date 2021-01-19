@@ -16,7 +16,7 @@ import { LockOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { addUser } from '../Users/redux';
+import { updateUser } from '../Users/redux';
 import { getUser, changePassword, resetErrorMsg } from '../../redux/auth';
 import { listCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
@@ -243,8 +243,10 @@ const Account = (props) => {
       department: {
         id: data.department,
       },
+      depots: null, //the user does not normally have access to the depots
+      permissions: auth.permissions
     };
-    dispatch(addUser(payload)).then((response) => {
+    dispatch(updateUser(payload)).then((response) => {
       if (response.payload.status === 200) {
         dispatch(getUser()).then(() => {
           history.goBack();
