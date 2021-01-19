@@ -135,6 +135,7 @@ const Classification = (props) => {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={20}>
+          {actions.includes("create") &&
           <Button
             style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
             icon={<PlusOutlined />}
@@ -144,6 +145,7 @@ const Classification = (props) => {
           >
             Add
           </Button>
+          }
           <TableDisplay
             columns={columns}
             data={data}

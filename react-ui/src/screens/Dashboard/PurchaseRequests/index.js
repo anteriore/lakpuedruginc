@@ -189,6 +189,7 @@ const PurchaseRequests = (props) => {
             <Title level={3} style={{ float: 'left' }}>
               {title}
             </Title>
+            {actions.includes("create") && 
             <Button
               style={{ float: 'right', marginRight: '1%' }}
               icon={<PlusOutlined />}
@@ -198,6 +199,7 @@ const PurchaseRequests = (props) => {
             >
               Add
             </Button>
+            }
           </Col>
         </Row>
         <Row>

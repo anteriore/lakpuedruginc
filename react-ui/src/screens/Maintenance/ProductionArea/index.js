@@ -104,9 +104,10 @@ const ProductionArea = (props) => {
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
+        {actions.includes("create") &&
         <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
           Add
-        </Button>
+        </Button>}
       </Col>
       <Col span={20}>
         <TableDisplay

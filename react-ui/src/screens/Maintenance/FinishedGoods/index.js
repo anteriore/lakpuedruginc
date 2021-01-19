@@ -125,9 +125,11 @@ const FinishedGoods = (props) => {
     <Row gutter={[8, 24]}>
       <Col style={styles.headerPage} span={20}>
         <Title level={3}>{title}</Title>
+        {actions.includes("create") &&
         <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
           Add
         </Button>
+        }
       </Col>
       <Col span={20}>
         <TableDisplay

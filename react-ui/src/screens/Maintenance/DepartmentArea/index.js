@@ -236,6 +236,7 @@ const DepartmentArea = (props) => {
           <Title level={5} style={{ float: 'left' }}>
             Departments
           </Title>
+          {actions.includes("create") &&
           <Button
             style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
             icon={<PlusOutlined />}
@@ -245,6 +246,7 @@ const DepartmentArea = (props) => {
           >
             Add
           </Button>
+          }
           <TableDisplay
             name={tableName}
             columns={deptColumns}

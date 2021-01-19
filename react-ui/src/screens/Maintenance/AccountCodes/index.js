@@ -106,15 +106,17 @@ const AccountCodes = (props) => {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={20}>
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            onClick={() => {
-              handleAdd();
-            }}
-          >
-            Add
-          </Button>
+          {actions.includes("create") && 
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginRight: '1%' }}
+              icon={<PlusOutlined />}
+              onClick={(e) => {
+                handleAdd();
+              }}
+            >
+              Add
+            </Button>
+          }
           {loading ? (
             <Skeleton />
           ) : (
