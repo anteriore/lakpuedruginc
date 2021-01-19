@@ -30,20 +30,6 @@ const InputForm = (props) => {
   const { orderSlipsList } = useSelector((state) => state.sales.orderSlips);
   const [form] = useForm();
 
-  // useEffect(() => {
-  //   if (id !== undefined && orderSlipsList.length !== 0) {
-  //     const selectedOrderSlips = _.find(orderSlipsList, (o) => {
-  //       return o.id === parseInt(id, 10);
-  //     });
-
-  //     form.setFieldsValue(fromatInitForm(selectedOrderSlips, initValueForm));
-  //     dispatch(listSalesOrderByDepot(selectedOrderSlips.depot.id)).then(() => {
-  //       setSelectedSales(selectedOrderSlips.salesOrder);
-  //       setShowSalesSection(true);
-  //     });
-  //   }
-  // }, [dispatch, orderSlipsList, id, form]);
-
   const handleSalesChange = useCallback(
     (value) => {
       const salesOrder = _.find(salesOrderList, (o) => {

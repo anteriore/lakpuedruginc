@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Row, Typography, Col, Button, Skeleton, message, Modal } from 'antd';
+import moment from 'moment';
+import { Row, Typography, Col, Button, Skeleton, message, Modal, Descriptions } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +25,7 @@ import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/red
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import { setConnectionEffect } from '../../../helpers/general-helper';
 import { listProductInventory } from '../../Maintenance/redux/productInventory';
+import { formDetails } from './data';
 
 const { Title } = Typography;
 
@@ -34,6 +36,8 @@ const OrderSlips = (props) => {
   const [contentLoading, setContentLoading] = useState(true);
   const { orderSlipsList, action, statusMessage } = useSelector((state) => state.sales.orderSlips);
   const [orderId, setOrderId] = useState(null);
+  const [displayModal, setDisplayModal] = useState(false);
+  const [selectedOS, setSelectedOS] = useState(null);
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth.user);
 
@@ -172,6 +176,11 @@ const OrderSlips = (props) => {
       });
   };
 
+  const handleRetrieve = (data) => {
+    setDisplayModal(true);
+    setSelectedOS(data)
+  }
+
   const onCreate = (value, salesOrder, orderedProducts) => {
     const payload = formatPayload(id, company, value, salesOrder, orderedProducts);
 
@@ -212,12 +221,89 @@ const OrderSlips = (props) => {
               <TableDisplay
                 columns={tableHeader}
                 data={orderSlipsList}
-                handleUpdate={handleEditButton}
+                handleUpdate={() => {}}
                 handleDelete={handleDeleteButton}
+                deleteEnabled={false}
+                handleRetrieve={handleRetrieve}
               />
             )}
           </Col>
         </Row>
+        <Modal
+          title="Order Slips Details"
+          visible={displayModal}
+          onOk={() => {
+            setDisplayModal(false);
+            setSelectedOS(null);
+          }}
+          onCancel={() => {
+            setDisplayModal(false);
+            setSelectedOS(null);
+          }}
+          width={1000}
+          cancelButtonProps={{ style: { display: 'none' } }}
+        >
+          {selectedOS === null ? (
+            <Skeleton/>
+          ) : (
+            <>
+              <Descriptions
+                bordered
+                title={`Ordser Slip ${selectedOS.number}`}
+                size="default"
+                layout="vertical"
+              >
+                {formDetails.form_items.map((item) => {
+                  if (!item.writeOnly && item.type !== 'readOnly') {
+                    if (item.type === 'select' || item.type === 'selectSearch') {
+                      const itemData = selectedOS[item.name];
+                      return (
+                        <Descriptions.Item key={item.name} label={item.label}>
+                          {typeof itemData === 'object' ? (typeof itemData.code === 'undefined' ? 
+                            itemData.number : itemData.code
+                          ) : itemData}
+                        </Descriptions.Item>
+                      );
+                    }
+
+                    if (item.type === 'date') {
+                      return (
+                        <Descriptions.Item key={item.name} label={item.label}>
+                          {moment(new Date(selectedOS[item.name])).format('DD/MM/YYYY')}
+                        </Descriptions.Item>
+                      );
+                    }
+
+                    return (
+                      <Descriptions.Item key={item.name} label={item.label}>
+                        {typeof selectedOS[item.name] === 'object' && selectedOS[item.name] !== null
+                          ? selectedOS[item.name].code
+                          : selectedOS[item.name]}
+                      </Descriptions.Item>
+                    );
+                  }
+                  
+                  return null;
+                })}
+              </Descriptions>
+              <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
+               Ordered Product Items:
+              </Title>
+              {selectedOS.orderedProducts.map((item) => {
+                console.log(item)
+                return (
+                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
+                    <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
+                    <Descriptions.Item label="Order Slip No">{item.orderSlipNo}</Descriptions.Item>
+                    <Descriptions.Item label="Sales Order Product ID">{item.salesOrderProductId}</Descriptions.Item>
+                    <Descriptions.Item label="Amount">{item.amount}</Descriptions.Item>
+                    <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
+                  </Descriptions>
+                );
+              })}
+            </>
+          )}
+        </Modal>
       </Route>
     </Switch>
   );

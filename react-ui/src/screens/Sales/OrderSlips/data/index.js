@@ -79,7 +79,10 @@ export const salesInfoHeader = [
     title: 'FG',
     dataIndex: 'finishedGood',
     key: 'finishedGood',
-    render: (object) => object.code,
+    render: (object) => {
+
+      return object.code
+    },
   },
   {
     title: 'Requested',
