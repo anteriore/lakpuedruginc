@@ -14,6 +14,7 @@ const TableDisplay = (props) => {
     handleUpdate,
     data,
     deleteEnabled,
+    updateEnabled,
     pagination,
     name,
   } = props;
@@ -59,54 +60,52 @@ const TableDisplay = (props) => {
         render: (row) => {
           return (
             <div style={styles.crudColumn}>
-              {typeof permissions[name] !== 'undefined' && permissions[name].actions.search('u') !== -1 &&
+              {(typeof updateEnabled === 'undefined' || updateEnabled) && (
+              <Button
+                icon={<EditOutlined />}
+                type="text"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUpdate(row);
+                }}
+              >
+                Edit
+              </Button>
+              )}
+              {(deleteEnabled || typeof deleteEnabled === 'undefined') && (
+              <Popconfirm
+                title="Would you like to delete this item?"
+                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                onConfirm={(e) => {
+                  e.stopPropagation();
+                  handleDelete(row);
+                }}
+                onCancel={(e) => {
+                  e.stopPropagation();
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
                 <Button
-                  icon={<EditOutlined />}
+                  icon={<DeleteOutlined />}
                   type="text"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleUpdate(row);
                   }}
                 >
-                  Edit
+                  Delete
                 </Button>
-              }
-              {typeof permissions[name] !== 'undefined' && permissions[name].actions.search('d') !== -1 &&
-                <Popconfirm
-                  title="Would you like to delete this item?"
-                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                  onConfirm={(e) => {
-                    e.stopPropagation();
-                    handleDelete(row);
-                  }}
-                  onCancel={(e) => {
-                    e.stopPropagation();
-                  }}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  {deleteEnabled ? (
-                    <Button
-                      icon={<DeleteOutlined />}
-                      type="text"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  ) : (
-                    ''
-                  )}
-                </Popconfirm>
-              }
+              </Popconfirm>
+              )}
             </div>
           );
         },
       },
     ];
 
-    filteredColumn = filteredColumn.concat(editpart);
+    if((typeof updateEnabled === 'undefined' || updateEnabled) || (deleteEnabled || typeof deleteEnabled === 'undefined')){
+      filteredColumn = filteredColumn.concat(editpart);
+    }
 
     return filteredColumn;
   };
