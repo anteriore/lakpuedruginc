@@ -76,7 +76,7 @@ public class UserRestController {
         User usercontainer=newuser;
         //get password from the old user
         User olduser = userRepository.getOne(newuser.getId());
-        usercontainer.setPassword(passwordEncoder.encode(olduser.getPassword()));
+        usercontainer.setPassword(olduser.getPassword());
 
 
         return userRepository.save(usercontainer);
