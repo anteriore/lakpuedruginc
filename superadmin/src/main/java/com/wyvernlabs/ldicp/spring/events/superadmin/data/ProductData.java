@@ -81,7 +81,7 @@ public class ProductData {
 
 
 
-		FinishedGood fg = finishedGoodRepository.getOne(2L);
+		fg = finishedGoodRepository.getOne(2L);
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
 		product.setCategory(categoryRepository.getOne(1L));
