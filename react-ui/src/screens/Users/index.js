@@ -25,7 +25,7 @@ import {
 import Container from '../../components/container';
 import InputForm from './InputForm';
 
-import { listUser, addUser, /* deleteUser, */ clearData, listPermission } from './redux';
+import { listUser, addUser, updateUser, /* deleteUser, */ clearData, listPermission } from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -277,7 +277,7 @@ const Users = () => {
     if (formMode === 'edit') {
       payload.id = formData.id;
       console.log(payload)
-      /*dispatch(addUser(payload)).then((response) => {
+      dispatch(updateUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
           updateUserDepartments(selectedCompany);
@@ -287,7 +287,7 @@ const Users = () => {
           setContentLoading(false);
           message.error(`Unable to update ${data.firstName} ${data.lastName}`);
         }
-      });*/
+      });
     } else if (formMode === 'add') {
       dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
