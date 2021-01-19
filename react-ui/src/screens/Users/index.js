@@ -51,8 +51,10 @@ const Users = () => {
   const [contentLoading, setContentLoading] = useState(true);
   const [userDepartments, setUserDepartments] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [actions, setActions] = useState([])
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const depots = useSelector((state) => state.maintenance.depots.list);
+  const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -60,6 +62,20 @@ const Users = () => {
       setCompanyLoading(false);
       setSelectedUser(null);
       updateUserDepartments(1);
+      var actionsList = []
+      if(typeof permissions["users"] !== 'undefined'){
+        if( permissions["users"].actions.search('u') !== -1){
+          actionsList.push("update")
+        }
+        if(permissions["users"].actions.search('c') !== -1){
+          actionsList.push("create")
+        }
+        if(permissions["users"].actions.search('d') !== -1){
+          actionsList.push("delete")
+        }
+      }
+      
+      setActions(actionsList)
     });
 
     return function cleanup() {
@@ -427,6 +443,7 @@ const Users = () => {
                   <Skeleton />
                 ) : (
                   <>
+                    {actions.includes("create") &&
                     <Button
                       style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                       icon={<UserAddOutlined />}
@@ -435,7 +452,7 @@ const Users = () => {
                       }}
                     >
                       Add
-                    </Button>
+                    </Button>}
                     {departments.map((department) => {
                       const departmentUsers = userDepartments.find(
                         (userDepartment) => userDepartment.id === department.id
@@ -465,6 +482,7 @@ const Users = () => {
                             layout="vertical"
                             extra={
                               <Row gutter={[8, 8]}>
+                                {actions.includes("update") && 
                                 <Col>
                                   <Button
                                     icon={<EditOutlined />}
@@ -474,7 +492,7 @@ const Users = () => {
                                   >
                                     Edit User
                                   </Button>
-                                </Col>
+                                </Col>}
                                 {/* <Col>
                               <Button danger
                                 icon={<DeleteOutlined />}

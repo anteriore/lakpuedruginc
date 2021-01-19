@@ -154,8 +154,20 @@ public class PermissionsData {
         permissionRepository.save(p1);
 
         p1 = new Permission();
-        p1.setCategory("Sales");
+        p1.setCategory("Users");
         p1.setSortOrder(2);
+        p1Subs = new ArrayList<>();
+        p1Subs.add(new PermissionSub(null, "Users", "users", 1));
+
+        p1 = new Permission();
+        p1.setCategory("Accounting");
+        p1.setSortOrder(3);
+        p1Subs = new ArrayList<>();
+        p1Subs.add(new PermissionSub(null, "PDC Disbursements", "pdc-disbursements", 1));
+
+        p1 = new Permission();
+        p1.setCategory("Sales");
+        p1.setSortOrder(4);
         p1Subs = new ArrayList<>();
         p1Subs.add(new PermissionSub(null, "Sales Orders", "sales-orders", 1));
         p1Subs.add(new PermissionSub(null, "Order Slips", "order-slips", 2));
@@ -166,5 +178,7 @@ public class PermissionsData {
         p1Subs.add(new PermissionSub(null, "Official Receipts", "official-receipts", 7));
 
         
+        
+
     }
 }
