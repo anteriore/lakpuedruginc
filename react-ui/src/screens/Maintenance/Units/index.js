@@ -11,7 +11,7 @@ import TableDisplay from '../../../components/TableDisplay';
 const { Title } = Typography;
 
 const Units = (props) => {
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -106,6 +106,8 @@ const Units = (props) => {
           data={unitList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

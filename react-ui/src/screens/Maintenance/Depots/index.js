@@ -17,7 +17,7 @@ const Depots = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
 
-  const { company } = props;
+  const { company, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.depots.list);
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
@@ -212,6 +212,8 @@ const Depots = (props) => {
               handleRetrieve={handleRetrieve}
               handleUpdate={handleUpdate}
               handleDelete={handleDelete}
+              updateEnabled={actions.includes("update")}
+              deleteEnabled={actions.includes("delete")}
             />
           )}
         </Col>

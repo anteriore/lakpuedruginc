@@ -11,7 +11,7 @@ import { listCluster, createCluster, updateCluster, deleteCluster, clearData } f
 const { Title } = Typography;
 
 const ClusterCodes = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -108,6 +108,8 @@ const ClusterCodes = (props) => {
           data={clusterList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

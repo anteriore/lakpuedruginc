@@ -15,7 +15,7 @@ import { formatZipPayload } from './helper';
 const { Title } = Typography;
 
 const ZipCodes = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -153,6 +153,8 @@ const ZipCodes = (props) => {
           data={zipCodeList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

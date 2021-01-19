@@ -54,7 +54,7 @@ const GroupsCategories = (props) => {
   
   const tableName = "group-categories"
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -288,7 +288,7 @@ const GroupsCategories = (props) => {
       ) : (
         <Row gutter={[16, 16]}>
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
-            {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('c') !== -1 &&
+            {actions.includes("create") &&
               <Button
                 style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
                 icon={<PlusOutlined />}
@@ -311,7 +311,7 @@ const GroupsCategories = (props) => {
 
             {selectedGroup !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('d') !== -1 &&
+                {actions.includes("delete") &&
                   <Popconfirm
                     title="Would you like to delete this item?"
                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
@@ -327,7 +327,7 @@ const GroupsCategories = (props) => {
                   </Popconfirm>
                 }
 
-                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('u') !== -1 &&
+                {actions.includes("update") &&
                   <Button
                     style={{ width: '30%' }}
                     icon={<EditOutlined />}
@@ -344,7 +344,7 @@ const GroupsCategories = (props) => {
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
             {selectedGroup !== null && (
               <>
-                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('c') !== -1 &&
+                {actions.includes("create") !== -1 &&
                   <Button
                     style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
                     icon={<PlusOutlined />}
@@ -371,7 +371,7 @@ const GroupsCategories = (props) => {
 
             {selectedCategory !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('d') !== -1 &&
+                {actions.includes("delete") &&
                   <Popconfirm
                     title="Would you like to delete this item?"
                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
@@ -389,7 +389,7 @@ const GroupsCategories = (props) => {
                     </Button>
                   </Popconfirm>
                 }
-                {typeof permissions[tableName] !== 'undefined' && permissions[tableName].actions.search('u') !== -1 &&
+                {actions.includes("update") &&
                   <Button
                     style={{ width: '30%' }}
                     icon={<EditOutlined />}

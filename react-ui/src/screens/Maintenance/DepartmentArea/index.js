@@ -85,7 +85,7 @@ const DepartmentArea = (props) => {
     ],
   };
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
   const deptData = useSelector((state) => state.maintenance.departmentArea.deptList);
   const areaData = useSelector((state) => state.maintenance.departmentArea.areaList);
@@ -253,6 +253,8 @@ const DepartmentArea = (props) => {
             handleUpdate={handleUpdateD}
             handleDelete={handleDeleteD}
             pagination={{ size: 'small' }}
+            updateEnabled={actions.includes("update")}
+            deleteEnabled={actions.includes("delete")}
           />
         </Col>
         <Col span={12}>
@@ -276,6 +278,8 @@ const DepartmentArea = (props) => {
             handleUpdate={handleUpdateA}
             handleDelete={handleDeleteA}
             pagination={{ size: 'small' }}
+            updateEnabled={actions.includes("update")}
+            deleteEnabled={actions.includes("delete")}
           />
         </Col>
         <SimpleForm

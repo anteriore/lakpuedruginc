@@ -17,7 +17,7 @@ import { tableHeader } from './data';
 const { Title } = Typography;
 
 const Product = (props) => {
-  const { title, company } = props;
+  const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const [contentLoading, setContenctLoading] = useState(true);
   const history = useHistory();
@@ -110,7 +110,8 @@ const Product = (props) => {
                 data={productList}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                deleteEnabled
+                updateEnabled={actions.includes("update")}
+                deleteEnabled={actions.includes("delete")}
               />
             </Col>
           </Row>

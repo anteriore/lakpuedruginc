@@ -17,7 +17,7 @@ import {
 const { Title } = Typography;
 
 const ProvinceCode = (props) => {
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -114,6 +114,8 @@ const ProvinceCode = (props) => {
           data={provinceCodeList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

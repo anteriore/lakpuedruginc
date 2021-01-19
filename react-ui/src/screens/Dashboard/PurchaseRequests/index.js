@@ -106,7 +106,7 @@ const PurchaseRequests = (props) => {
   const data = useSelector((state) => state.dashboard.purchaseRequests.listData);
   const itemData = useSelector((state) => state.dashboard.purchaseRequests.itemData);
 
-  const { company } = props;
+  const { company, title, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -187,7 +187,7 @@ const PurchaseRequests = (props) => {
         <Row>
           <Col span={20}>
             <Title level={3} style={{ float: 'left' }}>
-              {props.title}
+              {title}
             </Title>
             <Button
               style={{ float: 'right', marginRight: '1%' }}
@@ -211,6 +211,8 @@ const PurchaseRequests = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={actions.includes("update")}
+                deleteEnabled={actions.includes("delete")}
               />
             </Col>
           )}

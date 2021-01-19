@@ -20,7 +20,7 @@ import { formatProcedurePayload } from './helper';
 const { Title } = Typography;
 
 const Procedures = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -141,6 +141,8 @@ const Procedures = (props) => {
           data={procedureList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

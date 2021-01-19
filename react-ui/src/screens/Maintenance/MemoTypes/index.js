@@ -11,7 +11,7 @@ import { listMemo, createMemo, updateMemo, deleteMemo, clearData } from './redux
 const { Title } = Typography;
 
 const MemoTypes = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -106,6 +106,8 @@ const MemoTypes = (props) => {
           data={memoList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

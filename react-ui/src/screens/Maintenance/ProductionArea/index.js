@@ -17,7 +17,7 @@ import {
 const { Title } = Typography;
 
 const ProductionArea = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -114,6 +114,8 @@ const ProductionArea = (props) => {
           data={productionAreaList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

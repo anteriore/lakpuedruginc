@@ -24,7 +24,7 @@ const Clients = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
   const [displayData, setDisplayData] = useState(null);
 
-  const { company } = props;
+  const { company, actions } = props;
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -234,6 +234,8 @@ const Clients = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={actions.includes("update")}
+                deleteEnabled={actions.includes("delete")}
               />
             )}
           </Col>

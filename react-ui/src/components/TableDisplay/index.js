@@ -24,8 +24,6 @@ const TableDisplay = (props) => {
   const [dataCount, setDataCount] = useState(0);
   const [columns, setColumns] = useState(TableHeader(col));
 
-  const { permissions } = useSelector((state) => state.auth);
-
   /*
     columns must have an id
     

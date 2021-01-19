@@ -12,7 +12,7 @@ import SimpleForm from '../../../components/forms/FormModal';
 const { Title } = Typography;
 
 const FinishedGoods = (props) => {
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [formValues, setFormValues] = useState('');
@@ -135,6 +135,8 @@ const FinishedGoods = (props) => {
           data={list}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

@@ -17,7 +17,7 @@ const AccountCodes = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.accountCodes.list);
 
@@ -124,6 +124,8 @@ const AccountCodes = (props) => {
               handleRetrieve={handleRetrieve}
               handleUpdate={handleUpdate}
               handleDelete={handleDelete}
+              updateEnabled={actions.includes("update")}
+              deleteEnabled={actions.includes("delete")}
             />
           )}
         </Col>

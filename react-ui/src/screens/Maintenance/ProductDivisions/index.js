@@ -60,7 +60,7 @@ const ProductDivisions = (props) => {
     ],
   };
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.productDivisions.list);
 
@@ -162,6 +162,8 @@ const ProductDivisions = (props) => {
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdate}
             handleDelete={handleDelete}
+            updateEnabled={actions.includes("update")}
+            deleteEnabled={actions.includes("delete")}
           />
         </Col>
         <SimpleForm

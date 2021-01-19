@@ -76,10 +76,20 @@ const Dashboard = () => {
       </Route>
       {!contentLoading &&
         moduleRoutes.map((module) => {
+          var actions = []
+          if(permissions[module.path.split("/")[1]].actions.search('u') !== -1){
+            actions.push("update")
+          }
+          if(permissions[module.path.split("/")[1]].actions.search('c') !== -1){
+            actions.push("create")
+          }
+          if(permissions[module.path.split("/")[1]].actions.search('d') !== -1){
+            actions.push("delete")
+          }
           return (
             <Route path={path + module.path}>
               <Container location={{ pathname: path + module.path }}>
-                <module.component title={module.title} company={selectedCompany} />
+                <module.component title={module.title} company={selectedCompany} actions={actions} />
               </Container>
             </Route>
           );
