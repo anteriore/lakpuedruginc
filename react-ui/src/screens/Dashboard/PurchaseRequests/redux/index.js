@@ -20,7 +20,7 @@ const initialState = {
   list: null,
 };
 
-export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI, rejectWithValue) => {
+export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
@@ -34,7 +34,7 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI, rejec
     }
   } else {
     payload.message.error(message.ITEMS_GET_REJECTED);
-    return rejectWithValue(response);
+    return thunkAPI.rejectWithValue(response);
   }
 
   return response;

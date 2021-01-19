@@ -10,26 +10,31 @@ const initialState = {
   action: '',
 };
 
-export const listDepot = createAsyncThunk(
-  'listDepot',
-  async (payload, thunkAPI, rejectWithValue) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { fnCallback } = payload;
+  const response = await axiosInstance.get(`rest/depots?token=${accessToken}`);
 
-    const response = await axiosInstance.get(`rest/depots?token=${accessToken}`);
-
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for bank accounts');
+  if (typeof response !== 'undefined') {
+    const { status } = response;
+    if (status === 200) {
+      if (response.data.length === 0) {
+        response.statusText = `${message.API_200_EMPTY} in depot.`;
+      } else {
+        response.statusText = `${message.API_200_SUCCESS} in depot.`;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      fnCallback(response);
+      return response;
     }
 
-    return response;
+    if (status === 500 || status === 400) {
+      fnCallback(response);
+      return thunkAPI.rejectWithValue(response);
+    }
+  } else {
+    return thunkAPI.rejectWithValue(response);
   }
-);
+});
 
 export const addDepot = createAsyncThunk('addDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;

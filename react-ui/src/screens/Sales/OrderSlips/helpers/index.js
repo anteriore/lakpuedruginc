@@ -96,13 +96,12 @@ export const formatPayload = (approvalId, company, value, salesOrder, orderedPro
 
   orderedProducts.forEach((orderedProduct) => {
     formattedValue.orderedProducts.push({
-      orderSlipNo: value.number,
+      product: { id: orderedProduct.product.id },
       quantity: orderedProduct.quantityRequested,
       salesOrderProductId: orderedProduct.id,
-      status: salesOrder.status,
-      unitPrice: orderedProduct.quantity,
+      unitPrice: orderedProduct.unitPrice,
       depot: { id: salesOrder.depot.id },
-      product: { id: orderedProduct.product.id },
+      amount: orderedProduct.quantityRequested * orderedProduct.unitPrice,
     });
   });
 
