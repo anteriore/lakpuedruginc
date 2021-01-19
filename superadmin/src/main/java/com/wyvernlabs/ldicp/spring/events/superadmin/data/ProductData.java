@@ -65,6 +65,38 @@ public class ProductData {
 		productRepository.save(product);
 
 
+		product.setClassification(classification);
+		product.setDivision(divisionRepository.getOne(1L));
+		product.setCategory(categoryRepository.getOne(1L));
+		product.setCompany(company);
+		product.setExpiration(new Date());
+		product.setLotNumber("LOT#8888");
+		product.setQuantityPerBox(25);
+		product.setReorderLevel(1000);
+		product.setBigUnit(unitRepository.findByCode("g"));
+		product.setSmallUnit(unitRepository.findByCode("kg"));
+		product.setUnitPrice(50D);
+		product.setFinishedGood(fg);
+		productRepository.save(product);
+
+
+
+		FinishedGood fg = finishedGoodRepository.getOne(2L);
+		product.setClassification(classification);
+		product.setDivision(divisionRepository.getOne(1L));
+		product.setCategory(categoryRepository.getOne(1L));
+		product.setCompany(company);
+		product.setExpiration(new Date());
+		product.setLotNumber("LOT#9999");
+		product.setQuantityPerBox(25);
+		product.setReorderLevel(1000);
+		product.setBigUnit(unitRepository.findByCode("g"));
+		product.setSmallUnit(unitRepository.findByCode("kg"));
+		product.setUnitPrice(50D);
+		product.setFinishedGood(fg);
+		productRepository.save(product);
+
+
 
 
 		
