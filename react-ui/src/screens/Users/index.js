@@ -57,25 +57,32 @@ const Users = () => {
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    var actionsList = []
+    if(typeof permissions["users"] !== 'undefined'){
+      if( permissions["users"].actions.search('u') !== -1){
+        actionsList.push("update")
+      }
+      if(permissions["users"].actions.search('c') !== -1){
+        actionsList.push("create")
+      }
+      if(permissions["users"].actions.search('d') !== -1){
+        actionsList.push("delete")
+      }
+      if(permissions["users"].actions.search('r') !== -1){
+        actionsList.push("read")
+      }
+    }
+    setActions(actionsList)
     dispatch(listCompany()).then(() => {
       setFormData(null);
       setCompanyLoading(false);
       setSelectedUser(null);
-      updateUserDepartments(1);
-      var actionsList = []
-      if(typeof permissions["users"] !== 'undefined'){
-        if( permissions["users"].actions.search('u') !== -1){
-          actionsList.push("update")
-        }
-        if(permissions["users"].actions.search('c') !== -1){
-          actionsList.push("create")
-        }
-        if(permissions["users"].actions.search('d') !== -1){
-          actionsList.push("delete")
-        }
+      if(actions.includes("read")){
+        updateUserDepartments(selectedCompany);
       }
-      
-      setActions(actionsList)
+      else{
+        setContentLoading(false)
+      }
     });
 
     return function cleanup() {
@@ -349,7 +356,12 @@ const Users = () => {
   const handleChangeTab = (companyID) => {
     setContentLoading(true);
     dispatch(setCompany(companyID));
-    updateUserDepartments(companyID);
+    if(actions.includes("read")){
+      updateUserDepartments(companyID);
+    }
+    else{
+      setContentLoading(false)
+    }
   };
 
   const renderUsers = (departmentUsers) => {
@@ -453,17 +465,20 @@ const Users = () => {
                     >
                       Add
                     </Button>}
-                    {departments.map((department) => {
-                      const departmentUsers = userDepartments.find(
-                        (userDepartment) => userDepartment.id === department.id
-                      );
-                      return (
-                        <>
-                          <Divider orientation="left">{department.name}</Divider>
-                          {renderUsers(departmentUsers)}
-                        </>
-                      );
-                    })}
+                    {actions.includes("read") ? 
+                      (departments.map((department) => {
+                        const departmentUsers = userDepartments.find(
+                          (userDepartment) => userDepartment.id === department.id
+                        );
+                        return (
+                          <>
+                            <Divider orientation="left">{department.name}</Divider>
+                            {renderUsers(departmentUsers)}
+                          </>
+                        );
+                    })) : (
+                      <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />  
+                    )}
                     <Drawer
                       width="50%"
                       placement="right"
