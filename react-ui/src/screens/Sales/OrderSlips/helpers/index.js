@@ -41,7 +41,8 @@ export const formatLotProducts = (salesProducts, inventoryProducts) => {
       const { product } = soProduct;
       const results = _.filter(inventoryProducts, (o) => {
         return o.product.finishedGood.id === product.product.finishedGood.id && o.quantity !== 0;
-      });
+      }).filter((o) => o.depot.id === product.depot.id);
+
       results.forEach((result) => {
         listLotProducts.push(result);
       });
@@ -49,6 +50,7 @@ export const formatLotProducts = (salesProducts, inventoryProducts) => {
 
     return _.uniqBy(listLotProducts, 'id');
   }
+
   return null;
 };
 

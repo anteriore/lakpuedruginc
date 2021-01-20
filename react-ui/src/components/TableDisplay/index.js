@@ -13,6 +13,7 @@ const TableDisplay = (props) => {
     handleUpdate,
     data,
     deleteEnabled,
+    updateEnabled,
     pagination,
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
@@ -55,6 +56,7 @@ const TableDisplay = (props) => {
         render: (row) => {
           return (
             <div style={styles.crudColumn}>
+              {(typeof updateEnabled === 'undefined' || updateEnabled) && (
               <Button
                 icon={<EditOutlined />}
                 type="text"
@@ -65,6 +67,8 @@ const TableDisplay = (props) => {
               >
                 Edit
               </Button>
+              )}
+              {(deleteEnabled || typeof deleteEnabled === 'undefined') && (
               <Popconfirm
                 title="Would you like to delete this item?"
                 icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
@@ -78,27 +82,26 @@ const TableDisplay = (props) => {
                 okText="Yes"
                 cancelText="No"
               >
-                {deleteEnabled ? (
-                  <Button
-                    icon={<DeleteOutlined />}
-                    type="text"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Delete
-                  </Button>
-                ) : (
-                  ''
-                )}
+                <Button
+                  icon={<DeleteOutlined />}
+                  type="text"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  Delete
+                </Button>
               </Popconfirm>
+              )}
             </div>
           );
         },
       },
     ];
 
-    filteredColumn = filteredColumn.concat(editpart);
+    if((typeof updateEnabled === 'undefined' || updateEnabled) || (deleteEnabled || typeof deleteEnabled === 'undefined')){
+      filteredColumn = filteredColumn.concat(editpart);
+    }
 
     return filteredColumn;
   };

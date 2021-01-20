@@ -40,3 +40,21 @@ export const fromatInitForm = (rawValues, fieldNames) => {
 
   return newField;
 };
+
+export const setConnectionEffect = (response, noDataFoundError, serverError, defaultError) => {
+  const { status } = response;
+  switch (status) {
+    case 200:
+      if (response.data.length === 0) {
+        noDataFoundError();
+      }
+      break;
+    case 400:
+    case 500:
+      serverError();
+      break;
+    default:
+      defaultError();
+      break;
+  }
+};
