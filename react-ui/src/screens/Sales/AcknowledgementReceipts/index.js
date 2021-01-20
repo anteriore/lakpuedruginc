@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import FormDetails, { columns } from './data';
+import { unwrapResult } from '@reduxjs/toolkit'
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormScreen from '../../../components/forms/FormScreen';
@@ -13,6 +14,12 @@ import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
+
+import {
+  NO_DATA_FOUND,
+  NO_DATA_FOUND_DESC,
+} from '../../../data/constants/response-message.constant';
+import { fnCallback } from '../../../helpers/response-message.helper.js';
 
 const { Title } = Typography;
 
@@ -34,9 +41,20 @@ const AcknowledgementReceipts = (props) => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(listAReceipt({ company, message })).then(() => {
-      setLoading(false);
-    });
+    const payload = {
+      company
+    };
+    dispatch(listAReceipt(payload))
+    .then(unwrapResult)
+    .then((response) => {
+      const onSuccess = () => {
+        setLoading(false)
+      }
+      const useModal = false
+      const returnURL = '/sales'
+      fnCallback(response, history, useModal, onSuccess, returnURL)
+    })
+    .catch(() => {})
 
     return function cleanup() {
       dispatch(clearData());
@@ -47,16 +65,45 @@ const AcknowledgementReceipts = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
+    const payload = {
+      company,
+      fnCallback: (response) => {
+        const { status } = response;
+        switch (status) {
+          case 200:
+            if (response.data.length === 0) {
+              Modal.warning({
+                title: NO_DATA_FOUND,
+                content: NO_DATA_FOUND_DESC(response.config.url.split(/[/?]/g)[1]),
+              });
+            }
+            break;
+          case 400:
+          case 500:
+            history.push({
+              pathname: `/error/${status === 400 ? 403 : status}`,
+              state: {
+                moduleList: '/sales/acknowledgement-receipts',
+              },
+            });
+            break;
+          default:
+            break;
+        }
+      },
+    };
     setFormTitle('Create Acknowledgement Receipt');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listClient({ company, message })).then(() => {
+    dispatch(listClient(payload)).then(unwrapResult)
+    .then(() => {
       dispatch(listDepot({ company, message })).then(() => {
         history.push(`${path}/new`);
         setLoading(false);
       });
-    });
+    })
+    .catch(()=>{})
   };
 
   const handleUpdate = (data) => {

@@ -14,18 +14,28 @@ const noDataMessage = "No data retrieved for acknowledgement receipts"
 
 export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    var { company } = payload;
 
     const response = await axiosInstance.get(`rest/acknowledgement-receipts?token=${accessToken}`);
   
-    if(typeof response !== 'undefined' && response.status === 200){
-      const { data } = response;
-      if( data.length === 0){
-        payload.message.warning(noDataMessage)
+    if (typeof response !== 'undefined') {
+      const { status } = response;
+      if (status === 200) {
+        if (response.data.length === 0) {
+          response.statusText = `${message.API_200_EMPTY} in acknowledgement receipt.`;
+        } else {
+          response.statusText = `${message.API_200_SUCCESS} in acknowledgement receipt.`;
+        }
+        return response;
       }
-    }
-    else {
-      payload.message.error(message.ITEMS_GET_REJECTED)
-      return thunkAPI.rejectWithValue(response)
+
+      if (status === 500 || status === 400) {
+        return thunkAPI.rejectWithValue(response);
+      }
+    } else {
+      return thunkAPI.rejectWithValue({
+        status: 'error'
+      });
     }
   
     return response;
