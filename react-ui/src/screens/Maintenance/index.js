@@ -26,7 +26,7 @@ const Maintenance = () => {
       setModuleRoutes(getPermittedRoutes())
       setContentLoading(false);
     });
-
+  // eslint-disable-next-line
   }, [dispatch]);
 
   const getPermittedRoutes = () => {

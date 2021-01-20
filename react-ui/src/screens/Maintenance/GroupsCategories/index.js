@@ -25,7 +25,6 @@ const GroupsCategories = (props) => {
   const [formDataG, setFormDataG] = useState(null);
   const [formDataC, setFormDataC] = useState(null);
   const groupData = useSelector((state) => state.maintenance.groupsCategories.groupList);
-  const { permissions } = useSelector((state) => state.auth);
 
   const formDetailG = {
     form_name: 'groups',
@@ -50,9 +49,6 @@ const GroupsCategories = (props) => {
       },
     ],
   };
-
-  
-  const tableName = "group-categories"
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();

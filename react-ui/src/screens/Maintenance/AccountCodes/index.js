@@ -108,7 +108,7 @@ const AccountCodes = (props) => {
         <Col span={20}>
           {actions.includes("create") && 
             <Button
-              style={{ float: 'right', marginRight: '0.7%', marginRight: '1%' }}
+              style={{ float: 'right', marginRight: '0.7%'}}
               icon={<PlusOutlined />}
               onClick={(e) => {
                 handleAdd();
