@@ -52,6 +52,39 @@ public class UserRestController {
         return userRepository.save(user);
     }
 
+    @PostMapping("/permissions/")
+    public User editPermissions(@RequestBody User newuser ) {
+        User user = userRepository.getOne(newuser.getId());
+
+        user.setPermissions(newuser.getPermissions());
+
+        return userRepository.save(user);
+ 
+    }
+
+    @PostMapping("/password/")
+    public User editPassword(@RequestBody User newuser ) {
+
+        User user = userRepository.getOne(newuser.getId());
+        user.setPassword(passwordEncoder.encode(newuser.getPassword()));
+        return userRepository.save(user);
+ 
+    }
+
+    @PostMapping("/edit/")
+    public User editUser(@RequestBody User newuser ) {
+        User usercontainer=newuser;
+        //get password from the old user
+        User olduser = userRepository.getOne(newuser.getId());
+        usercontainer.setPassword(olduser.getPassword());
+
+
+        return userRepository.save(usercontainer);
+ 
+    }
+
+
+
     @GetMapping("/company/{id}")
     public List<User> listByCompany(@PathVariable Long id) {
         Company company = companyRepository.getOne(id);

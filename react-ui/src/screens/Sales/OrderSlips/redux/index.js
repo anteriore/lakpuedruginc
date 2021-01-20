@@ -2,27 +2,40 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listOrderSlips = createAsyncThunk(
-  'listOrderSlips',
-  async (payload, thunkAPI, rejectWithValue) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(
-      `/rest/order-slips/company/${payload.company}?token=${accessToken}`
-    );
+export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, fnCallback } = payload;
+  const response = await axiosInstance.get(
+    `/rest/order-slips/company/${company}?token=${accessToken}`
+  );
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for order slips');
+  if (typeof response !== 'undefined') {
+    const { status } = response;
+    if (status === 200) {
+      if (response.data.length === 0) {
+        response.statusText = `${message.API_200_EMPTY} in order slips.`;
+      } else {
+        response.statusText = `${message.API_200_SUCCESS} in order slips.`;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      fnCallback(response);
+      return response;
     }
 
-    return response;
+    if (status === 500 || status === 400) {
+      fnCallback(response);
+      return thunkAPI.rejectWithValue(response);
+    }
+  } else {
+    const newReponse = {
+      status: 500,
+      statusText: message.API_UNDEFINED,
+    };
+    fnCallback(newReponse);
+    return thunkAPI.rejectWithValue(response);
   }
-);
+
+  return response;
+});
 
 export const listOrderSlipsByDepot = createAsyncThunk(
   'listOrderSlipsByDepot',

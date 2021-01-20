@@ -8,7 +8,7 @@ const initialState = {
   expired: false,
   user: null,
   permissions: null,
-  error: null,
+  messsage: null,
 };
 
 export const login = createAsyncThunk('login', async (payload) => {
@@ -25,6 +25,17 @@ export const getUser = createAsyncThunk('getUser', async (args, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/me/?token=${accessToken}`);
+  return response;
+});
+
+export const changePassword = createAsyncThunk('changePassword', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const data = {
+    id: payload.id,
+    password: payload.password,
+  };
+
+  const response = await axiosInstance.post(`rest/users/password/?token=${accessToken}`, data);
   return response;
 });
 
@@ -61,8 +72,8 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.expired = action.payload.expired;
     },
-    resetErrorMsg(state, action) {
-      state.error = null;
+    resetErrorMsg(state) {
+      state.message = null;
     },
   },
   extraReducers: {
@@ -71,21 +82,37 @@ const authSlice = createSlice({
     },
     [login.fulfilled]: (state, action) => {
       if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.token = action.payload.data.token;
-        state.expired = action.payload.data.expired;
-        state.signedIn = true;
-      } else if (typeof action.payload === 'undefined') {
-        state.status = 'failed';
-        state.error = 'Unable to connect to server';
-      } else {
-        state.status = 'failed';
-        state.error = 'Invalid username and/or password';
+        return {
+          ...state,
+          status: 'succeeded',
+          token: action.payload.data.token,
+          expired: action.payload.data.expired,
+          signedIn: true,
+          message: 'Login Successful'
+        }
+
+      } 
+      else if (typeof action.payload === 'undefined') {
+        return {
+          ...state,
+          status: 'failed',
+          message: 'Unable to connect to server'
+        }
+      } 
+      else {
+        return {
+          ...state,
+          status: 'failed',
+          message: 'Invalid username and/or password'
+        }
       }
     },
     [login.rejected]: (state) => {
-      state.status = 'failed';
-      state.error = 'Invalid username and/or password';
+      return {
+        ...state,
+        status: 'failed',
+        message: 'Invalid username and/or password'
+      }
     },
 
     [getUser.pending]: (state) => {
@@ -93,20 +120,63 @@ const authSlice = createSlice({
     },
     [getUser.fulfilled]: (state, action) => {
       if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.user = processUserData(action.payload.data, action.type);
-        state.permissions = action.payload.data.permissions
-      } else if (typeof action.payload === 'undefined') {
-        state.status = 'failed';
-        state.error = 'Unable get user info';
-      } else {
-        state.status = 'failed';
-        state.error = 'Unable get user info';
+        return {
+          ...state,
+          status: 'succeeded',
+          message: null,
+          user: processUserData(action.payload.data, action.type)
+        }
+      }
+      else {
+        return {
+          ...state,
+          status: 'failed',
+          message: 'Unable get user info'
+        }
       }
     },
     [getUser.rejected]: (state) => {
-      state.status = 'failed';
-      state.error = 'Unable get user info';
+      return {
+        ...state,
+        status: 'failed',
+        message: 'Unable get user info'
+      }
+    },
+
+    
+    [changePassword.pending]: (state) => {
+      state.status = 'loading';
+    },
+    [changePassword.fulfilled]: (state, action) => {
+      if (action.payload !== undefined && action.payload.status === 200) {
+        return {
+          ...state,
+          status: 'succeeded',
+          message: 'Password change successful'
+        }
+
+      } 
+      else if (typeof action.payload === 'undefined') {
+        return {
+          ...state,
+          status: 'failed',
+          message: 'Unable to connect to server'
+        }
+      } 
+      else {
+        return {
+          ...state,
+          status: 'failed',
+          message: 'Password change request was denied'
+        }
+      }
+    },
+    [changePassword.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        message: 'Password change request was denied'
+      }
     },
   },
 });

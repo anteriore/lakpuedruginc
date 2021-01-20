@@ -3,10 +3,11 @@ import { Form, Modal } from 'antd';
 import FormItem from './FormItem';
 
 const SimpleForm = (props) => {
-  const { visible, title, onCancel, onSubmit, values, formDetails } = props;
+  const { visible, title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
+    console.log(formDetails)
     form.setFieldsValue(values);
   }, [values, form]);
 
@@ -29,7 +30,7 @@ const SimpleForm = (props) => {
     >
       <Form form={form} layout="vertical" initialValues={values} name={formDetails.form_name}>
         {formDetails.form_items.map((item) => (
-          <FormItem item={item} onFail={onCancel} />
+          <FormItem item={item} onFail={onCancel} formMode={formMode}/>
         ))}
       </Form>
     </Modal>
