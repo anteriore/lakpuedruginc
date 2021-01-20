@@ -125,6 +125,8 @@ public class UserData {
             "return-slips",
             "sales-journal-vouchers",
             "official-receipts",
+            //purchasing
+            "purchase-orders"
         };
         UserPermission p0;
         for(int i = 0; i < permissionString.length; i++){

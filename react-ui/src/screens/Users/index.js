@@ -51,7 +51,7 @@ const Users = () => {
   const [contentLoading, setContentLoading] = useState(true);
   const [userDepartments, setUserDepartments] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [actions, setActions] = useState([])
+  const [actions, setActions] = useState([]);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const depots = useSelector((state) => state.maintenance.depots.list);
   const { permissions } = useSelector((state) => state.auth);

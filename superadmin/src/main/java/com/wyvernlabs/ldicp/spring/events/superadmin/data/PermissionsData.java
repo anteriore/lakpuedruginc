@@ -177,6 +177,12 @@ public class PermissionsData {
         p1Subs.add(new PermissionSub(null, "Sales Journal Vouchers", "sales-journal-vouchers", 6));
         p1Subs.add(new PermissionSub(null, "Official Receipts", "official-receipts", 7));
 
+        p1 = new Permission();
+        p1.setCategory("Purchasing");
+        p1.setSortOrder(5);
+        p1Subs = new ArrayList<>();
+        p1Subs.add(new PermissionSub(null, "Purchase Orders", "purchase-orders", 1));
+
         
         
 
