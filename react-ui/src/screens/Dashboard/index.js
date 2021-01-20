@@ -86,6 +86,9 @@ const Dashboard = () => {
           if(permissions[module.path.split("/")[1]].actions.search('d') !== -1){
             actions.push("delete")
           }
+          if(permissions[module.path.split("/")[1]].actions.search('r') !== -1){
+            actions.push("read")
+          }
           return (
             <Route path={path + module.path}>
               <Container location={{ pathname: path + module.path }}>

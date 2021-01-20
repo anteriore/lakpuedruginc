@@ -22,7 +22,7 @@ import { clearData as clearSO } from '../SalesOrders/redux';
 const { Title } = Typography;
 
 const OrderSlips = (props) => {
-  const { title, company } = props;
+  const { title, company, actions } = props;
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
@@ -107,9 +107,10 @@ const OrderSlips = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
+            {actions.includes("create") &&
             <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
               Add
-            </Button>
+            </Button>}
           </Col>
           <Col span={20}>
             {contentLoading ? (
@@ -120,6 +121,8 @@ const OrderSlips = (props) => {
                 data={orderSlipsList}
                 handleUpdate={handleEditButton}
                 handleDelete={handleDeleteButton}
+                updateEnabled={actions.includes("update")}
+                deleteEnabled={actions.includes("delete")}
               />
             )}
           </Col>
