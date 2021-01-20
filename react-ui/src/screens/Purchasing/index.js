@@ -93,9 +93,14 @@ const Purchasing = () => {
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
     setLoading(true);
-    dispatch(listPO({ company: id, message })).then(() => {
+    if(actions.includes("read")){
+      dispatch(listPO({ company: id, message })).then(() => {
+        setLoading(false);
+      });
+    }
+    else{
       setLoading(false);
-    });
+    }
   };
 
   const handleAdd = () => {
