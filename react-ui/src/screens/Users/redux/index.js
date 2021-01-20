@@ -35,6 +35,13 @@ export const addUser = createAsyncThunk('addUser', async (payload, thunkAPI) => 
   return response;
 });
 
+export const updateUser = createAsyncThunk('updateUser', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.post(`rest/users/edit/?token=${accessToken}`, payload);
+  return response;
+});
+
 export const deleteUser = createAsyncThunk('deleteUser', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
