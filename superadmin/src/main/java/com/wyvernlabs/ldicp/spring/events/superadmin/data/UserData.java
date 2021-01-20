@@ -53,7 +53,7 @@ public class UserData {
         u.setRoles(new String[] { "ACTUATOR", "USER" });
 
         Map<String, UserPermission> permissions = new HashMap<>();
-        UserPermission p0 = new UserPermission();
+        /*UserPermission p0 = new UserPermission();
         p0.setCode("department-areas");
         p0.setActions("crud");
         permissions.put(p0.getCode(), p0);
@@ -63,10 +63,78 @@ public class UserData {
         p1.setActions("rud");
         permissions.put(p1.getCode(), p1);
 
-        /*UserPermission p2 = new UserPermission();
+        UserPermission p2 = new UserPermission();
         p2.setCode("superadmin");
         p2.setActions("crud");
         permissions.put(p2.getCode(), p2);*/
+
+        String[] permissionString = {
+            //dashboard
+            "purchase-requests", 
+            "receiving-receipts", 
+            "approved-receipts", 
+            "material-reevaluations",
+            "inventory",
+            "material-issueance",
+            "material-receiving",
+            "inventory-movement",
+            "product-movement",
+            "product-inventory",
+            "fgis",
+            "fgrs",
+            "depot-inventory",
+            "employees",
+            "job-orders",
+            "engineering-items",
+            "engineering-inventory",
+            "account-summary",
+            "sales-reports",
+            //maintenance
+            "finished-goods",
+            "clients",
+            "vendors",
+            "group-categories",
+            "department-areas",
+            "items",
+            "units",
+            "items-types",
+            "depots",
+            "products",
+            "procedures",
+            "production-areas",
+            "memo-types",
+            "bank-accounts",
+            "product-divisions",
+            "region-codes",
+            "cluster-codes",
+            "institutional-codes",
+            "account-codes",
+            "province-codes",
+            "sales-reps",
+            "zip-codes",
+            "product-categories",
+            //users
+            "users",
+            //accounting
+            "pdc-disbursements",
+            //sales
+            "sales-orders",
+            "order-slips",
+            "sales-invoices",
+            "acknowledgement-receipts",
+            "return-slips",
+            "sales-journal-vouchers",
+            "official-receipts",
+        };
+        UserPermission p0;
+        for(int i = 0; i < permissionString.length; i++){
+            p0 = new UserPermission();
+            p0.setCode(permissionString[i]);
+            p0.setActions("crud");
+            permissions.put(p0.getCode(), p0);
+        }
+
+        
 
         u.setPermissions(permissions);
         userRepository.save(u);
