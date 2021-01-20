@@ -12,7 +12,10 @@ const initialState = {
 
 export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { fnCallback } = payload;
+  var { fnCallback } = payload;
+  if( typeof fnCallback !== 'function' ){
+    fnCallback = () => {}
+  }
   const response = await axiosInstance.get(`rest/depots?token=${accessToken}`);
 
   if (typeof response !== 'undefined') {
