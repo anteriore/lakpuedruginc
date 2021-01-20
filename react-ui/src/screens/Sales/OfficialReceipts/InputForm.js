@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Form,
   Button,
-  Input,
-  InputNumber,
-  Select,
-  Checkbox,
-  Modal,
   Row,
   Col,
   Typography,
@@ -14,9 +9,9 @@ import {
   Empty,
   message,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
+import { useSelector } from 'react-redux';
 
 const { Title, Text } = Typography;
 
@@ -28,17 +23,12 @@ const FormScreen = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
-  const [toggleValue, setToggleValue] = useState(null);
-
-  const toggleName = formDetails.toggle_name;
+  const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
 
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable && values !== null) {
       setTableData(formTable.getValues(values));
-    }
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
     }
     // eslint-disable-next-line
   }, [values, form]);
@@ -68,6 +58,18 @@ const FormScreen = (props) => {
     message.error("An error has occurred. Please double check the information you've provided.");
   };
 
+  const onValuesChange = (event) => {
+    if(event.hasOwnProperty("acknowledgementReceipt")){
+      const selectedAR = areceipts.find(areceipt => areceipt.id === event.acknowledgementReceipt)
+      form.setFieldsValue({
+        customerCode: selectedAR.client.code,
+        tin: selectedAR.client.tin,
+        receivedFrom: selectedAR.client.name,
+        businessAddress: selectedAR.client.businessAddress,
+      })
+    }
+  }
+
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
@@ -86,37 +88,13 @@ const FormScreen = (props) => {
             name={formDetails.form_name}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
           </Form>
 
-          {/*For display only */}
-          <Form.Item
-            {...{ labelCol: { span: 6 }, wrapperCol: { span: 15 }}}
-            label={"Customer Code"}
-          >
-            <Input readOnly={true} placeholder={"Customer Code"}/>
-          </Form.Item>
-          <Form.Item
-            {...{ labelCol: { span: 6 }, wrapperCol: { span: 15 }}}
-            label={"TIN"}
-          >
-            <Input readOnly={true} placeholder={"TIN"}/>
-          </Form.Item>
-          <Form.Item
-            {...{ labelCol: { span: 6 }, wrapperCol: { span: 15 }}}
-            label={"Received From"}
-          >
-            <Input readOnly={true} placeholder={"Received From"}/>
-          </Form.Item>
-          <Form.Item
-            {...{ labelCol: { span: 6 }, wrapperCol: { span: 15 }}}
-            label={"Business Address"}
-          >
-            <Input readOnly={true} placeholder={"Business Address"}/>
-          </Form.Item>
           
           <Table
             dataSource={tableData}

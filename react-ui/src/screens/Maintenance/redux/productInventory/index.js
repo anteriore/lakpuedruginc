@@ -7,7 +7,8 @@ export const listProductInventory = createAsyncThunk(
   'listProductInventory',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const { fnCallback } = payload;
+    const { fnCallback } = payload || { fnCallback: () => {}};
+    
     const response = await axiosInstance.get(`rest/product-inventory?token=${accessToken}`);
 
     if (typeof response !== 'undefined') {

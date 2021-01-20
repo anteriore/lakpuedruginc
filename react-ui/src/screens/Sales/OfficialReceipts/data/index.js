@@ -1,9 +1,6 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Typography, Divider, message } from 'antd';
-import { listAReceiptWithSIByDepot, listAReceipt } from '../../AcknowledgementReceipts/redux';
-
-const { Text } = Typography;
+import { message } from 'antd';
+import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
 
 export const columns = [
   {
@@ -110,6 +107,30 @@ const FormDetails = () => {
         rules: [{ required: true }],
         allowEmpty: true
       },
+      {
+        label: 'Customer Code',
+        name: 'customerCode',
+        placeholder: "Customer Code",
+        readOnly: true
+      },
+      {
+        label: 'TIN',
+        name: 'tin',
+        placeholder: "TIN",
+        readOnly: true
+      },
+      {
+        label: 'Received From',
+        name: 'receivedFrom',
+        placeholder: "Received From",
+        readOnly: true
+      },
+      {
+        label: 'Business Address',
+        name: 'businessAddress',
+        placeholder: "Business Address",
+        readOnly: true
+      },
     ]
   };
 
@@ -123,8 +144,8 @@ const FormDetails = () => {
       },
       {
         title: 'Amount',
-        dataIndex: 'totalAmount',
-        key: 'totalAmount',
+        dataIndex: 'appliedAmount',
+        key: 'appliedAmount',
       },
       {
         title: 'Discount',
@@ -143,8 +164,8 @@ const FormDetails = () => {
       },
       {
         title: 'NET',
-        dataIndex: 'totalAmount',
-        key: 'totalAmount',
+        dataIndex: 'appliedAmount',
+        key: 'appliedAmount',
       },
     ]
   }
