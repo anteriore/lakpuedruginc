@@ -133,36 +133,48 @@ const FormScreen = (props) => {
             pagination={false}
             locale={{ emptyText: <Empty description="Please select an Acknowledgement Receipt." /> }}
             summary={(data) => {
+              let vatableSales = 0;
+              let totalSales = 0;
+              let vatExemptSales = 0;
+              let vatLess = 0;
+              let zeroRatedSales = 0;
+              let netSales = 0;
+              data.forEach(({ appliedAmount }) => {
+                vatableSales += appliedAmount / 1.12
+                totalSales += appliedAmount
+                vatLess += appliedAmount / 1.12 * 0.12
+                netSales += appliedAmount / 1.12
+              });
               return(
                 <>
                   <Table.Summary.Row>
                     <Table.Summary.Cell>VATABLE Sales</Table.Summary.Cell>
                     <Table.Summary.Cell>
-                      <Text>{0}</Text>
+                      <Text>{vatableSales.toFixed(2)}</Text>
                     </Table.Summary.Cell>
                     <Table.Summary.Cell>Total Sales (Vat Inclusive)</Table.Summary.Cell>
                     <Table.Summary.Cell>
-                      <Text>{0}</Text>
+                      <Text>{totalSales.toFixed(2)}</Text>
                     </Table.Summary.Cell>
                   </Table.Summary.Row>
                   <Table.Summary.Row>
                     <Table.Summary.Cell>VAT Exempt Sales</Table.Summary.Cell>
                     <Table.Summary.Cell>
-                      <Text>{0}</Text>
+                      <Text>{vatExemptSales.toFixed(2)}</Text>
                     </Table.Summary.Cell>
                     <Table.Summary.Cell>less VAT</Table.Summary.Cell>
                     <Table.Summary.Cell>
-                      <Text>{0}</Text>
+                      <Text>{vatLess.toFixed(2)}</Text>
                     </Table.Summary.Cell>
                   </Table.Summary.Row>
                   <Table.Summary.Row>
                     <Table.Summary.Cell>Zero-Rated Sales</Table.Summary.Cell>
                     <Table.Summary.Cell>
-                      <Text>{0}</Text>
+                      <Text>{zeroRatedSales.toFixed(2)}</Text>
                     </Table.Summary.Cell>
                     <Table.Summary.Cell>NET</Table.Summary.Cell>
                     <Table.Summary.Cell>
-                      <Text>{0}</Text>
+                      <Text>{netSales.toFixed(2)}</Text>
                     </Table.Summary.Cell>
                   </Table.Summary.Row>
                 </>

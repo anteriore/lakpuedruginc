@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { message } from 'antd';
-import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
+import { listAReceiptWithSIByDepot, listAReceiptByDepot } from '../../AcknowledgementReceipts/redux';
 import moment from 'moment';
 
 export const columns = [
+  {
+    title: 'Depot',
+    dataIndex: 'depot',
+    key: 'depot',
+    datatype: 'object',
+  },
   {
     title: 'OR Number',
     dataIndex: 'number',
@@ -98,7 +104,7 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(listAReceiptWithSIByDepot({message, depot: e}))
+          dispatch(listAReceiptByDepot({message, depot: e}))
         }
       },
       {

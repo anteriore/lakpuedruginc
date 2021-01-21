@@ -7,6 +7,12 @@ const { Text } = Typography;
 
 export const columns = [
   {
+    title: 'Depot',
+    dataIndex: 'depot',
+    key: 'depot',
+    datatype: 'object',
+  },
+  {
     title: 'AR Number',
     dataIndex: 'number',
     key: 'number',
