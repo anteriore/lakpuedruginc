@@ -107,12 +107,15 @@ const FormDetails = () => {
           dispatch(listAReceiptByDepot({message, depot: e}))
         }
       },
+    ],
+    ar_items: [
       {
         label: 'Acknowledgement Receipt',
         name: 'acknowledgementReceipt',
         type: 'selectTable',
         rules: [{ required: true }],
         allowEmpty: true,
+        placeholder: "Select Acknowledgement Receipt",
         displayModal: displayModal,
         setDisplayModal: setDisplayModal,
         dataSource: areceipts,

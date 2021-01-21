@@ -8,6 +8,7 @@ import {
   Table,
   Empty,
   Modal,
+  Alert,
   message,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
@@ -123,10 +124,23 @@ const FormScreen = (props) => {
             {formDetails.form_items.map((item) => {
               return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
+
+            {areceipts !== null && areceipts.length > 0 ? ( 
+            formDetails.ar_items.map((item) => {
+              return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
+            })
+            ):(
+              <Alert 
+                message="Please select a depot." 
+                type="warning" 
+                showIcon 
+                style={{width: '62.5%', marginLeft: '25%', marginBottom: '2%'}} />
+            )}
           </Form>
           
            
           
+          {areceipts !== null && areceipts.length > 0 && (
           <Table
             dataSource={tableData}
             columns={formTable.columns}
@@ -183,7 +197,9 @@ const FormScreen = (props) => {
             }
             style={{width: "87.5%"}}
           />
+          )}
 
+          {areceipts !== null && areceipts.length > 0 && (
           <div style={styles.tailLayout}>
             <Button type="primary" onClick={() => form.submit()}>
               Submit
@@ -198,6 +214,7 @@ const FormScreen = (props) => {
               Cancel
             </Button>
           </div>
+          )}
         </Col>
       </Row>
     </>
