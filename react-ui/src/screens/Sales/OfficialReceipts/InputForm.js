@@ -7,8 +7,10 @@ import {
   Typography,
   Table,
   Empty,
+  Modal,
   message,
 } from 'antd';
+import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 import { useSelector } from 'react-redux';
@@ -20,6 +22,7 @@ const FormScreen = (props) => {
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
+
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
@@ -44,6 +47,13 @@ const FormScreen = (props) => {
           'HH:mm:ss'
         )}`;
       }
+      else if(item.type === 'selectTable'&&
+      typeof data[item.name] !== 'undefined' &&
+      data[item.name] !== null
+      ){
+        const dataField = data[item.name]
+        data[item.name] = dataField[item.rowKey]
+      }
     });
 
     if (hasTable) {
@@ -60,6 +70,7 @@ const FormScreen = (props) => {
 
   const onValuesChange = (event) => {
     if(event.hasOwnProperty("acknowledgementReceipt")){
+      console.log(event)
       const selectedAR = areceipts.find(areceipt => areceipt.id === event.acknowledgementReceipt)
       form.setFieldsValue({
         customerCode: selectedAR.client.code,
@@ -67,12 +78,31 @@ const FormScreen = (props) => {
         receivedFrom: selectedAR.client.name,
         businessAddress: selectedAR.client.businessAddress,
       })
+      var paymentsData = []
+      selectedAR.payments.forEach((payment) => {
+        paymentsData.push({
+          ...payment.reference,
+          appliedAmount: payment.appliedAmount
+        })
+      })
+      console.log(paymentsData)
+      setTableData(paymentsData)
+
     }
   }
 
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
+
+  const onTableSelect = (key, value) => {
+    var formValues = {}
+    formValues[key] = value
+    onValuesChange(formValues)
+    const selectedAR = areceipts.find(areceipt => areceipt.id === value)
+    formValues[key] = selectedAR
+    form.setFieldsValue(formValues)
+  }
 
   return (
     <>
@@ -91,10 +121,11 @@ const FormScreen = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              return <FormItem item={item} onFail={onFail} />;
+              return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
           </Form>
-
+          
+           
           
           <Table
             dataSource={tableData}

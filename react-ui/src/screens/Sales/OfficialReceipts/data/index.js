@@ -1,6 +1,8 @@
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { message } from 'antd';
 import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
+import moment from 'moment';
 
 export const columns = [
   {
@@ -69,6 +71,7 @@ const FormDetails = () => {
   const dispatch = useDispatch();
   const depots = useSelector((state) => state.maintenance.depots.list);
   const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
+  const [displayModal, setDisplayModal] = useState(false);
 
   const formDetails = {
     form_name: 'official_receipt',
@@ -101,11 +104,43 @@ const FormDetails = () => {
       {
         label: 'Acknowledgement Receipt',
         name: 'acknowledgementReceipt',
-        type: 'selectSearch',
-        choices: areceipts || [],
-        render: (areceipt) => `${areceipt.id}`,
+        type: 'selectTable',
         rules: [{ required: true }],
-        allowEmpty: true
+        allowEmpty: true,
+        displayModal: displayModal,
+        setDisplayModal: setDisplayModal,
+        dataSource: areceipts,
+        columns: [
+          {
+            title: 'AR Number',
+            dataIndex: 'number',
+            key: 'number',
+          },
+          {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY')
+          },
+          {
+            title: 'Client',
+            dataIndex: 'client',
+            key: 'client',
+            render: (client) => client.name
+          },
+          {
+            title: 'Total SI Amount',
+            dataIndex: 'siAmount',
+            key: 'siAmount',
+          },
+        ],
+        rowKey: "id",
+        getValueProps: (value) => {
+          if(typeof value !== 'undefined'){
+            return { value: value.number }
+          }
+        },
+        emptyText: 'No data retrieved for acknowledgement receipts in the selected depot. Please select another depot.'
       },
       {
         label: 'Customer Code',

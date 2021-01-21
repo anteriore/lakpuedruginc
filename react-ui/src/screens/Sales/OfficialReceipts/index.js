@@ -103,31 +103,23 @@ const OfficialReceipts = (props) => {
 
   const onSubmit = (data) => {
     var payments = []
-    data.payments.forEach((payment) => {
-      payments.push({
-        reference: {
-          ...payment
-        },
-        appliedAmount: payment.appliedAmount
-      })
-    })
 
     const payload = {
       ...data,
       company: {
         id: company,
       },
+      acknowledgementReceipt: {
+        id: data.acknowledgementReceipt,
+      },
       depot: {
         id: data.depot,
       },
-      client: {
-        id: data.client,
-      },
       preparedBy: {
         id: user.id
-      },
-      payments: payments
+      }
     };
+    console.log(payload)
     if (formMode === 'edit') {
       payload.id = formData.id;
       dispatch(addOReceipt(payload)).then((response) => {

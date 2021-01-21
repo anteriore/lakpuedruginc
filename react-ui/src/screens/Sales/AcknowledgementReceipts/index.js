@@ -96,14 +96,17 @@ const AcknowledgementReceipts = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listClient(payload)).then(unwrapResult)
+    dispatch(listClient(payload))
+    .then(unwrapResult)
     .then(() => {
       dispatch(listDepot({ company, message })).then(() => {
         history.push(`${path}/new`);
         setLoading(false);
       });
     })
-    .catch(()=>{})
+    .catch(()=>{
+      setLoading(false)
+    })
   };
 
   const handleUpdate = (data) => {
