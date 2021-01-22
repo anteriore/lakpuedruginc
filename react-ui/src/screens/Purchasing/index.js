@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, Modal, message } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, Modal, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +27,7 @@ const { Title } = Typography;
 const Purchasing = () => {
   const [loading, setLoading] = useState(true);
   const [loadingCompany, setLoadingCompany] = useState(true);
+  const [actions, setActions] = useState([]);
 
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedPO, setSelectedPO] = useState(null);
@@ -43,18 +44,41 @@ const Purchasing = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { formDetails, tableDetails } = FormDetails();
+  const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
     let isCancelled = false;
+    var actionsList = []
+    if(typeof permissions["purchase-order"] !== 'undefined'){
+      if( permissions["users"].actions.search('u') !== -1){
+        actionsList.push("update")
+      }
+      if(permissions["purchase-order"].actions.search('c') !== -1){
+        actionsList.push("create")
+      }
+      if(permissions["purchase-order"].actions.search('d') !== -1){
+        actionsList.push("delete")
+      }
+      if(permissions["purchase-order"].actions.search('r') !== -1){
+        actionsList.push("read")
+      }
+    }
+    setActions(actionsList)
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
-      dispatch(listPO({ company: selectedCompany, message })).then(() => {
+      if(actions.includes("read")){
+        dispatch(listPO({ company: selectedCompany, message })).then(() => {
+          setLoading(false);
+          setSelectedPO(null);
+          if (isCancelled) {
+            dispatch(clearData());
+          }
+        });
+      }
+      else {
         setLoading(false);
         setSelectedPO(null);
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      });
+      }
     });
     return function cleanup() {
       dispatch(clearData());
@@ -69,9 +93,14 @@ const Purchasing = () => {
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
     setLoading(true);
-    dispatch(listPO({ company: id, message })).then(() => {
+    if(actions.includes("read")){
+      dispatch(listPO({ company: id, message })).then(() => {
+        setLoading(false);
+      });
+    }
+    else{
       setLoading(false);
-    });
+    }
   };
 
   const handleAdd = () => {
@@ -233,7 +262,7 @@ const Purchasing = () => {
                     <TabPane tab={val.name} key={val.id} />
                   ))}
                 </Tabs>
-
+                {actions.includes("create") &&
                 <Button
                   style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                   icon={<PlusOutlined />}
@@ -242,18 +271,26 @@ const Purchasing = () => {
                   }}
                 >
                   Add
-                </Button>
+                </Button>}
 
                 {loading ? (
                   <Skeleton />
                 ) : (
-                  <TableDisplay
-                    columns={columns}
-                    data={purchaseOrders}
-                    handleRetrieve={handleRetrieve}
-                    handleUpdate={handleUpdate}
-                    handleDelete={handleDelete}
-                  />
+                  actions.includes("read") ?
+                  (
+                    <TableDisplay
+                      columns={columns}
+                      data={purchaseOrders}
+                      handleRetrieve={handleRetrieve}
+                      handleUpdate={handleUpdate}
+                      handleDelete={handleDelete}
+                      updateEnabled={actions.includes("update")}
+                      deleteEnabled={actions.includes("delete")}
+                    />
+                  ):(
+                    <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />
+                  )
+
                 )}
               </Col>
               <Modal

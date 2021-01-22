@@ -15,7 +15,7 @@ import { formatZipPayload } from './helper';
 const { Title } = Typography;
 
 const ZipCodes = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -143,9 +143,10 @@ const ZipCodes = (props) => {
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
+        {actions.includes("create") &&
         <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
           Add
-        </Button>
+        </Button>}
       </Col>
       <Col span={20}>
         <TableDisplay
@@ -153,6 +154,8 @@ const ZipCodes = (props) => {
           data={zipCodeList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

@@ -270,6 +270,9 @@ const FormDetails = () => {
       ],
       data: 'requestedItems',
     },
+    getValues: (values) => {
+      return values.orderedItems;
+    },
     processData: (data) => {
       const processedData = [];
 

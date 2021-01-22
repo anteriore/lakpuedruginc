@@ -41,7 +41,8 @@ export const formatLotProducts = (salesProducts, inventoryProducts) => {
       const { product } = soProduct;
       const results = _.filter(inventoryProducts, (o) => {
         return o.product.finishedGood.id === product.product.finishedGood.id && o.quantity !== 0;
-      });
+      }).filter((o) => o.depot.id === product.depot.id);
+
       results.forEach((result) => {
         listLotProducts.push(result);
       });
@@ -49,6 +50,7 @@ export const formatLotProducts = (salesProducts, inventoryProducts) => {
 
     return _.uniqBy(listLotProducts, 'id');
   }
+
   return null;
 };
 
@@ -96,13 +98,12 @@ export const formatPayload = (approvalId, company, value, salesOrder, orderedPro
 
   orderedProducts.forEach((orderedProduct) => {
     formattedValue.orderedProducts.push({
-      orderSlipNo: value.number,
+      product: { id: orderedProduct.product.id },
       quantity: orderedProduct.quantityRequested,
       salesOrderProductId: orderedProduct.id,
-      status: salesOrder.status,
-      unitPrice: orderedProduct.quantity,
+      unitPrice: orderedProduct.unitPrice,
       depot: { id: salesOrder.depot.id },
-      product: { id: orderedProduct.product.id },
+      amount: orderedProduct.quantityRequested * orderedProduct.unitPrice,
     });
   });
 

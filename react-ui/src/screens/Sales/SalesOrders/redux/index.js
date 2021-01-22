@@ -2,27 +2,35 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
-export const listSalesOrder = createAsyncThunk(
-  'listSalesOrder',
-  async (payload, thunkAPI, rejectWithValue) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(
-      `/rest/sales-orders/company/${payload.company}?token=${accessToken}`
-    );
+export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, fnCallback } = payload;
+  const response = await axiosInstance.get(
+    `/rest/sales-orders/company/${company}?token=${accessToken}`
+  );
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for sales orders');
+  if (typeof response !== 'undefined') {
+    const { status } = response;
+    if (status === 200) {
+      if (response.data.length === 0) {
+        response.statusText = `${message.API_200_EMPTY} in sales order.`;
+      } else {
+        response.statusText = `${message.API_200_SUCCESS} in sales order.`;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      fnCallback(response);
+      return response;
     }
 
-    return response;
+    if (status === 500 || status === 400) {
+      fnCallback(response);
+      return thunkAPI.rejectWithValue(response);
+    }
+  } else {
+    return thunkAPI.rejectWithValue(response);
   }
-);
+
+  return response;
+});
 
 export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -46,10 +54,30 @@ export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payl
   return response;
 });
 
+export const approveSalesOrder = createAsyncThunk(
+  'approveSalesOrder',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `/rest/sales-orders/approve/${payload}?token=${accessToken}`
+    );
+
+    return response;
+  }
+);
+
+export const rejectSalesOrder = createAsyncThunk('rejectSalesOrder', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.post(
+    `/rest/sales-orders/reject/${payload}?token=${accessToken}`
+  );
+
+  return response;
+});
+
 export const listSalesOrderByDepot = createAsyncThunk(
   'listSalesOrderByDepot',
   async (payload, thunkAPI, rejectWithValue) => {
-    console.log(payload, 'Getting Payload');
     const accessToken = thunkAPI.getState().auth.token;
     const response = await axiosInstance.get(
       `/rest/sales-orders/depot/${payload}?token=${accessToken}`
@@ -92,21 +120,16 @@ const salesOrdersSlice = createSlice({
     },
     [listSalesOrder.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for sales orders';
-      }
 
       return {
         ...state,
         salesOrderList: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage,
+        statusMessage: message.ITEMS_GET_FULFILLED,
       };
     },
-    [listSalesOrder.rejected]: (state) => {
+    [listSalesOrder.rejected]: (state, _) => {
       return {
         ...state,
         status: 'failed',

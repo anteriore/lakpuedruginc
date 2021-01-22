@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 
 import TableHeader from './TableHeader';
 
@@ -13,7 +14,9 @@ const TableDisplay = (props) => {
     handleUpdate,
     data,
     deleteEnabled,
+    updateEnabled,
     pagination,
+    name,
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);
@@ -55,6 +58,7 @@ const TableDisplay = (props) => {
         render: (row) => {
           return (
             <div style={styles.crudColumn}>
+              {(typeof updateEnabled === 'undefined' || updateEnabled) && (
               <Button
                 icon={<EditOutlined />}
                 type="text"
@@ -65,6 +69,8 @@ const TableDisplay = (props) => {
               >
                 Edit
               </Button>
+              )}
+              {(deleteEnabled || typeof deleteEnabled === 'undefined') && (
               <Popconfirm
                 title="Would you like to delete this item?"
                 icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
@@ -78,27 +84,26 @@ const TableDisplay = (props) => {
                 okText="Yes"
                 cancelText="No"
               >
-                {deleteEnabled ? (
-                  <Button
-                    icon={<DeleteOutlined />}
-                    type="text"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Delete
-                  </Button>
-                ) : (
-                  ''
-                )}
+                <Button
+                  icon={<DeleteOutlined />}
+                  type="text"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  Delete
+                </Button>
               </Popconfirm>
+              )}
             </div>
           );
         },
       },
     ];
 
-    filteredColumn = filteredColumn.concat(editpart);
+    if((typeof updateEnabled === 'undefined' || updateEnabled) || (deleteEnabled || typeof deleteEnabled === 'undefined')){
+      filteredColumn = filteredColumn.concat(editpart);
+    }
 
     return filteredColumn;
   };

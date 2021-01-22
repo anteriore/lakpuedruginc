@@ -25,7 +25,7 @@ import {
 import Container from '../../components/container';
 import InputForm from './InputForm';
 
-import { listUser, addUser, /* deleteUser, */ clearData, listPermission } from './redux';
+import { listUser, addUser, updateUser, /* deleteUser, */ clearData, listPermission } from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -51,15 +51,38 @@ const Users = () => {
   const [contentLoading, setContentLoading] = useState(true);
   const [userDepartments, setUserDepartments] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [actions, setActions] = useState([]);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const depots = useSelector((state) => state.maintenance.depots.list);
+  const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    var actionsList = []
+    if(typeof permissions["users"] !== 'undefined'){
+      if( permissions["users"].actions.search('u') !== -1){
+        actionsList.push("update")
+      }
+      if(permissions["users"].actions.search('c') !== -1){
+        actionsList.push("create")
+      }
+      if(permissions["users"].actions.search('d') !== -1){
+        actionsList.push("delete")
+      }
+      if(permissions["users"].actions.search('r') !== -1){
+        actionsList.push("read")
+      }
+    }
+    setActions(actionsList)
     dispatch(listCompany()).then(() => {
       setFormData(null);
       setCompanyLoading(false);
       setSelectedUser(null);
-      updateUserDepartments(1);
+      if(actions.includes("read")){
+        updateUserDepartments(selectedCompany);
+      }
+      else{
+        setContentLoading(false)
+      }
     });
 
     return function cleanup() {
@@ -274,9 +297,11 @@ const Users = () => {
       depots: depotData,
       permissions: permissionData,
     };
+    
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addUser(payload)).then((response) => {
+      console.log(payload)
+      dispatch(updateUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
           updateUserDepartments(selectedCompany);
@@ -332,7 +357,12 @@ const Users = () => {
   const handleChangeTab = (companyID) => {
     setContentLoading(true);
     dispatch(setCompany(companyID));
-    updateUserDepartments(companyID);
+    if(actions.includes("read")){
+      updateUserDepartments(companyID);
+    }
+    else{
+      setContentLoading(false)
+    }
   };
 
   const renderUsers = (departmentUsers) => {
@@ -426,6 +456,7 @@ const Users = () => {
                   <Skeleton />
                 ) : (
                   <>
+                    {actions.includes("create") &&
                     <Button
                       style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                       icon={<UserAddOutlined />}
@@ -434,18 +465,21 @@ const Users = () => {
                       }}
                     >
                       Add
-                    </Button>
-                    {departments.map((department) => {
-                      const departmentUsers = userDepartments.find(
-                        (userDepartment) => userDepartment.id === department.id
-                      );
-                      return (
-                        <>
-                          <Divider orientation="left">{department.name}</Divider>
-                          {renderUsers(departmentUsers)}
-                        </>
-                      );
-                    })}
+                    </Button>}
+                    {actions.includes("read") ? 
+                      (departments.map((department) => {
+                        const departmentUsers = userDepartments.find(
+                          (userDepartment) => userDepartment.id === department.id
+                        );
+                        return (
+                          <>
+                            <Divider orientation="left">{department.name}</Divider>
+                            {renderUsers(departmentUsers)}
+                          </>
+                        );
+                    })) : (
+                      <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />  
+                    )}
                     <Drawer
                       width="50%"
                       placement="right"
@@ -464,6 +498,7 @@ const Users = () => {
                             layout="vertical"
                             extra={
                               <Row gutter={[8, 8]}>
+                                {actions.includes("update") && 
                                 <Col>
                                   <Button
                                     icon={<EditOutlined />}
@@ -473,7 +508,7 @@ const Users = () => {
                                   >
                                     Edit User
                                   </Button>
-                                </Col>
+                                </Col>}
                                 {/* <Col>
                               <Button danger
                                 icon={<DeleteOutlined />}
@@ -528,6 +563,23 @@ const Users = () => {
 
                               return null;
                             })}
+                          </Descriptions>
+                          <Descriptions
+                            bordered
+                            //title={"Permissions"}
+                            size="default"
+                            layout="vertical"
+                          >
+                            <Descriptions.Item label={"Permissions"}>
+                              <List
+                                size="small"
+                                bordered
+                                dataSource={Object.entries(selectedUser["permissions"])}
+                                renderItem={(listItem) => {
+                                  return <List.Item>{listItem[1].code + " - " + listItem[1].actions}</List.Item>
+                                }}
+                              />
+                            </Descriptions.Item>
                           </Descriptions>
                         </>
                       )}
