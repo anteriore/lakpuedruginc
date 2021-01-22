@@ -94,7 +94,7 @@ const OrderSlips = (props) => {
       dispatch(clearSO());
       isCancelled = true;
     };
-  }, [dispatch, company, history, pushErrorPage, actionOSPayload]);
+  }, [dispatch, company, pushErrorPage, actionOSPayload]);
 
   useEffect(() => {
     if (action !== 'get' && action !== '') {
@@ -290,7 +290,6 @@ const OrderSlips = (props) => {
                Ordered Product Items:
               </Title>
               {selectedOS.orderedProducts.map((item) => {
-                console.log(item)
                 return (
                   <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
                     <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
