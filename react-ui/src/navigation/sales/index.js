@@ -1,6 +1,7 @@
 import SalesOrders from '../../screens/Sales/SalesOrders';
 import OrderSlips from '../../screens/Sales/OrderSlips';
 import AcknowledgementReceipts from '../../screens/Sales/AcknowledgementReceipts';
+import ReturnSlips from '../../screens/Sales/ReturnSlips';
 
 export const routes = [
   {
@@ -26,7 +27,7 @@ export const routes = [
   {
     title: 'Return Slips',
     path: '/return-slips',
-    component: '',
+    component: ReturnSlips,
   },
   {
     title: 'Sales Journal Vouchers',
