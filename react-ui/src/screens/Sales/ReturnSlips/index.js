@@ -11,6 +11,8 @@ import FormScreen from '../../../components/forms/FormScreen';
 
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
 
 const { Title } = Typography;
 
@@ -43,13 +45,17 @@ const ReturnSlips = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Create Return Slips');
+    setFormTitle('Create Return Slip');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(listClient({ company, message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
+      dispatch(listDepot({ company, message })).then(() => {
+        dispatch(listProductInventory({ company, message })).then(() => {
+          history.push(`${path}/new`);
+          setLoading(false);
+        })
+      })
     });
   };
 
@@ -65,7 +71,8 @@ const ReturnSlips = (props) => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
-      } else {
+      }
+      else {
         setLoading(false);
         message.error(`Unable to delete ${data.number}`);
       }
