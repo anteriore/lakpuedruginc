@@ -46,13 +46,13 @@ export const formDetails = {
     {
       label: 'Number',
       name: 'number',
-      rules: [{ required: true, message: 'Please provide a order slip number' }],
+      rules: [{ required: true, message: 'Please provide a sales invoice number' }],
       placeholder: 'Order slip number',
     },
     {
       label: 'Date',
       name: 'date',
-      rules: [{ required: true, message: 'Please provide a order slip date' }],
+      rules: [{ required: true, message: 'Please provide a sales invoice date' }],
       placeholder: 'order slip number',
       type: 'date',
     },
@@ -67,8 +67,8 @@ export const formDetails = {
     {
       label: 'Depot',
       name: 'depot',
-      rules: [{ required: true, message: 'Please provide a order slip depot' }],
-      placeholder: 'Order slip depot',
+      rules: [{ required: true, message: 'Please provide a sales invoice depot' }],
+      placeholder: 'Sales invoice depot',
       type: 'select',
       choices: [],
     },

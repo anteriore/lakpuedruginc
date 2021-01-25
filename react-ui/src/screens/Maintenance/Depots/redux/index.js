@@ -2,13 +2,34 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import {checkResponseValidity, generateStatusMessage} from '../../../../helpers/general-helper';
 
 const initialState = {
   list: null,
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
+
+export const tempListDepot = createAsyncThunk('tempListDepot', async(payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try{
+    const response = await axiosInstance.get(`/rest/depots?token=${accessToken}`);
+    
+    const {response: validatedResponse, valid} = checkResponseValidity(response);
+    
+    if(valid){
+      return validatedResponse
+    }else{
+      return thunkAPI.rejectWithValue(validatedResponse);
+    }
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+})
 
 export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -60,6 +81,39 @@ const depotSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
+    [tempListDepot.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for depot`,
+      };
+    },
+    [tempListDepot.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const {message, level} = generateStatusMessage(action.payload, 'Depot')
+      
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status, 
+        statusMessage: message,
+      };
+    },
+    [tempListDepot.rejected]: (state, action) => {
+      const {status} = action.payload
+      const {message, level} = generateStatusMessage(action.payload, 'Depot')
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
+      };
+    },
     [listDepot.pending]: (state) => {
       state.status = 'loading';
     },

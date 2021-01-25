@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect} from 'react';
 import { Button, Row, Col, Typography, Skeleton } from 'antd';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
@@ -7,11 +7,13 @@ import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader } from './data';
 import { useDispatch, useSelector } from 'react-redux';
 import { listSalesInvoice, clearData } from './redux';
-import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
+import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearSO, tempListSalesOrder } from '../SalesOrders/redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
+import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
+import _ from 'lodash';
 
 const {Title} = Typography;
 
@@ -20,12 +22,32 @@ const SalesInvoice = (props) => {
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
-  const [contentLoading, setContentLoading] = useState(true);
-  const { salesInvoiceList, action, statusMessage, responseCode, status, statusLevel } = useSelector((state) => state.sales.salesInvoice)
+  const { salesInvoiceList, action, statusMessage, status, statusLevel } = useSelector((state) => state.sales.salesInvoice)
+
+  const { 
+    action: actionDepot, 
+    statusMessage: statusMessageDepot, 
+    status: statusDepot, 
+    statusLevel: statusLevelDepot 
+  } = useSelector((state) => state.maintenance.depots)
+
+  const {
+    action: actionPI,
+    statusMessage: statusMessagePI,
+    status: statusPI,
+    statusLevel: statusLevelPI
+  } = useSelector(state => state.maintenance.productInventory)
+
+  const {
+    action: actionSO,
+    statusMessage: statusMessageSO,
+    status: statusSO,
+    statusLevel: statusLevelSO
+  } = useSelector(state => state.sales.salesOrders)
 
   const pushErrorPage = useCallback((status) => {
     history.push({
-      pathname: `/error/${status === 400 ? 403 : status}`,
+      pathname: `/error/${status === 400 || status === 404 ? 403 : status}`,
       state: {
         moduleList: '/sales',
       },
@@ -34,7 +56,7 @@ const SalesInvoice = (props) => {
 
   useEffect(() => {
     if (status !== 'loading'){
-      if (action === 'fetch' && statusLevel === 'warning'){
+      if (action === 'fetch' && statusLevel !== 'success'){
         statusDialogue({statusMessage, statusLevel}, 'message')
       }
   
@@ -43,6 +65,48 @@ const SalesInvoice = (props) => {
       }
     }
   },[status, action, statusMessage, statusLevel])
+
+  useEffect(() => {
+    if(statusSO !== 'loading'){
+      if(actionSO === 'fetch' && statusLevelSO === 'warning'){
+        statusDialogue({
+          statusLevel: statusLevelSO,
+          modalContent: {
+            title: `${_.capitalize(statusLevelSO)} - (Sales Order)`,
+            content: statusMessageSO
+          }
+        }, "modal");
+      }
+    }
+  }, [actionSO, statusMessageSO, statusSO, statusLevelSO])
+
+  useEffect(() => {
+    if(statusPI !== 'loading'){
+      if(actionPI === 'fetch' && statusLevelPI === 'warning'){
+        statusDialogue({
+          statusLevel: statusLevelPI,
+          modalContent: {
+            title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
+            content: statusMessagePI
+          }
+        }, "modal");
+      }
+    }
+  }, [actionPI, statusMessagePI, statusPI, statusLevelPI])
+
+  useEffect(() => {
+    if(statusDepot !== 'loading') {
+      if(actionDepot === 'fetch' && statusLevelDepot === 'warning'){
+        statusDialogue({
+          statusLevel: statusLevelDepot,
+          modalContent: {
+            title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
+            content: statusMessageDepot
+          }
+        }, "modal");
+      }
+    }
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot])
 
   useEffect(() => {
     let isCancelled = false;
@@ -67,8 +131,30 @@ const SalesInvoice = (props) => {
   },[dispatch, company, history, pushErrorPage]);
 
   const handleAddButton = () => {
+    dispatch(tempListDepot(company)).then((dataDepot) => {
+      dispatch(tempListProductInventory()).then(dataPI => {
+        dispatch(tempListSalesOrder(company)).then(dataSO => {
+          const promiseList = [dataDepot, dataPI, dataSO]
+          const promiseResult = _.some(promiseList, (o) => {
+            return o.type.split(/[/?]/g)[1] === 'rejected';
+          });
 
-    history.push(`${path}/new`)
+          if(!promiseResult){
+            const promiseValues = _.some(promiseList, (o) => {
+              return o.payload.status !== 200 && o.payload.data.length === 0;
+            });
+
+            if (!promiseValues) {
+              history.push(`${path}/new`);
+            }
+          } else {
+            const {payload}  = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected')
+            pushErrorPage(payload.status)
+          }       
+        })
+      })
+    })
+    
   }
 
   const handleRetrieve = (data) => {
@@ -79,18 +165,14 @@ const SalesInvoice = (props) => {
 
   }
 
-  const onUpdate = () => {
-
-  }
-
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <InputForm title="New Order Slip" onSubmit={onCreate} company={company} />
+        <InputForm title="New Sales Invoice" onSubmit={onCreate} company={company} />
       </Route>
-      <Route path={`${path}/:id/edit`}>
+      {/* <Route path={`${path}/:id/edit`}>
         <InputForm title="Edit Order Slip" onSubmit={onUpdate} company={company} />
-      </Route>
+      </Route> */}
       <Route path={`${path}`}>
         <Row gutter={[8,24]}>
           <Col style={GeneralStyles.headerPage} span={20}>

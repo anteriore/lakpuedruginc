@@ -6,7 +6,7 @@ export const formatSOList = (salesOrders) => {
     salesOrders.forEach((sale) => {
       newList.push({
         id: sale.id,
-        code: `${sale.number} - ${sale.client.salesRep.code} - ${sale.client.code} - ${sale.client.name}`,
+        code: `${sale.number} - ${sale.client.salesRep !== null ? sale.client.salesRep.code : ''} - ${sale.client !== null ? sale.client.code : ''} - ${sale.client !== null ? sale.client.name : ''}`,
       });
     });
   }

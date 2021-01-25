@@ -133,6 +133,7 @@ const InputForm = (props) => {
       setSelectedLot(removedList);
     }
   };
+  
   const renderLotColumns = (rawColumns) => {
     let filteredColumn = [
       {

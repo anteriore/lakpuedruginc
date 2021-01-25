@@ -7,9 +7,8 @@ const SimpleForm = (props) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    console.log(formDetails)
     form.setFieldsValue(values);
-  }, [values, form]);
+  }, [values, form, formDetails]);
 
   return (
     <Modal
