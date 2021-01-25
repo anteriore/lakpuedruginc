@@ -20,7 +20,8 @@ import FormItem from './FormItem';
 const { Title } = Typography;
 
 const FormScreen = (props) => {
-  const { title, onCancel, onSubmit, values, formInstance, formDetails, formTable } = props;
+  const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
+  const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
@@ -33,17 +34,8 @@ const FormScreen = (props) => {
 
   const toggleName = formDetails.toggle_name;
 
-  const [form] = (() => {
-    if (typeof formInstance === 'undefined') {
-      return Form.useForm();
-    } else {
-      return [formInstance];
-    }
-  })();
-
   useEffect(() => {
     form.setFieldsValue(values);
-
     if (hasTable && values !== null) {
       setTableData(formTable.getValues(values));
     }
