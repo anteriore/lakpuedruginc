@@ -7,7 +7,7 @@ import moment from 'moment';
 import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
-import FormScreen from '../../../components/forms/FormScreen';
+import InputForm from './InputForm';
 
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
@@ -85,22 +85,30 @@ const ReturnSlips = (props) => {
   };
 
   const onSubmit = (data) => {
-    const payments = [];
-    data.payments.forEach((payment) => {
-      payments.push({
-        reference: {
-          ...payment,
+    //TODO: Data Validation
+    const products = [];
+    data.returnSlipProducts.forEach((returnSlipProduct) => {
+      products.push({
+        product: {
+          id: returnSlipProduct.product.id
         },
-        appliedAmount: payment.appliedAmount,
+        goodQuantity: returnSlipProduct.goodQuantity,
+        badQuantity: returnSlipProduct.badQuantity,
+        unitPrice: returnSlipProduct.unitPrice
       });
     });
-
     const payload = {
       ...data,
       company: {
         id: company,
       },
-      payments,
+      depot: {
+        id: data.depot,
+      },
+      client: {
+        id: data.client,
+      },
+      returnSlipProducts: products
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -140,7 +148,7 @@ const ReturnSlips = (props) => {
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -152,7 +160,7 @@ const ReturnSlips = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}

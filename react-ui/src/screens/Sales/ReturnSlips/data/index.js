@@ -93,9 +93,10 @@ const FormDetails = () => {
         name: 'salesNumber',
         type: 'selectSearch',
         selectName: 'name',
+        allowEmpty: true,
         choices: orderSlips,
         render: (orderSlip) => `${orderSlip.number}`,
-        rules: [{ required: true }],
+        rules: [],
       },
     ],
   };
@@ -103,7 +104,7 @@ const FormDetails = () => {
   const tableDetails = {
     label: 'Products',
     name: 'returnSlipProducts',
-    key: 'id',
+    key: 'product',
     rules: [{ required: true }],
     fields: [
       {
@@ -119,6 +120,7 @@ const FormDetails = () => {
         type: 'number',
         rules: [{ required: true }],
         min: 0,
+        initialValue: 0
       },
       {
         label: 'Bad Quantity',
@@ -126,6 +128,7 @@ const FormDetails = () => {
         type: 'number',
         rules: [{ required: true }],
         min: 0,
+        initialValue: 0
       },
       {
         label: 'Unit Price',
@@ -203,12 +206,14 @@ const FormDetails = () => {
     },
     processData: (data) => {
       console.log("DATA: ", data)
-      return { 
+      var processedData = { 
         ...data,
         product: data.product,
-        unitPrice: data.product.unitPrice
-
-      };
+        unitPrice: data.product.unitPrice,
+        key: data.product.id
+      }
+      delete processedData.id
+      return processedData;
     },
     checkSelected: (selectedData, rowData) => {
       if (

@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import FormItem from './FormItem';
+import FormItem from '../../../components/forms/FormItem';
 
 const { Title } = Typography;
 
@@ -59,15 +59,27 @@ const InputForm = (props) => {
     });
 
     if (hasTable) {
-      data[formTable.name] = tableData;
+      if(tableData !== null){
+        data[formTable.name] = tableData;
+        onSubmit(data);
+      }
+      else{
+        onFinishFailed(`Unable to submit. Please provide the necessary information on ${formTable.name}`)
+      }
+    }
+    else {
+      onSubmit(data);
     }
 
-    onSubmit(data);
   };
 
-  const onFinishFailed = () => {
-    // console.log(errorInfo)
-    message.error("An error has occurred. Please double check the information you've provided.");
+  const onFinishFailed = (errorInfo) => {
+    if(typeof errorInfo === 'string'){
+      message.error(errorInfo);
+    }
+    else {
+      message.error("An error has occurred. Please double check the information you've provided.");
+    }
   };
 
   const handleTableChange = (item, index, event) => {
@@ -97,7 +109,7 @@ const InputForm = (props) => {
                 <InputNumber
                   min={field.min}
                   max={field.max}
-                  defaultValue={rowData[field.name]}
+                  defaultValue={rowData[field.name] || field.initialValue}
                   onChange={(e) => {
                     handleTableChange(field.name, index, e);
                   }}
@@ -319,14 +331,12 @@ const InputForm = (props) => {
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
                   expandable={{ expandedRowRender }}
-                  rowKey={formTable.foreignKey}
                 />
               ) : (
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
-                  rowKey={formTable.foreignKey}
                 />
               )}
             </Modal>
