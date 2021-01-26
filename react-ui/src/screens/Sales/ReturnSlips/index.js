@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, message } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -13,8 +13,9 @@ import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './re
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
+import { clearData as clearOS } from '../OrderSlips/redux';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const ReturnSlips = (props) => {
   const dispatch = useDispatch();
@@ -52,6 +53,7 @@ const ReturnSlips = (props) => {
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
         dispatch(listProductInventory({ company, message })).then(() => {
+          dispatch(clearOS())
           history.push(`${path}/new`);
           setLoading(false);
         })
@@ -92,8 +94,8 @@ const ReturnSlips = (props) => {
         product: {
           id: returnSlipProduct.product.id
         },
-        goodQuantity: returnSlipProduct.goodQuantity,
-        badQuantity: returnSlipProduct.badQuantity,
+        goodQuantity: returnSlipProduct.goodQuantity || 0,
+        badQuantity: returnSlipProduct.badQuantity || 0,
         unitPrice: returnSlipProduct.unitPrice
       });
     });
@@ -143,6 +145,22 @@ const ReturnSlips = (props) => {
       });
     }
     setFormData(null);
+  };
+
+  const renderTableColumns = (fields) => {
+    const columns = [];
+    fields.forEach((field) => {
+        if (typeof field.render === 'undefined' || field.render === null) {
+          field.render = (object) => object[field.name];
+        }
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => field.render(object),
+        });
+    });
+
+    return columns;
   };
 
   return (
@@ -219,7 +237,7 @@ const ReturnSlips = (props) => {
             {selectedData === null ? (
               <Skeleton />
             ) : (
-              <>
+              <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <Descriptions
                   bordered
                   title={`${selectedData.number} Details`}
@@ -259,8 +277,52 @@ const ReturnSlips = (props) => {
 
                     return null;
                   })}
+                  {formDetails.rs_items.map((item) => {
+                    if (!item.writeOnly) {
+                      if (selectedData[item.name] === null && item.toggle) {
+                        return null;
+                      }
+                      else if (item.type === 'select' || item.type === 'selectSearch') {
+                        const itemData = selectedData[item.name];
+                        return (
+                          <Descriptions.Item label={item.label}>
+                            {itemData[item.selectName]}
+                          </Descriptions.Item>
+                        );
+                      }
+                      else if (item.type === 'date') {
+                        return (
+                          <Descriptions.Item label={item.label}>
+                            {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
+                          </Descriptions.Item>
+                        );
+                      }
+                      else if (item.type === 'list') {
+                        return null;
+                      }
+                      else {
+                        return (
+                          <Descriptions.Item label={item.label}>
+                            {selectedData[item.name]}
+                          </Descriptions.Item>
+                        );
+                      }
+
+                    }
+
+                    return null;
+                  })}
                 </Descriptions>
-              </>
+                <Text>{'Return Slip Items: '}</Text>
+                <Table
+                  dataSource={selectedData[tableDetails.name] !== null && typeof selectedData[tableDetails.name] !== 'undefined' ? 
+                    selectedData[tableDetails.name] : []
+                  }
+                  columns={renderTableColumns(tableDetails.fields)}
+                  pagination={false}
+                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                />
+              </Space>
             )}
           </Modal>
         </Row>

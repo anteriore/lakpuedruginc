@@ -14,6 +14,7 @@ import {
   message,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
@@ -31,6 +32,8 @@ const InputForm = (props) => {
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+
+  const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
 
   const toggleName = formDetails.toggle_name;
 
@@ -252,6 +255,21 @@ const InputForm = (props) => {
     }
   };
 
+  const onTableSelect = (key, value) => {
+    var formValues = {}
+
+    if(key === 'salesNumber'){
+      const selectedSaleSlip = orderSlips.find(slip => slip.id === value)
+      formValues[key] = selectedSaleSlip.number
+      formValues['client'] = selectedSaleSlip.salesOrder.client.id
+    }
+    else {
+      formValues[key] = value
+    }
+    onValuesChange(formValues)
+    form.setFieldsValue(formValues)
+  }
+
   return (
     <>
       <Row>
@@ -277,6 +295,10 @@ const InputForm = (props) => {
               }
 
               return <FormItem item={item} onFail={onFail} />;
+            })}
+
+            {orderSlips.length > 0 && formDetails.rs_items.map((item) => {
+              return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
           </Form>
           {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (

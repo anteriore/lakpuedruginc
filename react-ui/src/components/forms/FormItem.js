@@ -277,7 +277,6 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
       onFail();
       return null;
     }
-
     return (
       <>
       <Form.Item

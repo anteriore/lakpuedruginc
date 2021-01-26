@@ -30,11 +30,6 @@ export const routes = [
     component: ReturnSlips,
   },
   {
-    title: 'Sales Journal Vouchers',
-    path: '/sales-journal-vouchers',
-    component: '',
-  },
-  {
     title: 'Official Receipts',
     path: '/official-receipts',
     component: '',

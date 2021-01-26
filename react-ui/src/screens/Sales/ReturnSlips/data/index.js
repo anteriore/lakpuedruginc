@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, message } from 'antd';
 import moment from 'moment';
-import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
+import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
 
 const { Text } = Typography;
 
@@ -50,6 +50,7 @@ const FormDetails = () => {
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const productInventories = useSelector((state) => state.maintenance.productInventory.list);
+  const [displayModal, setDisplayModal] = useState(false);
 
   const formDetails = {
     form_name: 'return_slip',
@@ -76,6 +77,7 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
+          dispatch(clearOS())
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
         },
       },
@@ -88,17 +90,50 @@ const FormDetails = () => {
         render: (client) => `[${client.code}] ${client.name}`,
         rules: [{ required: true }],
       },
+    ],
+    rs_items: [
       {
         label: 'DR/OS',
         name: 'salesNumber',
-        type: 'selectSearch',
-        selectName: 'name',
+        type: 'selectTable',
+        rules: [{ required: true }],
         allowEmpty: true,
-        choices: orderSlips,
-        render: (orderSlip) => `${orderSlip.number}`,
-        rules: [],
+        placeholder: "Select DR/OS",
+        displayModal: displayModal,
+        setDisplayModal: setDisplayModal,
+        dataSource: orderSlips,
+        columns: [
+          {
+            title: 'DR/OS Number',
+            dataIndex: 'number',
+            key: 'number',
+          },
+          {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY')
+          },
+          {
+            title: 'Amount',
+            dataIndex: 'totalAmount',
+            key: 'totalAmount',
+          },
+          {
+            title: 'Remaining Balance',
+            dataIndex: 'remainingBalance',
+            key: 'remainingBalance',
+          },
+        ],
+        rowKey: "id",
+        getValueProps: (value) => {
+          if(typeof value !== 'undefined'){
+            return { value: value }
+          }
+        },
+        emptyText: 'No data retrieved for sales slips in the selected depot. Please select another depot.'
       },
-    ],
+    ]
   };
 
   const tableDetails = {
@@ -205,7 +240,6 @@ const FormDetails = () => {
       return payments;
     },
     processData: (data) => {
-      console.log("DATA: ", data)
       var processedData = { 
         ...data,
         product: data.product,
