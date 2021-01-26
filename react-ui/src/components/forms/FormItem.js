@@ -10,16 +10,19 @@ import {
   Row,
   Typography,
   Space,
-  Radio,
+  Radio, 
+  Modal, 
+  Table,
+  Empty,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
 const { Item } = Form;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 
-const FormItem = ({ item, onFail, formMode }) => {
+const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   if (item.type === 'select' || item.type === 'selectSearch') {
     if (typeof item.render === 'undefined') {
       if (typeof item.selectName === 'undefined') {
@@ -266,6 +269,63 @@ const FormItem = ({ item, onFail, formMode }) => {
           )}
         </Form.List>
       </div>
+    );
+  }
+  if (item.type === 'selectTable') {
+
+    if ((item.dataSource === null || typeof item.dataSource === 'undefined' || item.dataSource.length === 0) && !item.allowEmpty) {
+      onFail();
+      return null;
+    }
+
+    return (
+      <>
+      <Form.Item
+        label={item.label}
+        name={item.name}
+        rules={item.rules}
+        initialValue={item.initialValue}
+        getValueProps={item.getValueProps}
+      >
+        <Input 
+          suffix={
+            <Button
+            type={"primary"}
+              onClick={() => {
+                item.setDisplayModal(true)
+              }}
+              icon={<SelectOutlined />}
+            >
+              {`Select`}
+            </Button>
+          }
+          disabled={true} 
+          placeholder={item.placeholder}
+        />
+      </Form.Item>
+      <Modal
+        visible={item.displayModal}
+        title={`Select ${item.label}`}
+        onOk={() => item.setDisplayModal(false)}
+        onCancel={() => item.setDisplayModal(false)}
+        cancelButtonProps={{ style: { display: 'none' } }}
+        width={1000}
+      >
+        <Table
+          rowSelection={{
+            type: "radio",
+            onChange: (e) => {
+              onTableSelect(item.name, e[0])
+            }
+          }}
+          columns={item.columns}
+          dataSource={item.dataSource}
+          rowKey={item.rowKey}
+          pagination={{ size: 'small' }}
+          locale={{emptyText: item.emptyText || 'No Data'}}
+        /> 
+      </Modal>
+      </>
     );
   }
   if (item.type === 'custom' || item.type === 'customList') {
