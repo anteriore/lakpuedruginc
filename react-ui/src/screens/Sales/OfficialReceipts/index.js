@@ -110,7 +110,7 @@ const OfficialReceipts = (props) => {
         id: company,
       },
       acknowledgementReceipt: {
-        id: data.acknowledgementReceipt,
+        id: data.acknowledgementReceipt.id,
       },
       depot: {
         id: data.depot,
