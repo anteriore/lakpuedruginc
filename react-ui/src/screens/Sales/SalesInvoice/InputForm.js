@@ -127,6 +127,11 @@ const InputForm = (props) => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   }
 
+  const onFinish = (value) => {
+    onSubmit(value, selectedSales, salesInvoiceProducts);
+    history.goBack();
+  }
+
   return (
     <>
       <Row>
@@ -138,7 +143,7 @@ const InputForm = (props) => {
             <Skeleton/>
           ) : (
             <Layout style={styles.layout}>
-              <Form form={form} {...styles.formLayout}>
+              <Form form={form} onFinish={onFinish} {...styles.formLayout}>
                 {_.dropRight(tempFormDetails.form_items, 5).map((item) => (
                   <FormItem onFail={onFail} key={item.name} item={item} />
                 ))}

@@ -1,19 +1,22 @@
-import React, { useCallback, useEffect} from 'react';
-import { Button, Row, Col, Typography, Skeleton } from 'antd';
+import React, { useCallback, useEffect, useState} from 'react';
+import { Button, Row, Col, Typography, Skeleton, Modal, Descriptions,  } from 'antd';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader } from './data';
 import { useDispatch, useSelector } from 'react-redux';
-import { listSalesInvoice, clearData } from './redux';
+import { listSalesInvoice, clearData, create, createSalesInvoice } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, tempListSalesOrder } from '../SalesOrders/redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
 import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
+import { formatPayload } from './helpers';
+import { formDetails } from './data';
 import _ from 'lodash';
+import moment from 'moment';
 
 const {Title} = Typography;
 
@@ -23,6 +26,10 @@ const SalesInvoice = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { salesInvoiceList, action, statusMessage, status, statusLevel } = useSelector((state) => state.sales.salesInvoice)
+  const {id} = useSelector(state => state.auth.user);
+
+  const [displayModal, setDisplayModal] = useState(false);
+  const [selectedSI, setSelectedSI] = useState(null);
 
   const { 
     action: actionDepot, 
@@ -158,11 +165,21 @@ const SalesInvoice = (props) => {
   }
 
   const handleRetrieve = (data) => {
-    console.log(data)
+    setSelectedSI(data);
+    setDisplayModal(true)
   }
 
-  const onCreate = () => {
+  const onCreate = (value, salesOrder, salesInvoiceProducts) => {
+    const payload = formatPayload({
+      id,
+      company, 
+      value, 
+      salesOrder, 
+      salesInvoiceProducts});
 
+    dispatch(createSalesInvoice(payload)).then(() => {
+      dispatch(listSalesInvoice(company))
+    })
   }
 
   return (
@@ -195,6 +212,79 @@ const SalesInvoice = (props) => {
             ) }
           </Col>
         </Row>
+        <Modal
+          title="Sales Invoice Details"
+          visible={displayModal}
+          onOk={() => {
+            setDisplayModal(false);
+            setSelectedSI(null);
+          }}
+          onCancel={() => {
+            setDisplayModal(false);
+            setSelectedSI(null);
+          }}
+          width={1000}
+          cancelButtonProps={{ style: { display: 'none' } }}
+        >
+          {selectedSI === null ? (
+            <Skeleton/>
+          ) : (
+            <>
+              <Descriptions
+                bordered
+                title={`Sales Invoice ${selectedSI.number}`}
+                size="default"
+                layout="vertical"
+              >
+                {formDetails.form_items.map((item) => {
+                  if (!item.writeOnly && item.type !== 'readOnly') {
+                    if (item.type === 'select' || item.type === 'selectSearch') {
+                      const itemData = selectedSI[item.name];
+                      return (
+                        <Descriptions.Item key={item.name} label={item.label}>
+                          {typeof itemData === 'object' ? (typeof itemData.code === 'undefined' ? 
+                            itemData.number : itemData.code
+                          ) : itemData}
+                        </Descriptions.Item>
+                      );
+                    }
+
+                    if (item.type === 'date') {
+                      return (
+                        <Descriptions.Item key={item.name} label={item.label}>
+                          {moment(new Date(selectedSI[item.name])).format('DD/MM/YYYY')}
+                        </Descriptions.Item>
+                      );
+                    }
+
+                    return (
+                      <Descriptions.Item key={item.name} label={item.label}>
+                        {typeof selectedSI[item.name] === 'object' && selectedSI[item.name] !== null
+                          ? selectedSI[item.name].code
+                          : selectedSI[item.name]}
+                      </Descriptions.Item>
+                    );
+                  }
+                  
+                  return null;
+                })}
+              </Descriptions>
+              <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
+                Sales Invoice Product Items:
+              </Title>
+              {selectedSI.orderedProducts.map((item) => {
+                return (
+                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
+                    <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
+                    <Descriptions.Item label="Sales Order Product ID">{item.salesOrderProductId}</Descriptions.Item>
+                    <Descriptions.Item label="Amount">{item.amount}</Descriptions.Item>
+                    <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
+                  </Descriptions>
+                );
+              })}
+            </>
+          )}
+        </Modal>
       </Route>
     </Switch>
   )

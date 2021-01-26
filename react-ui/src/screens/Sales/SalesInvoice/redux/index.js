@@ -23,6 +23,26 @@ export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payl
 
 })
 
+export const createSalesInvoice = createAsyncThunk('createSalesInvoice', async (payload,thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try{
+    const response = await axiosInstance.post(
+      `/rest/sales-invoices?token=${accessToken}`,
+      payload
+    )
+  
+    const {response: validateResponse, valid} = checkResponseValidity(response);
+    if(valid) {
+      return validateResponse
+    } else { 
+      return thunkAPI.rejectWithValue(validateResponse)
+    }
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+})
+
 const initialState = {
   salesInvoiceList: [],
   status: 'loading',
@@ -72,6 +92,40 @@ const salesInvoiceSlice = createSlice({
         statusMessage: message,
       };
     },
+    [createSalesInvoice.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for sales invoice`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [createSalesInvoice.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const {message, level} = generateStatusMessage(action.payload, 'Sales Invoice')
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status, 
+        statusMessage: message,
+      };
+    },
+    [createSalesInvoice.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const {message, level} = generateStatusMessage(action.payload, 'Sales Invoice')
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status, 
+        statusMessage: message,
+      };
+    }
   }
 });
 

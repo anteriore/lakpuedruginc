@@ -47,13 +47,13 @@ export const formDetails = {
       label: 'Number',
       name: 'number',
       rules: [{ required: true, message: 'Please provide a sales invoice number' }],
-      placeholder: 'Order slip number',
+      placeholder: 'Sales invoice number',
     },
     {
       label: 'Date',
       name: 'date',
       rules: [{ required: true, message: 'Please provide a sales invoice date' }],
-      placeholder: 'order slip number',
+      placeholder: '',
       type: 'date',
     },
     {

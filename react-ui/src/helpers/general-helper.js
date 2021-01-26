@@ -105,7 +105,7 @@ export const generateStatusMessage = (payload, currentModule) => {
     case 400:
       return {
         level: 'error',
-        message: `{${code.STATUS_400}}: (${currentModule})`
+        message: `${code.STATUS_400}: (${currentModule})`
       };
     case 401:
       return {
