@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { message } from 'antd';
-import { listAReceiptWithSIByDepot, listAReceiptByDepot } from '../../AcknowledgementReceipts/redux';
+import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
 import moment from 'moment';
 
 export const columns = [
@@ -104,7 +104,7 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(listAReceiptByDepot({message, depot: e}))
+          dispatch(listAReceiptWithSIByDepot({message, depot: e}))
         }
       },
     ],
