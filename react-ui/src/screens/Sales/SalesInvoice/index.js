@@ -1,152 +1,165 @@
-import React, { useCallback, useEffect, useState} from 'react';
-import { Button, Row, Col, Typography, Skeleton, Modal, Descriptions,  } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Row, Col, Typography, Skeleton, Modal, Descriptions } from 'antd';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
-import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined } from '@ant-design/icons';
-import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader } from './data';
 import { useDispatch, useSelector } from 'react-redux';
-import { listSalesInvoice, clearData, create, createSalesInvoice } from './redux';
+import { unwrapResult } from '@reduxjs/toolkit';
+import _ from 'lodash';
+import moment from 'moment';
+import GeneralStyles from '../../../data/styles/styles.general';
+import TableDisplay from '../../../components/TableDisplay';
+import { tableHeader, formDetails } from './data';
+import { listSalesInvoice, clearData, createSalesInvoice } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, tempListSalesOrder } from '../SalesOrders/redux';
-import { unwrapResult } from '@reduxjs/toolkit';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
 import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
 import { formatPayload } from './helpers';
-import { formDetails } from './data';
-import _ from 'lodash';
-import moment from 'moment';
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const SalesInvoice = (props) => {
-  const {title, company} = props;
+  const { title, company } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
-  const { salesInvoiceList, action, statusMessage, status, statusLevel } = useSelector((state) => state.sales.salesInvoice)
-  const {id} = useSelector(state => state.auth.user);
+  const { salesInvoiceList, action, statusMessage, status, statusLevel } = useSelector(
+    (state) => state.sales.salesInvoice
+  );
+  const { id } = useSelector((state) => state.auth.user);
 
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedSI, setSelectedSI] = useState(null);
 
-  const { 
-    action: actionDepot, 
-    statusMessage: statusMessageDepot, 
-    status: statusDepot, 
-    statusLevel: statusLevelDepot 
-  } = useSelector((state) => state.maintenance.depots)
+  const {
+    action: actionDepot,
+    statusMessage: statusMessageDepot,
+    status: statusDepot,
+    statusLevel: statusLevelDepot,
+  } = useSelector((state) => state.maintenance.depots);
 
   const {
     action: actionPI,
     statusMessage: statusMessagePI,
     status: statusPI,
-    statusLevel: statusLevelPI
-  } = useSelector(state => state.maintenance.productInventory)
+    statusLevel: statusLevelPI,
+  } = useSelector((state) => state.maintenance.productInventory);
 
   const {
     action: actionSO,
     statusMessage: statusMessageSO,
     status: statusSO,
-    statusLevel: statusLevelSO
-  } = useSelector(state => state.sales.salesOrders)
+    statusLevel: statusLevelSO,
+  } = useSelector((state) => state.sales.salesOrders);
 
-  const pushErrorPage = useCallback((status) => {
-    history.push({
-      pathname: `/error/${status === 400 || status === 404 ? 403 : status}`,
-      state: {
-        moduleList: '/sales',
-      },
-    });
-  }, [history]);
-
-  useEffect(() => {
-    if (status !== 'loading'){
-      if (action === 'fetch' && statusLevel !== 'success'){
-        statusDialogue({statusMessage, statusLevel}, 'message')
-      }
-  
-      if(action !== 'fetch'){
-        statusDialogue({statusMessage, statusLevel}, 'message')
-      }
-    }
-  },[status, action, statusMessage, statusLevel])
+  const pushErrorPage = useCallback(
+    (statusCode) => {
+      history.push({
+        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
+        state: {
+          moduleList: '/sales',
+        },
+      });
+    },
+    [history]
+  );
 
   useEffect(() => {
-    if(statusSO !== 'loading'){
-      if(actionSO === 'fetch' && statusLevelSO === 'warning'){
-        statusDialogue({
-          statusLevel: statusLevelSO,
-          modalContent: {
-            title: `${_.capitalize(statusLevelSO)} - (Sales Order)`,
-            content: statusMessageSO
-          }
-        }, "modal");
+    if (status !== 'loading') {
+      if (action === 'fetch' && statusLevel !== 'success') {
+        statusDialogue({ statusMessage, statusLevel }, 'message');
+      }
+
+      if (action !== 'fetch') {
+        statusDialogue({ statusMessage, statusLevel }, 'message');
       }
     }
-  }, [actionSO, statusMessageSO, statusSO, statusLevelSO])
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    if(statusPI !== 'loading'){
-      if(actionPI === 'fetch' && statusLevelPI === 'warning'){
-        statusDialogue({
-          statusLevel: statusLevelPI,
-          modalContent: {
-            title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
-            content: statusMessagePI
-          }
-        }, "modal");
+    if (statusSO !== 'loading') {
+      if (actionSO === 'fetch' && statusLevelSO === 'warning') {
+        statusDialogue(
+          {
+            statusLevel: statusLevelSO,
+            modalContent: {
+              title: `${_.capitalize(statusLevelSO)} - (Sales Order)`,
+              content: statusMessageSO,
+            },
+          },
+          'modal'
+        );
       }
     }
-  }, [actionPI, statusMessagePI, statusPI, statusLevelPI])
+  }, [actionSO, statusMessageSO, statusSO, statusLevelSO]);
 
   useEffect(() => {
-    if(statusDepot !== 'loading') {
-      if(actionDepot === 'fetch' && statusLevelDepot === 'warning'){
-        statusDialogue({
-          statusLevel: statusLevelDepot,
-          modalContent: {
-            title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
-            content: statusMessageDepot
-          }
-        }, "modal");
+    if (statusPI !== 'loading') {
+      if (actionPI === 'fetch' && statusLevelPI === 'warning') {
+        statusDialogue(
+          {
+            statusLevel: statusLevelPI,
+            modalContent: {
+              title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
+              content: statusMessagePI,
+            },
+          },
+          'modal'
+        );
       }
     }
-  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot])
+  }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
+
+  useEffect(() => {
+    if (statusDepot !== 'loading') {
+      if (actionDepot === 'fetch' && statusLevelDepot === 'warning') {
+        statusDialogue(
+          {
+            statusLevel: statusLevelDepot,
+            modalContent: {
+              title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
+              content: statusMessageDepot,
+            },
+          },
+          'modal'
+        );
+      }
+    }
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listSalesInvoice(company))
-    .then(unwrapResult)
-    .then(() => {
-      if(isCancelled){
-        dispatch(clearData());
-      }
-    }).catch(rejectedValueOrSerializedError => {
-      console.log(rejectedValueOrSerializedError)
-    })
+      .then(unwrapResult)
+      .then(() => {
+        if (isCancelled) {
+          dispatch(clearData());
+        }
+      })
+      .catch((rejectedValueOrSerializedError) => {
+        console.log(rejectedValueOrSerializedError);
+      });
 
-    return function cleanup(){
+    return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearSO());
 
       isCancelled = true;
-    }
-
-  },[dispatch, company, history, pushErrorPage]);
+    };
+  }, [dispatch, company, history, pushErrorPage]);
 
   const handleAddButton = () => {
     dispatch(tempListDepot(company)).then((dataDepot) => {
-      dispatch(tempListProductInventory()).then(dataPI => {
-        dispatch(tempListSalesOrder(company)).then(dataSO => {
-          const promiseList = [dataDepot, dataPI, dataSO]
+      dispatch(tempListProductInventory()).then((dataPI) => {
+        dispatch(tempListSalesOrder(company)).then((dataSO) => {
+          const promiseList = [dataDepot, dataPI, dataSO];
           const promiseResult = _.some(promiseList, (o) => {
             return o.type.split(/[/?]/g)[1] === 'rejected';
           });
 
-          if(!promiseResult){
+          if (!promiseResult) {
             const promiseValues = _.some(promiseList, (o) => {
               return o.payload.status !== 200 && o.payload.data.length === 0;
             });
@@ -155,32 +168,32 @@ const SalesInvoice = (props) => {
               history.push(`${path}/new`);
             }
           } else {
-            const {payload}  = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected')
-            pushErrorPage(payload.status)
-          }       
-        })
-      })
-    })
-    
-  }
+            const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
+            pushErrorPage(payload.status);
+          }
+        });
+      });
+    });
+  };
 
   const handleRetrieve = (data) => {
     setSelectedSI(data);
-    setDisplayModal(true)
-  }
+    setDisplayModal(true);
+  };
 
   const onCreate = (value, salesOrder, salesInvoiceProducts) => {
     const payload = formatPayload({
       id,
-      company, 
-      value, 
-      salesOrder, 
-      salesInvoiceProducts});
+      company,
+      value,
+      salesOrder,
+      salesInvoiceProducts,
+    });
 
     dispatch(createSalesInvoice(payload)).then(() => {
-      dispatch(listSalesInvoice(company))
-    })
-  }
+      dispatch(listSalesInvoice(company));
+    });
+  };
 
   return (
     <Switch>
@@ -191,17 +204,17 @@ const SalesInvoice = (props) => {
         <InputForm title="Edit Order Slip" onSubmit={onUpdate} company={company} />
       </Route> */}
       <Route path={`${path}`}>
-        <Row gutter={[8,24]}>
+        <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
-            <Title>
-              {title}
-            </Title>
-            <Button icon={<PlusOutlined/>} onClick={() => handleAddButton()}>
+            <Title>{title}</Title>
+            <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
               Add
             </Button>
           </Col>
           <Col span={20}>
-            { status === 'loading' ? (<Skeleton/>) : (
+            {status === 'loading' ? (
+              <Skeleton />
+            ) : (
               <TableDisplay
                 columns={tableHeader}
                 data={salesInvoiceList}
@@ -209,7 +222,7 @@ const SalesInvoice = (props) => {
                 deleteEnabled={false}
                 handleRetrieve={handleRetrieve}
               />
-            ) }
+            )}
           </Col>
         </Row>
         <Modal
@@ -227,7 +240,7 @@ const SalesInvoice = (props) => {
           cancelButtonProps={{ style: { display: 'none' } }}
         >
           {selectedSI === null ? (
-            <Skeleton/>
+            <Skeleton />
           ) : (
             <>
               <Descriptions
@@ -242,9 +255,11 @@ const SalesInvoice = (props) => {
                       const itemData = selectedSI[item.name];
                       return (
                         <Descriptions.Item key={item.name} label={item.label}>
-                          {typeof itemData === 'object' ? (typeof itemData.code === 'undefined' ? 
-                            itemData.number : itemData.code
-                          ) : itemData}
+                          {typeof itemData === 'object'
+                            ? typeof itemData.code === 'undefined'
+                              ? itemData.number
+                              : itemData.code
+                            : itemData}
                         </Descriptions.Item>
                       );
                     }
@@ -265,7 +280,7 @@ const SalesInvoice = (props) => {
                       </Descriptions.Item>
                     );
                   }
-                  
+
                   return null;
                 })}
               </Descriptions>
@@ -276,7 +291,9 @@ const SalesInvoice = (props) => {
                 return (
                   <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
                     <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
-                    <Descriptions.Item label="Sales Order Product ID">{item.salesOrderProductId}</Descriptions.Item>
+                    <Descriptions.Item label="Sales Order Product ID">
+                      {item.salesOrderProductId}
+                    </Descriptions.Item>
                     <Descriptions.Item label="Amount">{item.amount}</Descriptions.Item>
                     <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
                   </Descriptions>
@@ -287,7 +304,7 @@ const SalesInvoice = (props) => {
         </Modal>
       </Route>
     </Switch>
-  )
-}
+  );
+};
 
 export default SalesInvoice;

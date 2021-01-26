@@ -1,26 +1,25 @@
-import {Modal, message} from 'antd';
+import { Modal, message } from 'antd';
 
-const statusDialogue = (response, dialogueType) => {  
-  if (dialogueType === 'message'){
-    switch(response.statusLevel){
-      case "warning":
-        return message.warning(response.statusMessage); 
-      case "error": 
+const statusDialogue = (response, dialogueType) => {
+  if (dialogueType === 'message') {
+    switch (response.statusLevel) {
+      case 'warning':
+        return message.warning(response.statusMessage);
+      case 'error':
         return message.error(response.statusMessage);
-      default: 
+      default:
         return message.success(response.statusMessage);
     }
-  }else{
-    switch(response.statusLevel){
-      case "warning":
-        return Modal.warning(response.modalContent); 
-      case "error": 
+  } else {
+    switch (response.statusLevel) {
+      case 'warning':
+        return Modal.warning(response.modalContent);
+      case 'error':
         return Modal.error(response.modalContent);
-      default: 
+      default:
         return Modal.success(response.modalContent);
     }
   }
-  
-}
+};
 
 export default statusDialogue;

@@ -5,43 +5,43 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.get(
       `/rest/sales-invoices/company/${payload}?token=${accessToken}`
     );
-    
-    const {response:validatedResponse, valid} = checkResponseValidity(response);
-  
-    if (valid){
-      return validatedResponse
-    }else{
-      return thunkAPI.rejectWithValue(validatedResponse)
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data);
   }
+});
 
-})
+export const createSalesInvoice = createAsyncThunk(
+  'createSalesInvoice',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const createSalesInvoice = createAsyncThunk('createSalesInvoice', async (payload,thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `/rest/sales-invoices?token=${accessToken}`,
+        payload
+      );
 
-  try{
-    const response = await axiosInstance.post(
-      `/rest/sales-invoices?token=${accessToken}`,
-      payload
-    )
-  
-    const {response: validateResponse, valid} = checkResponseValidity(response);
-    if(valid) {
-      return validateResponse
-    } else { 
-      return thunkAPI.rejectWithValue(validateResponse)
+      const { response: validateResponse, valid } = checkResponseValidity(response);
+      if (valid) {
+        return validateResponse;
+      }
+      return thunkAPI.rejectWithValue(validateResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-})
+);
 
 const initialState = {
   salesInvoiceList: [],
@@ -50,7 +50,7 @@ const initialState = {
   responseCode: null,
   statusMessage: '',
   action: '',
-}
+};
 
 const salesInvoiceSlice = createSlice({
   name: 'salesInvoice',
@@ -59,7 +59,7 @@ const salesInvoiceSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listSalesInvoice.pending]: (state,) => {
+    [listSalesInvoice.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
@@ -68,20 +68,26 @@ const salesInvoiceSlice = createSlice({
     },
     [listSalesInvoice.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const {message, level} = generateStatusMessage(action.payload, 'Sales Invoice')
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice'
+      );
 
       return {
         ...state,
         salesInvoiceList: data,
         status: 'succeeded',
         statusLevel: level,
-        responseCode: status, 
-        statusMessage: message,
+        responseCode: status,
+        statusMessage,
       };
     },
     [listSalesInvoice.rejected]: (state, action) => {
-      const {status} = action.payload
-      const {message, level} = generateStatusMessage(action.payload, 'Sales Invoice')
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice'
+      );
 
       return {
         ...state,
@@ -89,7 +95,7 @@ const salesInvoiceSlice = createSlice({
         statusLevel: level,
         responseCode: status,
         action: 'fetch',
-        statusMessage: message,
+        statusMessage,
       };
     },
     [createSalesInvoice.pending]: (state) => {
@@ -104,29 +110,35 @@ const salesInvoiceSlice = createSlice({
     },
     [createSalesInvoice.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const {message, level} = generateStatusMessage(action.payload, 'Sales Invoice')
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice'
+      );
 
       return {
         ...state,
         status: 'succeeded',
         statusLevel: level,
-        responseCode: status, 
-        statusMessage: message,
+        responseCode: status,
+        statusMessage,
       };
     },
     [createSalesInvoice.rejected]: (state, action) => {
       const { status } = action.payload;
-      const {message, level} = generateStatusMessage(action.payload, 'Sales Invoice')
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice'
+      );
 
       return {
         ...state,
         status: 'failed',
         statusLevel: level,
-        responseCode: status, 
-        statusMessage: message,
+        responseCode: status,
+        statusMessage,
       };
-    }
-  }
+    },
+  },
 });
 
 export const { clearData } = salesInvoiceSlice.actions;

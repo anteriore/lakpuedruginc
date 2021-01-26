@@ -3,23 +3,26 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const tempListSalesOrder = createAsyncThunk('tempListSalesOrder', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  
-  try{
-    const response = await axiosInstance.get(`/rest/sales-orders/company/${payload}?token=${accessToken}`)
-    const {response: validatedResponse, valid} = checkResponseValidity(response);
+export const tempListSalesOrder = createAsyncThunk(
+  'tempListSalesOrder',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-    if(valid){
-      return validatedResponse
-    } else {
+    try {
+      const response = await axiosInstance.get(
+        `/rest/sales-orders/company/${payload}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
       return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-})
-
+);
 
 export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -132,28 +135,28 @@ const salesOrdersSlice = createSlice({
   },
   extraReducers: {
     [tempListSalesOrder.pending]: (state) => {
-      return{
-        ...state, 
+      return {
+        ...state,
         action: 'fetch',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales orders`,
-      }
+      };
     },
     [tempListSalesOrder.fulfilled]: (state, action) => {
-      const {data, status} = action.payload;
-      const {message, level} = generateStatusMessage(action.payload, "Sales Order");
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Sales Order');
 
       return {
         ...state,
         salesOrderList: data,
         status: 'succeeded',
-        statusLevel: level, 
+        statusLevel: level,
         responseCode: status,
-        statusMessage: message
-      }
+        statusMessage: message,
+      };
     },
-    [tempListSalesOrder.rejected]: (state, action ) => {
-      const {status} = action.payload;
-      const {message, level} = generateStatusMessage(action.payload, "Sales Order");
+    [tempListSalesOrder.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Sales Order');
 
       return {
         ...state,
@@ -162,7 +165,7 @@ const salesOrdersSlice = createSlice({
         responseCode: status,
         action: 'fetch',
         statusMessage: message,
-      }
+      };
     },
     [listSalesOrder.pending]: (state) => {
       return {

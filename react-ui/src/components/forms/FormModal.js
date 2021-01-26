@@ -29,7 +29,7 @@ const SimpleForm = (props) => {
     >
       <Form form={form} layout="vertical" initialValues={values} name={formDetails.form_name}>
         {formDetails.form_items.map((item) => (
-          <FormItem item={item} onFail={onCancel} formMode={formMode}/>
+          <FormItem item={item} onFail={onCancel} formMode={formMode} />
         ))}
       </Form>
     </Modal>

@@ -38,7 +38,7 @@ export const tableHeader = [
     defaultSortOrder: 'ascend',
     sorter: (a, b) => a.status.length - b.status.length,
   },
-]
+];
 
 export const formDetails = {
   form_name: 'sales_invoice',
@@ -108,5 +108,5 @@ export const formDetails = {
       placeholder: 'Remarks (optional)',
       type: 'textArea',
     },
-  ]
-}
+  ],
+};

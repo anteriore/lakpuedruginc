@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash'
+import _ from 'lodash';
 import { Row, Typography, Col, Button, Skeleton, message, Modal, Descriptions, Space } from 'antd';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';

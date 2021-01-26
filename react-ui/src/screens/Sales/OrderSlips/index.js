@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader } from './data';
+import { tableHeader, formDetails } from './data';
 import InputForm from './InputForm';
 import { formatPayload } from './helpers';
 import {
@@ -25,7 +25,6 @@ import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/red
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import { setConnectionEffect } from '../../../helpers/general-helper';
 import { listProductInventory } from '../../Maintenance/redux/productInventory';
-import { formDetails } from './data';
 
 const { Title } = Typography;
 
@@ -178,8 +177,8 @@ const OrderSlips = (props) => {
 
   const handleRetrieve = (data) => {
     setDisplayModal(true);
-    setSelectedOS(data)
-  }
+    setSelectedOS(data);
+  };
 
   const onCreate = (value, salesOrder, orderedProducts) => {
     const payload = formatPayload(id, company, value, salesOrder, orderedProducts);
@@ -244,7 +243,7 @@ const OrderSlips = (props) => {
           cancelButtonProps={{ style: { display: 'none' } }}
         >
           {selectedOS === null ? (
-            <Skeleton/>
+            <Skeleton />
           ) : (
             <>
               <Descriptions
@@ -259,9 +258,11 @@ const OrderSlips = (props) => {
                       const itemData = selectedOS[item.name];
                       return (
                         <Descriptions.Item key={item.name} label={item.label}>
-                          {typeof itemData === 'object' ? (typeof itemData.code === 'undefined' ? 
-                            itemData.number : itemData.code
-                          ) : itemData}
+                          {typeof itemData === 'object'
+                            ? typeof itemData.code === 'undefined'
+                              ? itemData.number
+                              : itemData.code
+                            : itemData}
                         </Descriptions.Item>
                       );
                     }
@@ -282,19 +283,21 @@ const OrderSlips = (props) => {
                       </Descriptions.Item>
                     );
                   }
-                  
+
                   return null;
                 })}
               </Descriptions>
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
-               Ordered Product Items:
+                Ordered Product Items:
               </Title>
               {selectedOS.orderedProducts.map((item) => {
                 return (
                   <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
                     <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
                     <Descriptions.Item label="Order Slip No">{item.orderSlipNo}</Descriptions.Item>
-                    <Descriptions.Item label="Sales Order Product ID">{item.salesOrderProductId}</Descriptions.Item>
+                    <Descriptions.Item label="Sales Order Product ID">
+                      {item.salesOrderProductId}
+                    </Descriptions.Item>
                     <Descriptions.Item label="Amount">{item.amount}</Descriptions.Item>
                     <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
                   </Descriptions>

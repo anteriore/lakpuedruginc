@@ -1,67 +1,70 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import {Row, Col, Typography, Form, Skeleton, Table, Checkbox, Space, Button} from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Row, Col, Typography, Form, Skeleton, Table, Checkbox, Space, Button } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import Layout from 'antd/lib/layout/layout';
-import { formDetails } from './data';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
+import { formDetails } from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
 import { formatLotProducts, formatOrderedProducts, formatSOList } from '../OrderSlips/helpers';
 import { salesInfoHeader, salesOrderHeader } from '../OrderSlips/data';
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 const InputForm = (props) => {
-  const {title, onSubmit} = props;
+  const { title, onSubmit } = props;
   const history = useHistory();
   const { path } = useRouteMatch();
   const [form] = useForm();
 
-  const [contentLoading, setContentLoading] = useState(true)
+  const [contentLoading, setContentLoading] = useState(true);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
-  const [selectedSales,setSelectedSales] = useState(null);
+  const [selectedSales, setSelectedSales] = useState(null);
   const [showSalesSection, setShowSalesSection] = useState(false);
   const [selectedLot, setSelectedLot] = useState([]);
-  const [salesInvoiceProducts, setSalesInvoiceProducts] = useState([])
+  const [salesInvoiceProducts, setSalesInvoiceProducts] = useState([]);
 
   const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
-  const {list: depotList} = useSelector(state => state.maintenance.depots)
-  const { salesOrderList } = useSelector(state => state.sales.salesOrders);
+  const { list: depotList } = useSelector((state) => state.maintenance.depots);
+  const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
   const { user } = useSelector((state) => state.auth);
 
-  const handleSalesChange = useCallback((value) => {
-    const salesOrder = _.find(salesOrderList, (o) => {
-      return o.id === value;
-    });
-    setSelectedSales(salesOrder);
-  }, [salesOrderList])
+  const handleSalesChange = useCallback(
+    (value) => {
+      const salesOrder = _.find(salesOrderList, (o) => {
+        return o.id === value;
+      });
+      setSelectedSales(salesOrder);
+    },
+    [salesOrderList]
+  );
 
-  const handleDepotChange = useCallback((value) => {
-    form.setFieldsValue({salesOrder: ''});
-    setSelectedSales(null);
-    const selectedSalesList = _.filter(salesOrderList, (o) => {
-      return o.depot.id === value && _.toLower(o.status) !== 'pending';
-    }).filter((o) => _.toLower(o.type) === 'dr_si');
+  const handleDepotChange = useCallback(
+    (value) => {
+      form.setFieldsValue({ salesOrder: '' });
+      setSelectedSales(null);
+      const selectedSalesList = _.filter(salesOrderList, (o) => {
+        return o.depot.id === value && _.toLower(o.status) !== 'pending';
+      }).filter((o) => _.toLower(o.type) === 'dr_si');
 
-    console.log("Depot Value", value)
-    console.log(selectedSalesList)
+      if (selectedSalesList.length !== 0) {
+        const newForm = tempFormDetails;
+        const masterList = {
+          salesOrder: formatSOList(selectedSalesList),
+        };
+        const formItem = _.find(newForm.form_items, { name: 'salesOrder' });
 
-    if(selectedSalesList.length !== 0){
-      const newForm = tempFormDetails;
-      const masterList = {
-        salesOrder: formatSOList(selectedSalesList),
-      };
-      const formItem = _.find(newForm.form_items, {name: 'salesOrder'});
-
-      formItem.onChange = (e) => handleSalesChange(e);
-      setTempFormDetails(updateList(newForm,masterList));
-      setShowSalesSection(true);
-    } else {
-      setShowSalesSection(false);
-    }
-  },[form, handleSalesChange, salesOrderList, tempFormDetails])
+        formItem.onChange = (e) => handleSalesChange(e);
+        setTempFormDetails(updateList(newForm, masterList));
+        setShowSalesSection(true);
+      } else {
+        setShowSalesSection(false);
+      }
+    },
+    [form, handleSalesChange, salesOrderList, tempFormDetails]
+  );
 
   useEffect(() => {
     form.setFieldsValue({
@@ -74,17 +77,17 @@ const InputForm = (props) => {
     const masterList = {
       depot: depotList,
     };
-    const formItem = _.find(newForm.form_items, {name: 'depot'});
+    const formItem = _.find(newForm.form_items, { name: 'depot' });
     formItem.onChange = (e) => handleDepotChange(e);
     setTempFormDetails(updateList(newForm, masterList));
 
     setContentLoading(false);
-  },[depotList, form, user,tempFormDetails, handleDepotChange])
+  }, [depotList, form, user, tempFormDetails, handleDepotChange]);
 
   useEffect(() => {
     const newOrderedProducts = formatOrderedProducts(selectedLot, selectedSales);
     setSalesInvoiceProducts(newOrderedProducts);
-  },[selectedLot, selectedSales]);
+  }, [selectedLot, selectedSales]);
 
   const onItemSelect = (data, selected) => {
     if (selected) {
@@ -125,12 +128,12 @@ const InputForm = (props) => {
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
-  }
+  };
 
   const onFinish = (value) => {
     onSubmit(value, selectedSales, salesInvoiceProducts);
     history.goBack();
-  }
+  };
 
   return (
     <>
@@ -140,23 +143,24 @@ const InputForm = (props) => {
       <Row span={20} offset={1}>
         <Col span={20} offset={1}>
           {contentLoading ? (
-            <Skeleton/>
+            <Skeleton />
           ) : (
             <Layout style={styles.layout}>
               <Form form={form} onFinish={onFinish} {...styles.formLayout}>
                 {_.dropRight(tempFormDetails.form_items, 5).map((item) => (
                   <FormItem onFail={onFail} key={item.name} item={item} />
                 ))}
-                {showSalesSection ? _.dropRight(_.drop(tempFormDetails.form_items, 4), 1).map((item) => (
+                {showSalesSection
+                  ? _.dropRight(_.drop(tempFormDetails.form_items, 4), 1).map((item) => (
                       <FormItem onFail={onFail} key={item.name} item={item} />
                     ))
                   : ''}
                 {showSalesSection ? (
-                  <Form.Item wrapperCol={{span: 15, offset: 4}}>
+                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
                     <Form.Item>
                       <Table
                         columns={renderLotColumns(salesOrderHeader)}
-                        dataSource={formatLotProducts(selectedSales,productInvList)}
+                        dataSource={formatLotProducts(selectedSales, productInvList)}
                         pagination={false}
                       />
                     </Form.Item>
@@ -168,8 +172,10 @@ const InputForm = (props) => {
                       />
                     </Form.Item>
                   </Form.Item>
-                ) : ('')}
-                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
+                ) : (
+                  ''
+                )}
+                <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
                     <Button htmlType="button" onClick={() => history.goBack()}>
@@ -186,8 +192,8 @@ const InputForm = (props) => {
         </Col>
       </Row>
     </>
-  )
-}
+  );
+};
 
 export default InputForm;
 

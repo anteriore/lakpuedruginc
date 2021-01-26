@@ -8,7 +8,7 @@ const sales = combineReducers({
   salesOrders,
   orderSlips,
   acknowledgementReceipts,
-  salesInvoice
+  salesInvoice,
 });
 
 export default sales;
