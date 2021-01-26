@@ -67,7 +67,7 @@ const InputForm = (props) => {
         onSubmit(data);
       }
       else{
-        onFinishFailed(`Unable to submit. Please provide the necessary information on ${formTable.name}`)
+        onFinishFailed(`Unable to submit. Please provide the necessary information on ${formTable.label}`)
       }
     }
     else {
@@ -291,7 +291,16 @@ const InputForm = (props) => {
                 if (item.toggleCondition(toggleValue)) {
                   return <FormItem item={item} onFail={onFail} />;
                 }
-                return null;
+                else {
+                  return (
+                  <FormItem 
+                    item={{
+                      ...item,
+                      readOnly: true
+                    }} 
+                    onFail={onFail} 
+                  />)
+                }
               }
 
               return <FormItem item={item} onFail={onFail} />;

@@ -13,7 +13,7 @@ import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './re
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
-import { clearData as clearOS } from '../OrderSlips/redux';
+import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
 
 const { Title, Text } = Typography;
 
@@ -50,10 +50,10 @@ const ReturnSlips = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
+    dispatch(clearOS())
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
         dispatch(listProductInventory({ company, message })).then(() => {
-          dispatch(clearOS())
           history.push(`${path}/new`);
           setLoading(false);
         })
@@ -62,7 +62,27 @@ const ReturnSlips = (props) => {
   };
 
   const handleUpdate = (data) => {
-    message.error('Unable to perform action.');
+  setFormTitle('Update Return Slip');
+  setFormMode('edit');
+  const itemData = listData.find((item) => item.id === data.id);
+  const formData = {
+    ...itemData,
+    date: moment(new Date(data.date)) || moment(),
+    client: itemData.client !== null ? itemData.client.id : null,
+    depot: itemData.depot !== null ? itemData.depot.id : null,
+  };
+  setFormData(formData);
+  setLoading(true);
+  dispatch(listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })).then(() => {
+    dispatch(listClient({ company, message })).then(() => {
+      dispatch(listDepot({ company, message })).then(() => {
+        dispatch(listProductInventory({ company, message })).then(() => {
+          history.push(`${path}/${data.id}`);
+          setLoading(false);
+        })
+      })
+    })
+  });
   };
 
   const handleDelete = (data) => {
@@ -240,7 +260,7 @@ const ReturnSlips = (props) => {
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <Descriptions
                   bordered
-                  title={`${selectedData.number} Details`}
+                  title={`Return Slip ${selectedData.number}`}
                   size="default"
                   layout="vertical"
                 >

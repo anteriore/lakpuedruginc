@@ -54,7 +54,7 @@ const FormDetails = () => {
 
   const formDetails = {
     form_name: 'return_slip',
-    toggle_name: 'terms',
+    toggle_name: 'salesNumber',
     form_items: [
       {
         label: 'Return Slip Number',
@@ -86,6 +86,16 @@ const FormDetails = () => {
         name: 'client',
         type: 'selectSearch',
         selectName: 'name',
+        toggle: true,
+        readOnly: false,
+        toggleCondition: (value) => {
+          if (value === null || typeof value === 'undefined' ) {
+            return true;
+          }
+          else {
+            return false;
+          }
+        },
         choices: clients,
         render: (client) => `[${client.code}] ${client.name}`,
         rules: [{ required: true }],
@@ -96,7 +106,7 @@ const FormDetails = () => {
         label: 'DR/OS',
         name: 'salesNumber',
         type: 'selectTable',
-        rules: [{ required: true }],
+        rules: [],
         allowEmpty: true,
         placeholder: "Select DR/OS",
         displayModal: displayModal,
@@ -230,14 +240,13 @@ const FormDetails = () => {
       },
     ],
     getValues: (values) => {
-      const payments = [];
-      values.payments.forEach((payment) => {
-        payments.push({
-          ...payment.reference,
-          appliedAmount: payment.appliedAmount,
+      const products = [];
+      values.returnSlipProducts.forEach((product) => {
+        products.push({
+          ...product
         });
       });
-      return payments;
+      return products;
     },
     processData: (data) => {
       var processedData = { 
