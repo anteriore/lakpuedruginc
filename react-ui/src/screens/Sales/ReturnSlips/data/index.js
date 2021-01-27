@@ -262,7 +262,7 @@ const FormDetails = () => {
       if (
         typeof selectedData !== 'undefined' &&
         selectedData !== null &&
-        selectedData.some((item) => item.id === rowData.id)
+        selectedData.some((item) => item.product.id === rowData.product.id)
       ) {
         return true;
       }
