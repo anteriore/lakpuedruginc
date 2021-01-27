@@ -80,8 +80,7 @@ export const salesInfoHeader = [
     dataIndex: 'finishedGood',
     key: 'finishedGood',
     render: (object) => {
-
-      return object.code
+      return object.code;
     },
   },
   {

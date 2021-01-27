@@ -10,8 +10,8 @@ import {
   Row,
   Typography,
   Space,
-  Radio, 
-  Modal, 
+  Radio,
+  Modal,
   Table,
   Empty,
 } from 'antd';
@@ -36,7 +36,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
       }
     }
 
-    if (item.choices === null || typeof item.choices === 'undefined' || (item.choices.length === 0 && !item.allowEmpty)) {
+    if (
+      item.choices === null ||
+      typeof item.choices === 'undefined' ||
+      (item.choices.length === 0 && !item.allowEmpty)
+    ) {
       onFail();
       return null;
     }
@@ -273,58 +277,62 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
     );
   }
   if (item.type === 'selectTable') {
-
-    if ((item.dataSource === null || typeof item.dataSource === 'undefined' || item.dataSource.length === 0) && !item.allowEmpty) {
+    if (
+      (item.dataSource === null ||
+        typeof item.dataSource === 'undefined' ||
+        item.dataSource.length === 0) &&
+      !item.allowEmpty
+    ) {
       onFail();
       return null;
     }
     return (
       <>
-      <Form.Item
-        label={item.label}
-        name={item.name}
-        rules={item.rules}
-        initialValue={item.initialValue}
-        getValueProps={item.getValueProps}
-      >
-        <Input 
-          suffix={
-            <Button
-            type={"primary"}
-              onClick={() => {
-                item.setDisplayModal(true)
-              }}
-              icon={<SelectOutlined />}
-            >
-              {`Select`}
-            </Button>
-          }
-          disabled={true} 
-          placeholder={item.placeholder}
-        />
-      </Form.Item>
-      <Modal
-        visible={item.displayModal}
-        title={`Select ${item.label}`}
-        onOk={() => item.setDisplayModal(false)}
-        onCancel={() => item.setDisplayModal(false)}
-        cancelButtonProps={{ style: { display: 'none' } }}
-        width={1000}
-      >
-        <Table
-          rowSelection={{
-            type: "radio",
-            onChange: (e) => {
-              onTableSelect(item.name, e[0])
+        <Form.Item
+          label={item.label}
+          name={item.name}
+          rules={item.rules}
+          initialValue={item.initialValue}
+          getValueProps={item.getValueProps}
+        >
+          <Input
+            suffix={
+              <Button
+                type="primary"
+                onClick={() => {
+                  item.setDisplayModal(true);
+                }}
+                icon={<SelectOutlined />}
+              >
+                Select
+              </Button>
             }
-          }}
-          columns={item.columns}
-          dataSource={item.dataSource}
-          rowKey={item.rowKey}
-          pagination={{ size: 'small' }}
-          locale={{emptyText: item.emptyText || 'No Data'}}
-        /> 
-      </Modal>
+            disabled
+            placeholder={item.placeholder}
+          />
+        </Form.Item>
+        <Modal
+          visible={item.displayModal}
+          title={`Select ${item.label}`}
+          onOk={() => item.setDisplayModal(false)}
+          onCancel={() => item.setDisplayModal(false)}
+          cancelButtonProps={{ style: { display: 'none' } }}
+          width={1000}
+        >
+          <Table
+            rowSelection={{
+              type: 'radio',
+              onChange: (e) => {
+                onTableSelect(item.name, e[0]);
+              },
+            }}
+            columns={item.columns}
+            dataSource={item.dataSource}
+            rowKey={item.rowKey}
+            pagination={{ size: 'small' }}
+            locale={{ emptyText: item.emptyText || 'No Data' }}
+          />
+        </Modal>
       </>
     );
   }

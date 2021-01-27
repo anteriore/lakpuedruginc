@@ -83,12 +83,12 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
-            //dispatch(listPR({ company: selectedCompany, message }))
-            .then(() => {
-              history.push(`${path}/new`);
-              setLoadingCompany(false);
-            });
+            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+              // dispatch(listPR({ company: selectedCompany, message }))
+              .then(() => {
+                history.push(`${path}/new`);
+                setLoadingCompany(false);
+              });
           });
         });
       });
@@ -122,12 +122,12 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
-            //dispatch(listPR({ company: selectedCompany, message }))
-            .then(() => {
-              history.push(`${path}/${data.id}`);
-              setLoadingCompany(false);
-            });
+            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+              // dispatch(listPR({ company: selectedCompany, message }))
+              .then(() => {
+                history.push(`${path}/${data.id}`);
+                setLoadingCompany(false);
+              });
           });
         });
       });
