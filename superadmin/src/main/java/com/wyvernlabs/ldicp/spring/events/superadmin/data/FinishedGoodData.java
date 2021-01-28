@@ -22,22 +22,22 @@ public class FinishedGoodData {
 		
 		FinishedGood spicyTuna = new FinishedGood();
 		spicyTuna.setCode("ST1");
-		spicyTuna.setName("Spicy Tuna");
+		spicyTuna.setName("BRIGHT WASH 250 ML");
 		finishedGoodRepository.save(spicyTuna);
 		
 		FinishedGood coffee = new FinishedGood();
 		coffee.setCode("CO1");
-		coffee.setName("Coffee");
+		coffee.setName("GUAIFENESIN SYRUP 100MG/ML 60M");
 		finishedGoodRepository.save(coffee);
 		
 		FinishedGood bottledWater = new FinishedGood();
 		bottledWater.setCode("BW1");
-		bottledWater.setName("Bottled Water");
+		bottledWater.setName("LAKTRAZINE 48% WSP");
 		finishedGoodRepository.save(bottledWater);
 		
 		FinishedGood softDrinks = new FinishedGood();
 		softDrinks.setCode("SD1");
-		softDrinks.setName("Soft Drinks");
+		softDrinks.setName("DOXYVET PLAIN WSP TBPI");
 		finishedGoodRepository.save(softDrinks);
 
 		
