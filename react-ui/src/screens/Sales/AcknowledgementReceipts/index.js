@@ -223,6 +223,7 @@ const AcknowledgementReceipts = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={false}
               />
             )}
           </Col>
