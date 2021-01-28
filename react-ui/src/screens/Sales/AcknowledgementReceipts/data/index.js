@@ -150,7 +150,26 @@ const FormDetails = () => {
         name: 'amountPaid',
         type: 'number',
         min: 0,
-        rules: [{ required: true }],
+        dependencies: ['payments'],
+        rules: [
+          { required: true },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              const payments = getFieldValue('payments')
+              var sumPayments = 0
+              if(typeof payments !== 'undefined' && payments !== null){
+                payments.forEach(({appliedAmount}) => {
+                  sumPayments += appliedAmount
+                })
+              }
+              if (sumPayments === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject('The sum for the payments must be equal to the amount paid');
+            },
+          }),
+        ],
+        hasFeedback: true,
       },
       {
         label: 'Cut Off Date',
@@ -215,11 +234,11 @@ const FormDetails = () => {
     summary: (data) => {
       let totalAppliedAmount = 0;
       let totalSIAmount = 0;
-      data.forEach(({ totalAmount }) => {
+      data.forEach(({ appliedAmount }) => {
         if (data.type === 'DR_SI') {
-          totalSIAmount += totalAmount;
+          totalSIAmount += appliedAmount;
         } else {
-          totalAppliedAmount += totalAmount;
+          totalAppliedAmount += appliedAmount;
         }
       });
 
@@ -272,7 +291,10 @@ const FormDetails = () => {
       return payments;
     },
     processData: (data) => {
-      return { ...data, appliedAmount: 0 };
+      return { 
+        ...data, 
+        appliedAmount: data.remainingBalance
+      };
     },
     checkSelected: (selectedData, rowData) => {
       if (

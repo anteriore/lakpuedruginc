@@ -26,8 +26,8 @@ const FormScreen = (props) => {
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
-  const [tableData, setTableData] = useState(null);
   const [toggleValue, setToggleValue] = useState(null);
+  const [tableData, setTableData] = useState();
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -36,9 +36,7 @@ const FormScreen = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    if (hasTable && values !== null) {
-      setTableData(formTable.getValues(values));
-    }
+    setTableData(form.getFieldValue(formTable.name))
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
@@ -58,27 +56,11 @@ const FormScreen = (props) => {
       }
     });
 
-    if (hasTable) {
-      data[formTable.name] = tableData;
-    }
-
     onSubmit(data);
   };
 
   const onFinishFailed = () => {
-    // console.log(errorInfo)
     message.error("An error has occurred. Please double check the information you've provided.");
-  };
-
-  const handleTableChange = (item, index, event) => {
-    const data = { ...tableData };
-    const row = data[index];
-    row[item] = event;
-    const dataArray = [];
-    for (const [, value] of Object.entries(data)) {
-      dataArray.push(value);
-    }
-    setTableData(dataArray);
   };
 
   // for rendering tables
@@ -92,16 +74,18 @@ const FormScreen = (props) => {
             key: field.name,
             render: (row) => {
               const index = tableData.indexOf(row);
-              const rowData = tableData[index];
               return (
-                <InputNumber
-                  min={field.min}
-                  max={field.max}
-                  defaultValue={rowData[field.name]}
-                  onChange={(e) => {
-                    handleTableChange(field.name, index, e);
-                  }}
-                />
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <InputNumber
+                    min={field.min}
+                    max={field.max}
+                  />
+                </Form.Item>
               );
             },
           });
@@ -117,7 +101,6 @@ const FormScreen = (props) => {
             visible: false,
             render: (row) => {
               const index = tableData.indexOf(row);
-              const rowData = tableData[index];
               if (typeof field.render === 'undefined') {
                 if (typeof field.selectName === 'undefined') {
                   field.selectName = 'name';
@@ -130,11 +113,18 @@ const FormScreen = (props) => {
                 return null;
               }
               return (
-                <Select placeholder={field.placeholder} defaultValue={rowData[field.name]}>
-                  {field.choices.map((choice) => (
-                    <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
-                  ))}
-                </Select>
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <Select placeholder={field.placeholder}>
+                    {field.choices.map((choice) => (
+                      <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
               );
             },
           });
@@ -170,7 +160,6 @@ const FormScreen = (props) => {
           processedData = formTable.processData(data);
         }
         selectedItems = selectedItems.concat(processedData);
-        setTableData(selectedItems);
       } else if (tableData !== null && typeof tableData !== 'undefined') {
         selectedItems = tableData;
 
@@ -185,8 +174,11 @@ const FormScreen = (props) => {
         selectedItems = selectedItems.filter(
           (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
         );
-        setTableData(selectedItems);
       }
+      var fieldsValue = {}
+      fieldsValue[formTable.name] = selectedItems
+      setTableData(selectedItems)
+      form.setFieldsValue(fieldsValue)
     }
   };
 
@@ -233,6 +225,10 @@ const FormScreen = (props) => {
   };
 
   const onValuesChange = (values) => {
+    if(values.hasOwnProperty(formTable.name)){
+      setTableData(form.getFieldValue(formTable.name))
+    }
+    
     if (toggleName !== null && typeof toggleName !== 'undefined') {
       if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
         setToggleValue(values[toggleName]);
@@ -266,29 +262,35 @@ const FormScreen = (props) => {
 
               return <FormItem item={item} onFail={onFail} />;
             })}
+
+            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
+                {(fields, { errors }) => (
+                  <Col span={20} offset={1}>
+                    <div style={{ float: 'right', marginBottom: '1%' }}>
+                      <Button
+                        onClick={() => {
+                          setDisplayModal(true);
+                          setLoadingModal(false);
+                        }}
+                        icon={<SelectOutlined />}
+                      >
+                        {`Select ${formTable.label}`}
+                      </Button>
+                    </div>
+                    <Table
+                      dataSource={tableData}
+                      columns={renderTableColumns(formTable)}
+                      pagination={false}
+                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      summary={formTable.summary}
+                    />
+                  </Col>
+                )}
+              </Form.List>
+            )}
           </Form>
-          {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-            <Col span={20} offset={1}>
-              <div style={{ float: 'right', marginBottom: '1%' }}>
-                <Button
-                  onClick={() => {
-                    setDisplayModal(true);
-                    setLoadingModal(false);
-                  }}
-                  icon={<SelectOutlined />}
-                >
-                  {`Select ${formTable.label}`}
-                </Button>
-              </div>
-              <Table
-                dataSource={tableData}
-                columns={renderTableColumns(formTable)}
-                pagination={false}
-                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                summary={formTable.summary}
-              />
-            </Col>
-          )}
+          
           <div style={styles.tailLayout}>
             <Button type="primary" onClick={() => form.submit()}>
               Submit
