@@ -57,6 +57,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
           onChange={item.onChange}
           placeholder={item.placeholder}
           optionFilterProp="children"
+          disabled={item.type === 'readOnly' || item.readOnly}
         >
           {item.choices.map((choice) => (
             <Select.Option key={choice.id} value={choice.id}>
@@ -285,7 +286,6 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
       onFail();
       return null;
     }
-
     return (
       <>
         <Form.Item
