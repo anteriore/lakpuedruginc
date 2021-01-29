@@ -17,7 +17,7 @@ public class FinishedGoodData {
 	public void init() {
 		FinishedGood cornedTuna = new FinishedGood();
 		cornedTuna.setCode("CT1");
-		cornedTuna.setName("Corned Tuna");
+		cornedTuna.setName("Z-LINCOMYCIN/SPECTINOMYCIN F.G");
 		finishedGoodRepository.save(cornedTuna);
 		
 		FinishedGood spicyTuna = new FinishedGood();
