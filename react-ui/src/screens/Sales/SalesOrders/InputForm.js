@@ -12,6 +12,7 @@ import {
   Checkbox,
   message,
 } from 'antd';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import Layout from 'antd/lib/layout/layout';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
@@ -126,9 +127,11 @@ const InputForm = (props) => {
           precisionEnabled: col.precisionEnabled,
           precision: col.precision,
           handleSave: (data, rowRecord) => {
+            console.log(data, rowRecord)
             let currentProduct = _.clone(
-              _.find(requestedProductList, (prod) => prod.id === rowRecord.id)
+              _.find(requestedProductList, (prod) => prod.rowId === rowRecord.rowId)
             );
+
             Object.entries(data).forEach(([key, value]) => {
               currentProduct = { ...currentProduct, [key]: value };
 
@@ -150,7 +153,7 @@ const InputForm = (props) => {
 
             const indexProduct = _.findIndex(
               requestedProductList,
-              (object) => object.id === rowRecord.id
+              (o) => o.rowId === rowRecord.rowId
             );
             const newArray = _.clone(requestedProductList);
             newArray.splice(indexProduct, 1, currentProduct);
@@ -162,22 +165,15 @@ const InputForm = (props) => {
     };
   });
 
-  // render Product Items with checkbox
+  // render Product Items with add button
   const renderProductItemColumns = (rawColumns) => {
     let filteredColumn = [
       {
         title: 'Action',
-        key: 'select',
+        key: 'action',
         render: (row) => {
           return (
-            <Checkbox
-              onChange={(e) => {
-                onItemSelect(row, e.target.checked);
-              }}
-              checked={_.some(requestedProductList, (o) => {
-                return o.id === row.id;
-              })}
-            />
+            <Button type="dashed" onClick={() => handleAddSalesProduct(row)} icon={<PlusOutlined/>}/>
           );
         },
       },
@@ -190,22 +186,52 @@ const InputForm = (props) => {
     return filteredColumn;
   };
 
-  // Check box function callback upon onChange
-  const onItemSelect = (data, selected) => {
-    if (selected) {
-      if (data.quantity !== 0 && data.quantity > 0) {
-        setRequestedProductList(requestedProductList.concat(formatProduct(data)));
-      } else {
-        message.warning('Cannot add requested product with empty stock on hand');
-      }
+  // render Product Items with delete button
+
+  const renderSalesProductCol = (rawColumns) => {
+    let filteredColumn = [
+      {
+        title: 'Action',
+        key: 'action',
+        render: (row) => {
+          return (
+            <Button type="dashed" onClick={() => handleRemoveSalesProduct(row)} icon={<MinusOutlined/>} danger/>
+          );
+        },
+      },
+    ];
+
+    const inputColumn = rawColumns.slice();
+
+    filteredColumn = filteredColumn.concat(inputColumn);
+
+    return filteredColumn;
+  }
+
+  const handleRemoveSalesProduct = (data) => {
+    const removedData = _.remove(requestedProductList, (o) => o.rowId !== data.rowId)
+    console.log(removedData)
+    setRequestedProductList(removedData)
+  }
+
+  const handleAddSalesProduct = (data) => {
+    if (data.quantity !== 0 && data.quantity > 0) {
+      let newData = _.clone(formatProduct(data));
+      
+      if (requestedProductList.length !== 0){
+        const {rowId} = _.last(requestedProductList);
+        newData.rowId = rowId + 1;
+        
+        setRequestedProductList(requestedProductList.concat(newData))
+      } else{
+        newData.rowId = 1;
+        setRequestedProductList(requestedProductList.concat(newData))
+      } 
+      setProductModal(false);
     } else {
-      const removedList = _.remove(requestedProductList, (o) => {
-        return o.id !== data.id;
-      });
-      form.setFieldsValue({ product: removedList });
-      setRequestedProductList(removedList);
+      message.warning('Cannot add requested product with empty stock on hand');
     }
-  };
+  }
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
@@ -238,7 +264,7 @@ const InputForm = (props) => {
                 >
                   <Table
                     components={component}
-                    columns={modProductColumn}
+                    columns={renderSalesProductCol(modProductColumn)}
                     rowClassName={() => styles.editableRow}
                     dataSource={requestedProductList}
                     pagination={false}
@@ -251,7 +277,7 @@ const InputForm = (props) => {
                     }}
                     style={{ width: '40%', float: 'right' }}
                   >
-                    Select/Remove Product item(s)
+                    Select Product item(s)
                   </Button>
                 </Form.Item>
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
@@ -276,6 +302,7 @@ const InputForm = (props) => {
           onOk={() => setProductModal(false)}
           cancelButtonProps={{ style: { display: 'none' } }}
           width={1000}
+          footer={null}
         >
           <Table
             columns={renderProductItemColumns(tableProductInventory)}
