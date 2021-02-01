@@ -23,6 +23,21 @@ public class SalesOrderService {
 
 			System.out.println(salesOrder.getNumber());
 		}
+
+
+		Long id = salesOrderRepository.getMaxId();
+		
+		if (id == null) {
+			psalesOrderrf.setNumber("PRF-1");
+		} else {
+			salesOrder.setNumber("PRF-" + ++id);
+		}
+
+		if(salesOrder.getId()!=null){
+			salesOrder.setNumber("PRF-"+salesOrder.getId());
+		}
+
+		
 		return salesOrderRepository.save(salesOrder);
 	}
 }
