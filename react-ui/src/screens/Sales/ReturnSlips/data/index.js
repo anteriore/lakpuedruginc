@@ -86,16 +86,7 @@ const FormDetails = () => {
         name: 'client',
         type: 'selectSearch',
         selectName: 'name',
-        toggle: true,
-        readOnly: false,
-        toggleCondition: (value) => {
-          if (value === null || typeof value === 'undefined' ) {
-            return true;
-          }
-          else {
-            return false;
-          }
-        },
+        readOnly: true,
         choices: clients,
         render: (client) => `[${client.code}] ${client.name}`,
         rules: [{ required: true }],
@@ -106,7 +97,7 @@ const FormDetails = () => {
         label: 'DR/OS',
         name: 'salesNumber',
         type: 'selectTable',
-        rules: [],
+        rules: [{ required: true }],
         allowEmpty: true,
         placeholder: "Select DR/OS",
         displayModal: displayModal,
@@ -207,7 +198,7 @@ const FormDetails = () => {
     },
     foreignKey: 'product',
     selectedKey: 'product',
-    selectData: productInventories,
+    selectData: null, //to be provided in the InputForm
     selectFields: [
       {
         title: 'Lot Number',
@@ -267,6 +258,7 @@ const FormDetails = () => {
         return true;
       }
     },
+    emptyText: "Please select a delivery receipt (DR) or an order slip (OS)."
   };
 
   return { formDetails, tableDetails };

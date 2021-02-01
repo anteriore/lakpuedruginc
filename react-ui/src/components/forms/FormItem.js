@@ -307,7 +307,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
                 Select
               </Button>
             }
-            disabled
+            readOnly
             placeholder={item.placeholder}
           />
         </Form.Item>
@@ -325,6 +325,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
               onChange: (e) => {
                 onTableSelect(item.name, e[0]);
               },
+              preserveSelectedRowKeys: false
             }}
             columns={item.columns}
             dataSource={item.dataSource}

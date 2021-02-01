@@ -28,6 +28,7 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
+  const [orderedProducts, setOrderedProducts] = useState([])
   const [toggleValue, setToggleValue] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
@@ -253,6 +254,13 @@ const InputForm = (props) => {
         setToggleValue(values[toggleName]);
       }
     }
+    
+    if(values.hasOwnProperty('depot')){
+      setOrderedProducts([])
+      setTableData(null)
+      form.setFieldsValue({ salesNumber: null, client: null })
+    }
+
   };
 
   const onTableSelect = (key, value) => {
@@ -262,6 +270,7 @@ const InputForm = (props) => {
       const selectedSaleSlip = orderSlips.find(slip => slip.id === value)
       formValues[key] = selectedSaleSlip.number
       formValues['client'] = selectedSaleSlip.salesOrder.client.id
+      setOrderedProducts(selectedSaleSlip.orderedProducts)
     }
     else {
       formValues[key] = value
@@ -287,26 +296,10 @@ const InputForm = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
-                }
-                else {
-                  return (
-                  <FormItem 
-                    item={{
-                      ...item,
-                      readOnly: true
-                    }} 
-                    onFail={onFail} 
-                  />)
-                }
-              }
-
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {orderSlips.length > 0 && formDetails.rs_items.map((item) => {
+            {formDetails.rs_items.map((item) => {
               return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
           </Form>
@@ -358,16 +351,18 @@ const InputForm = (props) => {
               {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
                 // for nested tables
                 <Table
-                  dataSource={formTable.selectData}
+                  dataSource={orderedProducts}
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
                   expandable={{ expandedRowRender }}
+                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
                 />
               ) : (
                 <Table
-                  dataSource={formTable.selectData}
+                  dataSource={orderedProducts}
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
+                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
                 />
               )}
             </Modal>
