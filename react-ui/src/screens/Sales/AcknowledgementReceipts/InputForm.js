@@ -301,6 +301,18 @@ const FormScreen = (props) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
 
+            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) && 
+            formDetails.payment_items.map((item) => {
+              if (item.toggle) {
+                if (item.toggleCondition(toggleValue)) {
+                  return <FormItem item={item} onFail={onFail} />;
+                }
+                return null;
+              }
+
+              return <FormItem item={item} onFail={onFail} />;
+            })}
+
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
@@ -327,6 +339,7 @@ const FormScreen = (props) => {
                 )}
               </Form.List>
             )}
+
           </Form>
           
           <div style={styles.tailLayout}>

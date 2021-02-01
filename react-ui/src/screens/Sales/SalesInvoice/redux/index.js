@@ -21,6 +21,24 @@ export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payl
   }
 });
 
+export const listSalesInvoiceByDepot = createAsyncThunk('listSalesInvoiceByDepot', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+    );
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
 export const createSalesInvoice = createAsyncThunk(
   'createSalesInvoice',
   async (payload, thunkAPI) => {
@@ -87,6 +105,45 @@ const salesInvoiceSlice = createSlice({
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
         'Sales Invoice'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [listSalesInvoiceByDepot.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for sales invoice`,
+      };
+    },
+    [listSalesInvoiceByDepot.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice'
+      );
+
+      return {
+        ...state,
+        salesInvoiceList: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listSalesInvoiceByDepot.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice in the selected Depot'
       );
 
       return {

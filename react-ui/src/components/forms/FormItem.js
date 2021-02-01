@@ -342,8 +342,18 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   }
 
   return (
-    <Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue} hasFeedback={item.hasFeedback}>
-      <Input disabled={item.type === 'readOnly' || item.readOnly} placeholder={item.placeholder} />
+    <Item 
+      label={item.label} 
+      name={item.name} 
+      rules={item.rules} 
+      initialValue={item.initialValue} 
+      hasFeedback={item.hasFeedback}
+    >
+      <Input 
+        disabled={item.type === 'readOnly' || item.readOnly} 
+        placeholder={item.placeholder} 
+        suffix={item.suffix}
+      />
     </Item>
   );
 };

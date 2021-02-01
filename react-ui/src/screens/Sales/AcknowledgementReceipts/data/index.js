@@ -1,7 +1,9 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Typography, message } from 'antd';
+import { Table, Typography, Tooltip, message } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepot } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -58,6 +60,10 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
+  var salesSlips = []
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices)
+
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -87,6 +93,7 @@ const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
+          dispatch(listSalesInvoiceByDepot({ depot: e }));
         },
       },
       {
@@ -98,6 +105,8 @@ const FormDetails = () => {
         render: (client) => `[${client.code}] ${client.name}`,
         rules: [{ required: true }],
       },
+    ],
+    payment_items: [
       {
         label: 'Terms of Payment',
         name: 'terms',
@@ -148,7 +157,6 @@ const FormDetails = () => {
       {
         label: 'Amount Paid',
         name: 'amountPaid',
-        type: 'number',
         initialValue: 0,
         dependencies: ['payments'],
         readOnly: true,
@@ -170,23 +178,27 @@ const FormDetails = () => {
             },
           }),*/
         ],
+        suffix: (
+          <Tooltip title="Automatically Calculated">
+            <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+          </Tooltip>
+        ),
       },
       {
         label: 'Cut Off Date',
         name: 'cutOffDate',
         type: 'date',
-        toggle: true,
-        toggleCondition: (value) => {
-          if (value === 'CHEQUE') {
-            return true;
-          }
-
-          return false;
-        },
         initialValue: null,
         rules: [{ required: true }],
       },
-    ],
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        type: 'textArea',
+        rules: [{ message: 'Please provide a valid remark' }],
+        placeholder: 'Remarks',
+      },
+    ]
   };
 
   const tableDetails = {
@@ -194,7 +206,7 @@ const FormDetails = () => {
     name: 'payments',
     key: 'id',
     rules: [{ required: true }],
-    isVisible: orderSlips.length > 0,
+    isVisible: salesSlips.length > 0,
     fields: [
       {
         label: 'Type',
@@ -249,12 +261,16 @@ const FormDetails = () => {
     summary: (data) => {
       let totalAppliedAmount = 0;
       let totalSIAmount = 0;
-      data.forEach(({ appliedAmount }) => {
-        if (data.type === 'DR_SI') {
+      let totalOSAmount = 0;
+      data.forEach(({ appliedAmount, type }) => {
+        if (type === 'DR_SI') {
           totalSIAmount += appliedAmount;
-        } else {
-          totalAppliedAmount += appliedAmount;
+        } 
+        else if (type === 'OS'){
+          totalOSAmount += appliedAmount;
         }
+        
+        totalAppliedAmount += appliedAmount;
       });
 
       return (
@@ -262,6 +278,10 @@ const FormDetails = () => {
           <Table.Summary.Cell>Total Applied Amount</Table.Summary.Cell>
           <Table.Summary.Cell>
             <Text>{totalAppliedAmount}</Text>
+          </Table.Summary.Cell>
+          <Table.Summary.Cell>Total OS Amount</Table.Summary.Cell>
+          <Table.Summary.Cell>
+            <Text>{totalOSAmount}</Text>
           </Table.Summary.Cell>
           <Table.Summary.Cell>Total SI Amount</Table.Summary.Cell>
           <Table.Summary.Cell>
@@ -272,7 +292,7 @@ const FormDetails = () => {
     },
     foreignKey: 'number',
     selectedKey: 'number',
-    selectData: orderSlips,
+    selectData: salesSlips,
     selectFields: [
       {
         title: 'Type',

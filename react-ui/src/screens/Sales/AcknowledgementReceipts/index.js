@@ -12,7 +12,8 @@ import InputForm from './InputForm';
 import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
+import { clearData as clearOrderSlips } from '../OrderSlips/redux';
+import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
 
 const { Title } = Typography;
 
@@ -43,6 +44,7 @@ const AcknowledgementReceipts = (props) => {
       dispatch(clearClient());
       dispatch(clearDepot());
       dispatch(clearOrderSlips());
+      dispatch(clearSalesInvoice());
     };
   }, [dispatch, company]);
 
@@ -51,6 +53,8 @@ const AcknowledgementReceipts = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
+    dispatch(clearOrderSlips());
+    dispatch(clearSalesInvoice());
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
         history.push(`${path}/new`);
