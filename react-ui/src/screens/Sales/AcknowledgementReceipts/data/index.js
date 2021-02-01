@@ -149,11 +149,12 @@ const FormDetails = () => {
         label: 'Amount Paid',
         name: 'amountPaid',
         type: 'number',
-        min: 0,
+        initialValue: 0,
         dependencies: ['payments'],
+        readOnly: true,
         rules: [
           { required: true },
-          ({ getFieldValue }) => ({
+          /*({ getFieldValue }) => ({
             validator(rule, value) {
               const payments = getFieldValue('payments')
               var sumPayments = 0
@@ -167,9 +168,8 @@ const FormDetails = () => {
               }
               return Promise.reject('The sum for the payments must be equal to the amount paid');
             },
-          }),
+          }),*/
         ],
-        hasFeedback: true,
       },
       {
         label: 'Cut Off Date',
@@ -211,12 +211,27 @@ const FormDetails = () => {
       {
         label: 'Remaining Balance',
         name: 'remainingBalance',
+        type: 'readOnly',
       },
       {
         label: 'Payment',
         name: 'appliedAmount',
         type: 'number',
-        rules: [{ required: true }],
+        rules: [{ required: true },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              console.log(rule)
+              const index = parseInt(rule.field.split('.')[1])
+              const payments = getFieldValue('payments')
+              console.log(payments[index])
+              
+              if (payments[index].remainingBalance >= value) {
+                return Promise.resolve();
+              }
+              return Promise.reject();
+            },
+          }),
+        ],
         min: 0,
       },
       {
