@@ -13,6 +13,7 @@ const TableDisplay = (props) => {
     handleUpdate,
     data,
     deleteEnabled,
+    updateEnabled,
     pagination,
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
@@ -55,30 +56,32 @@ const TableDisplay = (props) => {
         render: (row) => {
           return (
             <div style={styles.crudColumn}>
-              <Button
-                icon={<EditOutlined />}
-                type="text"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleUpdate(row);
-                }}
-              >
-                Edit
-              </Button>
-              <Popconfirm
-                title="Would you like to delete this item?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={(e) => {
-                  e.stopPropagation();
-                  handleDelete(row);
-                }}
-                onCancel={(e) => {
-                  e.stopPropagation();
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                {deleteEnabled ? (
+              {(typeof updateEnabled === 'undefined' || updateEnabled) && (
+                <Button
+                  icon={<EditOutlined />}
+                  type="text"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpdate(row);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+              {(deleteEnabled || typeof deleteEnabled === 'undefined') && (
+                <Popconfirm
+                  title="Would you like to delete this item?"
+                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                  onConfirm={(e) => {
+                    e.stopPropagation();
+                    handleDelete(row);
+                  }}
+                  onCancel={(e) => {
+                    e.stopPropagation();
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
                   <Button
                     icon={<DeleteOutlined />}
                     type="text"
@@ -88,17 +91,22 @@ const TableDisplay = (props) => {
                   >
                     Delete
                   </Button>
-                ) : (
-                  ''
-                )}
-              </Popconfirm>
+                </Popconfirm>
+              )}
             </div>
           );
         },
       },
     ];
 
-    filteredColumn = filteredColumn.concat(editpart);
+    if (
+      typeof updateEnabled === 'undefined' ||
+      updateEnabled ||
+      deleteEnabled ||
+      typeof deleteEnabled === 'undefined'
+    ) {
+      filteredColumn = filteredColumn.concat(editpart);
+    }
 
     return filteredColumn;
   };

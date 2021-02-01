@@ -16,8 +16,8 @@ import { LockOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { addUser } from '../Users/redux';
-import { getUser } from '../../redux/auth';
+import { updateUser } from '../Users/redux';
+import { getUser, changePassword, resetErrorMsg } from '../../redux/auth';
 import { listCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import Container from '../../components/container';
@@ -36,6 +36,7 @@ const Account = (props) => {
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const companies = useSelector((state) => state.company.companyList);
   const user = useSelector((state) => state.auth.user);
+  const auth = useSelector((state) => state.auth);
 
   const [displayForm, setDisplayForm] = useState(false);
 
@@ -58,6 +59,17 @@ const Account = (props) => {
       dispatch(clearDepartment());
     };
   }, [dispatch, user.company.id]);
+
+  useEffect(() => {
+    console.log('Status:', auth.message);
+    if (auth.message !== null) {
+      if (auth.status === 'failed') {
+        message.error(auth.message);
+      } else if (auth.status === 'succeeded') {
+        message.success(auth.message);
+      }
+    }
+  }, [auth.message]);
 
   useEffect(() => {
     if (!loading) {
@@ -84,11 +96,11 @@ const Account = (props) => {
           {
             required: true,
             message:
-              'Please provide a valid password. Your password must be at least 8 characters long.',
+              'Please provide a valid password. The password must be at least 8 characters long.',
             min: 8,
           },
         ],
-        placeholder: 'New Password',
+        placeholder: 'Password',
         writeOnly: true,
       },
       {
@@ -230,8 +242,10 @@ const Account = (props) => {
       department: {
         id: data.department,
       },
+      depots: null, // the user does not normally have access to the depots
+      permissions: auth.permissions,
     };
-    dispatch(addUser(payload)).then((response) => {
+    dispatch(updateUser(payload)).then((response) => {
       if (response.payload.status === 200) {
         dispatch(getUser()).then(() => {
           history.goBack();
@@ -248,9 +262,18 @@ const Account = (props) => {
   };
 
   const onSubmitPassword = (data) => {
-    console.log('Password update request');
-    console.log({ password: data.password });
     setDisplayForm(false);
+    const payload = {
+      id: user.id,
+      password: data.password,
+    };
+    dispatch(changePassword(payload)).then((response) => {
+      dispatch(resetErrorMsg());
+    });
+  };
+
+  const onFail = () => {
+    history.push(`/`);
   };
 
   return (
@@ -288,7 +311,7 @@ const Account = (props) => {
               onFinishFailed={onFinishFailed}
             >
               {formDetails.form_items.map((item) => (
-                <FormItem item={item} />
+                <FormItem item={item} onFail={onFail} />
               ))}
 
               <div style={styles.tailLayout}>
@@ -316,6 +339,7 @@ const Account = (props) => {
             setDisplayForm(false);
           }}
           formDetails={formPassword}
+          formMode="add"
         />
       </Row>
     </Container>
