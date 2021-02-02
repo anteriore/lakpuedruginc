@@ -61,13 +61,12 @@ const Account = (props) => {
   }, [dispatch, user.company.id]);
 
   useEffect(() => {
-    console.log("Status:", auth.message)
-    if(auth.message !== null){
-      if(auth.status === 'failed'){
-        message.error(auth.message)
-      }
-      else if(auth.status === 'succeeded'){
-        message.success(auth.message)
+    console.log('Status:', auth.message);
+    if (auth.message !== null) {
+      if (auth.status === 'failed') {
+        message.error(auth.message);
+      } else if (auth.status === 'succeeded') {
+        message.success(auth.message);
       }
     }
   }, [auth.message, auth.status]);
@@ -243,8 +242,8 @@ const Account = (props) => {
       department: {
         id: data.department,
       },
-      depots: null, //the user does not normally have access to the depots
-      permissions: auth.permissions
+      depots: null, // the user does not normally have access to the depots
+      permissions: auth.permissions,
     };
     dispatch(updateUser(payload)).then((response) => {
       if (response.payload.status === 200) {
@@ -264,15 +263,15 @@ const Account = (props) => {
 
   const onSubmitPassword = (data) => {
     setDisplayForm(false);
-    var payload = {
+    const payload = {
       id: user.id,
-      password: data.password
-    }
+      password: data.password,
+    };
     dispatch(changePassword(payload)).then((response) => {
-      dispatch(resetErrorMsg())
-    })
+      dispatch(resetErrorMsg());
+    });
   };
-  
+
   const onFail = () => {
     history.push(`/`);
   };
@@ -340,7 +339,7 @@ const Account = (props) => {
             setDisplayForm(false);
           }}
           formDetails={formPassword}
-          formMode={"add"}
+          formMode="add"
         />
       </Row>
     </Container>

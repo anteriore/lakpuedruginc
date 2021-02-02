@@ -8,12 +8,13 @@ import FormDetails, { columns } from './data';
 import { unwrapResult } from '@reduxjs/toolkit'
 
 import TableDisplay from '../../../components/TableDisplay';
-import FormScreen from '../../../components/forms/FormScreen';
+import InputForm from './InputForm';
 
 import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
+import { clearData as clearOrderSlips } from '../OrderSlips/redux';
+import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
 
 import {
   NO_DATA_FOUND,
@@ -61,6 +62,7 @@ const AcknowledgementReceipts = (props) => {
       dispatch(clearClient());
       dispatch(clearDepot());
       dispatch(clearOrderSlips());
+      dispatch(clearSalesInvoice());
     };
   }, [dispatch, company]);
 
@@ -96,9 +98,9 @@ const AcknowledgementReceipts = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listClient(payload))
-    .then(unwrapResult)
-    .then(() => {
+    dispatch(clearOrderSlips());
+    dispatch(clearSalesInvoice());
+    dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
         history.push(`${path}/new`);
         setLoading(false);
@@ -221,7 +223,7 @@ const AcknowledgementReceipts = (props) => {
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -233,7 +235,7 @@ const AcknowledgementReceipts = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -273,6 +275,8 @@ const AcknowledgementReceipts = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={false}
+                deleteEnabled={false}
               />
             )}
           </Col>
