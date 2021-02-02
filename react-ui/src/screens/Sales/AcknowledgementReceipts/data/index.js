@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
-import { listSalesInvoiceByDepot } from '../../SalesInvoice/redux';
+import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -92,6 +92,8 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
+          dispatch(clearOS())
+          dispatch(clearSI())
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
           dispatch(listSalesInvoiceByDepot({ depot: e }));
         },

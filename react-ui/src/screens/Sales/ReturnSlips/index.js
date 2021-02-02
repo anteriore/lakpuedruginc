@@ -13,6 +13,7 @@ import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './re
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
+import { clearData as clearSI } from '../SalesInvoice/redux';
 
 const { Title, Text } = Typography;
 
@@ -41,6 +42,8 @@ const ReturnSlips = (props) => {
       dispatch(clearData());
       dispatch(clearClient());
       dispatch(clearDepot());
+      dispatch(clearOS());
+      dispatch(clearSI());
     };
   }, [dispatch, company]);
 

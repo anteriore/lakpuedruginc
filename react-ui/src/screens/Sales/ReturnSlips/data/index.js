@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, message } from 'antd';
 import moment from 'moment';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -49,7 +50,10 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
   const [displayModal, setDisplayModal] = useState(false);
+  var salesSlips = []
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices)
 
   const formDetails = {
     form_name: 'return_slip',
@@ -77,7 +81,9 @@ const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearOS())
+          dispatch(clearSI())
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
+          dispatch(listSalesInvoiceByDepot({ depot: e }));
         },
       },
       {
@@ -101,7 +107,7 @@ const FormDetails = () => {
         placeholder: "Select DR/OS",
         displayModal: displayModal,
         setDisplayModal: setDisplayModal,
-        dataSource: orderSlips,
+        dataSource: salesSlips,
         columns: [
           {
             title: 'DR/OS Number',
@@ -279,7 +285,7 @@ const FormDetails = () => {
       var processedData = { 
         ...data,
         product: data.product,
-        unitPrice: data.product.unitPrice,
+        unitPrice: data.unitPrice,
         key: data.product.id
       }
       delete processedData.id
