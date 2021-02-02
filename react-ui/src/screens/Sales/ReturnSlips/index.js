@@ -8,7 +8,7 @@ import FormDetails, { columns, reportColumns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
-import Report from './Report';
+import Report from '../../../components/Report';
 
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';

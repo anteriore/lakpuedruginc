@@ -9,7 +9,6 @@ const { Title } = Typography;
 const Report = (props) => {
     const { title, company, data, columns, dateRange } = props
     const companies = useSelector((state) => state.company.companyList);
-    console.log("props: ", props)
 
     const renderTableColumns = (inputColumns) => {
         const tableColumns = []
