@@ -49,7 +49,6 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
-  const productInventories = useSelector((state) => state.maintenance.productInventory.list);
   const [displayModal, setDisplayModal] = useState(false);
 
   const formDetails = {
@@ -133,6 +132,13 @@ const FormDetails = () => {
           }
         },
         emptyText: 'No data retrieved for sales slips in the selected depot. Please select another depot.'
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        type: 'textArea',
+        rules: [{ message: 'Please provide a valid remark' }],
+        placeholder: 'Remarks',
       },
     ]
   };

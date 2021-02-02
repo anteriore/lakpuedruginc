@@ -13,12 +13,11 @@ import {
   Radio,
   Modal,
   Table,
-  Empty,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
 const { Item } = Form;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 

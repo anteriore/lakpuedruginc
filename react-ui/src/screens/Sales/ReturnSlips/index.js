@@ -12,7 +12,6 @@ import InputForm from './InputForm';
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
 
 const { Title, Text } = Typography;
@@ -32,7 +31,6 @@ const ReturnSlips = (props) => {
   const { formDetails, tableDetails } = FormDetails();
 
   const listData = useSelector((state) => state.sales.returnSlips.list);
-  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     dispatch(listReturnSlip({ company, message })).then(() => {
@@ -42,6 +40,7 @@ const ReturnSlips = (props) => {
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearClient());
+      dispatch(clearDepot());
     };
   }, [dispatch, company]);
 
@@ -53,10 +52,8 @@ const ReturnSlips = (props) => {
     dispatch(clearOS())
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listProductInventory({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
-        })
+        history.push(`${path}/new`);
+        setLoading(false);
       })
     });
   };
@@ -76,10 +73,8 @@ const ReturnSlips = (props) => {
   dispatch(listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })).then(() => {
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listProductInventory({ company, message })).then(() => {
           history.push(`${path}/${data.id}`);
           setLoading(false);
-        })
       })
     })
   });
