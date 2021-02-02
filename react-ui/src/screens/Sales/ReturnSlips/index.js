@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty, Space, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import FormDetails, { columns } from './data';
+import FormDetails, { columns, reportColumns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
+import Report from './Report';
 
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
@@ -104,6 +105,16 @@ const ReturnSlips = (props) => {
     setDisplayModal(true);
   };
 
+  const handleReport = () => {
+    setFormTitle('Return Slip Summary Report');
+    setFormMode('report');
+    setFormData(listData);
+    console.log(formData)
+    setLoading(true);
+    history.push(`${path}/report`);
+    setLoading(false);
+  }
+
   const onSubmit = (data) => {
     //TODO: Data Validation
     const products = [];
@@ -183,7 +194,7 @@ const ReturnSlips = (props) => {
 
   return (
     <Switch>
-      <Route path={`${path}/new`}>
+      <Route exact path={`${path}/new`}>
         <InputForm
           title={formTitle}
           onSubmit={onSubmit}
@@ -193,6 +204,14 @@ const ReturnSlips = (props) => {
           }}
           formDetails={formDetails}
           formTable={tableDetails}
+        />
+      </Route>
+      <Route exact path={`${path}/report`}>
+        <Report
+          title={formTitle}
+          data={formData}
+          columns={reportColumns}
+          company={company}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -226,6 +245,16 @@ const ReturnSlips = (props) => {
               loading={loading}
             >
               Add
+            </Button>
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<FileTextOutlined />}
+              onClick={() => {
+                handleReport()
+              }}
+              loading={loading}
+            >
+              View Report
             </Button>
             {loading ? (
               <Skeleton />

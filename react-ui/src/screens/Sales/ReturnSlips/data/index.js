@@ -45,6 +45,44 @@ export const columns = [
   },
 ];
 
+export const reportColumns = [
+  {
+    title: 'Depot',
+    dataIndex: 'depot',
+    key: 'depot',
+    datatype: 'object',
+  },
+  {
+    title: 'Return Slip Number',
+    dataIndex: 'number',
+    key: 'number',
+    datatype: 'string',
+  },
+  {
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
+    datatype: 'date',
+  },
+  {
+    title: 'Sales Number',
+    dataIndex: 'salesNumber',
+    key: 'salesNumber',
+    datatype: 'string',
+  },
+  {
+    title: 'Client',
+    dataIndex: 'client',
+    key: 'client',
+    datatype: 'object',
+  },
+  {
+    title: 'Amount',
+    dataIndex: 'totalAmount',
+    key: 'totalAmount',
+  },
+];
+
 const FormDetails = () => {
   const dispatch = useDispatch();
   const depots = useSelector((state) => state.maintenance.depots.list);
