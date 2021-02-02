@@ -20,7 +20,6 @@ import {
   NO_DATA_FOUND,
   NO_DATA_FOUND_DESC,
 } from '../../../data/constants/response-message.constant';
-import { fnCallback } from '../../../helpers/response-message.helper.js';
 
 const { Title } = Typography;
 
@@ -42,20 +41,9 @@ const AcknowledgementReceipts = (props) => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    const payload = {
-      company
-    };
-    dispatch(listAReceipt(payload))
-    .then(unwrapResult)
-    .then((response) => {
-      const onSuccess = () => {
-        setLoading(false)
-      }
-      const useModal = false
-      const returnURL = '/sales'
-      fnCallback(response, history, useModal, onSuccess, returnURL)
-    })
-    .catch(() => {})
+    dispatch(listAReceipt({ company, message })).then(() => {
+      setLoading(false);
+    });
 
     return function cleanup() {
       dispatch(clearData());

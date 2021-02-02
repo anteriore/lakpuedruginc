@@ -108,11 +108,13 @@ const FormDetails = () => {
         }
       },
     ],
-    ar_items: [
+    //customized attributes to accomodate this form
+    ar_items: [ 
       {
         label: 'Acknowledgement Receipt',
         name: 'acknowledgementReceipt',
         type: 'selectTable',
+        toString: (object) => object.number,
         rules: [{ required: true }],
         allowEmpty: true,
         placeholder: "Select Acknowledgement Receipt",
@@ -155,24 +157,28 @@ const FormDetails = () => {
         label: 'Customer Code',
         name: 'customerCode',
         placeholder: "Customer Code",
+        toString: (object) => object.client.code,
         readOnly: true
       },
       {
         label: 'TIN',
         name: 'tin',
         placeholder: "TIN",
+        toString: (object) => object.client.tin,
         readOnly: true
       },
       {
         label: 'Received From',
         name: 'receivedFrom',
         placeholder: "Received From",
+        toString: (object) => object.client.name,
         readOnly: true
       },
       {
         label: 'Business Address',
         name: 'businessAddress',
         placeholder: "Business Address",
+        toString: (object) => object.client.businessAddress,
         readOnly: true
       },
     ]
@@ -211,7 +217,17 @@ const FormDetails = () => {
         dataIndex: 'appliedAmount',
         key: 'appliedAmount',
       },
-    ]
+    ],
+    getValues: (values) => {
+      const payments = [];
+      values.payments.forEach((payment) => {
+        payments.push({
+          ...payment.reference,
+          appliedAmount: payment.appliedAmount,
+        });
+      });
+      return payments;
+    },
   }
 
   return { formDetails, tableDetails };

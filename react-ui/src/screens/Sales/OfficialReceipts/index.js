@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, message } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -12,7 +12,7 @@ import InputForm from './InputForm';
 import { listOReceipt, addOReceipt, deleteOReceipt, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const OfficialReceipts = (props) => {
   const dispatch = useDispatch();
@@ -268,7 +268,21 @@ const OfficialReceipts = (props) => {
 
                     return null;
                   })}
+                  
+                  {formDetails.ar_items.map((item) => {
+                    return (
+                      <Descriptions.Item label={item.label}>
+                      {item.toString(selectedAR['acknowledgementReceipt'])}
+                      </Descriptions.Item>
+                    );
+                  })}
                 </Descriptions>
+                <Text>{'Payment Details:'}</Text>
+                <Table
+                  dataSource={tableDetails.getValues(selectedAR.acknowledgementReceipt)}
+                  columns={tableDetails.columns}
+                  pagination={false}
+                />
               </>
             )}
           </Modal>
