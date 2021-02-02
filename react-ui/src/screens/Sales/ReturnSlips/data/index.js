@@ -151,18 +151,43 @@ const FormDetails = () => {
         },
       },
       {
+        label: 'Quantity',
+        name: 'quantity',
+        type: 'readOnly',
+        render: (object) => {
+          return object.goodQuantity + object.badQuantity
+        },
+      },
+      {
         label: 'Good Quantity',
         name: 'goodQuantity',
-        type: 'number',
-        rules: [{ required: true }],
-        min: 0,
-        initialValue: 0
+        render: (object) => {
+          if(typeof object.quantity !== 'undefined' && object.quantity !== null){
+            return object.quantity - object.badQuantity || object.quantity;
+          }
+          else {
+            return object.goodQuantity
+          }
+        },
       },
       {
         label: 'Bad Quantity',
         name: 'badQuantity',
         type: 'number',
-        rules: [{ required: true }],
+        rules: [
+          { required: true },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              const index = parseInt(rule.field.split('.')[1])
+              const products = getFieldValue('returnSlipProducts')
+              
+              if (products[index].quantity >= value) {
+                return Promise.resolve();
+              }
+              return Promise.reject();
+            },
+          }),
+        ],
         min: 0,
         initialValue: 0
       },
@@ -177,7 +202,12 @@ const FormDetails = () => {
         label: 'Amount',
         name: 'amount',
         render: (object) => {
-          return object.goodQuantity * object.unitPrice || 0;
+          if(typeof object.quantity !== 'undefined' && object.quantity !== null){
+            return (object.quantity - object.badQuantity) * object.unitPrice || object.quantity * object.unitPrice;
+          }
+          else {
+            return object.goodQuantity * object.unitPrice
+          }
         },
       },
     ],

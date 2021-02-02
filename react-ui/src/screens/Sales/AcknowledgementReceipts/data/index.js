@@ -229,13 +229,12 @@ const FormDetails = () => {
         label: 'Payment',
         name: 'appliedAmount',
         type: 'number',
-        rules: [{ required: true },
+        rules: [
+          { required: true },
           ({ getFieldValue }) => ({
             validator(rule, value) {
-              console.log(rule)
               const index = parseInt(rule.field.split('.')[1])
               const payments = getFieldValue('payments')
-              console.log(payments[index])
               
               if (payments[index].remainingBalance >= value) {
                 return Promise.resolve();

@@ -323,7 +323,9 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
           <Table
             rowSelection={{
               type: 'radio',
+              selectedRowKeys: item.selectedData,
               onChange: (e) => {
+                item.setSelectedData(e)
                 onTableSelect(item.name, e[0]);
               },
               preserveSelectedRowKeys: false

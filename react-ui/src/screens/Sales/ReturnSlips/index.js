@@ -114,7 +114,7 @@ const ReturnSlips = (props) => {
         product: {
           id: returnSlipProduct.product.id
         },
-        goodQuantity: returnSlipProduct.goodQuantity || 0,
+        goodQuantity: returnSlipProduct.quantity - returnSlipProduct.badQuantity || returnSlipProduct.quantity,
         badQuantity: returnSlipProduct.badQuantity || 0,
         unitPrice: returnSlipProduct.unitPrice
       });
