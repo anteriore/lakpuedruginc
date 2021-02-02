@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, message } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -9,15 +9,15 @@ import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
 
-import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
+import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearOrderSlips } from '../OrderSlips/redux';
-import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
+import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
+import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-const AcknowledgementReceipts = (props) => {
+const ReturnSlips = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -28,77 +28,73 @@ const AcknowledgementReceipts = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-  const [selectedAR, setSelectedAR] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const listData = useSelector((state) => state.sales.acknowledgementReceipts.list);
+  const listData = useSelector((state) => state.sales.returnSlips.list);
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(listAReceipt({ company, message })).then(() => {
+    dispatch(listReturnSlip({ company, message })).then(() => {
       setLoading(false);
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearClient());
-      dispatch(clearDepot());
-      dispatch(clearOrderSlips());
-      dispatch(clearSalesInvoice());
     };
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Create Acknowledgement Receipt');
+    setFormTitle('Create Return Slip');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(clearOrderSlips());
-    dispatch(clearSalesInvoice());
+    dispatch(clearOS())
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
-        history.push(`${path}/new`);
-        setLoading(false);
-      });
+        dispatch(listProductInventory({ company, message })).then(() => {
+          history.push(`${path}/new`);
+          setLoading(false);
+        })
+      })
     });
   };
 
   const handleUpdate = (data) => {
-    message.error('Unable to perform action.');
-    /*
-    setFormTitle('Edit Acknowledgement Receipt');
-    setFormMode('edit');
-    setLoading(true);
-    const itemData = listData.find((item) => item.id === data.id);
-    const formData = {
-      ...itemData,
-      date: moment(new Date(data.date)) || moment(),
-      chequeDate: data.cutOffDate !== null ? moment(new Date(data.chequeDate)) : null,
-      cutOffDate: data.cutOffDate !== null ? moment(new Date(data.cutOffDate)) : null,
-      client: itemData.client !== null ? itemData.client.id : null,
-      depot: itemData.depot !== null ? itemData.depot.id : null,
-    };
-    setFormData(formData);
+  setFormTitle('Update Return Slip');
+  setFormMode('edit');
+  const itemData = listData.find((item) => item.id === data.id);
+  const formData = {
+    ...itemData,
+    date: moment(new Date(data.date)) || moment(),
+    client: itemData.client !== null ? itemData.client.id : null,
+    depot: itemData.depot !== null ? itemData.depot.id : null,
+  };
+  setFormData(formData);
+  setLoading(true);
+  dispatch(listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })).then(() => {
     dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          dispatch(listOrderSlips({ company, message })).then(() => {
-            history.push(`${path}/${data.id}`);
-            setLoading(false);
-          })
+      dispatch(listDepot({ company, message })).then(() => {
+        dispatch(listProductInventory({ company, message })).then(() => {
+          history.push(`${path}/${data.id}`);
+          setLoading(false);
         })
-    });
-    */
+      })
+    })
+  });
   };
 
   const handleDelete = (data) => {
-    dispatch(deleteAReceipt(data.id)).then((response) => {
+    dispatch(deleteReturnSlip(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listAReceipt({ company, message })).then(() => {
+        dispatch(listReturnSlip({ company, message })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
-      } else {
+      }
+      else {
         setLoading(false);
         message.error(`Unable to delete ${data.number}`);
       }
@@ -106,21 +102,23 @@ const AcknowledgementReceipts = (props) => {
   };
 
   const handleRetrieve = (data) => {
-    setSelectedAR(data);
+    setSelectedData(data);
     setDisplayModal(true);
   };
 
   const onSubmit = (data) => {
-    const payments = [];
-    data.payments.forEach((payment) => {
-      payments.push({
-        reference: {
-          ...payment,
+    //TODO: Data Validation
+    const products = [];
+    data.returnSlipProducts.forEach((returnSlipProduct) => {
+      products.push({
+        product: {
+          id: returnSlipProduct.product.id
         },
-        appliedAmount: payment.appliedAmount,
+        goodQuantity: returnSlipProduct.goodQuantity || 0,
+        badQuantity: returnSlipProduct.badQuantity || 0,
+        unitPrice: returnSlipProduct.unitPrice
       });
     });
-
     const payload = {
       ...data,
       company: {
@@ -132,17 +130,14 @@ const AcknowledgementReceipts = (props) => {
       client: {
         id: data.client,
       },
-      preparedBy: {
-        id: user.id,
-      },
-      payments,
+      returnSlipProducts: products
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addAReceipt(payload)).then((response) => {
+      dispatch(addReturnSlip(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
+          dispatch(listReturnSlip({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.number}`);
@@ -153,10 +148,10 @@ const AcknowledgementReceipts = (props) => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addAReceipt(payload)).then((response) => {
+      dispatch(addReturnSlip(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
+          dispatch(listReturnSlip({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${response.payload.data.number}`);
@@ -164,12 +159,28 @@ const AcknowledgementReceipts = (props) => {
         } else {
           setLoading(false);
           message.error(
-            `Unable to add Acknowledgement Receipt. Please double check the provided information.`
+            `Unable to add Return Slip. Please double check the provided information.`
           );
         }
       });
     }
     setFormData(null);
+  };
+
+  const renderTableColumns = (fields) => {
+    const columns = [];
+    fields.forEach((field) => {
+        if (typeof field.render === 'undefined' || field.render === null) {
+          field.render = (object) => object[field.name];
+        }
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => field.render(object),
+        });
+    });
+
+    return columns;
   };
 
   return (
@@ -227,8 +238,6 @@ const AcknowledgementReceipts = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={false}
-                deleteEnabled={false}
               />
             )}
           </Col>
@@ -236,32 +245,32 @@ const AcknowledgementReceipts = (props) => {
             visible={displayModal}
             onOk={() => {
               setDisplayModal(false);
-              setSelectedAR(null);
+              setSelectedData(null);
             }}
             onCancel={() => {
               setDisplayModal(false);
-              setSelectedAR(null);
+              setSelectedData(null);
             }}
             width={1000}
             cancelButtonProps={{ style: { display: 'none' } }}
           >
-            {selectedAR === null ? (
+            {selectedData === null ? (
               <Skeleton />
             ) : (
-              <>
+              <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <Descriptions
                   bordered
-                  title={`${selectedAR.number} Details`}
+                  title={`Return Slip ${selectedData.number}`}
                   size="default"
                   layout="vertical"
                 >
                   {formDetails.form_items.map((item) => {
                     if (!item.writeOnly) {
-                      if (selectedAR[item.name] === null && item.toggle) {
+                      if (selectedData[item.name] === null && item.toggle) {
                         return null;
                       }
                       if (item.type === 'select' || item.type === 'selectSearch') {
-                        const itemData = selectedAR[item.name];
+                        const itemData = selectedData[item.name];
                         return (
                           <Descriptions.Item label={item.label}>
                             {itemData[item.selectName]}
@@ -271,7 +280,7 @@ const AcknowledgementReceipts = (props) => {
                       if (item.type === 'date') {
                         return (
                           <Descriptions.Item label={item.label}>
-                            {moment(new Date(selectedAR[item.name])).format('DD/MM/YYYY')}
+                            {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
                           </Descriptions.Item>
                         );
                       }
@@ -281,63 +290,59 @@ const AcknowledgementReceipts = (props) => {
 
                       return (
                         <Descriptions.Item label={item.label}>
-                          {selectedAR[item.name]}
+                          {selectedData[item.name]}
                         </Descriptions.Item>
                       );
                     }
 
                     return null;
                   })}
-                </Descriptions>
-                <Title
-                  level={5}
-                  style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
-                >
-                  Payment Details:
-                </Title>
-                {selectedAR[tableDetails.name].map((item) => {
-                  return (
-                    <Descriptions title={`${item.reference.number}`} size="default">
-                      {tableDetails.fields.map((field) => {
-                        if (field.type === 'hidden' || field.type === 'hiddenNumber') {
-                          return null;
-                        }
-                        if (typeof field.render === 'function') {
-                          return (
-                            <Descriptions.Item label={field.label}>
-                              {field.render(item.reference)}
-                            </Descriptions.Item>
-                          );
-                        }
-                        if (field.type === 'select') {
-                          if (typeof field.selectName === 'undefined') {
-                            field.selectName = 'name';
-                          }
-                          const fieldData = item.reference[field.name];
-                          return (
-                            <Descriptions.Item label={field.label}>
-                              {fieldData[field.selectName]}
-                            </Descriptions.Item>
-                          );
-                        }
-                        if (field.name === 'appliedAmount') {
-                          return (
-                            <Descriptions.Item label={field.label}>
-                              {item.appliedAmount}
-                            </Descriptions.Item>
-                          );
-                        }
-
+                  {formDetails.rs_items.map((item) => {
+                    if (!item.writeOnly) {
+                      if (selectedData[item.name] === null && item.toggle) {
+                        return null;
+                      }
+                      else if (item.type === 'select' || item.type === 'selectSearch') {
+                        const itemData = selectedData[item.name];
                         return (
-                          <Descriptions.Item label={field.label}>
-                            {item.reference[field.name]}
+                          <Descriptions.Item label={item.label}>
+                            {itemData[item.selectName]}
                           </Descriptions.Item>
                         );
-                      })}
-                    </Descriptions>
-                  );
-                })}
-              </>
+                      }
+                      else if (item.type === 'date') {
+                        return (
+                          <Descriptions.Item label={item.label}>
+                            {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
+                          </Descriptions.Item>
+                        );
+                      }
+                      else if (item.type === 'list') {
+                        return null;
+                      }
+                      else {
+                        return (
+                          <Descriptions.Item label={item.label}>
+                            {selectedData[item.name]}
+                          </Descriptions.Item>
+                        );
+                      }
+
+                    }
+
+                    return null;
+                  })}
+                </Descriptions>
+                <Text>{'Return Slip Items: '}</Text>
+                <Table
+                  dataSource={selectedData[tableDetails.name] !== null && typeof selectedData[tableDetails.name] !== 'undefined' ? 
+                    selectedData[tableDetails.name] : []
+                  }
+                  columns={renderTableColumns(tableDetails.fields)}
+                  pagination={false}
+                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                />
+              </Space>
             )}
           </Modal>
         </Row>
@@ -346,4 +351,4 @@ const AcknowledgementReceipts = (props) => {
   );
 };
 
-export default AcknowledgementReceipts;
+export default ReturnSlips;

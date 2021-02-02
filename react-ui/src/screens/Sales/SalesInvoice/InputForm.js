@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Layout, Checkbox } from 'antd';
-import _ from 'lodash';
+import { Row, Col, Typography, Form, Skeleton, Table, Checkbox, Space, Button } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import Layout from 'antd/lib/layout/layout';
+import _ from 'lodash';
 import { useSelector } from 'react-redux';
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
-import { formDetails, salesOrderHeader, salesInfoHeader, initValueForm } from './data';
-import { fromatInitForm, updateList } from '../../../helpers/general-helper';
+import { formDetails } from './data';
 import FormItem from '../../../components/forms/FormItem';
-
-import { formatSOList, formatLotProducts, formatOrderedProducts } from './helpers';
+import { updateList } from '../../../helpers/general-helper';
+import { formatLotProducts, formatOrderedProducts, formatSOList } from '../OrderSlips/helpers';
+import { salesInfoHeader, salesOrderHeader } from '../OrderSlips/data';
 
 const { Title } = Typography;
 
@@ -16,19 +17,19 @@ const InputForm = (props) => {
   const { title, onSubmit } = props;
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { id } = useParams();
+  const [form] = useForm();
+
   const [contentLoading, setContentLoading] = useState(true);
-  const [showSalesSection, setShowSalesSection] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [selectedSales, setSelectedSales] = useState(null);
+  const [showSalesSection, setShowSalesSection] = useState(false);
   const [selectedLot, setSelectedLot] = useState([]);
-  const [orderedProducts, setOrderedProducts] = useState([]);
-  const { user } = useSelector((state) => state.auth);
+  const [salesInvoiceProducts, setSalesInvoiceProducts] = useState([]);
+
   const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
-  const { orderSlipsList } = useSelector((state) => state.sales.orderSlips);
-  const [form] = useForm();
+  const { user } = useSelector((state) => state.auth);
 
   const handleSalesChange = useCallback(
     (value) => {
@@ -46,7 +47,7 @@ const InputForm = (props) => {
       setSelectedSales(null);
       const selectedSalesList = _.filter(salesOrderList, (o) => {
         return o.depot.id === value && _.toLower(o.status) !== 'pending';
-      }).filter((o) => _.toLower(o.type) === 'os');
+      }).filter((o) => _.toLower(o.type) === 'dr_si');
 
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
@@ -62,41 +63,8 @@ const InputForm = (props) => {
         setShowSalesSection(false);
       }
     },
-    [form, salesOrderList, tempFormDetails, handleSalesChange]
+    [form, handleSalesChange, salesOrderList, tempFormDetails]
   );
-
-  // useEffect for Edit Mode
-  useEffect(() => {
-    try {
-      if (typeof id !== 'undefined') {
-        const loadedOS = _.find(orderSlipsList, (o) => o.id === parseInt(id, 10));
-        form.setFieldsValue(fromatInitForm(loadedOS, initValueForm));
-        setSelectedSales(loadedOS.salesOrder);
-
-        const selectedSalesList = _.filter(salesOrderList, (o) => {
-          return o.depot.id === loadedOS.depot.id && _.toLower(o.status) !== 'pending';
-        }).filter((o) => _.toLower(o.type) === 'os');
-
-        if (selectedSalesList.length !== 0) {
-          const newForm = tempFormDetails;
-          const masterList = {
-            salesOrder: formatSOList(selectedSalesList),
-          };
-          const formItem = _.find(newForm.form_items, { name: 'salesOrder' });
-
-          formItem.onChange = (e) => handleSalesChange(e);
-          setTempFormDetails(updateList(newForm, masterList));
-          setSelectedLot(loadedOS.orderedProducts);
-
-          setShowSalesSection(true);
-        } else {
-          setShowSalesSection(false);
-        }
-      }
-    } catch {
-      history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
-    }
-  }, [id, orderSlipsList, form, history, path, salesOrderList, tempFormDetails, handleSalesChange]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -110,16 +78,15 @@ const InputForm = (props) => {
       depot: depotList,
     };
     const formItem = _.find(newForm.form_items, { name: 'depot' });
-
     formItem.onChange = (e) => handleDepotChange(e);
     setTempFormDetails(updateList(newForm, masterList));
 
     setContentLoading(false);
-  }, [form, user, tempFormDetails, depotList, handleDepotChange]);
+  }, [depotList, form, user, tempFormDetails, handleDepotChange]);
 
   useEffect(() => {
     const newOrderedProducts = formatOrderedProducts(selectedLot, selectedSales);
-    setOrderedProducts(newOrderedProducts);
+    setSalesInvoiceProducts(newOrderedProducts);
   }, [selectedLot, selectedSales]);
 
   const onItemSelect = (data, selected) => {
@@ -164,7 +131,7 @@ const InputForm = (props) => {
   };
 
   const onFinish = (value) => {
-    onSubmit(value, selectedSales, orderedProducts);
+    onSubmit(value, selectedSales, salesInvoiceProducts);
     history.goBack();
   };
 
@@ -184,7 +151,7 @@ const InputForm = (props) => {
                   <FormItem onFail={onFail} key={item.name} item={item} />
                 ))}
                 {showSalesSection
-                  ? _.dropRight(_.drop(tempFormDetails.form_items, 3), 1).map((item) => (
+                  ? _.dropRight(_.drop(tempFormDetails.form_items, 4), 1).map((item) => (
                       <FormItem onFail={onFail} key={item.name} item={item} />
                     ))
                   : ''}

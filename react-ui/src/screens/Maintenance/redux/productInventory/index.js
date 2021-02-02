@@ -2,12 +2,35 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { message as Message } from 'antd';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
+
+export const tempListProductInventory = createAsyncThunk(
+  'tempListProductInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(`rest/product-inventory?token=${accessToken}`);
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
 
 export const listProductInventory = createAsyncThunk(
   'listProductInventory',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const { fnCallback } = payload;
+    var { fnCallback } = payload;
+    if(typeof fnCallback === 'undefined'){
+      fnCallback = () => {}
+    }
     const response = await axiosInstance.get(`rest/product-inventory?token=${accessToken}`);
 
     if (typeof response !== 'undefined') {
@@ -51,7 +74,9 @@ export const listProductInventoryByDepot = createAsyncThunk(
 
 const initialState = {
   list: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -63,6 +88,39 @@ const productInventorySlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
+    [tempListProductInventory.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for product inventory`,
+      };
+    },
+    [tempListProductInventory.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Product Inventory');
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [tempListProductInventory.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'ProductInventory');
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
+      };
+    },
     [listProductInventory.pending]: (state) => {
       return {
         ...state,

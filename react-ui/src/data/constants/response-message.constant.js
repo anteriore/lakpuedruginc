@@ -3,6 +3,7 @@
 export const ITEMS_GET_PENDING = 'Retrieving data';
 export const ITEMS_GET_FULFILLED = 'Successfully retrieved data';
 export const ITEMS_GET_REJECTED = 'Failed to retrieve data';
+export const ITEMS_GET_EMPTY = 'No datas retrieved';
 
 // get item message
 export const ITEM_GET_PENDING = 'Searching specific item';

@@ -25,7 +25,13 @@ import {
 import Container from '../../components/container';
 import InputForm from './InputForm';
 
-import { listUser, addUser, /* deleteUser, */ clearData, listPermission } from './redux';
+import {
+  listUser,
+  addUser,
+  updateUser,
+  /* deleteUser, */ clearData,
+  listPermission,
+} from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -276,7 +282,8 @@ const Users = () => {
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addUser(payload)).then((response) => {
+      console.log(payload);
+      dispatch(updateUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
           updateUserDepartments(selectedCompany);

@@ -3,6 +3,7 @@ import {
   Form,
   Button,
   InputNumber,
+  Input,
   Select,
   Checkbox,
   Modal,
@@ -15,7 +16,7 @@ import {
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import FormItem from './FormItem';
+import FormItem from '../../../components/forms/FormItem';
 
 const { Title } = Typography;
 
@@ -89,12 +90,34 @@ const FormScreen = (props) => {
               );
             },
           });
-        } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+        } 
+        else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
             visible: false,
           });
-        } else if (field.type === 'select') {
+        }
+        else if (field.type === 'readOnly'){
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                >
+                  <Input 
+                    bordered={false}
+                  />
+                </Form.Item>
+              );
+            },
+          });
+        } 
+        else if (field.type === 'select') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -179,6 +202,7 @@ const FormScreen = (props) => {
       fieldsValue[formTable.name] = selectedItems
       setTableData(selectedItems)
       form.setFieldsValue(fieldsValue)
+      onValuesChange(fieldsValue)
     }
   };
 
@@ -225,8 +249,22 @@ const FormScreen = (props) => {
   };
 
   const onValuesChange = (values) => {
+
     if(values.hasOwnProperty(formTable.name)){
       setTableData(form.getFieldValue(formTable.name))
+    }
+    
+    if(values.hasOwnProperty('payments')){
+      var paymentSum = 0
+      const paymentValues = form.getFieldValue('payments')
+      paymentValues.forEach((payment) => {
+        if(payment.appliedAmount > 0) {
+          paymentSum += payment.appliedAmount
+        }
+      })
+      var formValues = {}
+      formValues['amountPaid'] = paymentSum
+      form.setFieldsValue(formValues)
     }
     
     if (toggleName !== null && typeof toggleName !== 'undefined') {
@@ -263,6 +301,18 @@ const FormScreen = (props) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
 
+            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) && 
+            formDetails.payment_items.map((item) => {
+              if (item.toggle) {
+                if (item.toggleCondition(toggleValue)) {
+                  return <FormItem item={item} onFail={onFail} />;
+                }
+                return null;
+              }
+
+              return <FormItem item={item} onFail={onFail} />;
+            })}
+
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
@@ -289,6 +339,7 @@ const FormScreen = (props) => {
                 )}
               </Form.List>
             )}
+
           </Form>
           
           <div style={styles.tailLayout}>
