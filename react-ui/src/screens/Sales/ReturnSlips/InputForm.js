@@ -3,6 +3,7 @@ import {
   Form,
   Button,
   InputNumber,
+  Input,
   Select,
   Checkbox,
   Modal,
@@ -28,12 +29,17 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
+  const [orderedProducts, setOrderedProducts] = useState([]);
+  const [selectedSaleSlip, setSelectedSaleSlip] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const toggleName = formDetails.toggle_name;
 
@@ -83,17 +89,6 @@ const InputForm = (props) => {
     }
   };
 
-  const handleTableChange = (item, index, event) => {
-    const data = { ...tableData };
-    const row = data[index];
-    row[item] = event;
-    const dataArray = [];
-    for (const [, value] of Object.entries(data)) {
-      dataArray.push(value);
-    }
-    setTableData(dataArray);
-  };
-
   // for rendering tables
   const renderTableColumns = (item) => {
     const columns = [];
@@ -105,16 +100,15 @@ const InputForm = (props) => {
             key: field.name,
             render: (row) => {
               const index = tableData.indexOf(row);
-              const rowData = tableData[index];
               return (
-                <InputNumber
-                  min={field.min}
-                  max={field.max}
-                  defaultValue={rowData[field.name] || field.initialValue}
-                  onChange={(e) => {
-                    handleTableChange(field.name, index, e);
-                  }}
-                />
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <InputNumber min={field.min} max={field.max} />
+                </Form.Item>
               );
             },
           });
@@ -123,6 +117,23 @@ const InputForm = (props) => {
             key: field.name,
             visible: false,
           });
+        } else if (field.type === 'readOnly') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                >
+                  <Input bordered={false} />
+                </Form.Item>
+              );
+            },
+          });
         } else if (field.type === 'select') {
           columns.push({
             title: field.label,
@@ -130,7 +141,6 @@ const InputForm = (props) => {
             visible: false,
             render: (row) => {
               const index = tableData.indexOf(row);
-              const rowData = tableData[index];
               if (typeof field.render === 'undefined') {
                 if (typeof field.selectName === 'undefined') {
                   field.selectName = 'name';
@@ -143,11 +153,18 @@ const InputForm = (props) => {
                 return null;
               }
               return (
-                <Select placeholder={field.placeholder} defaultValue={rowData[field.name]}>
-                  {field.choices.map((choice) => (
-                    <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
-                  ))}
-                </Select>
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <Select placeholder={field.placeholder}>
+                    {field.choices.map((choice) => (
+                      <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
               );
             },
           });
@@ -183,7 +200,6 @@ const InputForm = (props) => {
           processedData = formTable.processData(data);
         }
         selectedItems = selectedItems.concat(processedData);
-        setTableData(selectedItems);
       } else if (tableData !== null && typeof tableData !== 'undefined') {
         selectedItems = tableData;
 
@@ -198,8 +214,12 @@ const InputForm = (props) => {
         selectedItems = selectedItems.filter(
           (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
         );
-        setTableData(selectedItems);
       }
+      const fieldsValue = {};
+      fieldsValue[formTable.name] = selectedItems;
+      setTableData(selectedItems);
+      form.setFieldsValue(fieldsValue);
+      onValuesChange(fieldsValue);
     }
   };
 
@@ -251,6 +271,18 @@ const InputForm = (props) => {
         setToggleValue(values[toggleName]);
       }
     }
+    if (values.hasOwnProperty(formTable.name)) {
+      setTableData(form.getFieldValue(formTable.name));
+      console.log(form.getFieldsValue());
+      console.log(tableData);
+    }
+
+    if (values.hasOwnProperty('depot')) {
+      setOrderedProducts([]);
+      setSelectedSaleSlip([]);
+      setTableData(null);
+      form.setFieldsValue({ salesNumber: null, client: null });
+    }
   };
 
   const onTableSelect = (key, value) => {
@@ -284,66 +316,62 @@ const InputForm = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
-                }
-
-                return (
-                  <FormItem
-                    item={{
-                      ...item,
-                      readOnly: true,
-                    }}
-                    onFail={onFail}
-                  />
-                );
-              }
-
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {orderSlips.length > 0 &&
-              formDetails.rs_items.map((item) => {
-                return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
-              })}
+            {formDetails.rs_items.map((item) => {
+              const itemData = {
+                ...item,
+              };
+
+              if (item.name === 'salesNumber') {
+                itemData.selectedData = selectedSaleSlip;
+                itemData.setSelectedData = setSelectedSaleSlip;
+              }
+
+              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
+            })}
+            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
+                {(fields, { errors }) => (
+                  <Col span={20} offset={1}>
+                    <div style={{ float: 'right', marginBottom: '1%' }}>
+                      <Button
+                        onClick={() => {
+                          setDisplayModal(true);
+                          setLoadingModal(false);
+                        }}
+                        icon={<SelectOutlined />}
+                      >
+                        {`Select ${formTable.label}`}
+                      </Button>
+                    </div>
+                    <Table
+                      dataSource={tableData}
+                      columns={renderTableColumns(formTable)}
+                      pagination={false}
+                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      summary={formTable.summary}
+                    />
+                  </Col>
+                )}
+              </Form.List>
+            )}
+            <div style={styles.tailLayout}>
+              <Button type="primary" onClick={() => form.submit()}>
+                Submit
+              </Button>
+              <Button
+                style={{ marginRight: '2%' }}
+                onClick={() => {
+                  onCancel();
+                  history.goBack();
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           </Form>
-          {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-            <Col span={20} offset={1}>
-              <div style={{ float: 'right', marginBottom: '1%' }}>
-                <Button
-                  onClick={() => {
-                    setDisplayModal(true);
-                    setLoadingModal(false);
-                  }}
-                  icon={<SelectOutlined />}
-                >
-                  {`Select ${formTable.label}`}
-                </Button>
-              </div>
-              <Table
-                dataSource={tableData}
-                columns={renderTableColumns(formTable)}
-                pagination={false}
-                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                summary={formTable.summary}
-              />
-            </Col>
-          )}
-          <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
-              Submit
-            </Button>
-            <Button
-              style={{ marginRight: '2%' }}
-              onClick={() => {
-                onCancel();
-                history.goBack();
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
           {!loadingModal && hasTable && (
             <Modal
               visible={displayModal}
@@ -356,16 +384,18 @@ const InputForm = (props) => {
               {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
                 // for nested tables
                 <Table
-                  dataSource={formTable.selectData}
+                  dataSource={orderedProducts}
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
                   expandable={{ expandedRowRender }}
+                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
                 />
               ) : (
                 <Table
-                  dataSource={formTable.selectData}
+                  dataSource={orderedProducts}
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
+                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
                 />
               )}
             </Modal>

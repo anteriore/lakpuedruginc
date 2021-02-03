@@ -1,7 +1,9 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Typography, message } from 'antd';
-import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
+import { Table, Typography, Tooltip, message } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -58,6 +60,9 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -86,7 +91,10 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
+          dispatch(clearOS());
+          dispatch(clearSI());
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
+          dispatch(listSalesInvoiceByDepot({ depot: e }));
         },
       },
       {
@@ -98,6 +106,8 @@ const FormDetails = () => {
         render: (client) => `[${client.code}] ${client.name}`,
         rules: [{ required: true }],
       },
+    ],
+    payment_items: [
       {
         label: 'Terms of Payment',
         name: 'terms',
@@ -148,24 +158,46 @@ const FormDetails = () => {
       {
         label: 'Amount Paid',
         name: 'amountPaid',
-        type: 'number',
-        min: 0,
-        rules: [{ required: true }],
+        initialValue: 0,
+        dependencies: ['payments'],
+        readOnly: true,
+        rules: [
+          { required: true },
+          /* ({ getFieldValue }) => ({
+            validator(rule, value) {
+              const payments = getFieldValue('payments')
+              var sumPayments = 0
+              if(typeof payments !== 'undefined' && payments !== null){
+                payments.forEach(({appliedAmount}) => {
+                  sumPayments += appliedAmount
+                })
+              }
+              if (sumPayments === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject('The sum for the payments must be equal to the amount paid');
+            },
+          }), */
+        ],
+        suffix: (
+          <Tooltip title="Automatically Calculated">
+            <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+          </Tooltip>
+        ),
       },
       {
         label: 'Cut Off Date',
         name: 'cutOffDate',
         type: 'date',
-        toggle: true,
-        toggleCondition: (value) => {
-          if (value === 'CHEQUE') {
-            return true;
-          }
-
-          return false;
-        },
         initialValue: null,
         rules: [{ required: true }],
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        type: 'textArea',
+        rules: [{ message: 'Please provide a valid remark' }],
+        placeholder: 'Remarks',
       },
     ],
   };
@@ -175,7 +207,7 @@ const FormDetails = () => {
     name: 'payments',
     key: 'id',
     rules: [{ required: true }],
-    isVisible: orderSlips.length > 0,
+    isVisible: salesSlips.length > 0,
     fields: [
       {
         label: 'Type',
@@ -192,12 +224,26 @@ const FormDetails = () => {
       {
         label: 'Remaining Balance',
         name: 'remainingBalance',
+        type: 'readOnly',
       },
       {
         label: 'Payment',
         name: 'appliedAmount',
         type: 'number',
-        rules: [{ required: true }],
+        rules: [
+          { required: true },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              const index = parseInt(rule.field.split('.')[1]);
+              const payments = getFieldValue('payments');
+
+              if (payments[index].remainingBalance >= value) {
+                return Promise.resolve();
+              }
+              return Promise.reject();
+            },
+          }),
+        ],
         min: 0,
       },
       {
@@ -215,12 +261,15 @@ const FormDetails = () => {
     summary: (data) => {
       let totalAppliedAmount = 0;
       let totalSIAmount = 0;
-      data.forEach(({ totalAmount }) => {
-        if (data.type === 'DR_SI') {
-          totalSIAmount += totalAmount;
-        } else {
-          totalAppliedAmount += totalAmount;
+      let totalOSAmount = 0;
+      data.forEach(({ appliedAmount, type }) => {
+        if (type === 'DR_SI') {
+          totalSIAmount += appliedAmount;
+        } else if (type === 'OS') {
+          totalOSAmount += appliedAmount;
         }
+
+        totalAppliedAmount += appliedAmount;
       });
 
       return (
@@ -228,6 +277,10 @@ const FormDetails = () => {
           <Table.Summary.Cell>Total Applied Amount</Table.Summary.Cell>
           <Table.Summary.Cell>
             <Text>{totalAppliedAmount}</Text>
+          </Table.Summary.Cell>
+          <Table.Summary.Cell>Total OS Amount</Table.Summary.Cell>
+          <Table.Summary.Cell>
+            <Text>{totalOSAmount}</Text>
           </Table.Summary.Cell>
           <Table.Summary.Cell>Total SI Amount</Table.Summary.Cell>
           <Table.Summary.Cell>
@@ -238,7 +291,7 @@ const FormDetails = () => {
     },
     foreignKey: 'number',
     selectedKey: 'number',
-    selectData: orderSlips,
+    selectData: salesSlips,
     selectFields: [
       {
         title: 'Type',
@@ -272,7 +325,10 @@ const FormDetails = () => {
       return payments;
     },
     processData: (data) => {
-      return { ...data, appliedAmount: 0 };
+      return {
+        ...data,
+        appliedAmount: data.remainingBalance,
+      };
     },
     checkSelected: (selectedData, rowData) => {
       if (
