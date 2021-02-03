@@ -64,19 +64,12 @@ const OfficialReceipts = (props) => {
     const formData = {
       ...itemData,
       date: moment(new Date(data.date)) || moment(),
-      chequeDate: data.cutOffDate !== null ? moment(new Date(data.chequeDate)) : null,
-      cutOffDate: data.cutOffDate !== null ? moment(new Date(data.cutOffDate)) : null,
-      client: itemData.client !== null ? itemData.client.id : null,
       depot: itemData.depot !== null ? itemData.depot.id : null,
     };
     setFormData(formData);
-    dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          dispatch(listOrderSlips({ company, message })).then(() => {
-            history.push(`${path}/${data.id}`);
-            setLoading(false);
-          })
-        })
+    dispatch(listDepot({ company, message })).then(() => {
+      history.push(`${path}/${data.id}`);
+      setLoading(false);
     });
     */
   };
@@ -209,6 +202,8 @@ const OfficialReceipts = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={false}
+                deleteEnabled={false}
               />
             )}
           </Col>

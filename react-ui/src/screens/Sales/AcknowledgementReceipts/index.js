@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, message } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -21,7 +21,7 @@ import {
   NO_DATA_FOUND_DESC,
 } from '../../../data/constants/response-message.constant';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const AcknowledgementReceipts = (props) => {
   const dispatch = useDispatch();
@@ -208,6 +208,25 @@ const AcknowledgementReceipts = (props) => {
     setFormData(null);
   };
 
+  const renderTableColumns = (item) => {
+    const columns = [];
+    item.fields.forEach((field) => {
+      if(!field.writeOnly){
+        if (typeof field.render === 'undefined' || field.render === null) {
+          field.render = (object) => object[field.name];
+        }
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => field.render(object),
+        });
+      }
+        
+    });
+
+    return columns;
+  };
+
   return (
     <Switch>
       <Route path={`${path}/new`}>
@@ -325,54 +344,12 @@ const AcknowledgementReceipts = (props) => {
                     return null;
                   })}
                 </Descriptions>
-                <Title
-                  level={5}
-                  style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
-                >
-                  Payment Details:
-                </Title>
-                {selectedAR[tableDetails.name].map((item) => {
-                  return (
-                    <Descriptions title={`${item.reference.number}`} size="default">
-                      {tableDetails.fields.map((field) => {
-                        if (field.type === 'hidden' || field.type === 'hiddenNumber') {
-                          return null;
-                        }
-                        if (typeof field.render === 'function') {
-                          return (
-                            <Descriptions.Item label={field.label}>
-                              {field.render(item.reference)}
-                            </Descriptions.Item>
-                          );
-                        }
-                        if (field.type === 'select') {
-                          if (typeof field.selectName === 'undefined') {
-                            field.selectName = 'name';
-                          }
-                          const fieldData = item.reference[field.name];
-                          return (
-                            <Descriptions.Item label={field.label}>
-                              {fieldData[field.selectName]}
-                            </Descriptions.Item>
-                          );
-                        }
-                        if (field.name === 'appliedAmount') {
-                          return (
-                            <Descriptions.Item label={field.label}>
-                              {item.appliedAmount}
-                            </Descriptions.Item>
-                          );
-                        }
-
-                        return (
-                          <Descriptions.Item label={field.label}>
-                            {item.reference[field.name]}
-                          </Descriptions.Item>
-                        );
-                      })}
-                    </Descriptions>
-                  );
-                })}
+                <Text>{'Payment Details:'}</Text>
+                <Table
+                  dataSource={tableDetails.getValues(selectedAR)}
+                  columns={renderTableColumns(tableDetails)}
+                  pagination={false}
+                />
               </>
             )}
           </Modal>

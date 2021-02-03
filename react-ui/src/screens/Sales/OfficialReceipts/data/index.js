@@ -201,16 +201,19 @@ const FormDetails = () => {
         title: 'Discount',
         dataIndex: 'discount',
         key: 'discount',
+        render: (data) => data || 0
       },
       {
         title: 'Others',
         dataIndex: 'others',
         key: 'others',
+        render: (data) => data || 0
       },
       {
         title: 'Withholding Tax',
         dataIndex: 'tax',
         key: 'tax',
+        render: (data) => data || 0
       },
       {
         title: 'NET',

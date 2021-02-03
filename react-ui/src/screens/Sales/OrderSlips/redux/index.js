@@ -59,6 +59,33 @@ export const listOrderSlipsByDepot = createAsyncThunk(
   }
 );
 
+export const listOrderSlipsWithBalanceByDepot = createAsyncThunk(
+  'listOrderSlipsWithBalanceByDepot',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.get(
+      `/rest/order-slips/depot/${payload.depot}?token=${accessToken}`
+    );
+
+    const processedResponse = {
+      ...response,
+      data: filterOSWithBalance(response.data)
+    }
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = processedResponse;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for order slips from the selected depot');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(processedResponse);
+    }
+
+    return processedResponse;
+  }
+);
+
 export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const response = await axiosInstance.post(`/rest/order-slips?token=${accessToken}`, payload);
@@ -80,6 +107,18 @@ export const deleteOrderSlips = createAsyncThunk('deleteOrderSlips', async (payl
 
   return response;
 });
+
+const filterOSWithBalance = (data) => {
+  const processedData = []
+  data.forEach((orderSlip) => {
+    if(orderSlip.remainingBalance > 0){
+      processedData.push(orderSlip)
+    }
+  })
+
+  return processedData
+
+}
 
 const initialState = {
   orderSlipsList: [],
@@ -120,6 +159,38 @@ const orderSlipsSlice = createSlice({
       };
     },
     [listOrderSlips.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listOrderSlipsWithBalanceByDepot.pending]: (state) => {
+      return {
+        ...state,
+        status: 'loading',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_PENDING,
+      };
+    },
+    [listOrderSlipsWithBalanceByDepot.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for order slips from the selected depot';
+      }
+
+      return {
+        ...state,
+        orderSlipsList: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listOrderSlipsWithBalanceByDepot.rejected]: (state) => {
       return {
         ...state,
         status: 'failed',

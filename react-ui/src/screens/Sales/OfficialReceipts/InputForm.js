@@ -32,7 +32,7 @@ const FormScreen = (props) => {
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable && values !== null) {
-      setTableData(formTable.getValues(values));
+      setTableData(formTable.getValues(values.acknowledgementReceipt));
     }
     // eslint-disable-next-line
   }, [values, form]);
@@ -131,7 +131,7 @@ const FormScreen = (props) => {
             })
             ):(
               <Alert 
-                message="Please select a depot." 
+                message="Please select a depot with a pending acknowledgement receipt." 
                 type="warning" 
                 showIcon 
                 style={{width: '62.5%', marginLeft: '25%', marginBottom: '2%'}} />

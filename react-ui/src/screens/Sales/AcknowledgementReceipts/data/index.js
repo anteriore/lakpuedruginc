@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
-import { listSalesInvoiceByDepot } from '../../SalesInvoice/redux';
+import { listOrderSlipsWithBalanceByDepot } from '../../OrderSlips/redux';
+import { listSalesInvoiceWithBalanceByDepot } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -59,6 +59,12 @@ export const columns = [
     key: 'amountPaid',
     datatype: 'number',
   },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status',
+    datatype: 'string',
+  },
 ];
 
 const FormDetails = () => {
@@ -98,8 +104,8 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(listOrderSlipsByDepot({ message, depot: e }));
-          dispatch(listSalesInvoiceByDepot({ depot: e }));
+          dispatch(listOrderSlipsWithBalanceByDepot({ message, depot: e }));
+          dispatch(listSalesInvoiceWithBalanceByDepot({ depot: e }));
         },
       },
       {
@@ -262,6 +268,7 @@ const FormDetails = () => {
 
           return object.remainingBalance || 0;
         },
+        writeOnly: true
       },
     ],
     summary: (data) => {
@@ -322,6 +329,7 @@ const FormDetails = () => {
       },
     ],
     getValues: (values) => {
+      console.log(values)
       const payments = [];
       values.payments.forEach((payment) => {
         payments.push({
