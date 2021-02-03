@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
-import { listSalesInvoiceByDepot } from '../../SalesInvoice/redux';
+import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -92,6 +92,8 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
+          dispatch(clearOS())
+          dispatch(clearSI())
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
           dispatch(listSalesInvoiceByDepot({ depot: e }));
         },
@@ -229,13 +231,12 @@ const FormDetails = () => {
         label: 'Payment',
         name: 'appliedAmount',
         type: 'number',
-        rules: [{ required: true },
+        rules: [
+          { required: true },
           ({ getFieldValue }) => ({
             validator(rule, value) {
-              console.log(rule)
               const index = parseInt(rule.field.split('.')[1])
               const payments = getFieldValue('payments')
-              console.log(payments[index])
               
               if (payments[index].remainingBalance >= value) {
                 return Promise.resolve();

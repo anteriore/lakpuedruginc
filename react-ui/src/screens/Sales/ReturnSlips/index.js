@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty, Space, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import FormDetails, { columns } from './data';
+import FormDetails, { columns, reportColumns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
+import Report from '../../../components/Report';
 
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
+import { clearData as clearSI } from '../SalesInvoice/redux';
 
 const { Title, Text } = Typography;
 
@@ -32,7 +33,6 @@ const ReturnSlips = (props) => {
   const { formDetails, tableDetails } = FormDetails();
 
   const listData = useSelector((state) => state.sales.returnSlips.list);
-  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     dispatch(listReturnSlip({ company, message })).then(() => {
@@ -42,6 +42,9 @@ const ReturnSlips = (props) => {
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearClient());
+      dispatch(clearDepot());
+      dispatch(clearOS());
+      dispatch(clearSI());
     };
   }, [dispatch, company]);
 
@@ -53,10 +56,8 @@ const ReturnSlips = (props) => {
     dispatch(clearOS())
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listProductInventory({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
-        })
+        history.push(`${path}/new`);
+        setLoading(false);
       })
     });
   };
@@ -76,10 +77,8 @@ const ReturnSlips = (props) => {
   dispatch(listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })).then(() => {
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listProductInventory({ company, message })).then(() => {
           history.push(`${path}/${data.id}`);
           setLoading(false);
-        })
       })
     })
   });
@@ -106,6 +105,16 @@ const ReturnSlips = (props) => {
     setDisplayModal(true);
   };
 
+  const handleReport = () => {
+    setFormTitle('Return Slip Summary Report');
+    setFormMode('report');
+    setFormData(listData);
+    console.log(formData)
+    setLoading(true);
+    history.push(`${path}/report`);
+    setLoading(false);
+  }
+
   const onSubmit = (data) => {
     //TODO: Data Validation
     const products = [];
@@ -114,7 +123,7 @@ const ReturnSlips = (props) => {
         product: {
           id: returnSlipProduct.product.id
         },
-        goodQuantity: returnSlipProduct.goodQuantity || 0,
+        goodQuantity: returnSlipProduct.quantity - returnSlipProduct.badQuantity || returnSlipProduct.quantity,
         badQuantity: returnSlipProduct.badQuantity || 0,
         unitPrice: returnSlipProduct.unitPrice
       });
@@ -185,7 +194,7 @@ const ReturnSlips = (props) => {
 
   return (
     <Switch>
-      <Route path={`${path}/new`}>
+      <Route exact path={`${path}/new`}>
         <InputForm
           title={formTitle}
           onSubmit={onSubmit}
@@ -195,6 +204,14 @@ const ReturnSlips = (props) => {
           }}
           formDetails={formDetails}
           formTable={tableDetails}
+        />
+      </Route>
+      <Route exact path={`${path}/report`}>
+        <Report
+          title={formTitle}
+          data={formData}
+          columns={reportColumns}
+          company={company}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -229,6 +246,16 @@ const ReturnSlips = (props) => {
             >
               Add
             </Button>
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<FileTextOutlined />}
+              onClick={() => {
+                handleReport()
+              }}
+              loading={loading}
+            >
+              View Report
+            </Button>
             {loading ? (
               <Skeleton />
             ) : (
@@ -238,6 +265,8 @@ const ReturnSlips = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={false}
+                deleteEnabled={false}
               />
             )}
           </Col>

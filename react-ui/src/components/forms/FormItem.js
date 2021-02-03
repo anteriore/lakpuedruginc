@@ -13,12 +13,11 @@ import {
   Radio,
   Modal,
   Table,
-  Empty,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
 const { Item } = Form;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 
@@ -308,7 +307,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
                 Select
               </Button>
             }
-            disabled
+            readOnly
             placeholder={item.placeholder}
           />
         </Form.Item>
@@ -323,9 +322,12 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
           <Table
             rowSelection={{
               type: 'radio',
+              selectedRowKeys: item.selectedData,
               onChange: (e) => {
+                item.setSelectedData(e)
                 onTableSelect(item.name, e[0]);
               },
+              preserveSelectedRowKeys: false
             }}
             columns={item.columns}
             dataSource={item.dataSource}
