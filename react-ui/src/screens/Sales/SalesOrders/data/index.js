@@ -38,10 +38,6 @@ export const tableHeader = [
 
 export const tableProduct = [
   {
-    title: 'ID',
-    dataIndex: 'id',
-  },
-  {
     title: 'FG ID',
     dataIndex: 'finishedGoodID',
   },
@@ -80,6 +76,9 @@ export const tableProduct = [
   {
     title: 'Amount',
     dataIndex: 'amount',
+  },
+  {
+    title: 'Action',
   },
 ];
 
@@ -138,6 +137,9 @@ export const formDetails = {
       name: 'depot',
       rules: [{ required: true, message: 'Please provide a sales order depot' }],
       placeholder: 'Sales order depot',
+      render: (depot) => {
+        return `[${depot.id}] ${depot.name}`;
+      },
       type: 'select',
       choices: [],
     },

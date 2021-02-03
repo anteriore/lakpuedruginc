@@ -1,34 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Row,
-  Col,
-  Typography,
-  Form,
-  Table,
-  Space,
-  Button,
-  Skeleton,
-  Modal,
-  Checkbox,
-  message,
-} from 'antd';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import Layout from 'antd/lib/layout/layout';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash';
-import { formDetails, tableProduct, tableProductInventory, initValueForm } from './data';
+import { formDetails, tableProduct, tableProductInventory } from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { EditableRow, EditableCell } from '../../../components/TableRowInput';
-import { updateList, fromatInitForm } from '../../../helpers/general-helper';
-import { formatProduct, formatProductCalc } from './helpers';
+import { updateList } from '../../../helpers/general-helper';
+import { formatProduct } from './helpers';
 
 const { Title } = Typography;
 
 const InputForm = (props) => {
   const { title, onSubmit } = props;
-  const { id } = useParams();
   const [form] = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -43,7 +30,6 @@ const InputForm = (props) => {
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
   const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
-  const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
 
   const component = {
     body: {
@@ -51,23 +37,6 @@ const InputForm = (props) => {
       row: EditableRow,
     },
   };
-
-  useEffect(() => {
-    if (id !== undefined && salesOrderList.length !== 0) {
-      const selectedSales = _.find(salesOrderList, (o) => {
-        return o.id === parseInt(id, 10);
-      });
-
-      form.setFieldsValue(fromatInitForm(selectedSales, initValueForm));
-      form.setFieldsValue({ product: formatProductCalc(selectedSales.products) });
-      setRequestedProductList(formatProductCalc(selectedSales.products));
-      setProductInv(
-        _.filter(productInventoryList, (o) => {
-          return o.depot.id === selectedSales.depot.id;
-        })
-      );
-    }
-  }, [salesOrderList, id, form, productInventoryList]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -101,16 +70,26 @@ const InputForm = (props) => {
     setTempFormDetails(updateList(newForm, masterList));
   }, [depotList, clientList, tempFormDetails, productInventoryList, form]);
 
-  const selectProductItems = () => {
-    setProductModal(true);
-    // setModalContentLoading(true);
-    // dispatch(listProductInventory()).then(() => {
-    //   setModalContentLoading(false);
-    // });
-  };
-
   const modProductColumn = tableProduct.map((col) => {
     if (!col.editable) {
+      if (col.title === 'Action') {
+        const filteredColumn = {
+          ...col,
+          render: (row) => {
+            return (
+              <Button
+                type="dashed"
+                onClick={() => handleRemoveSalesProduct(row)}
+                icon={<DeleteOutlined />}
+                danger
+              />
+            );
+          },
+        };
+
+        return filteredColumn;
+      }
+
       return col;
     }
     return {
@@ -126,44 +105,29 @@ const InputForm = (props) => {
           minLimit: 0,
           precisionEnabled: col.precisionEnabled,
           precision: col.precision,
-          handleSave: (data, rowRecord) => {
-            console.log(data, rowRecord)
-            let currentProduct = _.clone(
-              _.find(requestedProductList, (prod) => prod.rowId === rowRecord.rowId)
-            );
+          handleSave: (row) => {
+            const newData = [...requestedProductList];
+            const index = _.findIndex(newData, (o) => o.key === row.key);
+            const item = newData[index];
 
-            Object.entries(data).forEach(([key, value]) => {
-              currentProduct = { ...currentProduct, [key]: value };
+            row = {
+              ...row,
+              amount: (row.quantityRequested * row.unitPrice).toFixed(2),
+              quantityRemaining: row.quantity - row.quantityRequested,
+            };
 
-              if (key === 'quantityRequested') {
-                currentProduct = {
-                  ...currentProduct,
-                  quantityRemaining: currentProduct.quantity - value,
-                  amount: (currentProduct.unitPrice * value).toFixed(2),
-                };
-              }
-
-              if (key === 'unitPrice') {
-                currentProduct = {
-                  ...currentProduct,
-                  amount: (currentProduct.quantityRequested * value).toFixed(2),
-                };
-              }
-            });
-
-            const indexProduct = _.findIndex(
-              requestedProductList,
-              (o) => o.rowId === rowRecord.rowId
-            );
-            const newArray = _.clone(requestedProductList);
-            newArray.splice(indexProduct, 1, currentProduct);
-            setRequestedProductList(newArray);
-            form.setFieldsValue({ product: newArray });
+            newData.splice(index, 1, { ...item, ...row });
+            form.setFieldsValue({ product: newData });
+            setRequestedProductList(newData);
           },
         };
       },
     };
   });
+
+  useEffect(() => {
+    console.log(requestedProductList, 'Checking requestedProductList');
+  }, [requestedProductList]);
 
   // render Product Items with add button
   const renderProductItemColumns = (rawColumns) => {
@@ -173,7 +137,12 @@ const InputForm = (props) => {
         key: 'action',
         render: (row) => {
           return (
-            <Button type="dashed" onClick={() => handleAddSalesProduct(row)} icon={<PlusOutlined/>}/>
+            <Button
+              type="dashed"
+              onClick={() => handleAddSalesProduct(row)}
+              icon={<PlusOutlined />}
+              primary
+            />
           );
         },
       },
@@ -186,52 +155,34 @@ const InputForm = (props) => {
     return filteredColumn;
   };
 
-  // render Product Items with delete button
-
-  const renderSalesProductCol = (rawColumns) => {
-    let filteredColumn = [
-      {
-        title: 'Action',
-        key: 'action',
-        render: (row) => {
-          return (
-            <Button type="dashed" onClick={() => handleRemoveSalesProduct(row)} icon={<MinusOutlined/>} danger/>
-          );
-        },
-      },
-    ];
-
-    const inputColumn = rawColumns.slice();
-
-    filteredColumn = filteredColumn.concat(inputColumn);
-
-    return filteredColumn;
-  }
-
   const handleRemoveSalesProduct = (data) => {
-    const removedData = _.remove(requestedProductList, (o) => o.rowId !== data.rowId)
-    console.log(removedData)
-    setRequestedProductList(removedData)
-  }
+    const newData = [...requestedProductList];
+    setRequestedProductList(_.filter(newData, (o) => o.key !== data.key));
+  };
 
   const handleAddSalesProduct = (data) => {
     if (data.quantity !== 0 && data.quantity > 0) {
-      let newData = _.clone(formatProduct(data));
-      
-      if (requestedProductList.length !== 0){
-        const {rowId} = _.last(requestedProductList);
-        newData.rowId = rowId + 1;
-        
-        setRequestedProductList(requestedProductList.concat(newData))
-      } else{
-        newData.rowId = 1;
-        setRequestedProductList(requestedProductList.concat(newData))
-      } 
+      const newData = _.clone(formatProduct(data));
+
+      if (requestedProductList.length !== 16) {
+        if (requestedProductList.length !== 0) {
+          const { key } = _.last(requestedProductList);
+          newData.key = key + 1;
+
+          form.setFieldsValue({ product: requestedProductList.concat(newData) });
+          setRequestedProductList(requestedProductList.concat(newData));
+        } else {
+          newData.key = 1;
+          setRequestedProductList(requestedProductList.concat(newData));
+        }
+      } else {
+        message.warning('Cannot add more than 16 requested products');
+      }
       setProductModal(false);
     } else {
       message.warning('Cannot add requested product with empty stock on hand');
     }
-  }
+  };
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
@@ -264,7 +215,7 @@ const InputForm = (props) => {
                 >
                   <Table
                     components={component}
-                    columns={renderSalesProductCol(modProductColumn)}
+                    columns={modProductColumn}
                     rowClassName={() => styles.editableRow}
                     dataSource={requestedProductList}
                     pagination={false}
@@ -273,7 +224,7 @@ const InputForm = (props) => {
                 <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
                   <Button
                     onClick={() => {
-                      selectProductItems();
+                      setProductModal(true);
                     }}
                     style={{ width: '40%', float: 'right' }}
                   >

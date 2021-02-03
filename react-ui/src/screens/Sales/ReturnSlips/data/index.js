@@ -77,7 +77,7 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearOS())
+          dispatch(clearOS());
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
         },
       },
@@ -89,12 +89,11 @@ const FormDetails = () => {
         toggle: true,
         readOnly: false,
         toggleCondition: (value) => {
-          if (value === null || typeof value === 'undefined' ) {
+          if (value === null || typeof value === 'undefined') {
             return true;
           }
-          else {
-            return false;
-          }
+
+          return false;
         },
         choices: clients,
         render: (client) => `[${client.code}] ${client.name}`,
@@ -108,9 +107,9 @@ const FormDetails = () => {
         type: 'selectTable',
         rules: [],
         allowEmpty: true,
-        placeholder: "Select DR/OS",
-        displayModal: displayModal,
-        setDisplayModal: setDisplayModal,
+        placeholder: 'Select DR/OS',
+        displayModal,
+        setDisplayModal,
         dataSource: orderSlips,
         columns: [
           {
@@ -122,7 +121,7 @@ const FormDetails = () => {
             title: 'Date',
             dataIndex: 'date',
             key: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY')
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
           },
           {
             title: 'Amount',
@@ -135,15 +134,16 @@ const FormDetails = () => {
             key: 'remainingBalance',
           },
         ],
-        rowKey: "id",
+        rowKey: 'id',
         getValueProps: (value) => {
-          if(typeof value !== 'undefined'){
-            return { value: value }
+          if (typeof value !== 'undefined') {
+            return { value };
           }
         },
-        emptyText: 'No data retrieved for sales slips in the selected depot. Please select another depot.'
+        emptyText:
+          'No data retrieved for sales slips in the selected depot. Please select another depot.',
       },
-    ]
+    ],
   };
 
   const tableDetails = {
@@ -153,7 +153,7 @@ const FormDetails = () => {
     rules: [{ required: true }],
     fields: [
       {
-        label: 'Product', 
+        label: 'Product',
         name: 'product',
         render: (object) => {
           return object.product.finishedGood.name;
@@ -165,7 +165,7 @@ const FormDetails = () => {
         type: 'number',
         rules: [{ required: true }],
         min: 0,
-        initialValue: 0
+        initialValue: 0,
       },
       {
         label: 'Bad Quantity',
@@ -173,7 +173,7 @@ const FormDetails = () => {
         type: 'number',
         rules: [{ required: true }],
         min: 0,
-        initialValue: 0
+        initialValue: 0,
       },
       {
         label: 'Unit Price',
@@ -193,7 +193,7 @@ const FormDetails = () => {
     summary: (data) => {
       let totalAmount = 0;
       data.forEach(({ goodQuantity, unitPrice }) => {
-        totalAmount += (goodQuantity * unitPrice) || 0;
+        totalAmount += goodQuantity * unitPrice || 0;
       });
 
       return (
@@ -214,24 +214,24 @@ const FormDetails = () => {
         dataIndex: 'product',
         key: 'product',
         render: (product) => {
-          return product.lotNumber
-        }
+          return product.lotNumber;
+        },
       },
       {
         title: 'FG Code',
         dataIndex: 'product',
         key: 'product',
         render: (object) => {
-          return `[${object.finishedGood.code}] ${object.finishedGood.name}`
-        }
+          return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
+        },
       },
       {
         title: 'Expiration',
         dataIndex: 'product',
         key: 'product',
         render: (object) => {
-          return moment(new Date(object.expiration)).format('DD/MM/YYYY')
-        }
+          return moment(new Date(object.expiration)).format('DD/MM/YYYY');
+        },
       },
       {
         title: 'Stock',
@@ -243,19 +243,19 @@ const FormDetails = () => {
       const products = [];
       values.returnSlipProducts.forEach((product) => {
         products.push({
-          ...product
+          ...product,
         });
       });
       return products;
     },
     processData: (data) => {
-      var processedData = { 
+      const processedData = {
         ...data,
         product: data.product,
         unitPrice: data.product.unitPrice,
-        key: data.product.id
-      }
-      delete processedData.id
+        key: data.product.id,
+      };
+      delete processedData.id;
       return processedData;
     },
     checkSelected: (selectedData, rowData) => {

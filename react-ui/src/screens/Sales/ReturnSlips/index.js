@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty, Space, message } from 'antd';
+import {
+  Row,
+  Col,
+  Typography,
+  Button,
+  Skeleton,
+  Descriptions,
+  Modal,
+  Table,
+  Empty,
+  Space,
+  message,
+} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -12,7 +24,10 @@ import InputForm from './InputForm';
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
+import {
+  clearData as clearPI,
+  listProductInventory,
+} from '../../Maintenance/redux/productInventory';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
 
 const { Title, Text } = Typography;
@@ -50,39 +65,41 @@ const ReturnSlips = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(clearOS())
+    dispatch(clearOS());
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
         dispatch(listProductInventory({ company, message })).then(() => {
           history.push(`${path}/new`);
           setLoading(false);
-        })
-      })
+        });
+      });
     });
   };
 
   const handleUpdate = (data) => {
-  setFormTitle('Update Return Slip');
-  setFormMode('edit');
-  const itemData = listData.find((item) => item.id === data.id);
-  const formData = {
-    ...itemData,
-    date: moment(new Date(data.date)) || moment(),
-    client: itemData.client !== null ? itemData.client.id : null,
-    depot: itemData.depot !== null ? itemData.depot.id : null,
-  };
-  setFormData(formData);
-  setLoading(true);
-  dispatch(listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })).then(() => {
-    dispatch(listClient({ company, message })).then(() => {
-      dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listProductInventory({ company, message })).then(() => {
-          history.push(`${path}/${data.id}`);
-          setLoading(false);
-        })
-      })
-    })
-  });
+    setFormTitle('Update Return Slip');
+    setFormMode('edit');
+    const itemData = listData.find((item) => item.id === data.id);
+    const formData = {
+      ...itemData,
+      date: moment(new Date(data.date)) || moment(),
+      client: itemData.client !== null ? itemData.client.id : null,
+      depot: itemData.depot !== null ? itemData.depot.id : null,
+    };
+    setFormData(formData);
+    setLoading(true);
+    dispatch(
+      listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })
+    ).then(() => {
+      dispatch(listClient({ company, message })).then(() => {
+        dispatch(listDepot({ company, message })).then(() => {
+          dispatch(listProductInventory({ company, message })).then(() => {
+            history.push(`${path}/${data.id}`);
+            setLoading(false);
+          });
+        });
+      });
+    });
   };
 
   const handleDelete = (data) => {
@@ -93,8 +110,7 @@ const ReturnSlips = (props) => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
-      }
-      else {
+      } else {
         setLoading(false);
         message.error(`Unable to delete ${data.number}`);
       }
@@ -107,16 +123,16 @@ const ReturnSlips = (props) => {
   };
 
   const onSubmit = (data) => {
-    //TODO: Data Validation
+    // TODO: Data Validation
     const products = [];
     data.returnSlipProducts.forEach((returnSlipProduct) => {
       products.push({
         product: {
-          id: returnSlipProduct.product.id
+          id: returnSlipProduct.product.id,
         },
         goodQuantity: returnSlipProduct.goodQuantity || 0,
         badQuantity: returnSlipProduct.badQuantity || 0,
-        unitPrice: returnSlipProduct.unitPrice
+        unitPrice: returnSlipProduct.unitPrice,
       });
     });
     const payload = {
@@ -130,7 +146,7 @@ const ReturnSlips = (props) => {
       client: {
         id: data.client,
       },
-      returnSlipProducts: products
+      returnSlipProducts: products,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -158,9 +174,7 @@ const ReturnSlips = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(
-            `Unable to add Return Slip. Please double check the provided information.`
-          );
+          message.error(`Unable to add Return Slip. Please double check the provided information.`);
         }
       });
     }
@@ -170,14 +184,14 @@ const ReturnSlips = (props) => {
   const renderTableColumns = (fields) => {
     const columns = [];
     fields.forEach((field) => {
-        if (typeof field.render === 'undefined' || field.render === null) {
-          field.render = (object) => object[field.name];
-        }
-        columns.push({
-          title: field.label,
-          key: field.name,
-          render: (object) => field.render(object),
-        });
+      if (typeof field.render === 'undefined' || field.render === null) {
+        field.render = (object) => object[field.name];
+      }
+      columns.push({
+        title: field.label,
+        key: field.name,
+        render: (object) => field.render(object),
+      });
     });
 
     return columns;
@@ -302,7 +316,7 @@ const ReturnSlips = (props) => {
                       if (selectedData[item.name] === null && item.toggle) {
                         return null;
                       }
-                      else if (item.type === 'select' || item.type === 'selectSearch') {
+                      if (item.type === 'select' || item.type === 'selectSearch') {
                         const itemData = selectedData[item.name];
                         return (
                           <Descriptions.Item label={item.label}>
@@ -310,24 +324,22 @@ const ReturnSlips = (props) => {
                           </Descriptions.Item>
                         );
                       }
-                      else if (item.type === 'date') {
+                      if (item.type === 'date') {
                         return (
                           <Descriptions.Item label={item.label}>
                             {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
                           </Descriptions.Item>
                         );
                       }
-                      else if (item.type === 'list') {
+                      if (item.type === 'list') {
                         return null;
                       }
-                      else {
-                        return (
-                          <Descriptions.Item label={item.label}>
-                            {selectedData[item.name]}
-                          </Descriptions.Item>
-                        );
-                      }
 
+                      return (
+                        <Descriptions.Item label={item.label}>
+                          {selectedData[item.name]}
+                        </Descriptions.Item>
+                      );
                     }
 
                     return null;
@@ -335,8 +347,11 @@ const ReturnSlips = (props) => {
                 </Descriptions>
                 <Text>{'Return Slip Items: '}</Text>
                 <Table
-                  dataSource={selectedData[tableDetails.name] !== null && typeof selectedData[tableDetails.name] !== 'undefined' ? 
-                    selectedData[tableDetails.name] : []
+                  dataSource={
+                    selectedData[tableDetails.name] !== null &&
+                    typeof selectedData[tableDetails.name] !== 'undefined'
+                      ? selectedData[tableDetails.name]
+                      : []
                   }
                   columns={renderTableColumns(tableDetails.fields)}
                   pagination={false}

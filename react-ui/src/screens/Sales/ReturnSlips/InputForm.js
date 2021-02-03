@@ -62,25 +62,23 @@ const InputForm = (props) => {
     });
 
     if (hasTable) {
-      if(tableData !== null){
+      if (tableData !== null) {
         data[formTable.name] = tableData;
         onSubmit(data);
+      } else {
+        onFinishFailed(
+          `Unable to submit. Please provide the necessary information on ${formTable.label}`
+        );
       }
-      else{
-        onFinishFailed(`Unable to submit. Please provide the necessary information on ${formTable.label}`)
-      }
-    }
-    else {
+    } else {
       onSubmit(data);
     }
-
   };
 
   const onFinishFailed = (errorInfo) => {
-    if(typeof errorInfo === 'string'){
+    if (typeof errorInfo === 'string') {
       message.error(errorInfo);
-    }
-    else {
+    } else {
       message.error("An error has occurred. Please double check the information you've provided.");
     }
   };
@@ -256,19 +254,18 @@ const InputForm = (props) => {
   };
 
   const onTableSelect = (key, value) => {
-    var formValues = {}
+    const formValues = {};
 
-    if(key === 'salesNumber'){
-      const selectedSaleSlip = orderSlips.find(slip => slip.id === value)
-      formValues[key] = selectedSaleSlip.number
-      formValues['client'] = selectedSaleSlip.salesOrder.client.id
+    if (key === 'salesNumber') {
+      const selectedSaleSlip = orderSlips.find((slip) => slip.id === value);
+      formValues[key] = selectedSaleSlip.number;
+      formValues.client = selectedSaleSlip.salesOrder.client.id;
+    } else {
+      formValues[key] = value;
     }
-    else {
-      formValues[key] = value
-    }
-    onValuesChange(formValues)
-    form.setFieldsValue(formValues)
-  }
+    onValuesChange(formValues);
+    form.setFieldsValue(formValues);
+  };
 
   return (
     <>
@@ -291,24 +288,25 @@ const InputForm = (props) => {
                 if (item.toggleCondition(toggleValue)) {
                   return <FormItem item={item} onFail={onFail} />;
                 }
-                else {
-                  return (
-                  <FormItem 
+
+                return (
+                  <FormItem
                     item={{
                       ...item,
-                      readOnly: true
-                    }} 
-                    onFail={onFail} 
-                  />)
-                }
+                      readOnly: true,
+                    }}
+                    onFail={onFail}
+                  />
+                );
               }
 
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {orderSlips.length > 0 && formDetails.rs_items.map((item) => {
-              return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
-            })}
+            {orderSlips.length > 0 &&
+              formDetails.rs_items.map((item) => {
+                return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
+              })}
           </Form>
           {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
             <Col span={20} offset={1}>

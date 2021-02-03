@@ -12,9 +12,9 @@ const initialState = {
 
 export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  var { company, fnCallback } = payload;
-  if(typeof fnCallback === 'undefined'){
-    fnCallback = () => {}
+  let { company, fnCallback } = payload;
+  if (typeof fnCallback === 'undefined') {
+    fnCallback = () => {};
   }
   const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
 
