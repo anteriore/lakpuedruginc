@@ -3,10 +3,49 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, message } from 'antd';
 import moment from 'moment';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
 export const columns = [
+  {
+    title: 'Depot',
+    dataIndex: 'depot',
+    key: 'depot',
+    datatype: 'object',
+  },
+  {
+    title: 'Return Slip Number',
+    dataIndex: 'number',
+    key: 'number',
+    datatype: 'string',
+  },
+  {
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
+    datatype: 'date',
+  },
+  {
+    title: 'Sales Number',
+    dataIndex: 'salesNumber',
+    key: 'salesNumber',
+    datatype: 'string',
+  },
+  {
+    title: 'Client',
+    dataIndex: 'client',
+    key: 'client',
+    datatype: 'object',
+  },
+  {
+    title: 'Amount',
+    dataIndex: 'totalAmount',
+    key: 'totalAmount',
+  },
+];
+
+export const reportColumns = [
   {
     title: 'Depot',
     dataIndex: 'depot',
@@ -49,8 +88,10 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
-  const productInventories = useSelector((state) => state.maintenance.productInventory.list);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
   const [displayModal, setDisplayModal] = useState(false);
+  var salesSlips = []
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices)
 
   const formDetails = {
     form_name: 'return_slip',
@@ -78,7 +119,9 @@ const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearOS())
+          dispatch(clearSI())
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
+          dispatch(listSalesInvoiceByDepot({ depot: e }));
         },
       },
       {
@@ -86,16 +129,7 @@ const FormDetails = () => {
         name: 'client',
         type: 'selectSearch',
         selectName: 'name',
-        toggle: true,
-        readOnly: false,
-        toggleCondition: (value) => {
-          if (value === null || typeof value === 'undefined' ) {
-            return true;
-          }
-          else {
-            return false;
-          }
-        },
+        readOnly: true,
         choices: clients,
         render: (client) => `[${client.code}] ${client.name}`,
         rules: [{ required: true }],
@@ -106,12 +140,12 @@ const FormDetails = () => {
         label: 'DR/OS',
         name: 'salesNumber',
         type: 'selectTable',
-        rules: [],
+        rules: [{ required: true }],
         allowEmpty: true,
         placeholder: "Select DR/OS",
         displayModal: displayModal,
         setDisplayModal: setDisplayModal,
-        dataSource: orderSlips,
+        dataSource: salesSlips,
         columns: [
           {
             title: 'DR/OS Number',
@@ -143,6 +177,13 @@ const FormDetails = () => {
         },
         emptyText: 'No data retrieved for sales slips in the selected depot. Please select another depot.'
       },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        type: 'textArea',
+        rules: [{ message: 'Please provide a valid remark' }],
+        placeholder: 'Remarks',
+      },
     ]
   };
 
@@ -160,18 +201,43 @@ const FormDetails = () => {
         },
       },
       {
+        label: 'Quantity',
+        name: 'quantity',
+        type: 'readOnly',
+        render: (object) => {
+          return object.goodQuantity + object.badQuantity
+        },
+      },
+      {
         label: 'Good Quantity',
         name: 'goodQuantity',
-        type: 'number',
-        rules: [{ required: true }],
-        min: 0,
-        initialValue: 0
+        render: (object) => {
+          if(typeof object.quantity !== 'undefined' && object.quantity !== null){
+            return object.quantity - object.badQuantity || object.quantity;
+          }
+          else {
+            return object.goodQuantity
+          }
+        },
       },
       {
         label: 'Bad Quantity',
         name: 'badQuantity',
         type: 'number',
-        rules: [{ required: true }],
+        rules: [
+          { required: true },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              const index = parseInt(rule.field.split('.')[1])
+              const products = getFieldValue('returnSlipProducts')
+              
+              if (products[index].quantity >= value) {
+                return Promise.resolve();
+              }
+              return Promise.reject();
+            },
+          }),
+        ],
         min: 0,
         initialValue: 0
       },
@@ -186,7 +252,12 @@ const FormDetails = () => {
         label: 'Amount',
         name: 'amount',
         render: (object) => {
-          return object.goodQuantity * object.unitPrice || 0;
+          if(typeof object.quantity !== 'undefined' && object.quantity !== null){
+            return (object.quantity - object.badQuantity) * object.unitPrice || object.quantity * object.unitPrice;
+          }
+          else {
+            return object.goodQuantity * object.unitPrice
+          }
         },
       },
     ],
@@ -207,7 +278,7 @@ const FormDetails = () => {
     },
     foreignKey: 'product',
     selectedKey: 'product',
-    selectData: productInventories,
+    selectData: null, //to be provided in the InputForm
     selectFields: [
       {
         title: 'Lot Number',
@@ -252,7 +323,7 @@ const FormDetails = () => {
       var processedData = { 
         ...data,
         product: data.product,
-        unitPrice: data.product.unitPrice,
+        unitPrice: data.unitPrice,
         key: data.product.id
       }
       delete processedData.id
@@ -267,6 +338,7 @@ const FormDetails = () => {
         return true;
       }
     },
+    emptyText: "Please select a delivery receipt (DR) or an order slip (OS)."
   };
 
   return { formDetails, tableDetails };
