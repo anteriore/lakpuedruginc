@@ -21,23 +21,26 @@ export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payl
   }
 });
 
-export const listSalesInvoiceByDepot = createAsyncThunk('listSalesInvoiceByDepot', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(
-      `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
-    );
+export const listSalesInvoiceByDepot = createAsyncThunk(
+  'listSalesInvoiceByDepot',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
 export const listSalesInvoiceWithBalanceByDepot = createAsyncThunk('listSalesInvoiceWithBalanceByDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
