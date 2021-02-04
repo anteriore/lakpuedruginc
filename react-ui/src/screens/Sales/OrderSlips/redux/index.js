@@ -69,8 +69,8 @@ export const listOrderSlipsWithBalanceByDepot = createAsyncThunk(
 
     const processedResponse = {
       ...response,
-      data: filterOSWithBalance(response.data)
-    }
+      data: filterOSWithBalance(response.data),
+    };
 
     if (typeof response !== 'undefined' && response.status === 200) {
       const { data } = processedResponse;
@@ -109,16 +109,15 @@ export const deleteOrderSlips = createAsyncThunk('deleteOrderSlips', async (payl
 });
 
 const filterOSWithBalance = (data) => {
-  const processedData = []
+  const processedData = [];
   data.forEach((orderSlip) => {
-    if(orderSlip.remainingBalance > 0){
-      processedData.push(orderSlip)
+    if (orderSlip.remainingBalance > 0) {
+      processedData.push(orderSlip);
     }
-  })
+  });
 
-  return processedData
-
-}
+  return processedData;
+};
 
 const initialState = {
   orderSlipsList: [],

@@ -1,20 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Empty,
-  Modal,
-  Alert,
-  message,
-} from 'antd';
+import { Form, Button, Row, Col, Typography, Table, Empty, Modal, Alert, message } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import FormItem from '../../../components/forms/FormItem';
 import { useSelector } from 'react-redux';
+import FormItem from '../../../components/forms/FormItem';
 
 const { Title, Text } = Typography;
 
@@ -47,13 +36,13 @@ const FormScreen = (props) => {
         data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format(
           'HH:mm:ss'
         )}`;
-      }
-      else if(item.type === 'selectTable'&&
-      typeof data[item.name] !== 'undefined' &&
-      data[item.name] !== null
-      ){
-        const dataField = data[item.name]
-        data[item.name] = dataField[item.rowKey]
+      } else if (
+        item.type === 'selectTable' &&
+        typeof data[item.name] !== 'undefined' &&
+        data[item.name] !== null
+      ) {
+        const dataField = data[item.name];
+        data[item.name] = dataField[item.rowKey];
       }
     });
 
@@ -70,40 +59,39 @@ const FormScreen = (props) => {
   };
 
   const onValuesChange = (event) => {
-    if(event.hasOwnProperty("acknowledgementReceipt")){
-      console.log(event)
-      const selectedAR = areceipts.find(areceipt => areceipt.id === event.acknowledgementReceipt)
+    if (event.hasOwnProperty('acknowledgementReceipt')) {
+      console.log(event);
+      const selectedAR = areceipts.find((areceipt) => areceipt.id === event.acknowledgementReceipt);
       form.setFieldsValue({
         customerCode: selectedAR.client.code,
         tin: selectedAR.client.tin,
         receivedFrom: selectedAR.client.name,
         businessAddress: selectedAR.client.businessAddress,
-      })
-      var paymentsData = []
+      });
+      const paymentsData = [];
       selectedAR.payments.forEach((payment) => {
         paymentsData.push({
           ...payment.reference,
-          appliedAmount: payment.appliedAmount
-        })
-      })
-      console.log(paymentsData)
-      setTableData(paymentsData)
-
+          appliedAmount: payment.appliedAmount,
+        });
+      });
+      console.log(paymentsData);
+      setTableData(paymentsData);
     }
-  }
+  };
 
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
 
   const onTableSelect = (key, value) => {
-    var formValues = {}
-    formValues[key] = value
-    onValuesChange(formValues)
-    const selectedAR = areceipts.find(areceipt => areceipt.id === value)
-    formValues[key] = selectedAR
-    form.setFieldsValue(formValues)
-  }
+    const formValues = {};
+    formValues[key] = value;
+    onValuesChange(formValues);
+    const selectedAR = areceipts.find((areceipt) => areceipt.id === value);
+    formValues[key] = selectedAR;
+    form.setFieldsValue(formValues);
+  };
 
   return (
     <>
@@ -125,95 +113,95 @@ const FormScreen = (props) => {
               return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
 
-            {areceipts !== null && areceipts.length > 0 ? ( 
-            formDetails.ar_items.map((item) => {
-              return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
-            })
-            ):(
-              <Alert 
-                message="Please select a depot with a pending acknowledgement receipt." 
-                type="warning" 
-                showIcon 
-                style={{width: '62.5%', marginLeft: '25%', marginBottom: '2%'}} />
+            {areceipts !== null && areceipts.length > 0 ? (
+              formDetails.ar_items.map((item) => {
+                return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
+              })
+            ) : (
+              <Alert
+                message="Please select a depot with a pending acknowledgement receipt."
+                type="warning"
+                showIcon
+                style={{ width: '62.5%', marginLeft: '25%', marginBottom: '2%' }}
+              />
             )}
           </Form>
-          
-           
-          
+
           {areceipts !== null && areceipts.length > 0 && (
-          <Table
-            dataSource={tableData}
-            columns={formTable.columns}
-            pagination={false}
-            locale={{ emptyText: <Empty description="Please select an Acknowledgement Receipt." /> }}
-            summary={(data) => {
-              let vatableSales = 0;
-              let totalSales = 0;
-              let vatExemptSales = 0;
-              let vatLess = 0;
-              let zeroRatedSales = 0;
-              let netSales = 0;
-              data.forEach(({ appliedAmount }) => {
-                vatableSales += appliedAmount / 1.12
-                totalSales += appliedAmount
-                vatLess += appliedAmount / 1.12 * 0.12
-                netSales += appliedAmount / 1.12
-              });
-              return(
-                <>
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell>VATABLE Sales</Table.Summary.Cell>
-                    <Table.Summary.Cell>
-                      <Text>{vatableSales.toFixed(2)}</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell>Total Sales (Vat Inclusive)</Table.Summary.Cell>
-                    <Table.Summary.Cell>
-                      <Text>{totalSales.toFixed(2)}</Text>
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell>VAT Exempt Sales</Table.Summary.Cell>
-                    <Table.Summary.Cell>
-                      <Text>{vatExemptSales.toFixed(2)}</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell>less VAT</Table.Summary.Cell>
-                    <Table.Summary.Cell>
-                      <Text>{vatLess.toFixed(2)}</Text>
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell>Zero-Rated Sales</Table.Summary.Cell>
-                    <Table.Summary.Cell>
-                      <Text>{zeroRatedSales.toFixed(2)}</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell>NET</Table.Summary.Cell>
-                    <Table.Summary.Cell>
-                      <Text>{netSales.toFixed(2)}</Text>
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-                </>
-              )
-            }
-            }
-            style={{width: "87.5%"}}
-          />
+            <Table
+              dataSource={tableData}
+              columns={formTable.columns}
+              pagination={false}
+              locale={{
+                emptyText: <Empty description="Please select an Acknowledgement Receipt." />,
+              }}
+              summary={(data) => {
+                let vatableSales = 0;
+                let totalSales = 0;
+                const vatExemptSales = 0;
+                let vatLess = 0;
+                const zeroRatedSales = 0;
+                let netSales = 0;
+                data.forEach(({ appliedAmount }) => {
+                  vatableSales += appliedAmount / 1.12;
+                  totalSales += appliedAmount;
+                  vatLess += (appliedAmount / 1.12) * 0.12;
+                  netSales += appliedAmount / 1.12;
+                });
+                return (
+                  <>
+                    <Table.Summary.Row>
+                      <Table.Summary.Cell>VATABLE Sales</Table.Summary.Cell>
+                      <Table.Summary.Cell>
+                        <Text>{vatableSales.toFixed(2)}</Text>
+                      </Table.Summary.Cell>
+                      <Table.Summary.Cell>Total Sales (Vat Inclusive)</Table.Summary.Cell>
+                      <Table.Summary.Cell>
+                        <Text>{totalSales.toFixed(2)}</Text>
+                      </Table.Summary.Cell>
+                    </Table.Summary.Row>
+                    <Table.Summary.Row>
+                      <Table.Summary.Cell>VAT Exempt Sales</Table.Summary.Cell>
+                      <Table.Summary.Cell>
+                        <Text>{vatExemptSales.toFixed(2)}</Text>
+                      </Table.Summary.Cell>
+                      <Table.Summary.Cell>less VAT</Table.Summary.Cell>
+                      <Table.Summary.Cell>
+                        <Text>{vatLess.toFixed(2)}</Text>
+                      </Table.Summary.Cell>
+                    </Table.Summary.Row>
+                    <Table.Summary.Row>
+                      <Table.Summary.Cell>Zero-Rated Sales</Table.Summary.Cell>
+                      <Table.Summary.Cell>
+                        <Text>{zeroRatedSales.toFixed(2)}</Text>
+                      </Table.Summary.Cell>
+                      <Table.Summary.Cell>NET</Table.Summary.Cell>
+                      <Table.Summary.Cell>
+                        <Text>{netSales.toFixed(2)}</Text>
+                      </Table.Summary.Cell>
+                    </Table.Summary.Row>
+                  </>
+                );
+              }}
+              style={{ width: '87.5%' }}
+            />
           )}
 
           {areceipts !== null && areceipts.length > 0 && (
-          <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
-              Submit
-            </Button>
-            <Button
-              style={{ marginRight: '2%' }}
-              onClick={() => {
-                onCancel();
-                history.goBack();
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
+            <div style={styles.tailLayout}>
+              <Button type="primary" onClick={() => form.submit()}>
+                Submit
+              </Button>
+              <Button
+                style={{ marginRight: '2%' }}
+                onClick={() => {
+                  onCancel();
+                  history.goBack();
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           )}
         </Col>
       </Row>

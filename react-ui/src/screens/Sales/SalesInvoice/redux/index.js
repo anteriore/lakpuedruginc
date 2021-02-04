@@ -42,28 +42,31 @@ export const listSalesInvoiceByDepot = createAsyncThunk(
   }
 );
 
-export const listSalesInvoiceWithBalanceByDepot = createAsyncThunk('listSalesInvoiceWithBalanceByDepot', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(
-      `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
-    );
+export const listSalesInvoiceWithBalanceByDepot = createAsyncThunk(
+  'listSalesInvoiceWithBalanceByDepot',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+      );
 
-    const processedResponse = {
-      ...response,
-      data: filterSIWithBalance(response.data)
+      const processedResponse = {
+        ...response,
+        data: filterSIWithBalance(response.data),
+      };
+
+      const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-
-    const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
-
-    if (valid) {
-      return validatedResponse;
-    }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
 export const createSalesInvoice = createAsyncThunk(
   'createSalesInvoice',
@@ -88,16 +91,15 @@ export const createSalesInvoice = createAsyncThunk(
 );
 
 const filterSIWithBalance = (data) => {
-  const processedData = []
+  const processedData = [];
   data.forEach((salesInvoice) => {
-    if(salesInvoice.remainingBalance > 0){
-      processedData.push(salesInvoice)
+    if (salesInvoice.remainingBalance > 0) {
+      processedData.push(salesInvoice);
     }
-  })
+  });
 
-  return processedData
-
-}
+  return processedData;
+};
 
 const initialState = {
   salesInvoiceList: [],

@@ -149,7 +149,7 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please provide a sales order client' }],
       placeholder: 'Sales order client',
       render: (client) => {
-        return `[${client.code}] ${client.name}`
+        return `[${client.code}] ${client.name}`;
       },
       type: 'selectSearch',
       choices: [],

@@ -3,26 +3,23 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listSalesOrder = createAsyncThunk(
-  'listSalesOrder',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
-    try {
-      const response = await axiosInstance.get(
-        `/rest/sales-orders/company/${payload}?token=${accessToken}`
-      );
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
+  try {
+    const response = await axiosInstance.get(
+      `/rest/sales-orders/company/${payload}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-);
+});
 
 export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -98,7 +95,10 @@ const salesOrdersSlice = createSlice({
     },
     [listSalesOrder.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Sales Order');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Order'
+      );
 
       return {
         ...state,
@@ -106,12 +106,15 @@ const salesOrdersSlice = createSlice({
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage: message,
+        statusMessage,
       };
     },
     [listSalesOrder.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Sales Order');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Order'
+      );
 
       return {
         ...state,
@@ -119,7 +122,7 @@ const salesOrdersSlice = createSlice({
         statusLevel: level,
         responseCode: status,
         action: 'fetch',
-        statusMessage: message,
+        statusMessage,
       };
     },
     [listSalesOrderByDepot.pending]: (state) => {
@@ -179,7 +182,7 @@ const salesOrdersSlice = createSlice({
         action: 'error',
         statusMessage: message.ITEM_ADD_REJECTED,
       };
-    }
+    },
   },
 });
 

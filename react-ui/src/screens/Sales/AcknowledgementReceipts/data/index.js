@@ -103,8 +103,8 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearOS())
-          dispatch(clearSI())
+          dispatch(clearOS());
+          dispatch(clearSI());
           dispatch(listOrderSlipsWithBalanceByDepot({ message, depot: e }));
           dispatch(listSalesInvoiceWithBalanceByDepot({ depot: e }));
         },
@@ -268,7 +268,7 @@ const FormDetails = () => {
 
           return object.remainingBalance || 0;
         },
-        writeOnly: true
+        writeOnly: true,
       },
     ],
     summary: (data) => {
@@ -328,7 +328,7 @@ const FormDetails = () => {
       },
     ],
     getValues: (values) => {
-      console.log(values)
+      console.log(values);
       const payments = [];
       values.payments.forEach((payment) => {
         payments.push({

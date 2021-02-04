@@ -40,7 +40,6 @@ const OfficialReceipts = (props) => {
       dispatch(clearData());
       dispatch(clearDepot());
     };
-
   }, [dispatch, company]);
 
   const handleAdd = () => {
@@ -55,7 +54,7 @@ const OfficialReceipts = (props) => {
   };
 
   const handleUpdate = (data) => {
-    message.error("Unable to perform action.")
+    message.error('Unable to perform action.');
     /*
     setFormTitle('Edit Official Receipt');
     setFormMode('edit');
@@ -95,7 +94,7 @@ const OfficialReceipts = (props) => {
   };
 
   const onSubmit = (data) => {
-    var payments = []
+    const payments = [];
 
     const payload = {
       ...data,
@@ -109,10 +108,10 @@ const OfficialReceipts = (props) => {
         id: data.depot,
       },
       preparedBy: {
-        id: user.id
-      }
+        id: user.id,
+      },
     };
-    console.log(payload)
+    console.log(payload);
     if (formMode === 'edit') {
       payload.id = formData.id;
       dispatch(addOReceipt(payload)).then((response) => {
@@ -137,10 +136,11 @@ const OfficialReceipts = (props) => {
             history.goBack();
             message.success(`Successfully added ${response.payload.data.number}`);
           });
-        } 
-        else {
+        } else {
           setLoading(false);
-          message.error(`Unable to add Official Receipt. Please double check the provided information.`);
+          message.error(
+            `Unable to add Official Receipt. Please double check the provided information.`
+          );
         }
       });
     }
@@ -232,8 +232,8 @@ const OfficialReceipts = (props) => {
                 >
                   {formDetails.form_items.map((item) => {
                     if (!item.writeOnly) {
-                      if(selectedAR[item.name] === null && item.toggle){
-                        return null
+                      if (selectedAR[item.name] === null && item.toggle) {
+                        return null;
                       }
                       if (item.type === 'select' || item.type === 'selectSearch') {
                         const itemData = selectedAR[item.name];
@@ -263,16 +263,16 @@ const OfficialReceipts = (props) => {
 
                     return null;
                   })}
-                  
+
                   {formDetails.ar_items.map((item) => {
                     return (
                       <Descriptions.Item label={item.label}>
-                      {item.toString(selectedAR['acknowledgementReceipt'])}
+                        {item.toString(selectedAR.acknowledgementReceipt)}
                       </Descriptions.Item>
                     );
                   })}
                 </Descriptions>
-                <Text>{'Payment Details:'}</Text>
+                <Text>Payment Details:</Text>
                 <Table
                   dataSource={tableDetails.getValues(selectedAR.acknowledgementReceipt)}
                   columns={tableDetails.columns}

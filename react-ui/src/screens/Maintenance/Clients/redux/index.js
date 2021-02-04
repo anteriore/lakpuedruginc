@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import {checkResponseValidity, generateStatusMessage} from  '../../../../helpers/general-helper';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
   list: null,
@@ -17,7 +17,9 @@ export const tempListClient = createAsyncThunk('tempListClient', async (payload,
   const accessToken = thunkAPI.getState().auth.token;
 
   try {
-    const response = await axiosInstance.get(`/rest/clients/company/${payload}?token=${accessToken}`);
+    const response = await axiosInstance.get(
+      `/rest/clients/company/${payload}?token=${accessToken}`
+    );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -37,7 +39,6 @@ export const listClient = createAsyncThunk('listClient', async (payload, thunkAP
     fnCallback = () => {};
   }
   const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
-
 
   if (typeof response !== 'undefined') {
     const { status } = response;

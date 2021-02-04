@@ -2,10 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import _ from 'lodash';
 import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space } from 'antd';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import statusDialogue from '../../../components/StatusDialogue';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { unwrapResult } from '@reduxjs/toolkit';
+import statusDialogue from '../../../components/StatusDialogue';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
@@ -25,8 +26,6 @@ import {
   tempListProductInventory,
 } from '../../Maintenance/redux/productInventory';
 
-import { unwrapResult } from '@reduxjs/toolkit';
-
 const { Title } = Typography;
 
 const SalesOrders = (props) => {
@@ -39,29 +38,31 @@ const SalesOrders = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
 
   const { path } = useRouteMatch();
-  const { salesOrderList, action, statusMessage, status, statusLevel } = useSelector((state) => state.sales.salesOrders);
+  const { salesOrderList, action, statusMessage, status, statusLevel } = useSelector(
+    (state) => state.sales.salesOrders
+  );
   const { id } = useSelector((state) => state.auth.user);
 
   const {
-    action: actionDepot, 
+    action: actionDepot,
     statusMessage: statusMessageDepot,
     status: statusDepot,
     statusLevel: statusLevelDepot,
-  } = useSelector(state => state.maintenance.depots)
+  } = useSelector((state) => state.maintenance.depots);
 
   const {
     action: actionClient,
     statusMessage: statusMessageClient,
     status: statusClient,
-    statusLevel: statusLevelClient
-  } = useSelector(state => state.maintenance.clients)
+    statusLevel: statusLevelClient,
+  } = useSelector((state) => state.maintenance.clients);
 
   const {
     action: actionPI,
     statusMessage: statusMessagePI,
     status: statusPI,
-    statusLevel: statusLevelPI
-  } = useSelector(state => state.maintenance.productInventory)
+    statusLevel: statusLevelPI,
+  } = useSelector((state) => state.maintenance.productInventory);
 
   const pushErrorPage = useCallback(
     (statusCode) => {
@@ -102,7 +103,7 @@ const SalesOrders = (props) => {
         );
       }
     }
-  },[actionClient, statusMessageClient, statusClient, statusLevelClient])
+  }, [actionClient, statusMessageClient, statusClient, statusLevelClient]);
 
   useEffect(() => {
     if (statusPI !== 'loading') {
@@ -139,18 +140,18 @@ const SalesOrders = (props) => {
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
-   let isCancelled = false;
-   setContentLoading(true);
-   dispatch(listSalesOrder(company))
-    .then(unwrapResult)
-    .then(() => {
-      if(isCancelled) {
-        dispatch(clearData());
-      }
-    })
-    .catch((rejectedValueOrSerializedError) => {
-      console.log(rejectedValueOrSerializedError);
-    })
+    let isCancelled = false;
+    setContentLoading(true);
+    dispatch(listSalesOrder(company))
+      .then(unwrapResult)
+      .then(() => {
+        if (isCancelled) {
+          dispatch(clearData());
+        }
+      })
+      .catch((rejectedValueOrSerializedError) => {
+        console.log(rejectedValueOrSerializedError);
+      });
 
     setContentLoading(false);
     return function cleanup() {
@@ -160,7 +161,7 @@ const SalesOrders = (props) => {
       dispatch(clearPI());
 
       isCancelled = true;
-    }
+    };
   }, [dispatch, company, history]);
 
   const handleAddButton = () => {
@@ -173,7 +174,7 @@ const SalesOrders = (props) => {
             return o.type.split(/[/?]/g)[1] === 'rejected';
           });
 
-          if(!promiseResult) {
+          if (!promiseResult) {
             const promiseValues = _.some(promiseList, (o) => {
               return o.payload.status !== 200 && o.payload.data.length === 0;
             });
@@ -186,9 +187,9 @@ const SalesOrders = (props) => {
             const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
             pushErrorPage(payload.status);
           }
-        })
-      })
-    })
+        });
+      });
+    });
   };
 
   const handleRetrieve = (data) => {
