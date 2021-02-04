@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import _ from 'lodash';
-import { Row, Typography, Col, Button, Skeleton, message, Modal, Descriptions, Space } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space } from 'antd';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import statusDialogue from '../../../components/StatusDialogue';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -17,17 +18,14 @@ import {
   approveSalesOrder,
   rejectSalesOrder,
 } from './redux';
-import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearClient, listClient } from '../../Maintenance/Clients/redux';
+import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearClient, tempListClient } from '../../Maintenance/Clients/redux';
 import {
   clearData as clearPI,
-  listProductInventory,
+  tempListProductInventory,
 } from '../../Maintenance/redux/productInventory';
 
-import {
-  NO_DATA_FOUND,
-  NO_DATA_FOUND_DESC,
-} from '../../../data/constants/response-message.constant';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const { Title } = Typography;
 
@@ -41,118 +39,156 @@ const SalesOrders = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
 
   const { path } = useRouteMatch();
-  const { salesOrderList, action, statusMessage } = useSelector((state) => state.sales.salesOrders);
+  const { salesOrderList, action, statusMessage, status, statusLevel } = useSelector((state) => state.sales.salesOrders);
   const { id } = useSelector((state) => state.auth.user);
 
-  const dispatchPayload = {
-    company,
-    fnCallback: (response) => {
-      const { status } = response;
-      console.log(response)
-      switch (status) {
-        case 200:
-          setContentLoading(false);
-          if (response.data.length === 0) {
-            message.warning(response.statusText);
-          }
-          break;
-        case 400:
-        case 500:
-          history.push({
-            pathname: `/error/${status === 400 ? 403 : status}`,
-            state: {
-              moduleList: '/sales',
-            },
-          });
-          break;
-        default:
-          break;
-      }
+  const {
+    action: actionDepot, 
+    statusMessage: statusMessageDepot,
+    status: statusDepot,
+    statusLevel: statusLevelDepot,
+  } = useSelector(state => state.maintenance.depots)
+
+  const {
+    action: actionClient,
+    statusMessage: statusMessageClient,
+    status: statusClient,
+    statusLevel: statusLevelClient
+  } = useSelector(state => state.maintenance.clients)
+
+  const {
+    action: actionPI,
+    statusMessage: statusMessagePI,
+    status: statusPI,
+    statusLevel: statusLevelPI
+  } = useSelector(state => state.maintenance.productInventory)
+
+  const pushErrorPage = useCallback(
+    (statusCode) => {
+      history.push({
+        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
+        state: {
+          moduleList: '/sales',
+        },
+      });
     },
-  };
+    [history]
+  );
 
   useEffect(() => {
-    let isCancelled = false;
+    if (status !== 'loading') {
+      if (action === 'fetch' && statusLevel !== 'success') {
+        statusDialogue({ statusMessage, statusLevel }, 'message');
+      }
 
-    dispatch(listSalesOrder(dispatchPayload)).then(() => {
-      if (isCancelled) {
+      if (action !== 'fetch') {
+        statusDialogue({ statusMessage, statusLevel }, 'message');
+      }
+    }
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    if (statusClient !== 'loading') {
+      if (actionClient === 'fetch' && statusLevelClient === 'warning') {
+        statusDialogue(
+          {
+            statusLevel: statusLevelClient,
+            modalContent: {
+              title: `${_.capitalize(statusLevelClient)} - (Client)`,
+              content: statusMessageClient,
+            },
+          },
+          'modal'
+        );
+      }
+    }
+  },[actionClient, statusMessageClient, statusClient, statusLevelClient])
+
+  useEffect(() => {
+    if (statusPI !== 'loading') {
+      if (actionPI === 'fetch' && statusLevelPI === 'warning') {
+        statusDialogue(
+          {
+            statusLevel: statusLevelPI,
+            modalContent: {
+              title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
+              content: statusMessagePI,
+            },
+          },
+          'modal'
+        );
+      }
+    }
+  }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
+
+  useEffect(() => {
+    if (statusDepot !== 'loading') {
+      if (actionDepot === 'fetch' && statusLevelDepot === 'warning') {
+        statusDialogue(
+          {
+            statusLevel: statusLevelDepot,
+            modalContent: {
+              title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
+              content: statusMessageDepot,
+            },
+          },
+          'modal'
+        );
+      }
+    }
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
+
+  useEffect(() => {
+   let isCancelled = false;
+   setContentLoading(true);
+   dispatch(listSalesOrder(company))
+    .then(unwrapResult)
+    .then(() => {
+      if(isCancelled) {
         dispatch(clearData());
       }
-    });
+    })
+    .catch((rejectedValueOrSerializedError) => {
+      console.log(rejectedValueOrSerializedError);
+    })
 
+    setContentLoading(false);
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearClient());
       dispatch(clearPI());
-      isCancelled = true;
-    };
-  }, [dispatch, company, history]);
 
-  useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
+      isCancelled = true;
     }
-  }, [statusMessage, action]);
+  }, [dispatch, company, history]);
 
   const handleAddButton = () => {
     setContentLoading(true);
-    const payload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              Modal.warning({
-                title: NO_DATA_FOUND,
-                content: NO_DATA_FOUND_DESC(response.config.url.split(/[/?]/g)[1]),
-              });
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales/sales-orders',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-
-    dispatch(listDepot(payload)).then((dataDepot) => {
-      if (typeof dataDepot.payload !== 'undefined') {
-        if (dataDepot.payload.status === 200 && dataDepot.payload.data.length !== 0) {
-          dispatch(listClient(payload)).then((dataClient) => {
-            if (dataClient.payload.status === 200 && dataClient.payload.data.length !== 0) {
-              dispatch(listProductInventory(payload)).then((dataPI) => {
-                if (dataPI.payload.status === 200 && dataPI.payload.data.length !== 0) {
-                  history.push(`${path}/new`);
-                  setContentLoading(false);
-                } else if (dataPI.payload.status === 200 && dataPI.payload.data.length === 0) {
-                  setContentLoading(false);
-                }
-              });
-            } else if (dataClient.payload.status === 200 && dataClient.payload.data.length === 0) {
-              setContentLoading(false);
-            }
+    dispatch(tempListDepot(company)).then((dataDepot) => {
+      dispatch(tempListClient(company)).then((dataClient) => {
+        dispatch(tempListProductInventory()).then((dataPI) => {
+          const promiseList = [dataDepot, dataPI, dataClient];
+          const promiseResult = _.some(promiseList, (o) => {
+            return o.type.split(/[/?]/g)[1] === 'rejected';
           });
-        } else if (dataDepot.payload.status === 200 && dataDepot.payload.data.length === 0) {
-          setContentLoading(false);
-        }
-      }
-    });
+
+          if(!promiseResult) {
+            const promiseValues = _.some(promiseList, (o) => {
+              return o.payload.status !== 200 && o.payload.data.length === 0;
+            });
+
+            if (!promiseValues) {
+              history.push(`${path}/new`);
+            }
+            setContentLoading(false);
+          } else {
+            const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
+            pushErrorPage(payload.status);
+          }
+        })
+      })
+    })
   };
 
   const handleRetrieve = (data) => {
@@ -161,108 +197,24 @@ const SalesOrders = (props) => {
   };
 
   const handleApprove = (data) => {
-    const salesOrderPayload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              message.warning(response.statusText);
-              setContentLoading(false);
-            } else {
-              setContentLoading(false);
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-
     dispatch(approveSalesOrder(data.id)).then(() => {
-      dispatch(listSalesOrder(salesOrderPayload)).then(() => {
+      dispatch(listSalesOrder(company)).then(() => {
         setDisplayModal(false);
       });
     });
   };
 
   const handleReject = (data) => {
-    const salesOrderPayload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              message.warning(response.statusText);
-              setContentLoading(false);
-            } else {
-              setContentLoading(false);
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-
     dispatch(rejectSalesOrder(data.id)).then(() => {
-      dispatch(listSalesOrder(salesOrderPayload)).then(() => {
+      dispatch(listSalesOrder(company)).then(() => {
         setDisplayModal(false);
       });
     });
   };
 
   const onCreate = (value) => {
-    const salesOrderPayload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              message.warning(response.statusText);
-              setContentLoading(false);
-            } else {
-              setContentLoading(false);
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-
     dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
-      dispatch(listSalesOrder(salesOrderPayload));
+      dispatch(listSalesOrder(company));
     });
   };
 

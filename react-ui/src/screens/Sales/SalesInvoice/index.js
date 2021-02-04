@@ -11,7 +11,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import { listSalesInvoice, clearData, createSalesInvoice } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearSO, tempListSalesOrder } from '../SalesOrders/redux';
+import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
 import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
@@ -148,12 +148,12 @@ const SalesInvoice = (props) => {
 
       isCancelled = true;
     };
-  }, [dispatch, company, history, pushErrorPage]);
+  }, [dispatch, company, history]);
 
   const handleAddButton = () => {
     dispatch(tempListDepot(company)).then((dataDepot) => {
       dispatch(tempListProductInventory()).then((dataPI) => {
-        dispatch(tempListSalesOrder(company)).then((dataSO) => {
+        dispatch(listSalesOrder(company)).then((dataSO) => {
           const promiseList = [dataDepot, dataPI, dataSO];
           const promiseResult = _.some(promiseList, (o) => {
             return o.type.split(/[/?]/g)[1] === 'rejected';
@@ -200,9 +200,6 @@ const SalesInvoice = (props) => {
       <Route path={`${path}/new`}>
         <InputForm title="New Sales Invoice" onSubmit={onCreate} company={company} />
       </Route>
-      {/* <Route path={`${path}/:id/edit`}>
-        <InputForm title="Edit Order Slip" onSubmit={onUpdate} company={company} />
-      </Route> */}
       <Route path={`${path}`}>
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>

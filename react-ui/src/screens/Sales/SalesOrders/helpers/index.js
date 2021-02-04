@@ -56,7 +56,7 @@ export const formatPayload = (approvalId, company, value) => {
     number: value.number,
     remarks: value.remarks,
     type: value.type,
-    status: value.status,
+    status: "Pending",
     products: [],
   };
 
