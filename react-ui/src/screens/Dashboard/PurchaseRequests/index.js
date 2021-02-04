@@ -135,9 +135,9 @@ const PurchaseRequests = (props) => {
   }, [itemData]);
 
   const closeModal = () => {
+    setLoadingItem(true);
     setDisplayModal(false);
     setDisplayData(null);
-    setLoadingItem(true);
   };
 
   const handleUpdate = (data) => {

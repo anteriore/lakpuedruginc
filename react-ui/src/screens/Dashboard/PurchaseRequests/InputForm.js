@@ -130,13 +130,14 @@ const InputForm = (props) => {
       });
     } else {
       var selectedItems = formData.requestedItems.slice();
-      selectedItems.pop(data);
+      selectedItems = selectedItems.filter(
+        (item) => item.id !== data.id
+      );
       setFormData({
         ...formData,
         requestedItems: selectedItems,
       });
     }
-    //
   };
 
   const onFinish = (values) => {
@@ -303,6 +304,7 @@ const InputForm = (props) => {
                       columns={renderColumns(fields)}
                       pagination={false}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      rowKey={"id"}
                     />
                     <Form.ErrorList errors={errors} />
                   </Col>
