@@ -114,6 +114,7 @@ const TableDisplay = (props) => {
   return (
     <Table
       dataSource={data}
+      rowKey={(record) => record.uid}
       columns={columnfilter()}
       pagination={{
         onChange: (page, size) => {

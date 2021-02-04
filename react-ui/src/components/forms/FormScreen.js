@@ -36,7 +36,7 @@ const FormScreen = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    setTableData(form.getFieldValue(formTable.name))
+    setTableData(form.getFieldValue(formTable.name));
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
@@ -81,10 +81,7 @@ const FormScreen = (props) => {
                   rules={field.rules}
                   initialValue={field.initialValue}
                 >
-                  <InputNumber
-                    min={field.min}
-                    max={field.max}
-                  />
+                  <InputNumber min={field.min} max={field.max} />
                 </Form.Item>
               );
             },
@@ -175,10 +172,10 @@ const FormScreen = (props) => {
           (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
         );
       }
-      var fieldsValue = {}
-      fieldsValue[formTable.name] = selectedItems
-      setTableData(selectedItems)
-      form.setFieldsValue(fieldsValue)
+      const fieldsValue = {};
+      fieldsValue[formTable.name] = selectedItems;
+      setTableData(selectedItems);
+      form.setFieldsValue(fieldsValue);
     }
   };
 
@@ -225,10 +222,10 @@ const FormScreen = (props) => {
   };
 
   const onValuesChange = (values) => {
-    if(values.hasOwnProperty(formTable.name)){
-      setTableData(form.getFieldValue(formTable.name))
+    if (values.hasOwnProperty(formTable.name)) {
+      setTableData(form.getFieldValue(formTable.name));
     }
-    
+
     if (toggleName !== null && typeof toggleName !== 'undefined') {
       if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
         setToggleValue(values[toggleName]);
@@ -290,7 +287,7 @@ const FormScreen = (props) => {
               </Form.List>
             )}
           </Form>
-          
+
           <div style={styles.tailLayout}>
             <Button type="primary" onClick={() => form.submit()}>
               Submit

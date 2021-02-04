@@ -61,9 +61,8 @@ const FormDetails = () => {
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
-  var salesSlips = []
-  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices)
-
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -92,8 +91,8 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearOS())
-          dispatch(clearSI())
+          dispatch(clearOS());
+          dispatch(clearSI());
           dispatch(listOrderSlipsByDepot({ message, depot: e }));
           dispatch(listSalesInvoiceByDepot({ depot: e }));
         },
@@ -164,7 +163,7 @@ const FormDetails = () => {
         readOnly: true,
         rules: [
           { required: true },
-          /*({ getFieldValue }) => ({
+          /* ({ getFieldValue }) => ({
             validator(rule, value) {
               const payments = getFieldValue('payments')
               var sumPayments = 0
@@ -178,7 +177,7 @@ const FormDetails = () => {
               }
               return Promise.reject('The sum for the payments must be equal to the amount paid');
             },
-          }),*/
+          }), */
         ],
         suffix: (
           <Tooltip title="Automatically Calculated">
@@ -200,7 +199,7 @@ const FormDetails = () => {
         rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
       },
-    ]
+    ],
   };
 
   const tableDetails = {
@@ -235,9 +234,9 @@ const FormDetails = () => {
           { required: true },
           ({ getFieldValue }) => ({
             validator(rule, value) {
-              const index = parseInt(rule.field.split('.')[1])
-              const payments = getFieldValue('payments')
-              
+              const index = parseInt(rule.field.split('.')[1]);
+              const payments = getFieldValue('payments');
+
               if (payments[index].remainingBalance >= value) {
                 return Promise.resolve();
               }
@@ -266,11 +265,10 @@ const FormDetails = () => {
       data.forEach(({ appliedAmount, type }) => {
         if (type === 'DR_SI') {
           totalSIAmount += appliedAmount;
-        } 
-        else if (type === 'OS'){
+        } else if (type === 'OS') {
           totalOSAmount += appliedAmount;
         }
-        
+
         totalAppliedAmount += appliedAmount;
       });
 
@@ -327,9 +325,9 @@ const FormDetails = () => {
       return payments;
     },
     processData: (data) => {
-      return { 
-        ...data, 
-        appliedAmount: data.remainingBalance
+      return {
+        ...data,
+        appliedAmount: data.remainingBalance,
       };
     },
     checkSelected: (selectedData, rowData) => {

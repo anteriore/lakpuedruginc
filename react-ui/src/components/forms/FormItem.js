@@ -85,7 +85,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
         label={item.label}
         name={item.name}
         rules={item.rules}
-        initialValue={item.initialValue} 
+        initialValue={item.initialValue}
         hasFeedback={item.hasFeedback}
       >
         <InputNumber
@@ -324,10 +324,10 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
               type: 'radio',
               selectedRowKeys: item.selectedData,
               onChange: (e) => {
-                item.setSelectedData(e)
+                item.setSelectedData(e);
                 onTableSelect(item.name, e[0]);
               },
-              preserveSelectedRowKeys: false
+              preserveSelectedRowKeys: false,
             }}
             columns={item.columns}
             dataSource={item.dataSource}
@@ -344,16 +344,16 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   }
 
   return (
-    <Item 
-      label={item.label} 
-      name={item.name} 
-      rules={item.rules} 
-      initialValue={item.initialValue} 
+    <Item
+      label={item.label}
+      name={item.name}
+      rules={item.rules}
+      initialValue={item.initialValue}
       hasFeedback={item.hasFeedback}
     >
-      <Input 
-        disabled={item.type === 'readOnly' || item.readOnly} 
-        placeholder={item.placeholder} 
+      <Input
+        disabled={item.type === 'readOnly' || item.readOnly}
+        placeholder={item.placeholder}
         suffix={item.suffix}
       />
     </Item>

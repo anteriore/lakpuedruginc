@@ -37,7 +37,7 @@ const FormScreen = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    setTableData(form.getFieldValue(formTable.name))
+    setTableData(form.getFieldValue(formTable.name));
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
@@ -82,22 +82,17 @@ const FormScreen = (props) => {
                   rules={field.rules}
                   initialValue={field.initialValue}
                 >
-                  <InputNumber
-                    min={field.min}
-                    max={field.max}
-                  />
+                  <InputNumber min={field.min} max={field.max} />
                 </Form.Item>
               );
             },
           });
-        } 
-        else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+        } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
             visible: false,
           });
-        }
-        else if (field.type === 'readOnly'){
+        } else if (field.type === 'readOnly') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -109,15 +104,12 @@ const FormScreen = (props) => {
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                 >
-                  <Input 
-                    bordered={false}
-                  />
+                  <Input bordered={false} />
                 </Form.Item>
               );
             },
           });
-        } 
-        else if (field.type === 'select') {
+        } else if (field.type === 'select') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -198,11 +190,11 @@ const FormScreen = (props) => {
           (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
         );
       }
-      var fieldsValue = {}
-      fieldsValue[formTable.name] = selectedItems
-      setTableData(selectedItems)
-      form.setFieldsValue(fieldsValue)
-      onValuesChange(fieldsValue)
+      const fieldsValue = {};
+      fieldsValue[formTable.name] = selectedItems;
+      setTableData(selectedItems);
+      form.setFieldsValue(fieldsValue);
+      onValuesChange(fieldsValue);
     }
   };
 
@@ -249,24 +241,23 @@ const FormScreen = (props) => {
   };
 
   const onValuesChange = (values) => {
+    if (values.hasOwnProperty(formTable.name)) {
+      setTableData(form.getFieldValue(formTable.name));
+    }
 
-    if(values.hasOwnProperty(formTable.name)){
-      setTableData(form.getFieldValue(formTable.name))
-    }
-    
-    if(values.hasOwnProperty('payments')){
-      var paymentSum = 0
-      const paymentValues = form.getFieldValue('payments')
+    if (values.hasOwnProperty('payments')) {
+      let paymentSum = 0;
+      const paymentValues = form.getFieldValue('payments');
       paymentValues.forEach((payment) => {
-        if(payment.appliedAmount > 0) {
-          paymentSum += payment.appliedAmount
+        if (payment.appliedAmount > 0) {
+          paymentSum += payment.appliedAmount;
         }
-      })
-      var formValues = {}
-      formValues['amountPaid'] = paymentSum
-      form.setFieldsValue(formValues)
+      });
+      const formValues = {};
+      formValues.amountPaid = paymentSum;
+      form.setFieldsValue(formValues);
     }
-    
+
     if (toggleName !== null && typeof toggleName !== 'undefined') {
       if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
         setToggleValue(values[toggleName]);
@@ -301,17 +292,17 @@ const FormScreen = (props) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) && 
-            formDetails.payment_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
+            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) &&
+              formDetails.payment_items.map((item) => {
+                if (item.toggle) {
+                  if (item.toggleCondition(toggleValue)) {
+                    return <FormItem item={item} onFail={onFail} />;
+                  }
+                  return null;
                 }
-                return null;
-              }
 
-              return <FormItem item={item} onFail={onFail} />;
-            })}
+                return <FormItem item={item} onFail={onFail} />;
+              })}
 
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
@@ -339,9 +330,8 @@ const FormScreen = (props) => {
                 )}
               </Form.List>
             )}
-
           </Form>
-          
+
           <div style={styles.tailLayout}>
             <Button type="primary" onClick={() => form.submit()}>
               Submit

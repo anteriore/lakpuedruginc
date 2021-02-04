@@ -13,8 +13,6 @@ import InputForm from './InputForm';
 import {
   listSalesOrder,
   createSalesOrder,
-  updateSalesOrder,
-  deleteSalesOrder,
   clearData,
   approveSalesOrder,
   rejectSalesOrder,
@@ -41,7 +39,6 @@ const SalesOrders = (props) => {
   const [contentLoading, setContentLoading] = useState(true);
   const [selectedSO, setSelectedSO] = useState(null);
   const [displayModal, setDisplayModal] = useState(false);
-  const [orderId, setOrderId] = useState(null);
 
   const { path } = useRouteMatch();
   const { salesOrderList, action, statusMessage } = useSelector((state) => state.sales.salesOrders);
@@ -156,102 +153,6 @@ const SalesOrders = (props) => {
     });
   };
 
-  const handleEditButton = (value) => {
-    const { id: rowId } = value;
-    setOrderId(value.id);
-    setContentLoading(true);
-    const payload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              Modal.warning({
-                title: NO_DATA_FOUND,
-                content: NO_DATA_FOUND_DESC(response.config.url.split(/[/?]/g)[1]),
-              });
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales/sales-orders',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-
-    // history.push(`${path}/${rowId}/edit`);
-
-    dispatch(listDepot(payload)).then((dataDepot) => {
-      if (typeof dataDepot.payload !== 'undefined') {
-        if (dataDepot.payload.status === 200 && dataDepot.payload.data.length !== 0) {
-          dispatch(listClient(payload)).then((dataClient) => {
-            if (dataClient.payload.status === 200 && dataClient.payload.data.length !== 0) {
-              dispatch(listProductInventory(payload)).then((dataPI) => {
-                if (dataPI.payload.status === 200 && dataPI.payload.data.length !== 0) {
-                  history.push(`${path}/${rowId}/edit`);
-                  setContentLoading(false);
-                } else if (dataPI.payload.status === 200 && dataPI.payload.data.length === 0) {
-                  setContentLoading(false);
-                }
-              });
-            } else if (dataClient.payload.status === 200 && dataClient.payload.data.length === 0) {
-              setContentLoading(false);
-            }
-          });
-        } else if (dataDepot.payload.status === 200 && dataDepot.payload.data.length === 0) {
-          setContentLoading(false);
-        }
-      }
-    });
-  };
-
-  const handleDeleteButton = (row) => {
-    const salesOrderPayload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              message.warning(response.statusText);
-              setContentLoading(false);
-            } else {
-              setContentLoading(false);
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-
-    dispatch(deleteSalesOrder(row))
-      .then(() => {
-        dispatch(listSalesOrder(salesOrderPayload));
-      })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
-  };
-
   const handleRetrieve = (data) => {
     setDisplayModal(true);
     setSelectedSO(data);
@@ -363,55 +264,20 @@ const SalesOrders = (props) => {
     });
   };
 
-  const onUpdate = (value) => {
-    const salesOrderPayload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              message.warning(response.statusText);
-              setContentLoading(false);
-            } else {
-              setContentLoading(false);
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-
-    const order = formatPayload(id, company, value);
-    order.id = orderId;
-    dispatch(updateSalesOrder(order)).then(() => {
-      dispatch(listSalesOrder(salesOrderPayload));
-    });
-  };
-
   return (
     <Switch>
       <Route path={`${path}/new`}>
         <InputForm title="New Sales Order" onSubmit={onCreate} company={company} />
       </Route>
-      <Route path={`${path}/:id/edit`}>
-        <InputForm title="Edit Sales Order" onSubmit={onUpdate} company={company} />
-      </Route>
       <Route path={`${path}`}>
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+            <Button
+              loading={contentLoading}
+              icon={<PlusOutlined />}
+              onClick={() => handleAddButton()}
+            >
               Add
             </Button>
           </Col>
@@ -422,8 +288,8 @@ const SalesOrders = (props) => {
               <TableDisplay
                 columns={tableHeader}
                 data={salesOrderList}
-                handleUpdate={handleEditButton}
-                handleDelete={handleDeleteButton}
+                updateEnabled={false}
+                deleteEnabled={false}
                 handleRetrieve={handleRetrieve}
               />
             )}

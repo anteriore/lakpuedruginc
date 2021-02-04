@@ -29,8 +29,8 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
-  const [orderedProducts, setOrderedProducts] = useState([])
-  const [selectedSaleSlip, setSelectedSaleSlip] = useState([])
+  const [orderedProducts, setOrderedProducts] = useState([]);
+  const [selectedSaleSlip, setSelectedSaleSlip] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
@@ -38,8 +38,8 @@ const InputForm = (props) => {
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
-  var salesSlips = []
-  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices)
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const toggleName = formDetails.toggle_name;
 
@@ -68,25 +68,23 @@ const InputForm = (props) => {
     });
 
     if (hasTable) {
-      if(tableData !== null){
+      if (tableData !== null) {
         data[formTable.name] = tableData;
         onSubmit(data);
+      } else {
+        onFinishFailed(
+          `Unable to submit. Please provide the necessary information on ${formTable.label}`
+        );
       }
-      else{
-        onFinishFailed(`Unable to submit. Please provide the necessary information on ${formTable.label}`)
-      }
-    }
-    else {
+    } else {
       onSubmit(data);
     }
-
   };
 
   const onFinishFailed = (errorInfo) => {
-    if(typeof errorInfo === 'string'){
+    if (typeof errorInfo === 'string') {
       message.error(errorInfo);
-    }
-    else {
+    } else {
       message.error("An error has occurred. Please double check the information you've provided.");
     }
   };
@@ -109,22 +107,17 @@ const InputForm = (props) => {
                   rules={field.rules}
                   initialValue={field.initialValue}
                 >
-                  <InputNumber
-                    min={field.min}
-                    max={field.max}
-                  />
+                  <InputNumber min={field.min} max={field.max} />
                 </Form.Item>
               );
             },
           });
-        } 
-        else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+        } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
             visible: false,
           });
-        }
-        else if (field.type === 'readOnly'){
+        } else if (field.type === 'readOnly') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -136,15 +129,12 @@ const InputForm = (props) => {
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                 >
-                  <Input 
-                    bordered={false}
-                  />
+                  <Input bordered={false} />
                 </Form.Item>
               );
             },
           });
-        } 
-        else if (field.type === 'select') {
+        } else if (field.type === 'select') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -225,11 +215,11 @@ const InputForm = (props) => {
           (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
         );
       }
-      var fieldsValue = {}
-      fieldsValue[formTable.name] = selectedItems
-      setTableData(selectedItems)
-      form.setFieldsValue(fieldsValue)
-      onValuesChange(fieldsValue)
+      const fieldsValue = {};
+      fieldsValue[formTable.name] = selectedItems;
+      setTableData(selectedItems);
+      form.setFieldsValue(fieldsValue);
+      onValuesChange(fieldsValue);
     }
   };
 
@@ -281,36 +271,33 @@ const InputForm = (props) => {
         setToggleValue(values[toggleName]);
       }
     }
-    if(values.hasOwnProperty(formTable.name)){
-      setTableData(form.getFieldValue(formTable.name))
-      console.log(form.getFieldsValue())
-      console.log(tableData)
-    }
-    
-    if(values.hasOwnProperty('depot')){
-      setOrderedProducts([])
-      setSelectedSaleSlip([])
-      setTableData(null)
-      form.setFieldsValue({ salesNumber: null, client: null })
+    if (values.hasOwnProperty(formTable.name)) {
+      setTableData(form.getFieldValue(formTable.name));
+      console.log(form.getFieldsValue());
+      console.log(tableData);
     }
 
+    if (values.hasOwnProperty('depot')) {
+      setOrderedProducts([]);
+      setSelectedSaleSlip([]);
+      setTableData(null);
+      form.setFieldsValue({ salesNumber: null, client: null });
+    }
   };
 
   const onTableSelect = (key, value) => {
-    var formValues = {}
+    const formValues = {};
 
-    if(key === 'salesNumber'){
-      const selectedSaleSlip = salesSlips.find(slip => slip.id === value)
-      formValues[key] = selectedSaleSlip.number
-      formValues['client'] = selectedSaleSlip.salesOrder.client.id
-      setOrderedProducts(selectedSaleSlip.orderedProducts)
+    if (key === 'salesNumber') {
+      const selectedSaleSlip = orderSlips.find((slip) => slip.id === value);
+      formValues[key] = selectedSaleSlip.number;
+      formValues.client = selectedSaleSlip.salesOrder.client.id;
+    } else {
+      formValues[key] = value;
     }
-    else {
-      formValues[key] = value
-    }
-    onValuesChange(formValues)
-    form.setFieldsValue(formValues)
-  }
+    onValuesChange(formValues);
+    form.setFieldsValue(formValues);
+  };
 
   return (
     <>
@@ -333,13 +320,13 @@ const InputForm = (props) => {
             })}
 
             {formDetails.rs_items.map((item) => {
-              var itemData = {
-                ...item
-              }
+              const itemData = {
+                ...item,
+              };
 
-              if(item.name === 'salesNumber'){
-                itemData['selectedData'] = selectedSaleSlip
-                itemData['setSelectedData'] = setSelectedSaleSlip
+              if (item.name === 'salesNumber') {
+                itemData.selectedData = selectedSaleSlip;
+                itemData.setSelectedData = setSelectedSaleSlip;
               }
 
               return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
