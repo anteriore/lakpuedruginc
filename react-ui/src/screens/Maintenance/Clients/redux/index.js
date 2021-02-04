@@ -18,6 +18,7 @@ export const listClient = createAsyncThunk('listClient', async (payload, thunkAP
   }
   const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
 
+
   if (typeof response !== 'undefined') {
     const { status } = response;
     if (status === 200) {

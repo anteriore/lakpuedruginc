@@ -5,25 +5,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import FormDetails, { columns } from './data';
-import { unwrapResult } from '@reduxjs/toolkit'
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
 
-import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
-import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { listOReceipt, addOReceipt, deleteOReceipt, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearOrderSlips } from '../OrderSlips/redux';
-import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
-
-import {
-  NO_DATA_FOUND,
-  NO_DATA_FOUND_DESC,
-} from '../../../data/constants/response-message.constant';
 
 const { Title, Text } = Typography;
 
-const AcknowledgementReceipts = (props) => {
+const OfficialReceipts = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -37,100 +28,57 @@ const AcknowledgementReceipts = (props) => {
   const [selectedAR, setSelectedAR] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const listData = useSelector((state) => state.sales.acknowledgementReceipts.list);
+  const listData = useSelector((state) => state.sales.officialReceipts.list);
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(listAReceipt({ company, message })).then(() => {
+    dispatch(listOReceipt({ company, message })).then(() => {
       setLoading(false);
     });
 
     return function cleanup() {
       dispatch(clearData());
-      dispatch(clearClient());
       dispatch(clearDepot());
-      dispatch(clearOrderSlips());
-      dispatch(clearSalesInvoice());
     };
+
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    const payload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              Modal.warning({
-                title: NO_DATA_FOUND,
-                content: NO_DATA_FOUND_DESC(response.config.url.split(/[/?]/g)[1]),
-              });
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales/acknowledgement-receipts',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
-    setFormTitle('Create Acknowledgement Receipt');
+    setFormTitle('Create Official Receipt');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(clearOrderSlips());
-    dispatch(clearSalesInvoice());
-    dispatch(listClient({ company, message })).then(() => {
-      dispatch(listDepot({ company, message })).then(() => {
-        history.push(`${path}/new`);
-        setLoading(false);
-      });
-    })
-    .catch(()=>{
-      setLoading(false)
-    })
+    dispatch(listDepot({ company, message })).then(() => {
+      history.push(`${path}/new`);
+      setLoading(false);
+    });
   };
 
   const handleUpdate = (data) => {
-    message.error('Unable to perform action.');
+    message.error("Unable to perform action.")
     /*
-    setFormTitle('Edit Acknowledgement Receipt');
+    setFormTitle('Edit Official Receipt');
     setFormMode('edit');
     setLoading(true);
     const itemData = listData.find((item) => item.id === data.id);
     const formData = {
       ...itemData,
       date: moment(new Date(data.date)) || moment(),
-      chequeDate: data.cutOffDate !== null ? moment(new Date(data.chequeDate)) : null,
-      cutOffDate: data.cutOffDate !== null ? moment(new Date(data.cutOffDate)) : null,
-      client: itemData.client !== null ? itemData.client.id : null,
       depot: itemData.depot !== null ? itemData.depot.id : null,
     };
     setFormData(formData);
-    dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          dispatch(listOrderSlips({ company, message })).then(() => {
-            history.push(`${path}/${data.id}`);
-            setLoading(false);
-          })
-        })
+    dispatch(listDepot({ company, message })).then(() => {
+      history.push(`${path}/${data.id}`);
+      setLoading(false);
     });
     */
   };
 
   const handleDelete = (data) => {
-    dispatch(deleteAReceipt(data.id)).then((response) => {
+    dispatch(deleteOReceipt(data.id)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
-        dispatch(listAReceipt({ company, message })).then(() => {
+        dispatch(listOReceipt({ company, message })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
@@ -147,38 +95,30 @@ const AcknowledgementReceipts = (props) => {
   };
 
   const onSubmit = (data) => {
-    const payments = [];
-    data.payments.forEach((payment) => {
-      payments.push({
-        reference: {
-          ...payment,
-        },
-        appliedAmount: payment.appliedAmount,
-      });
-    });
+    var payments = []
 
     const payload = {
       ...data,
       company: {
         id: company,
       },
+      acknowledgementReceipt: {
+        id: data.acknowledgementReceipt.id,
+      },
       depot: {
         id: data.depot,
       },
-      client: {
-        id: data.client,
-      },
       preparedBy: {
-        id: user.id,
-      },
-      payments,
+        id: user.id
+      }
     };
+    console.log(payload)
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addAReceipt(payload)).then((response) => {
+      dispatch(addOReceipt(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
+          dispatch(listOReceipt({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.number}`);
@@ -189,42 +129,22 @@ const AcknowledgementReceipts = (props) => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addAReceipt(payload)).then((response) => {
+      dispatch(addOReceipt(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
+          dispatch(listOReceipt({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${response.payload.data.number}`);
           });
-        } else {
+        } 
+        else {
           setLoading(false);
-          message.error(
-            `Unable to add Acknowledgement Receipt. Please double check the provided information.`
-          );
+          message.error(`Unable to add Official Receipt. Please double check the provided information.`);
         }
       });
     }
     setFormData(null);
-  };
-
-  const renderTableColumns = (item) => {
-    const columns = [];
-    item.fields.forEach((field) => {
-      if(!field.writeOnly){
-        if (typeof field.render === 'undefined' || field.render === null) {
-          field.render = (object) => object[field.name];
-        }
-        columns.push({
-          title: field.label,
-          key: field.name,
-          render: (object) => field.render(object),
-        });
-      }
-        
-    });
-
-    return columns;
   };
 
   return (
@@ -312,8 +232,8 @@ const AcknowledgementReceipts = (props) => {
                 >
                   {formDetails.form_items.map((item) => {
                     if (!item.writeOnly) {
-                      if (selectedAR[item.name] === null && item.toggle) {
-                        return null;
+                      if(selectedAR[item.name] === null && item.toggle){
+                        return null
                       }
                       if (item.type === 'select' || item.type === 'selectSearch') {
                         const itemData = selectedAR[item.name];
@@ -343,11 +263,19 @@ const AcknowledgementReceipts = (props) => {
 
                     return null;
                   })}
+                  
+                  {formDetails.ar_items.map((item) => {
+                    return (
+                      <Descriptions.Item label={item.label}>
+                      {item.toString(selectedAR['acknowledgementReceipt'])}
+                      </Descriptions.Item>
+                    );
+                  })}
                 </Descriptions>
                 <Text>{'Payment Details:'}</Text>
                 <Table
-                  dataSource={tableDetails.getValues(selectedAR)}
-                  columns={renderTableColumns(tableDetails)}
+                  dataSource={tableDetails.getValues(selectedAR.acknowledgementReceipt)}
+                  columns={tableDetails.columns}
                   pagination={false}
                 />
               </>
@@ -359,4 +287,4 @@ const AcknowledgementReceipts = (props) => {
   );
 };
 
-export default AcknowledgementReceipts;
+export default OfficialReceipts;

@@ -26,7 +26,10 @@ export const tempListSalesOrder = createAsyncThunk(
 
 export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company, fnCallback } = payload;
+  var { company, fnCallback } = payload;
+  if( typeof fnCallback !== 'function' ){
+    fnCallback = () => {}
+  }
   const response = await axiosInstance.get(
     `/rest/sales-orders/company/${company}?token=${accessToken}`
   );

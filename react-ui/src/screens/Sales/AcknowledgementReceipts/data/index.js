@@ -2,12 +2,18 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
-import { listSalesInvoiceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
+import { listOrderSlipsWithBalanceByDepot, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceWithBalanceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
 export const columns = [
+  {
+    title: 'Depot',
+    dataIndex: 'depot',
+    key: 'depot',
+    datatype: 'object',
+  },
   {
     title: 'AR Number',
     dataIndex: 'number',
@@ -53,6 +59,12 @@ export const columns = [
     key: 'amountPaid',
     datatype: 'number',
   },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status',
+    datatype: 'string',
+  },
 ];
 
 const FormDetails = () => {
@@ -91,10 +103,10 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearOS());
-          dispatch(clearSI());
-          dispatch(listOrderSlipsByDepot({ message, depot: e }));
-          dispatch(listSalesInvoiceByDepot({ depot: e }));
+          dispatch(clearOS())
+          dispatch(clearSI())
+          dispatch(listOrderSlipsWithBalanceByDepot({ message, depot: e }));
+          dispatch(listSalesInvoiceWithBalanceByDepot({ depot: e }));
         },
       },
       {
@@ -256,6 +268,7 @@ const FormDetails = () => {
 
           return object.remainingBalance || 0;
         },
+        writeOnly: true
       },
     ],
     summary: (data) => {
@@ -315,6 +328,7 @@ const FormDetails = () => {
       },
     ],
     getValues: (values) => {
+      console.log(values)
       const payments = [];
       values.payments.forEach((payment) => {
         payments.push({

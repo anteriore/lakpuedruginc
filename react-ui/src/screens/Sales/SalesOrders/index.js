@@ -44,35 +44,37 @@ const SalesOrders = (props) => {
   const { salesOrderList, action, statusMessage } = useSelector((state) => state.sales.salesOrders);
   const { id } = useSelector((state) => state.auth.user);
 
+  const dispatchPayload = {
+    company,
+    fnCallback: (response) => {
+      const { status } = response;
+      console.log(response)
+      switch (status) {
+        case 200:
+          setContentLoading(false);
+          if (response.data.length === 0) {
+            message.warning(response.statusText);
+          }
+          break;
+        case 400:
+        case 500:
+          history.push({
+            pathname: `/error/${status === 400 ? 403 : status}`,
+            state: {
+              moduleList: '/sales',
+            },
+          });
+          break;
+        default:
+          break;
+      }
+    },
+  };
+
   useEffect(() => {
     let isCancelled = false;
-    const salesOrderPayload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              message.warning(response.statusText);
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
 
-    dispatch(listSalesOrder(salesOrderPayload)).then(() => {
-      setContentLoading(false);
+    dispatch(listSalesOrder(dispatchPayload)).then(() => {
       if (isCancelled) {
         dispatch(clearData());
       }
