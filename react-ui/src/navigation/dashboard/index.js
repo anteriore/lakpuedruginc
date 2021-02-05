@@ -1,6 +1,7 @@
 import PurchaseRequests from '../../screens/Dashboard/PurchaseRequests';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
+import ProductInventories from '../../screens/Dashboard/ProductInventories';
 
 export const modules = [
   {
@@ -50,8 +51,8 @@ export const modules = [
   },
   {
     title: 'Product Inventory',
-    path: 'product/inventory',
-    component: PurchaseRequests,
+    path: '/product/inventory',
+    component: ProductInventories,
   },
   {
     title: 'FG-IS',
