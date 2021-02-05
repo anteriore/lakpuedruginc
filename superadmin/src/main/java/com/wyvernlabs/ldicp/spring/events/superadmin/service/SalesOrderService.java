@@ -28,13 +28,13 @@ public class SalesOrderService {
 		Long id = salesOrderRepository.getMaxId();
 		//di sya number dapat sales order so number
 		if (id == null) {
-			salesOrder.setNumber("PRF-1");
+			salesOrder.setNumber("SO-1");
 		} else {
-			salesOrder.setNumber("PRF-" + ++id);
+			salesOrder.setNumber("SO-" +( ++id));
 		}
 
 		if(salesOrder.getId()!=null){
-			salesOrder.setNumber("PRF-"+salesOrder.getId());
+			salesOrder.setNumber("SO-"+salesOrder.getId());
 		}
 
 		
