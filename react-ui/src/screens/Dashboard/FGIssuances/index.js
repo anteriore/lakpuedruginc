@@ -13,7 +13,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listFGIssuance, clearData } from './redux';
+import { listFGIssuance, addFGIssuance, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 
@@ -27,9 +27,8 @@ const FGIssuances = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  
-
   const listData = useSelector((state) => state.dashboard.FGIssuances.list);
+  const user = useSelector((state) => state.auth.user);
 
   const { company } = props;
   const { formDetails, tableDetails } = FormDetails();
@@ -77,21 +76,37 @@ const FGIssuances = (props) => {
 
   const onSubmit = (data) => {
     console.log(data)
+    const inventoryList = [];
+    data.inventoryList.forEach((inventory) => {
+      inventoryList.push({
+        product: {
+          id: inventory.product.id,
+        },
+        quantity: inventory.quantity
+      });
+    });
     const payload = {
       ...data,
       company: {
         id: company,
       },
-      depot: {
-        id: data.depot,
+      fromDepot: {
+        id: data.fromDepot,
       },
+      toDepot: {
+        id: data.toDepot,
+      },
+      requestedBy: {
+        id: user.id,
+      },
+      inventoryList: inventoryList
     };
-    /*if (formMode === 'edit') {
+    if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addReturnSlip(payload)).then((response) => {
+      dispatch(addFGIssuance(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listReturnSlip({ company, message })).then(() => {
+          dispatch(listFGIssuance({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.number}`);
@@ -102,20 +117,20 @@ const FGIssuances = (props) => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addReturnSlip(payload)).then((response) => {
+      dispatch(addFGIssuance(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listReturnSlip({ company, message })).then(() => {
+          dispatch(listFGIssuance({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${response.payload.data.number}`);
           });
         } else {
           setLoading(false);
-          message.error(`Unable to add Return Slip. Please double check the provided information.`);
+          message.error(`Unable to create FG Issuance. Please double check the provided information.`);
         }
       });
-    }*/
+    }
     setFormData(null);
   };
 
