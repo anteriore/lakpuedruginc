@@ -1,14 +1,9 @@
 export const columns = [
     {
         title: 'Item ID',
-<<<<<<< Updated upstream
-        dataIndex: 'id',
-        key: 'id',
-=======
         dataIndex: 'item',
         key: 'itemName',
         render: (object) => object.name,
->>>>>>> Stashed changes
     },
     {
         title: 'Control Number',
@@ -23,25 +18,15 @@ export const columns = [
     },
     {
         title: 'Unit',
-<<<<<<< Updated upstream
-        dataIndex: 'unit',
-        key: 'unit',
-        datatype: 'string'
-=======
         dataIndex: 'item',
         key: 'itemUnit',
         render: (object) => object.unit.name,
->>>>>>> Stashed changes
     },
     {
         title: 'Date Created',
         dataIndex: 'dateCreated',
         key: 'date',
-<<<<<<< Updated upstream
-        datatype: 'string'
-=======
         datatype: 'date'
->>>>>>> Stashed changes
     },
 ];
 
@@ -105,11 +90,7 @@ const FormDetails = () => {
             },
             {
                 label: 'Manufacturing Order Reserved',
-<<<<<<< Updated upstream
-                name: 'moReserved',
-=======
                 name: 'moqReserved',
->>>>>>> Stashed changes
                 type: 'number',
                 min: 0,
                 rules: [{ required: true, message: 'Please provide a valid amount' }],

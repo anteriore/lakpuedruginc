@@ -8,11 +8,6 @@ import moment from 'moment';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listInventory, addInventory, getInventory, deleteInventory, clearData, updateInventory } from './redux';
-<<<<<<< Updated upstream
-import { listItem, clearData as clearItem } from '../../Maintenance/Items/redux';
-import { listUnit, clearData as clearUnit } from '../../Maintenance/Units/redux';
-=======
->>>>>>> Stashed changes
 import FormScreen from '../../../components/forms/FormScreen';
 
 const { Title } = Typography;
@@ -225,11 +220,7 @@ const Inventory = (props) => {
                 <Space direction="vertical" style={{ width: '100%' }} size="middle">
                   <Descriptions bordered size="default" layout="vertical">
                     <Descriptions.Item label="Item ID">
-<<<<<<< Updated upstream
-                      {displayData !== null ? displayData.id : 'No data'}
-=======
                       {displayData !== null ? displayData.item.name : 'No data'}
->>>>>>> Stashed changes
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Control Number">
@@ -271,11 +262,7 @@ const Inventory = (props) => {
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Manufacturing Order Reserved">
-<<<<<<< Updated upstream
-                      {displayData !== null ? displayData.moReserved : 'No data'}
-=======
                       {displayData !== null ? displayData.moqReserved : 'No data'}
->>>>>>> Stashed changes
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Manufacturing Order Quantity">
