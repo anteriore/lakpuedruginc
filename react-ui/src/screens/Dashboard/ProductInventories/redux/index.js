@@ -43,13 +43,6 @@ export const deleteProductInventory = createAsyncThunk('deleteProductInventory',
   return response;
 });
 
-export const getClient = createAsyncThunk('getClient', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-
-  const response = await axiosInstance.get(`rest/product-inventory/${payload.id}?token=${accessToken}`);
-  return response;
-});
-
 const productInventorySlice = createSlice({
   name: 'productInventories',
   initialState,
