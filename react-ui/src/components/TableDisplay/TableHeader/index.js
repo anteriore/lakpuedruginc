@@ -8,7 +8,7 @@ const TableHeader = (columnHeaders) => {
   const { hasOwnProperty } = Object.prototype;
   const dateFormat = 'YYYY/MM/DD';
 
-  const filterSearch = (dataIndex, dataValue) => ({
+  const filterSearch = (dataIndex, dataValue, dataToString) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
         <Input
@@ -42,6 +42,11 @@ const TableHeader = (columnHeaders) => {
       if (record[dataIndex] === null) {
         return '';
       }
+      else if(typeof dataToString === 'function'){
+        return record[dataIndex]
+        ? dataToString(record[dataIndex]).toLowerCase().includes(value.toLowerCase())
+        : '';
+      }
       else if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
         return record[dataIndex].code
           ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
@@ -57,10 +62,13 @@ const TableHeader = (columnHeaders) => {
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
+      else {
+        return record[dataIndex]
+          ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+          : '';
+      }
 
-      return record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-        : '';
+      
     },
   });
 
@@ -122,7 +130,7 @@ const TableHeader = (columnHeaders) => {
           }
           
           if(typeof header.toString !== 'function'){
-            return header.toString = (object) => object[header.name]
+            return header.dataToString = (object) => object[header.name]
           }
 
           header = {
@@ -130,14 +138,14 @@ const TableHeader = (columnHeaders) => {
             sorter: (a, b) => {
               if (typeof a[header.key] !== 'undefined' && a[header.key] !== null) {
                 a = a[header.key];
-                a = header.toString(a);
+                a = header.dataToString(a);
               } else {
                 a = '';
               }
 
               if (typeof b[header.key] !== 'undefined' && b[header.key] !== null) {
                 b = b[header.key];
-                b = header.toString(b);
+                b = header.dataToString(b);
               } else {
                 b = '';
               }
@@ -180,11 +188,12 @@ const TableHeader = (columnHeaders) => {
             ...header,
             render: (object) => {
               if (typeof object !== 'undefined' && object !== null) {
-                if(typeof header.toString !== 'function'){
+                console.log("DAFUQ?", header)
+                if(typeof header.dataToString !== 'function'){
                   return object[header.name];
                 }
                 else {
-                  return header.toString(object)
+                  return header.dataToString(object)
                 }
               }
 
@@ -226,7 +235,7 @@ const TableHeader = (columnHeaders) => {
         header = {
           ...header,
           defaultSortOrder: header.defaultSortOrder || 'ascend',
-          ...filterSearch(header.key, header.name),
+          ...filterSearch(header.key, header.name, header.dataToString),
         };
       }
       newColumnHeaders.push(header);
