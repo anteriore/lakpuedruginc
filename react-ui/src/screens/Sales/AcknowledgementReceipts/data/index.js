@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { listOrderSlipsWithBalanceByDepot, clearData as clearOS } from '../../OrderSlips/redux';
-import { listSalesInvoiceWithBalanceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
+import { listOrderSlipsByDepotAndBalance, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepotAndBalance, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -103,10 +103,10 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearOS());
-          dispatch(clearSI());
-          dispatch(listOrderSlipsWithBalanceByDepot({ message, depot: e }));
-          dispatch(listSalesInvoiceWithBalanceByDepot({ depot: e }));
+          dispatch(clearOS())
+          dispatch(clearSI())
+          dispatch(listOrderSlipsByDepotAndBalance({ message, depot: e, hasBalance: true }));
+          dispatch(listSalesInvoiceByDepotAndBalance({ depot: e, hasBalance: true }));
         },
       },
       {
