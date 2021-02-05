@@ -197,7 +197,7 @@ const FormDetails = () => {
         dataIndex: 'appliedAmount',
         key: 'appliedAmount',
       },
-      {
+      /*{
         title: 'Discount',
         dataIndex: 'discount',
         key: 'discount',
@@ -214,7 +214,7 @@ const FormDetails = () => {
         dataIndex: 'tax',
         key: 'tax',
         render: (data) => data || 0
-      },
+      },*/
       {
         title: 'NET',
         dataIndex: 'appliedAmount',
