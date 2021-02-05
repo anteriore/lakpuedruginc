@@ -11,39 +11,37 @@ const initialState = {
 };
 
 export const listInventory = createAsyncThunk('listInventory', async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const { inventory, fnCallback } = payload;
-    const response = await axiosInstance.get(`rest/inventory/company/${inventory}?token=${accessToken}`);
+  const accessToken = thunkAPI.getState().auth.token;
+  var { company, fnCallback } = payload;
+  if(typeof fnCallback === 'undefined'){
+    fnCallback = () => {}
+  }
+  const response = await axiosInstance.get(`rest/inventory/company/${company}?token=${accessToken}`);
 
-    if (typeof response !== 'undefined') {
-        const { status } = response;
-        if (status === 200) {
-            if (response.data.length === 0) {
-                response.statusText = `${message.API_200_EMPTY} in inventory`;
-            } else {
-                response.statusText = `${message.API_200_SUCCESS} in inventory`;
-            }
-            fnCallback(response);
-            
-            return response;
-        }
-    
-        if (status === 500 || status === 400) {
-            fnCallback(response);
-            
-            return thunkAPI.rejectWithValue(response);
-        }
-
-    } else {
-        const newReponse = {
-        status: 500,
-        statusText: message.API_UNDEFINED,
-        };
-
-        fnCallback(newReponse);
-        
-        return thunkAPI.rejectWithValue(response);
+  if (typeof response !== 'undefined') {
+    const { status } = response;
+    if (status === 200) {
+      if (response.data.length === 0) {
+        response.statusText = `${message.API_200_EMPTY} in inventory`;
+      } else {
+        response.statusText = `${message.API_200_SUCCESS} in inventory`;
+      }
+      fnCallback(response);
+      return response;
     }
+
+    if (status === 500 || status === 400) {
+      fnCallback(response);
+      return thunkAPI.rejectWithValue(response);
+    }
+  } else {
+    const newReponse = {
+      status: 500,
+      statusText: message.API_UNDEFINED,
+    };
+    fnCallback(newReponse);
+    return thunkAPI.rejectWithValue(response);
+  }
 });
 
 export const addInventory = createAsyncThunk('addInventory', async (payload, thunkAPI) => {

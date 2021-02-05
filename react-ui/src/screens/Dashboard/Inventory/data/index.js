@@ -1,17 +1,8 @@
-import { useSelector } from 'react-redux';
-
 export const columns = [
     {
-        title: 'Code',
-        dataIndex: 'code',
-        key: 'code',
-        datatype: 'string'
-    },
-    {
-        title: 'Item',
-        dataIndex: 'item',
-        key: 'item',
-        datatype: 'string'
+        title: 'Item ID',
+        dataIndex: 'id',
+        key: 'id',
     },
     {
         title: 'Control Number',
@@ -23,36 +14,29 @@ export const columns = [
         title: 'Quantity',
         dataIndex: 'quantity',
         key: 'quantity',
-        datatype: 'string'
     },
     {
         title: 'Unit',
         dataIndex: 'unit',
         key: 'unit',
         datatype: 'string'
-    }
+    },
+    {
+        title: 'Date Created',
+        dataIndex: 'dateCreated',
+        key: 'date',
+        datatype: 'string'
+    },
 ];
 
 const FormDetails = () => {
-    const items = useSelector((state) => state.dashboard.inventory.items);
-    //const companies = useSelector((state) => state.dashboard.companies.list);
-
     const formDetails = {
         form_name: 'inventory',
         form_items: [
             {
-                label: 'Code',
-                name: 'code',
-                rules: [{ required: true, message: 'Please provide a valid code' }],
-                placeholder: 'Code',
-            },
-            {
-                label: 'Item',
-                name: 'item',
-                type : 'item',
-                selectName: 'itemCode',
-                choices: items,
-                rules: [{ required: true, message: 'Please select an Item' }],
+                label: 'Item ID',
+                name: 'id',
+                type : 'number',
             },
             {
                 label: 'Control Number',

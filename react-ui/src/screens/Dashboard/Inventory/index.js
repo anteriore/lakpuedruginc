@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions, Empty } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import moment from 'moment';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listInventory, addInventory, getInventory, deleteInventory, clearData, updateInventory } from './redux';
-import { clearData as clearItem } from '../../Maintenance/Items/redux';
+import { listItem, clearData as clearItem } from '../../Maintenance/Items/redux';
+import { listUnit, clearData as clearUnit } from '../../Maintenance/Units/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 
 const { Title } = Typography;
@@ -42,7 +44,6 @@ const Inventory = (props) => {
     
         return function cleanup() {
             dispatch(clearData());
-            dispatch(clearItem());
             isCancelled = true;
         };
     }, [dispatch, company]);
@@ -164,6 +165,7 @@ const Inventory = (props) => {
               formDetails={formDetails}
             />
           </Route>
+
           <Route path={`${path}/:id`}>
             <FormScreen
               title={formTitle}
@@ -173,6 +175,7 @@ const Inventory = (props) => {
               formDetails={formDetails}
             />
           </Route>
+
           <Route>
             <Row>
               <Col span={20}>
@@ -181,6 +184,7 @@ const Inventory = (props) => {
                 </Title>
               </Col>
             </Row>
+
             <Row gutter={[16, 16]}>
               <Col span={20}>
                 <Button
@@ -190,97 +194,94 @@ const Inventory = (props) => {
                     handleAdd();
                   }}
                 >
-              Add
-            </Button>
-            {loading ? (
-              <Skeleton />
-            ) : (
-              <TableDisplay
-                columns={columns}
-                data={inventory}
-                handleRetrieve={handleRetrieve}
-                handleUpdate={handleUpdate}
-                handleDelete={handleDelete}
-              />
-            )}
-          </Col>
-          <Modal
-            title="Inventory Details"
-            visible={displayModal}
-            onOk={closeModal}
-            onCancel={closeModal}
-            width={1000}
-            cancelButtonProps={{ style: { display: 'none' } }}
-          >
-            {loadingItem ? (
-              <Skeleton />
-            ) : (
-              <>
-                <Descriptions bordered title={displayData.name} size="default" layout="vertical">
-                  {formDetails.form_items.map((item) => {
-                    if (item.type === 'select') {
-                      const itemData = displayData[item.name];
-                      return (
-                        <Descriptions.Item label={item.label}>
-                          {itemData !== null ? itemData[item.selectName] : null}
-                        </Descriptions.Item>
-                      );
-                    }
-                    if (item.type === 'list' || item.type === 'listSelect') {
-                      return null;
-                    }
+                Add
+              </Button>
+              {loading ? (
+                <Skeleton />
+              ) : (
+                <TableDisplay
+                  columns={columns}
+                  data={inventory}
+                  handleRetrieve={handleRetrieve}
+                  handleUpdate={handleUpdate}
+                  handleDelete={handleDelete}
+                />
+              )}
+              </Col>
+              <Modal
+                title="Inventory Details:"
+                visible={displayModal}
+                onOk={closeModal}
+                onCancel={closeModal}
+                width={1000}
+                cancelButtonProps={{ style: { display: 'none' } }}
+              >
+              {loadingItem ? (
+                <Skeleton />
+              ) : (
+                <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                  <Descriptions bordered size="default" layout="vertical">
+                    <Descriptions.Item label="Item ID">
+                      {displayData !== null ? displayData.id : 'No data'}
+                    </Descriptions.Item>
 
-                    return (
-                      <Descriptions.Item label={item.label}>
-                        {displayData[item.name]}
-                      </Descriptions.Item>
-                    );
-                  })}
-                </Descriptions>
+                    <Descriptions.Item label="Control Number">
+                      {displayData !== null ? displayData.controlNumber : 'No data'}
+                    </Descriptions.Item>
 
-                {formDetails.form_items.map((item) => {
-                  if (item.type === 'list' || item.type === 'listSelect') {
-                    const itemList = displayData[item.name];
-                    const itemRender = [];
-                    itemRender.push(
-                      <Title
-                        level={5}
-                        style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
-                      >
-                        {`${item.label}:`}
-                      </Title>
-                    );
-                    if (itemList.length === 0) {
-                      itemRender.push(<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />);
-                    }
-                    itemList.forEach((itemData) => {
-                      itemRender.push(
-                        <Descriptions title={itemData[item.selectName]} size="default">
-                          {item.fields.map((field) => {
-                            if (field.type !== 'hidden') {
-                              return (
-                                <Descriptions.Item label={field.label}>
-                                  {itemData[field.name]}
-                                </Descriptions.Item>
-                              );
-                            }
-                            return null;
-                          })}
-                        </Descriptions>
-                      );
-                    });
-                    return itemRender;
-                  }
-                  return null;
-                })}
-              </>
-            )}
-          </Modal>
-        </Row>
-      </Route>  
-        </Switch>
+                    <Descriptions.Item label="Quantity">
+                      {displayData !== null ? displayData.quantity : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Date Created">
+                      {displayData !== null
+                        ? moment(new Date(displayData.dateCreated)).format('DD/MM/YYYY')
+                        : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Expiration">
+                      {displayData !== null
+                        ? moment(new Date(displayData.expiration)).format('DD/MM/YYYY')
+                        : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Best Before">
+                      {displayData !== null
+                        ? moment(new Date(displayData.bestBefore)).format('DD/MM/YYYY')
+                        : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Reevaluation">
+                      {displayData !== null
+                        ? moment(new Date(displayData.reevaluation)).format('DD/MM/YYYY')
+                        : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Retest">
+                      {displayData !== null
+                        ? moment(new Date(displayData.retest)).format('DD/MM/YYYY')
+                        : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Manufacturing Order Reserved">
+                      {displayData !== null ? displayData.moReserved : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Manufacturing Order Quantity">
+                      {displayData !== null ? displayData.moQuantity : 'No data'}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Packaging Process Quantity">
+                      {displayData !== null ? displayData.ppQuantity : 'No data'}
+                    </Descriptions.Item>
+                  </Descriptions>
+                </Space>
+              )}
+            </Modal>
+          </Row>
+        </Route>  
+      </Switch>
     );
 };
-
 
 export default Inventory;
