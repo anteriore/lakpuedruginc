@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, message } from 'antd';
 import moment from 'moment';
-import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
-import { listSalesInvoiceByDepot, clearData as clearSI } from '../../SalesInvoice/redux';
+import { listOrderSlipsByDepotAndStatus, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepotAndStatus, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
@@ -120,8 +120,8 @@ const FormDetails = () => {
         onChange: (e) => {
           dispatch(clearOS());
           dispatch(clearSI());
-          dispatch(listOrderSlipsByDepot({ message, depot: e }));
-          dispatch(listSalesInvoiceByDepot({ depot: e }));
+          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ["Pending"] }));
+          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ["Pending"] }));
         },
       },
       {
