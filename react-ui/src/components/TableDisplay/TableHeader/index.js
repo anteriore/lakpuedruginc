@@ -3,7 +3,7 @@ import { Input, Button, Space, DatePicker } from 'antd';
 import { SearchOutlined, CheckOutlined, CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-const TableSearch = (columnHeaders) => {
+const TableHeader = (columnHeaders) => {
   const newColumnHeaders = [];
   const { hasOwnProperty } = Object.prototype;
   const dateFormat = 'YYYY/MM/DD';
@@ -38,20 +38,21 @@ const TableSearch = (columnHeaders) => {
       <SearchOutlined style={{ color: filtered ? '#1890ff' : '#545454' }} />
     ),
     onFilter: (value, record) => {
+      console.log(record[dataIndex])
       if (record[dataIndex] === null) {
         return '';
       }
-      if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
+      else if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
         return record[dataIndex].code
           ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      if (hasOwnProperty.call(record[dataIndex], 'name') && dataValue === 'name') {
+      else if (hasOwnProperty.call(record[dataIndex], 'name') && dataValue === 'name') {
         return record[dataIndex].name
           ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      if (hasOwnProperty.call(record[dataIndex], 'title') && dataValue === 'title') {
+      else if (hasOwnProperty.call(record[dataIndex], 'title') && dataValue === 'title') {
         return record[dataIndex].title
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
@@ -119,19 +120,24 @@ const TableSearch = (columnHeaders) => {
           if (typeof header.name === 'undefined' || header.name === null) {
             header.name = 'name';
           }
+          
+          if(typeof header.toString !== 'function'){
+            return header.toString = (object) => object[header.name]
+          }
+
           header = {
             ...header,
             sorter: (a, b) => {
               if (typeof a[header.key] !== 'undefined' && a[header.key] !== null) {
                 a = a[header.key];
-                a = a[header.name];
+                a = header.toString(a);
               } else {
                 a = '';
               }
 
               if (typeof b[header.key] !== 'undefined' && b[header.key] !== null) {
                 b = b[header.key];
-                b = b[header.name];
+                b = header.toString(b);
               } else {
                 b = '';
               }
@@ -174,7 +180,12 @@ const TableSearch = (columnHeaders) => {
             ...header,
             render: (object) => {
               if (typeof object !== 'undefined' && object !== null) {
-                return object[header.name];
+                if(typeof header.toString !== 'function'){
+                  return object[header.name];
+                }
+                else {
+                  return header.toString(object)
+                }
               }
 
               return null;
@@ -227,4 +238,4 @@ const TableSearch = (columnHeaders) => {
   return setColumnHeaders();
 };
 
-export default TableSearch;
+export default TableHeader;
