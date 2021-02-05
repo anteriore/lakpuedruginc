@@ -2,7 +2,6 @@ import PurchaseRequests from '../../screens/Dashboard/PurchaseRequests';
 import Inventory from '../../screens/Dashboard/Inventory';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
-import Inventory from '../../screens/Dashboard/Inventory';
 
 export const modules = [
   {
