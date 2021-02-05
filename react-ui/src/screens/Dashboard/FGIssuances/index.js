@@ -32,7 +32,7 @@ const FGIssuances = (props) => {
   const listData = useSelector((state) => state.dashboard.FGIssuances.list);
 
   const { company } = props;
-  const { formDetails } = FormDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -76,6 +76,7 @@ const FGIssuances = (props) => {
   };
 
   const onSubmit = (data) => {
+    console.log(data)
     const payload = {
       ...data,
       company: {
@@ -129,6 +130,7 @@ const FGIssuances = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -140,6 +142,7 @@ const FGIssuances = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>
