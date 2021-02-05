@@ -188,7 +188,6 @@ const TableHeader = (columnHeaders) => {
             ...header,
             render: (object) => {
               if (typeof object !== 'undefined' && object !== null) {
-                console.log("DAFUQ?", header)
                 if(typeof header.dataToString !== 'function'){
                   return object[header.name];
                 }
