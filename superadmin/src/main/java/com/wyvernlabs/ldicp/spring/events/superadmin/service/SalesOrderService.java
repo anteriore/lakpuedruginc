@@ -26,9 +26,9 @@ public class SalesOrderService {
 
 
 		Long id = salesOrderRepository.getMaxId();
-		
+		//di sya number dapat sales order so number
 		if (id == null) {
-			psalesOrderrf.setNumber("PRF-1");
+			salesOrder.setNumber("PRF-1");
 		} else {
 			salesOrder.setNumber("PRF-" + ++id);
 		}

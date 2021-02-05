@@ -1,4 +1,4 @@
-0package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
+package com.wyvernlabs.ldicp.spring.events.superadmin.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,11 +38,11 @@ public class BankAccount {
 		this.id = id;
 	}
 
-	public Long getAccountNumber() {
+	public String getAccountNumber() {
 		return accountNumber;
 	}
 
-	public void setAccountNumber(Long accountNumber) {
+	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
 	}
 

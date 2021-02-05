@@ -144,6 +144,16 @@ public class ProductData {
 					productRepository.save(tempproduct);
 
 
+					/*
+					ProductInventory inventory = new ProductInventory();
+					inventory.setCompany(product.getCompany());
+					inventory.setDateCreated(new Date());
+					inventory.setDepot(product.getDepot());
+					inventory.setProduct(product);
+					inventory.setQuantity(0);
+					productInventoryRepository.save(inventory);
+					*/
+
               
             }
 

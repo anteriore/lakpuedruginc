@@ -48,7 +48,7 @@ public class SalesRep {
 		this.name = name;
 	}
 
-	public String getStatus() {
+	public boolean getStatus() {
 		return status;
 	}
 
