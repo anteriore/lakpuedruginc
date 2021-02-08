@@ -5,6 +5,10 @@ import {
   Skeleton,
   Typography, 
   Button,
+  Modal,
+  Space,
+  Table,
+  Empty,
   message,  
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -16,8 +20,9 @@ import FormDetails, { columns } from './data';
 import { listFGIssuance, addFGIssuance, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import FormScreen from '../../../components/forms/FormScreen';
+import ItemDescription from '../../../components/ItemDescription';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const FGIssuances = (props) => {
   const [loading, setLoading] = useState(true);
@@ -72,6 +77,8 @@ const FGIssuances = (props) => {
   };
 
   const handleRetrieve = (data) => {
+    setSelectedData(data);
+    setDisplayModal(true);
   };
 
   const onSubmit = (data) => {
@@ -194,6 +201,43 @@ const FGIssuances = (props) => {
               />
             )}
           </Col>
+          <Modal
+            visible={displayModal}
+            onOk={() => {
+              setDisplayModal(false);
+              setSelectedData(null);
+            }}
+            onCancel={() => {
+              setDisplayModal(false);
+              setSelectedData(null);
+            }}
+            width={1000}
+            cancelButtonProps={{ style: { display: 'none' } }}
+          >
+            {selectedData === null ? (
+              <Skeleton />
+            ) : (
+              <Space direction="vertical" size={20} style={{ width: '100%' }}>
+                <ItemDescription
+                  title={`${selectedData.pisNo} Details`} 
+                  selectedData={selectedData}
+                  formItems={formDetails.form_items}
+                />
+                <Text>{'Issued Items: '}</Text>
+                <Table
+                  dataSource={
+                    selectedData[tableDetails.name] !== null &&
+                    typeof selectedData[tableDetails.name] !== 'undefined'
+                      ? selectedData[tableDetails.name]
+                      : []
+                  }
+                  columns={tableDetails.renderTableColumns(tableDetails.fields)}
+                  pagination={false}
+                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                />
+              </Space>
+            )}
+          </Modal>
         </Row>
       </Route>
     </Switch>
