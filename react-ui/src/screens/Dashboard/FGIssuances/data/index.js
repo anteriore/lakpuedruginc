@@ -18,6 +18,24 @@ export const columns = [
     datatype: 'date',
   },
   {
+    title: 'Ship From',
+    dataIndex: 'fromDepot',
+    key: 'fromDepot',
+    datatype: 'object',
+    dataToString: (object) => {
+      return `[${object.code}] ${object.name}`
+    }
+  },
+  {
+    title: 'Ship To',
+    dataIndex: 'toDepot',
+    key: 'toDepot',
+    datatype: 'object',
+    dataToString: (object) => {
+      return `[${object.code}] ${object.name}`
+    }
+  },
+  {
     title: 'Requested By',
     dataIndex: 'requestedBy',
     key: 'requestedBy',
@@ -41,7 +59,7 @@ const FormDetails = () => {
   const productInventories = useSelector((state) => state.dashboard.productInventories.list);
 
   const formDetails = {
-    form_name: 'product_inventory',
+    form_name: 'fg_issuance',
     form_items: [
       {
         label: 'FS-IS Number',
