@@ -11,56 +11,45 @@ const initialState = {
 };
 
 export const listOReceipt = createAsyncThunk('listOReceipt', async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+  const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.get(`rest/order-receipts?token=${accessToken}`);
-  
-    if(typeof response !== 'undefined' && response.status === 200){
-      const { data } = response;
-      if( data.length === 0){
-        payload.message.warning("No data retrieved for official receipts")
-      }
+  const response = await axiosInstance.get(`rest/order-receipts?token=${accessToken}`);
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for official receipts');
     }
-    else {
-      payload.message.error(message.ITEMS_GET_REJECTED)
-      return thunkAPI.rejectWithValue(response)
-    }
-  
-    return response;
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
   }
-);
 
-export const addOReceipt = createAsyncThunk(
-  'addOReceipt',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+  return response;
+});
 
-    const response = await axiosInstance.post(
-      `rest/order-receipts/?token=${accessToken}`,
-      payload
-    );
-    return response;
-  }
-);
+export const addOReceipt = createAsyncThunk('addOReceipt', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
-export const deleteOReceipt = createAsyncThunk(
-  'deleteOReceipt',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.post(`rest/order-receipts/?token=${accessToken}`, payload);
+  return response;
+});
 
-    const response = await axiosInstance.post(
-      `rest/order-receipts/delete?token=${accessToken}`,
-      payload
-    );
-    return response;
-  }
-);
+export const deleteOReceipt = createAsyncThunk('deleteOReceipt', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.post(
+    `rest/order-receipts/delete?token=${accessToken}`,
+    payload
+  );
+  return response;
+});
 
 const officialReceiptSlice = createSlice({
   name: 'officialReceipts',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listOReceipt.pending]: (state) => {
@@ -68,10 +57,10 @@ const officialReceiptSlice = createSlice({
     },
     [listOReceipt.fulfilled]: (state, action) => {
       const { data } = action.payload;
-      var statusMessage = message.ITEMS_GET_FULFILLED
+      let statusMessage = message.ITEMS_GET_FULFILLED;
 
-      if( data.length === 0){
-        statusMessage = "No data retrieved for official receipts"
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for official receipts';
       }
 
       return {
@@ -79,7 +68,7 @@ const officialReceiptSlice = createSlice({
         list: data,
         status: 'succeeded',
         action: 'get',
-        statusMessage: statusMessage,
+        statusMessage,
       };
     },
     [listOReceipt.rejected]: (state) => {

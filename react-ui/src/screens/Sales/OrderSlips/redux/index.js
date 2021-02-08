@@ -135,6 +135,13 @@ export const deleteOrderSlips = createAsyncThunk('deleteOrderSlips', async (payl
   return response;
 });
 
+<<<<<<< HEAD
+const filterOSWithBalance = (data) => {
+  const processedData = [];
+  data.forEach((orderSlip) => {
+    if (orderSlip.remainingBalance > 0) {
+      processedData.push(orderSlip);
+=======
 const filterOSByBalance = (data, hasBalance) => {
   const processedData = []
   data.forEach((orderSlip) => {
@@ -147,12 +154,12 @@ const filterOSByBalance = (data, hasBalance) => {
       if(orderSlip.remainingBalance === 0){
         processedData.push(orderSlip)
       }
+>>>>>>> 3e7c2200700ed9326b0725a92dcf145e50d68023
     }
-  })
+  });
 
-  return processedData
-
-}
+  return processedData;
+};
 
 const filterOSByStatus = (data, statuses) => {
   const processedData = []

@@ -4,8 +4,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { unwrapResult } from '@reduxjs/toolkit';
 import FormDetails, { columns } from './data';
-import { unwrapResult } from '@reduxjs/toolkit'
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
@@ -88,15 +88,16 @@ const AcknowledgementReceipts = (props) => {
     setLoading(true);
     dispatch(clearOrderSlips());
     dispatch(clearSalesInvoice());
-    dispatch(listClient({ company, message })).then(() => {
-      dispatch(listDepot({ company, message })).then(() => {
-        history.push(`${path}/new`);
+    dispatch(listClient({ company, message }))
+      .then(() => {
+        dispatch(listDepot({ company, message })).then(() => {
+          history.push(`${path}/new`);
+          setLoading(false);
+        });
+      })
+      .catch(() => {
         setLoading(false);
       });
-    })
-    .catch(()=>{
-      setLoading(false)
-    })
   };
 
   const handleUpdate = (data) => {
@@ -211,7 +212,7 @@ const AcknowledgementReceipts = (props) => {
   const renderTableColumns = (item) => {
     const columns = [];
     item.fields.forEach((field) => {
-      if(!field.writeOnly){
+      if (!field.writeOnly) {
         if (typeof field.render === 'undefined' || field.render === null) {
           field.render = (object) => object[field.name];
         }
@@ -221,7 +222,6 @@ const AcknowledgementReceipts = (props) => {
           render: (object) => field.render(object),
         });
       }
-        
     });
 
     return columns;
@@ -344,7 +344,7 @@ const AcknowledgementReceipts = (props) => {
                     return null;
                   })}
                 </Descriptions>
-                <Text>{'Payment Details:'}</Text>
+                <Text>Payment Details:</Text>
                 <Table
                   dataSource={tableDetails.getValues(selectedAR)}
                   columns={renderTableColumns(tableDetails)}

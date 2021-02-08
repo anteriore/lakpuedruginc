@@ -77,16 +77,17 @@ export const listSalesInvoiceByDepotAndStatus = createAsyncThunk('listSalesInvoi
       data: filterSIByStatus(response.data, payload.statuses)
     }
 
-    const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
+      const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
 export const createSalesInvoice = createAsyncThunk(
   'createSalesInvoice',
@@ -123,11 +124,10 @@ const filterSIByBalance = (data, hasBalance) => {
         processedData.push(salesInvoice)
       }
     }
-  })
+  });
 
-  return processedData
-
-}
+  return processedData;
+};
 
 const filterSIByStatus = (data, statuses) => {
   const processedData = []

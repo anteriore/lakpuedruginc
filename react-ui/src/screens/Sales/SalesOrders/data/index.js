@@ -138,7 +138,7 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please provide a sales order depot' }],
       placeholder: 'Sales order depot',
       render: (depot) => {
-        return `[${depot.id}] ${depot.name}`;
+        return `[${depot.code}] ${depot.name}`;
       },
       type: 'select',
       choices: [],
@@ -148,6 +148,9 @@ export const formDetails = {
       name: 'client',
       rules: [{ required: true, message: 'Please provide a sales order client' }],
       placeholder: 'Sales order client',
+      render: (client) => {
+        return `[${client.code}] ${client.name}`;
+      },
       type: 'selectSearch',
       choices: [],
     },
@@ -174,18 +177,6 @@ export const formDetails = {
       placeholder: '',
       type: 'readOnly',
       writeOnly: true,
-    },
-    {
-      label: 'Status',
-      name: 'status',
-      rules: [{ required: true, message: 'Please provide a sales order status' }],
-      placeholder: 'Sales order status',
-      type: 'select',
-      choices: [
-        { id: 'pending', name: 'Pending' },
-        { id: 'complete', name: 'Complete' },
-        { id: 'approved', name: 'Approved' },
-      ],
     },
     {
       label: 'Remarks',

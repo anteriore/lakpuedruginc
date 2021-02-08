@@ -268,7 +268,7 @@ const FormDetails = () => {
 
           return object.remainingBalance || 0;
         },
-        writeOnly: true
+        writeOnly: true,
       },
     ],
     summary: (data) => {
@@ -328,7 +328,7 @@ const FormDetails = () => {
       },
     ],
     getValues: (values) => {
-      console.log(values)
+      console.log(values);
       const payments = [];
       values.payments.forEach((payment) => {
         payments.push({
