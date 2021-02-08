@@ -14,6 +14,7 @@ import {
   message,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
@@ -31,6 +32,9 @@ const InputForm = (props) => {
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+  const [selectedFGIS, setSelectedFGIS] = useState([]);
+
+  const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
 
   const toggleName = formDetails.toggle_name;
 
@@ -235,6 +239,19 @@ const InputForm = (props) => {
     }
   };
 
+  const onTableSelect = (key, value) => {
+    const formValues = {};
+
+    if (key === 'salesNumber') {
+      const selectedFGIS = FGISList.find((slip) => slip.id === value);
+      formValues[key] = selectedFGIS.number;
+    } else {
+      formValues[key] = value;
+    }
+    onValuesChange(formValues)
+    form.setFieldsValue(formValues)
+  };
+
   return (
     <>
       <Row>
@@ -252,14 +269,16 @@ const InputForm = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
-                }
-                return null;
+              const itemData = {
+                ...item,
+              };
+
+              if (item.name === 'pis') {
+                itemData.selectedData = selectedFGIS;
+                itemData.setSelectedData = setSelectedFGIS;
               }
 
-              return <FormItem item={item} onFail={onFail} />;
+              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
 
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (

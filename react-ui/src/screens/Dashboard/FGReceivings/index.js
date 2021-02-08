@@ -82,31 +82,20 @@ const FGReceivings = (props) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
-    const inventoryList = [];
-    data.inventoryList.forEach((inventory) => {
-      inventoryList.push({
-        product: {
-          id: inventory.product.id,
-        },
-        quantity: inventory.quantity
-      });
-    });
     const payload = {
       ...data,
       company: {
         id: company,
       },
-      fromDepot: {
-        id: data.fromDepot,
+      depot: {
+        id: data.depot,
       },
-      toDepot: {
-        id: data.toDepot,
-      },
-      requestedBy: {
+      receivedBy: {
         id: user.id,
       },
-      inventoryList: inventoryList
+      pis: {
+        id: data.pis,
+      },
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
