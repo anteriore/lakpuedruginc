@@ -42,7 +42,7 @@ export const listSalesInvoiceByDepot = createAsyncThunk(
   }
 );
 
-export const listSalesInvoiceWithBalanceByDepot = createAsyncThunk('listSalesInvoiceWithBalanceByDepot', async (payload, thunkAPI) => {
+export const listSalesInvoiceByDepotAndBalance = createAsyncThunk('listSalesInvoiceByDepotAndBalance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.get(
@@ -51,7 +51,30 @@ export const listSalesInvoiceWithBalanceByDepot = createAsyncThunk('listSalesInv
 
     const processedResponse = {
       ...response,
-      data: filterSIWithBalance(response.data)
+      data: filterSIByBalance(response.data, payload.hasBalance)
+    }
+
+    const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const listSalesInvoiceByDepotAndStatus = createAsyncThunk('listSalesInvoiceByDepotAndStatus', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+    );
+
+    const processedResponse = {
+      ...response,
+      data: filterSIByStatus(response.data, payload.statuses)
     }
 
     const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
@@ -87,14 +110,32 @@ export const createSalesInvoice = createAsyncThunk(
   }
 );
 
-const filterSIWithBalance = (data) => {
+const filterSIByBalance = (data, hasBalance) => {
   const processedData = []
   data.forEach((salesInvoice) => {
-    if(salesInvoice.remainingBalance > 0){
-      processedData.push(salesInvoice)
+    if(hasBalance){
+      if(salesInvoice.remainingBalance > 0){
+        processedData.push(salesInvoice)
+      }
+    }
+    else {
+      if(salesInvoice.remainingBalance === 0){
+        processedData.push(salesInvoice)
+      }
     }
   })
 
+  return processedData
+
+}
+
+const filterSIByStatus = (data, statuses) => {
+  const processedData = []
+  data.forEach((salesInvoice) => {
+    if(statuses.includes(salesInvoice.status)){
+      processedData.push(salesInvoice)
+    }
+  })
   return processedData
 
 }
@@ -193,14 +234,14 @@ const salesInvoiceSlice = createSlice({
         statusMessage,
       };
     },
-    [listSalesInvoiceWithBalanceByDepot.pending]: (state) => {
+    [listSalesInvoiceByDepotAndBalance.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales invoice`,
       };
     },
-    [listSalesInvoiceWithBalanceByDepot.fulfilled]: (state, action) => {
+    [listSalesInvoiceByDepotAndBalance.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
@@ -216,7 +257,46 @@ const salesInvoiceSlice = createSlice({
         statusMessage,
       };
     },
-    [listSalesInvoiceWithBalanceByDepot.rejected]: (state, action) => {
+    [listSalesInvoiceByDepotAndBalance.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice in the selected Depot'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [listSalesInvoiceByDepotAndStatus.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for sales invoice`,
+      };
+    },
+    [listSalesInvoiceByDepotAndStatus.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Invoice'
+      );
+
+      return {
+        ...state,
+        salesInvoiceList: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listSalesInvoiceByDepotAndStatus.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
