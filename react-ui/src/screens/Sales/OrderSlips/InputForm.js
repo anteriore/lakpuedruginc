@@ -3,12 +3,12 @@ import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Layout, Che
 import _ from 'lodash';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
-import { formDetails, salesOrderHeader, salesInfoHeader, initValueForm } from './data';
-import { fromatInitForm, updateList } from '../../../helpers/general-helper';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { formDetails, salesOrderHeader, salesInfoHeader } from './data';
+import { updateList } from '../../../helpers/general-helper';
 import FormItem from '../../../components/forms/FormItem';
 
-import { formatSOList, formatLotProducts, formatOrderedProducts } from './helpers';
+import { formatLotProducts, formatOrderedProducts } from './helpers';
 
 const { Title } = Typography;
 
@@ -16,7 +16,6 @@ const InputForm = (props) => {
   const { title, onSubmit } = props;
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { id } = useParams();
   const [contentLoading, setContentLoading] = useState(true);
   const [showSalesSection, setShowSalesSection] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
@@ -27,7 +26,6 @@ const InputForm = (props) => {
   const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
-  const { orderSlipsList } = useSelector((state) => state.sales.orderSlips);
   const [form] = useForm();
 
   const handleSalesChange = useCallback(
@@ -51,7 +49,7 @@ const InputForm = (props) => {
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
         const masterList = {
-          salesOrder: formatSOList(selectedSalesList),
+          salesOrder: selectedSalesList,
         };
         const formItem = _.find(newForm.form_items, { name: 'salesOrder' });
 
@@ -64,39 +62,6 @@ const InputForm = (props) => {
     },
     [form, salesOrderList, tempFormDetails, handleSalesChange]
   );
-
-  // useEffect for Edit Mode
-  useEffect(() => {
-    try {
-      if (typeof id !== 'undefined') {
-        const loadedOS = _.find(orderSlipsList, (o) => o.id === parseInt(id, 10));
-        form.setFieldsValue(fromatInitForm(loadedOS, initValueForm));
-        setSelectedSales(loadedOS.salesOrder);
-
-        const selectedSalesList = _.filter(salesOrderList, (o) => {
-          return o.depot.id === loadedOS.depot.id && _.toLower(o.status) !== 'pending';
-        }).filter((o) => _.toLower(o.type) === 'os');
-
-        if (selectedSalesList.length !== 0) {
-          const newForm = tempFormDetails;
-          const masterList = {
-            salesOrder: formatSOList(selectedSalesList),
-          };
-          const formItem = _.find(newForm.form_items, { name: 'salesOrder' });
-
-          formItem.onChange = (e) => handleSalesChange(e);
-          setTempFormDetails(updateList(newForm, masterList));
-          setSelectedLot(loadedOS.orderedProducts);
-
-          setShowSalesSection(true);
-        } else {
-          setShowSalesSection(false);
-        }
-      }
-    } catch {
-      history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
-    }
-  }, [id, orderSlipsList, form, history, path, salesOrderList, tempFormDetails, handleSalesChange]);
 
   useEffect(() => {
     form.setFieldsValue({
