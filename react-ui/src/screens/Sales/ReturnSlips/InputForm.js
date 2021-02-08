@@ -289,14 +289,16 @@ const InputForm = (props) => {
     const formValues = {};
 
     if (key === 'salesNumber') {
-      const selectedSaleSlip = orderSlips.find((slip) => slip.id === value);
-      formValues[key] = selectedSaleSlip.number;
-      formValues.client = selectedSaleSlip.salesOrder.client.id;
-    } else {
-      formValues[key] = value;
+      const selectedSaleSlip = salesSlips.find(slip => slip.id === value)
+      formValues[key] = selectedSaleSlip.number
+      formValues['client'] = selectedSaleSlip.salesOrder.client.id
+      setOrderedProducts(selectedSaleSlip.orderedProducts)
     }
-    onValuesChange(formValues);
-    form.setFieldsValue(formValues);
+    else {
+      formValues[key] = value
+    }
+    onValuesChange(formValues)
+    form.setFieldsValue(formValues)
   };
 
   return (

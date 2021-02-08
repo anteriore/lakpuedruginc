@@ -33,6 +33,10 @@ public class AcknowledgementReceiptService {
 			updateStatusOfSalesSlip(payment.getReference(), payment.getAppliedAmount());
 		}
 
+		if(acknowledgementReceipt.getSiAmount() == 0){
+			acknowledgementReceipt.setStatus("Completed");
+		}
+
 		return acknowledgementReceiptRepository.save(acknowledgementReceipt);
 	}
 

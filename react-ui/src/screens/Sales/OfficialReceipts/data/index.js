@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { message } from 'antd';
-import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
 import moment from 'moment';
+import { listAReceiptWithSIByDepot } from '../../AcknowledgementReceipts/redux';
 
 export const columns = [
   {
@@ -86,7 +86,7 @@ const FormDetails = () => {
       {
         label: 'OR Number',
         name: 'number',
-        placeholder: "Official Receipt Number",
+        placeholder: 'Official Receipt Number',
         rules: [{ required: true }],
       },
       {
@@ -104,12 +104,12 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(listAReceiptWithSIByDepot({message, depot: e}))
-        }
+          dispatch(listAReceiptWithSIByDepot({ message, depot: e }));
+        },
       },
     ],
-    //customized attributes to accomodate this form
-    ar_items: [ 
+    // customized attributes to accomodate this form
+    ar_items: [
       {
         label: 'Acknowledgement Receipt',
         name: 'acknowledgementReceipt',
@@ -117,9 +117,9 @@ const FormDetails = () => {
         toString: (object) => object.number,
         rules: [{ required: true }],
         allowEmpty: true,
-        placeholder: "Select Acknowledgement Receipt",
-        displayModal: displayModal,
-        setDisplayModal: setDisplayModal,
+        placeholder: 'Select Acknowledgement Receipt',
+        displayModal,
+        setDisplayModal,
         dataSource: areceipts,
         columns: [
           {
@@ -131,13 +131,13 @@ const FormDetails = () => {
             title: 'Date',
             dataIndex: 'date',
             key: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY')
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
           },
           {
             title: 'Client',
             dataIndex: 'client',
             key: 'client',
-            render: (client) => client.name
+            render: (client) => client.name,
           },
           {
             title: 'Total SI Amount',
@@ -145,46 +145,47 @@ const FormDetails = () => {
             key: 'siAmount',
           },
         ],
-        rowKey: "id",
+        rowKey: 'id',
         getValueProps: (value) => {
-          if(typeof value !== 'undefined'){
-            return { value: value.number }
+          if (typeof value !== 'undefined') {
+            return { value: value.number };
           }
         },
-        emptyText: 'No data retrieved for acknowledgement receipts in the selected depot. Please select another depot.'
+        emptyText:
+          'No data retrieved for acknowledgement receipts in the selected depot. Please select another depot.',
       },
       {
         label: 'Customer Code',
         name: 'customerCode',
-        placeholder: "Customer Code",
+        placeholder: 'Customer Code',
         toString: (object) => object.client.code,
-        readOnly: true
+        readOnly: true,
       },
       {
         label: 'TIN',
         name: 'tin',
-        placeholder: "TIN",
+        placeholder: 'TIN',
         toString: (object) => object.client.tin,
-        readOnly: true
+        readOnly: true,
       },
       {
         label: 'Received From',
         name: 'receivedFrom',
-        placeholder: "Received From",
+        placeholder: 'Received From',
         toString: (object) => object.client.name,
-        readOnly: true
+        readOnly: true,
       },
       {
         label: 'Business Address',
         name: 'businessAddress',
-        placeholder: "Business Address",
+        placeholder: 'Business Address',
         toString: (object) => object.client.businessAddress,
-        readOnly: true
+        readOnly: true,
       },
-    ]
+    ],
   };
 
-  //different format from other "tableDetails"
+  // different format from other "tableDetails"
   const tableDetails = {
     columns: [
       {
@@ -197,24 +198,24 @@ const FormDetails = () => {
         dataIndex: 'appliedAmount',
         key: 'appliedAmount',
       },
-      {
+      /*{
         title: 'Discount',
         dataIndex: 'discount',
         key: 'discount',
-        render: (data) => data || 0
+        render: (data) => data || 0,
       },
       {
         title: 'Others',
         dataIndex: 'others',
         key: 'others',
-        render: (data) => data || 0
+        render: (data) => data || 0,
       },
       {
         title: 'Withholding Tax',
         dataIndex: 'tax',
         key: 'tax',
         render: (data) => data || 0
-      },
+      },*/
       {
         title: 'NET',
         dataIndex: 'appliedAmount',
@@ -231,11 +232,9 @@ const FormDetails = () => {
       });
       return payments;
     },
-  }
+  };
 
   return { formDetails, tableDetails };
 };
-
-
 
 export default FormDetails;
