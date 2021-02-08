@@ -9,8 +9,7 @@ export const updateList = (form, choices) => {
       form.form_items.forEach((formItem) => {
         if (formItem.name === key) {
           value.forEach((val) => {
-            const { id, code } = val;
-            formItem.choices.push({ id, name: code });
+            formItem.choices.push(val);
           });
         }
         formItem.choices = _.uniqBy(formItem.choices, 'id');
