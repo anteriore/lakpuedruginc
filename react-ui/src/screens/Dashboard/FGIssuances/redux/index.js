@@ -5,7 +5,7 @@ import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
-  list: null,
+  list: [],
   status: '',
   statusMessage: '',
   action: '',
@@ -17,6 +17,24 @@ export const listFGIssuance = createAsyncThunk('listFGIssuance', async (payload,
 
   try {
     const response = await axiosInstance.get(`rest/product-issuances/company/${company}?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+
+});
+
+export const listFGIssuanceByDepot = createAsyncThunk('listFGIssuanceByDepot', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { depot, status = "Pending" } = payload
+
+  try {
+    const response = await axiosInstance.get(`rest/product-issuances/status/${status}/depot/${depot}?token=${accessToken}`);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -55,7 +73,7 @@ const FGIssuanceSlice = createSlice({
     },
     [listFGIssuance.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Sales Order');
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance Slips');
 
       return {
         ...state,
@@ -66,6 +84,29 @@ const FGIssuanceSlice = createSlice({
       };
     },
     [listFGIssuance.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listFGIssuanceByDepot.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listFGIssuanceByDepot.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance Slips');
+
+      return {
+        ...state,
+        list: data,
+        responseCode: status,
+        statusLevel: level,
+        statusMessage: message,
+      };
+    },
+    [listFGIssuanceByDepot.rejected]: (state, action) => {
       return {
         ...state,
         status: 'failed',

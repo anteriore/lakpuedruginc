@@ -27,6 +27,13 @@ const ItemDescription = (props) => {
               </Descriptions.Item>
             );
           }
+          else if(item.type === 'selectTable') {
+            return (
+              <Descriptions.Item label={item.label}>
+                {item.toString(selectedData[item.name])}
+              </Descriptions.Item>
+            );
+          }
           else if (item.type === 'date') {
             return (
               <Descriptions.Item label={item.label}>

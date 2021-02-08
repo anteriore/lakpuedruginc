@@ -4,6 +4,7 @@ import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
+import FGReceivings from '../../screens/Dashboard/FGReceivings';
 
 export const modules = [
   {
@@ -63,8 +64,8 @@ export const modules = [
   },
   {
     title: 'FG-RS',
-    path: 'fgrs',
-    component: PurchaseRequests,
+    path: '/fgrs',
+    component: FGReceivings,
   },
   {
     title: 'Depot Inventory',
