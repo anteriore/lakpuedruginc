@@ -53,7 +53,6 @@ export const formatPayload = (approvalId, company, value) => {
     checkedBy: { id: approvalId },
     depot: { id: value.depot },
     client: { id: value.client },
-    number: value.number,
     remarks: value.remarks,
     type: value.type,
     status: 'Pending',
