@@ -1,4 +1,5 @@
 import PurchaseRequests from '../../screens/Dashboard/PurchaseRequests';
+import Inventory from '../../screens/Dashboard/Inventory';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
 
@@ -26,7 +27,7 @@ export const routes = [
   {
     title: 'Inventory',
     path: '/inventory',
-    component: PurchaseRequests,
+    component: Inventory,
   },
   {
     title: 'Material Issuance Slips',

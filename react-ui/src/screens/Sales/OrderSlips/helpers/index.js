@@ -1,19 +1,5 @@
 import _ from 'lodash';
 
-export const formatSOList = (salesOrders) => {
-  const newList = [];
-  if (salesOrders.length !== 0) {
-    salesOrders.forEach((sale) => {
-      newList.push({
-        id: sale.id,
-        code: `${sale.number} - ${sale.client.salesRep.code} - ${sale.client.code} - ${sale.client.name}`,
-      });
-    });
-  }
-
-  return newList;
-};
-
 export const formatOrderedProducts = (lotProducts, salesProducts) => {
   if (salesProducts !== null && lotProducts !== null) {
     const { products } = salesProducts;

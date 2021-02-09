@@ -18,7 +18,7 @@ import {
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
 import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
-import { listPR, listPRByStatus, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
+import { listPRByStatus, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -112,11 +112,12 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            // dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
-            dispatch(listPR({ company: selectedCompany, message })).then(() => {
-              history.push(`${path}/new`);
-              setLoadingCompany(false);
-            });
+            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+              // dispatch(listPR({ company: selectedCompany, message }))
+              .then(() => {
+                history.push(`${path}/new`);
+                setLoadingCompany(false);
+              });
           });
         });
       });
@@ -150,11 +151,12 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            // dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
-            dispatch(listPR({ company: selectedCompany, message })).then(() => {
-              history.push(`${path}/${data.id}`);
-              setLoadingCompany(false);
-            });
+            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+              // dispatch(listPR({ company: selectedCompany, message }))
+              .then(() => {
+                history.push(`${path}/${data.id}`);
+                setLoadingCompany(false);
+              });
           });
         });
       });
