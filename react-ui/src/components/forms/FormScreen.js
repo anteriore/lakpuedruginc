@@ -91,7 +91,7 @@ const FormScreen = (props) => {
             key: field.name,
             visible: false,
           });
-        } else if (field.type === 'select') {
+        } else if (field.type === 'select' === 'selectSearch') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -111,6 +111,7 @@ const FormScreen = (props) => {
               }
               return (
                 <Form.Item
+                  showSearch={item.type === 'selectSearch'}
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
