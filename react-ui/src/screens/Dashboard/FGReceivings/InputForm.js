@@ -10,15 +10,15 @@ import {
   Col,
   Typography,
   Table,
+  Space,
   Empty,
   message,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
@@ -229,22 +229,22 @@ const InputForm = (props) => {
 
   const onValuesChange = (values) => {
     if (hasTable && values.hasOwnProperty(formTable.name)) {
-      setTableData(form.getFieldValue(formTable.name));
+      setTableData(values[formTable.name].inventoryList);
     }
 
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
-      }
+    if (values.hasOwnProperty('depot')) {
+      setSelectedFGIS([]);
+      setTableData(null);
+      form.setFieldsValue({ pis: null });
     }
   };
 
   const onTableSelect = (key, value) => {
     const formValues = {};
 
-    if (key === 'salesNumber') {
-      const selectedFGIS = FGISList.find((slip) => slip.id === value);
-      formValues[key] = selectedFGIS.number;
+    if (key === 'pis') {
+      const selected = FGISList.find((slip) => slip.id === value);
+      formValues[key] = selected;
     } else {
       formValues[key] = value;
     }
@@ -284,26 +284,16 @@ const InputForm = (props) => {
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
-                    <div style={{ float: 'right', marginBottom: '1%' }}>
-                      <Button
-                        onClick={() => {
-                          setDisplayModal(true);
-                          setLoadingModal(false);
-                        }}
-                        icon={<SelectOutlined />}
-                      >
-                        {`Select ${formTable.label}`}
-                      </Button>
-                    </div>
+                  <Space direction="vertical" size={20} style={{ width: '100%' }}>
+                    <Text style={{float: "left", marginLeft: "2%"}}>{'Received Items: '}</Text>
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
                       pagination={false}
-                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      locale={{ emptyText: <Empty description="No FG-IS Seleted." /> }}
                       summary={formTable.summary}
                     />
-                  </Col>
+                  </Space>
                 )}
               </Form.List>
             )}

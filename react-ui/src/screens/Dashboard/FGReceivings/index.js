@@ -18,6 +18,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listFGReceiving, addFGReceiving, clearData } from './redux';
+import { listFGIssuance, clearData as clearFGIS } from '../FGIssuances/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
@@ -65,8 +66,9 @@ const FGReceivings = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(listDepot({ company, message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
+        dispatch(clearFGIS())
+        history.push(`${path}/new`);
+        setLoading(false);
     });
   };
 
@@ -82,6 +84,7 @@ const FGReceivings = (props) => {
   };
 
   const onSubmit = (data) => {
+    console.log(data)
     const payload = {
       ...data,
       company: {
@@ -94,7 +97,7 @@ const FGReceivings = (props) => {
         id: user.id,
       },
       pis: {
-        id: data.pis,
+        id: data.pis.id,
       },
     };
     if (formMode === 'edit') {
@@ -141,7 +144,7 @@ const FGReceivings = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          //formTable={tableDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -153,7 +156,7 @@ const FGReceivings = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          //formTable={tableDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>

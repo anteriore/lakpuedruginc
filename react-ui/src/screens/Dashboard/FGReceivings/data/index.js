@@ -122,8 +122,8 @@ const FormDetails = () => {
         ],
         rowKey: 'id',
         getValueProps: (value) => {
-          if (typeof value !== 'undefined') {
-            return { value };
+          if (typeof value !== 'undefined' && value !== null) {
+            return { value: value.pisNo };
           }
         },
         emptyText:
