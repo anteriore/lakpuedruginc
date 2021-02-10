@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { formDetails } from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
-import { formatLotProducts, formatOrderedProducts, formatSOList } from '../OrderSlips/helpers';
+import { formatLotProducts, formatOrderedProducts } from '../OrderSlips/helpers';
 import { salesInfoHeader, salesOrderHeader } from '../OrderSlips/data';
 
 const { Title } = Typography;
@@ -52,7 +52,7 @@ const InputForm = (props) => {
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
         const masterList = {
-          salesOrder: formatSOList(selectedSalesList),
+          salesOrder: selectedSalesList,
         };
         const formItem = _.find(newForm.form_items, { name: 'salesOrder' });
 

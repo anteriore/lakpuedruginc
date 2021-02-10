@@ -1,40 +1,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company, fnCallback } = payload;
-  const response = await axiosInstance.get(
-    `/rest/order-slips/company/${company}?token=${accessToken}`
-  );
+  try {
+    const response = await axiosInstance.get(
+      `/rest/order-slips/company/${payload}?token=${accessToken}`
+    );
 
-  if (typeof response !== 'undefined') {
-    const { status } = response;
-    if (status === 200) {
-      if (response.data.length === 0) {
-        response.statusText = `${message.API_200_EMPTY} in order slips.`;
-      } else {
-        response.statusText = `${message.API_200_SUCCESS} in order slips.`;
-      }
-      fnCallback(response);
-      return response;
-    }
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (status === 500 || status === 400) {
-      fnCallback(response);
-      return thunkAPI.rejectWithValue(response);
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    const newReponse = {
-      status: 500,
-      statusText: message.API_UNDEFINED,
-    };
-    fnCallback(newReponse);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const listOrderSlipsByDepot = createAsyncThunk(
@@ -115,24 +99,21 @@ export const listOrderSlipsByDepotAndStatus = createAsyncThunk(
 
 export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/order-slips?token=${accessToken}`, payload);
 
-  return response;
-});
+  try {
+    const response = await axiosInstance.post(
+      `/rest/order-slips?token=${accessToken}`,
+      payload
+    );
 
-export const updateOrderSlips = createAsyncThunk('updateOrderSlips', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/order-slips?token=${accessToken}`, payload);
-
-  return response;
-});
-
-export const deleteOrderSlips = createAsyncThunk('deleteOrderSlips', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload;
-  const response = await axiosInstance.post(`/rest/order-slips/delete?token=${accessToken}`, id);
-
-  return response;
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 const filterOSByBalance = (data, hasBalance) => {
@@ -166,7 +147,9 @@ const filterOSByStatus = (data, statuses) => {
 
 const initialState = {
   orderSlipsList: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -181,33 +164,40 @@ const orderSlipsSlice = createSlice({
     [listOrderSlips.pending]: (state) => {
       return {
         ...state,
-        status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for order slips`,
       };
     },
     [listOrderSlips.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for order slips';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Order Slips'
+      );
 
       return {
         ...state,
         orderSlipsList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
-    [listOrderSlips.rejected]: (state) => {
+    [listOrderSlips.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Order Slips'
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
       };
     },
     [listOrderSlipsByDepotAndBalance.pending]: (state) => {
@@ -309,73 +299,41 @@ const orderSlipsSlice = createSlice({
     [createOrderSlips.pending]: (state) => {
       return {
         ...state,
+        action: 'create',
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
+        statusMessage: `${message.ITEM_ADD_PENDING} for order slips`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [createOrderSlips.fulfilled]: (state) => {
+    [createOrderSlips.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Order Slips'
+      );
+
       return {
         ...state,
         status: 'succeeded',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [createOrderSlips.rejected]: (state) => {
+    [createOrderSlips.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Order Slips'
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
-      };
-    },
-    [updateOrderSlips.pending]: (state) => {
-      return {
-        ...state,
-        status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
-      };
-    },
-    [updateOrderSlips.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'succeeded',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
-      };
-    },
-    [updateOrderSlips.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
-      };
-    },
-    [deleteOrderSlips.pending]: (state) => {
-      return {
-        ...state,
-        status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
-      };
-    },
-    [deleteOrderSlips.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'succeeded',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
-      };
-    },
-    [deleteOrderSlips.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },
