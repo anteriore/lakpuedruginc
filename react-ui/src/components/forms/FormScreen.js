@@ -34,6 +34,8 @@ const FormScreen = (props) => {
 
   const toggleName = formDetails.toggle_name;
 
+  console.log(formDetails)
+
   useEffect(() => {
     form.setFieldsValue(values);
     if(hasTable){

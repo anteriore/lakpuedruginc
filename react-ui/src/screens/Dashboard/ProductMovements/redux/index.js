@@ -53,7 +53,7 @@ const productMovementSlice = createSlice({
 
       return {
         ...state,
-        productMovmentList: data,
+        productMovementList: data,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
