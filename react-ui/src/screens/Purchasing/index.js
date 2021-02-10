@@ -47,23 +47,26 @@ const Purchasing = () => {
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    let isCancelled = false;
     var actionsList = []
-    if(typeof permissions["purchase-order"] !== 'undefined'){
-      if( permissions["users"].actions.search('u') !== -1){
+    if(typeof permissions["purchase-orders"] !== 'undefined'){
+      if( permissions["purchase-orders"].actions.search('u') !== -1){
         actionsList.push("update")
       }
-      if(permissions["purchase-order"].actions.search('c') !== -1){
+      if(permissions["purchase-orders"].actions.search('c') !== -1){
         actionsList.push("create")
       }
-      if(permissions["purchase-order"].actions.search('d') !== -1){
+      if(permissions["purchase-orders"].actions.search('d') !== -1){
         actionsList.push("delete")
       }
-      if(permissions["purchase-order"].actions.search('r') !== -1){
+      if(permissions["purchase-orders"].actions.search('r') !== -1){
         actionsList.push("read")
       }
     }
     setActions(actionsList)
+  }, [permissions])
+
+  useEffect(() => {
+    let isCancelled = false;
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
       if(actions.includes("read")){
@@ -88,7 +91,7 @@ const Purchasing = () => {
       dispatch(clearUnit());
       isCancelled = true;
     };
-  }, [dispatch, selectedCompany]);
+  }, [actions, dispatch, selectedCompany]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));

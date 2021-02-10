@@ -34,10 +34,8 @@ const Dashboard = () => {
   const getPermittedRoutes = () => {
     var routeList = []
     routes.forEach((route) => {
-      if(typeof route.key !== 'undefined'){
-        if(typeof permissions[route.key] !== 'undefined'){
-          routeList.push(route)
-        }
+      if(typeof permissions[route.path.split("/")[1]] !== 'undefined'){
+        routeList.push(route)
       }
     })
     return routeList
