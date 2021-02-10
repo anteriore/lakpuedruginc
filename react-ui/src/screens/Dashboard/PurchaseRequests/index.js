@@ -17,9 +17,12 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { getPR, listPR, deletePR, approvePR, rejectPR, clearData } from './redux';
+import { listPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
-import { clearData as clearItem } from '../../Maintenance/Items/redux';
+import { listI, clearData as clearItem } from '../../Maintenance/Items/redux';
+import { listInventory } from '../Inventory/redux';
+import { DisplayDetails, FormDetails } from './data';
+import { processDataForSubmission } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
@@ -32,78 +35,14 @@ const PurchaseRequests = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
   const [displayData, setDisplayData] = useState(null);
 
-  const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
+  const [formTitle, setFormTitle] = useState('');
+  const [formMode, setFormMode] = useState('');
+  const [formData, setFormData] = useState(null);
 
-  const columns = [
-    {
-      title: 'PRF Number',
-      dataIndex: 'number',
-      key: 'number',
-      sorter: (a, b) => a.id - b.id,
-    },
-    {
-      title: 'PRF Date',
-      dataIndex: 'date',
-      key: 'date',
-      datatype: 'date',
-    },
-    {
-      title: 'Date Needed',
-      dataIndex: 'dateNeeded',
-      key: 'dateNeeded',
-      datatype: 'date',
-    },
-    {
-      title: 'Department',
-      dataIndex: 'department',
-      key: 'department',
-      filters: departments,
-      filterKey: 'name',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      datatype: 'string',
-    },
-  ];
+  const { columns, itemColumns } = DisplayDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
-  const itemColumns = [
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      render: (object) => object.name,
-    },
-    {
-      title: 'Code',
-      dataIndex: 'code',
-      key: 'code',
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'unit',
-      render: (object) => object.name,
-    },
-    {
-      title: 'Current Stocks',
-      dataIndex: 'stocks',
-      key: 'stocks',
-    },
-    {
-      title: 'Quantity Requested',
-      dataIndex: 'quantityRequested',
-      key: 'quantityRequested',
-    },
-  ];
-
-  const data = useSelector((state) => state.dashboard.purchaseRequests.listData);
+  const data = useSelector((state) => state.dashboard.purchaseRequests.list);
   const itemData = useSelector((state) => state.dashboard.purchaseRequests.itemData);
 
   const { company } = props;
@@ -140,6 +79,15 @@ const PurchaseRequests = (props) => {
     setLoadingItem(true);
   };
 
+  const handleAdd = () => {
+    setFormTitle('Create Purchase Order');
+    setFormMode('add');
+    setFormData(null);
+    dispatch(listI({ company, message })).then(() => {
+      history.push(`${path}/new`);
+    })
+  }
+
   const handleUpdate = (data) => {
     history.push(`${path}/${data.id}`);
   };
@@ -155,10 +103,8 @@ const PurchaseRequests = (props) => {
   };
   const handleRetrieve = (data) => {
     setLoadingItem(true);
-    dispatch(getPR({ id: data.id })).then(() => {
-      setLoadingItem(false);
-      setDisplayModal(true);
-    });
+    setLoadingItem(false);
+    setDisplayModal(true);
   };
 
   const handleApprove = (data) => {
@@ -175,13 +121,45 @@ const PurchaseRequests = (props) => {
     });
   };
 
+  const onSubmit = (data) => {
+    const payload = processDataForSubmission(data, company)
+    dispatch(addPR(payload)).then((response) => {
+      if (response.payload.status === 200) {
+        message.success('Successfully saved');
+        dispatch(listPR({ company: company, message })).then(() => {
+          history.goBack();
+        });
+      } else {
+        message.error('Something went wrong. Unable to add item.');
+      }
+    })
+  };
+  
+  const handleCancelButton = () => {
+    setFormData(null);
+  };
+
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <InputForm title="New Purchase Request" company={company} />
+        <InputForm
+          title={formTitle}
+          onSubmit={onSubmit}
+          values={formData}
+          onCancel={handleCancelButton}
+          formDetails={formDetails}
+          formTable={tableDetails}
+        />
       </Route>
       <Route path={`${path}/:id`}>
-        <InputForm title="Edit Purchase Request" company={company} />
+        <InputForm
+          title={formTitle}
+          onSubmit={onSubmit}
+          values={formData}
+          onCancel={handleCancelButton}
+          formDetails={formDetails}
+          formTable={tableDetails}
+        />
       </Route>
       <Route path={path}>
         <Row>
@@ -193,7 +171,7 @@ const PurchaseRequests = (props) => {
               style={{ float: 'right', marginRight: '1%' }}
               icon={<PlusOutlined />}
               onClick={(e) => {
-                history.push(`${path}/new`);
+                handleAdd()
               }}
             >
               Add
