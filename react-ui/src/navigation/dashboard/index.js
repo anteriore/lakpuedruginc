@@ -2,6 +2,7 @@ import PurchaseRequests from '../../screens/Dashboard/PurchaseRequests';
 import Inventory from '../../screens/Dashboard/Inventory';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
+import ProductInventories from '../../screens/Dashboard/ProductInventories';
 
 export const routes = [
   {
@@ -52,7 +53,7 @@ export const routes = [
   {
     title: 'Product Inventory',
     path: '/product-inventory',
-    component: PurchaseRequests,
+    component: ProductInventories,
   },
   {
     title: 'FG-IS',

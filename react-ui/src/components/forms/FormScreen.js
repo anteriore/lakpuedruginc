@@ -36,7 +36,9 @@ const FormScreen = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    setTableData(form.getFieldValue(formTable.name));
+    if(hasTable){
+      setTableData(form.getFieldValue(formTable.name));
+    }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
@@ -222,7 +224,7 @@ const FormScreen = (props) => {
   };
 
   const onValuesChange = (values) => {
-    if (values.hasOwnProperty(formTable.name)) {
+    if (hasTable && values.hasOwnProperty(formTable.name)) {
       setTableData(form.getFieldValue(formTable.name));
     }
 
