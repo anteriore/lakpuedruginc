@@ -91,8 +91,8 @@ public class ApprovedReceiptData {
 		ar2.setDateCreated(new Date());
 		ar2.setModified(new Date());
 		ar2.setReceivingReceipt(rr1);
-		ar2.setApprovedQuantity(50);
-		ar2.setReceivedQuantity(50);
+		ar2.setApprovedQuantity(501);
+		ar2.setReceivedQuantity(502);
 		// ar1.setApprovedQuantity(101);
 		// ar1.setRejectedQuantity(102);
 		ar2.setQcSamples(1);
