@@ -4,7 +4,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import { unwrapResult } from '@reduxjs/toolkit';
 import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
@@ -15,11 +14,6 @@ import { listClient, clearData as clearClient } from '../../Maintenance/Clients/
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearOrderSlips } from '../OrderSlips/redux';
 import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
-
-import {
-  NO_DATA_FOUND,
-  NO_DATA_FOUND_DESC,
-} from '../../../data/constants/response-message.constant';
 
 const { Title, Text } = Typography;
 
@@ -55,33 +49,6 @@ const AcknowledgementReceipts = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    const payload = {
-      company,
-      fnCallback: (response) => {
-        const { status } = response;
-        switch (status) {
-          case 200:
-            if (response.data.length === 0) {
-              Modal.warning({
-                title: NO_DATA_FOUND,
-                content: NO_DATA_FOUND_DESC(response.config.url.split(/[/?]/g)[1]),
-              });
-            }
-            break;
-          case 400:
-          case 500:
-            history.push({
-              pathname: `/error/${status === 400 ? 403 : status}`,
-              state: {
-                moduleList: '/sales/acknowledgement-receipts',
-              },
-            });
-            break;
-          default:
-            break;
-        }
-      },
-    };
     setFormTitle('Create Acknowledgement Receipt');
     setFormMode('add');
     setFormData(null);

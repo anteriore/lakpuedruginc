@@ -247,8 +247,6 @@ const SalesOrders = (props) => {
                 updateEnabled={false}
                 deleteEnabled={false}
                 handleRetrieve={handleRetrieve}
-                updateEnabled={actions.includes("update")}
-                deleteEnabled={actions.includes("delete")}
               />
             )}
           </Col>

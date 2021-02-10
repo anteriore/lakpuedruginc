@@ -100,25 +100,6 @@ const Users = () => {
     // eslint-disable-next-line
   }, [dispatch]);
 
-  const setPermittedActions = () => {
-    var actionList = []
-    if(typeof permissions["users"] !== 'undefined'){
-      if( permissions["users"].actions.search('u') !== -1){
-        actionList.push("update")
-      }
-      if(permissions["users"].actions.search('c') !== -1){
-        actionList.push("create")
-      }
-      if(permissions["users"].actions.search('d') !== -1){
-        actionList.push("delete")
-      }
-      if(permissions["users"].actions.search('r') !== -1){
-        actionList.push("read")
-      }
-    }
-    setActions(actionList)
-  }
-
   const formDetails = {
     form_name: 'user',
     form_items: [

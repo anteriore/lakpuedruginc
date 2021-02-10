@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Row, Col, Typography, Table, Empty, Modal, Alert, message } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
+import { Form, Button, Row, Col, Typography, Table, Empty, Alert, message } from 'antd';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import FormItem from '../../../components/forms/FormItem';

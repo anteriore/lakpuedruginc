@@ -75,7 +75,7 @@ const GroupsCategories = (props) => {
       const group = groupData.find((group) => group.id === selectedGroup.id);
       setselectedGroup(group);
     }
-  }, [groupData])
+  }, [groupData, selectedGroup])
 
   const handleAddG = () => {
     setFormTitle('Add Group');
