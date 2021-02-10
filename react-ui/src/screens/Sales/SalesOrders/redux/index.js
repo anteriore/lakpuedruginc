@@ -23,9 +23,21 @@ export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload,
 
 export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/sales-orders?token=${accessToken}`, payload);
 
-  return response;
+  try {
+    const response = await axiosInstance.post(
+      `/rest/sales-orders?token=${accessToken}`,
+      payload
+    );
+
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const approveSalesOrder = createAsyncThunk(
@@ -162,25 +174,41 @@ const salesOrdersSlice = createSlice({
     [createSalesOrder.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for sales orders`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [createSalesOrder.fulfilled]: (state) => {
+    [createSalesOrder.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders'
+      );
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [createSalesOrder.rejected]: (state) => {
+    [createSalesOrder.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders'
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

@@ -135,6 +135,9 @@ export const formDetails = {
       name: 'depot',
       rules: [{ required: true, message: 'Please provide a order slip depot' }],
       placeholder: 'Order slip depot',
+      render: (depot) => {
+        return `[${depot.code}] ${depot.name}`;
+      },
       type: 'select',
       choices: [],
     },
@@ -144,6 +147,10 @@ export const formDetails = {
       rules: [{ required: true, message: 'Please select sales order' }],
       placeholder: 'Sales order',
       type: 'selectSearch',
+      render: (sales) => {
+        console.log(sales)
+        return `[${sales.number} ] ${sales.client.name}, Sales Rep: ${sales.client.salesRep.name}`
+      },
       choices: [],
     },
     {

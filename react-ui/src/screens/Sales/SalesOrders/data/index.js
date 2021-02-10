@@ -107,12 +107,12 @@ export const tableProductInventory = [
 export const formDetails = {
   form_name: 'sales_orders',
   form_items: [
-    {
-      label: 'Number',
-      name: 'number',
-      rules: [{ required: true, message: 'Please provide a sales order number' }],
-      placeholder: 'Sales order number',
-    },
+    // {
+    //   label: 'Number',
+    //   name: 'number',
+    //   rules: [{ required: true, message: 'Please provide a sales order number' }],
+    //   placeholder: 'Sales order number',
+    // },
     {
       label: 'Date',
       name: 'date',
