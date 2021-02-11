@@ -30,6 +30,10 @@ export const DisplayDetails = () => {
             key: 'department',
             filters: departments,
             filterKey: 'name',
+            datatype: 'object',
+            dataToString: (department) => {
+              return department.name
+            }
         },
         {
             title: 'Status',

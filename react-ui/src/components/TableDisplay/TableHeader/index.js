@@ -201,7 +201,7 @@ const TableHeader = (columnHeaders) => {
         }
       }
 
-      if (typeof header.filters !== 'undefined' && header.filters !== null) {
+      if (typeof header.filters !== 'undefined' && header.filters !== null && header.datatype === 'object') {
         const filters = [];
         header.filters.forEach((filter) => {
           filters.push({
@@ -212,7 +212,12 @@ const TableHeader = (columnHeaders) => {
         header = {
           ...header,
           filters,
-          onFilter: (value, record) => record[header.key].includes(value),
+          onFilter: (value, record) => {
+            const rowData = record[header.key]
+            if(typeof rowData !== 'undefined' && rowData !== null){
+              return rowData[header.filterKey].includes(value)
+            }
+          },
         };
       } else if (header.datatype === 'boolean') {
         header = {
@@ -229,7 +234,7 @@ const TableHeader = (columnHeaders) => {
           defaultSortOrder: header.defaultSortOrder || 'ascend',
           ...filterDate(header.key, header.name),
         };
-      } else if (header.datatype !== 'boolean' && header.datatype !== 'date') {
+      } else {
         header = {
           ...header,
           defaultSortOrder: header.defaultSortOrder || 'ascend',
