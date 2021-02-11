@@ -2,6 +2,7 @@ import PurchaseRequests from '../../screens/Dashboard/PurchaseRequests';
 import Inventory from '../../screens/Dashboard/Inventory';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
+import ProductMovements from '../../screens/Dashboard/ProductMovements';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
@@ -49,8 +50,8 @@ export const modules = [
   },
   {
     title: 'Product Movements',
-    path: 'product/movement',
-    component: PurchaseRequests,
+    path: '/product/movement',
+    component: ProductMovements,
   },
   {
     title: 'Product Inventory',
