@@ -160,6 +160,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
     );
   }
   if (item.type === 'checkList') {
+    if (item.choices === null || item.choices.length === 0) {
+      onFail();
+      return null;
+    }
+
     return (
       <Form.Item
         label={item.label}

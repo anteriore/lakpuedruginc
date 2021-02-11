@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 
 import TableHeader from './TableHeader';
 
@@ -15,6 +16,7 @@ const TableDisplay = (props) => {
     deleteEnabled,
     updateEnabled,
     pagination,
+    name,
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);

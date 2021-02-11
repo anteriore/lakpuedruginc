@@ -24,7 +24,7 @@ const Clients = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
   const [displayData, setDisplayData] = useState(null);
 
-  const { company } = props;
+  const { company, actions } = props;
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -216,6 +216,7 @@ const Clients = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
+            {actions.includes("create") &&
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
@@ -225,6 +226,7 @@ const Clients = (props) => {
             >
               Add
             </Button>
+            }
             {loading ? (
               <Skeleton />
             ) : (
@@ -234,6 +236,8 @@ const Clients = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={actions.includes("update")}
+                deleteEnabled={actions.includes("delete")}
               />
             )}
           </Col>

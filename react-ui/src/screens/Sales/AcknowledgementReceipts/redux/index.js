@@ -14,7 +14,6 @@ const noDataMessage = 'No data retrieved for acknowledgement receipts';
 
 export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload;
 
   const response = await axiosInstance.get(`rest/acknowledgement-receipts?token=${accessToken}`);
 

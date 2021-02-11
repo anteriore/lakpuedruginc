@@ -203,6 +203,8 @@ const Inventory = (props) => {
                   handleRetrieve={handleRetrieve}
                   handleUpdate={handleUpdate}
                   handleDelete={handleDelete}
+                  updateEnabled={false}
+                  deleteEnabled={false}
                 />
               )}
               </Col>
