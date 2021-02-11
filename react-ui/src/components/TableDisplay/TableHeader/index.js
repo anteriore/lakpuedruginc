@@ -128,8 +128,8 @@ const TableHeader = (columnHeaders) => {
             header.name = 'name';
           }
           
-          if(typeof header.toString !== 'function'){
-            return header.dataToString = (object) => object[header.name]
+          if(typeof header.dataToString !== 'function'){
+            header.dataToString = (object) => object[header.name]
           }
 
           header = {
