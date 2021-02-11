@@ -199,36 +199,48 @@ export const FormDetails = () => {
         selectFields: [
             {
                 title: 'Item Name',
-                dataIndex: 'name',
-                key: 'name',
+                dataIndex: 'item',
+                key: 'item',
+                render: (object) => object.name,
             },
             {
                 title: 'Code',
-                dataIndex: 'code',
-                key: 'code',
+                dataIndex: 'item',
+                key: 'item',
+                render: (object) => object.code,
             },
             {
                 title: 'Type',
-                dataIndex: 'type',
-                key: 'type',
-                render: (object) => object.name,
+                dataIndex: 'item',
+                key: 'item',
+                render: (object) => object.type.name,
             },
             {
                 title: 'Unit of Measurement',
-                dataIndex: 'unit',
-                key: 'unit',
-                render: (object) => object.name,
+                dataIndex: 'item',
+                key: 'item',
+                render: (object) => object.unit.name,
             },
-            /*{
+            {
+                title: 'Current Stocks',
+                dataIndex: 'stockQuantity',
+                key: 'stockQuantity',
+            },
+            {
                 title: 'PRF Quantity',
-                dataIndex: 'requestedQuantity',
-                key: 'requestedQuantity',
+                dataIndex: 'prfQuantity',
+                key: 'prfQuantity',
             },
             {
                 title: 'PO Quantity',
-                dataIndex: 'orderedQuantity',
-                key: 'orderedQuantity',
-            },*/
+                dataIndex: 'poQuantity',
+                key: 'poQuantity',
+            },
+            {
+                title: 'Quarantined',
+                dataIndex: 'quarantineQuantity',
+                key: 'quarantineQuantity',
+            },
         ],
         processData: (data) => {
             var processedData = {
@@ -239,13 +251,7 @@ export const FormDetails = () => {
             return processedData
         },
         checkSelected: (selectedData, rowData) => {
-            console.log(selectedData)
-            console.log(rowData)
-            if (
-                typeof selectedData !== 'undefined' &&
-                selectedData !== null &&
-                selectedData.some((item) => item.itemID === rowData.id)
-            ) {
+            if (typeof selectedData !== 'undefined' && selectedData !== null && selectedData.some((item) => item.itemID === rowData.id)) {
                 return true;
             }
         },

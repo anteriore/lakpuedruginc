@@ -19,7 +19,7 @@ import moment from 'moment';
 
 import { listPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
-import { listI, clearData as clearItem } from '../../Maintenance/Items/redux';
+import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 import { DisplayDetails, FormDetails } from './data';
 import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
@@ -72,7 +72,7 @@ const PurchaseRequests = (props) => {
     setFormTitle('Create Purchase Request');
     setFormMode('add');
     setFormData(null);
-    dispatch(listI({ company, message })).then(() => {
+    dispatch(listItemSummary({ company, message })).then(() => {
       history.push(`${path}/new`);
     })
   }
@@ -86,7 +86,7 @@ const PurchaseRequests = (props) => {
       const inputData = loadDataForUpdate(itemData)
       setFormData(inputData);
       console.log(inputData)
-      dispatch(listI({ company, message })).then(() => {
+      dispatch(listItemSummary({ company, message })).then(() => {
         history.push(`${path}/${data.id}`);
       })
     }
