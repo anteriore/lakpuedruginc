@@ -20,9 +20,8 @@ import moment from 'moment';
 import { listPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
 import { listI, clearData as clearItem } from '../../Maintenance/Items/redux';
-import { listInventory } from '../Inventory/redux';
 import { DisplayDetails, FormDetails } from './data';
-import { processDataForSubmission } from './helpers';
+import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
@@ -33,7 +32,7 @@ const PurchaseRequests = (props) => {
   const [loadingItem, setLoadingItem] = useState(true);
 
   const [displayModal, setDisplayModal] = useState(false);
-  const [displayData, setDisplayData] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -42,7 +41,7 @@ const PurchaseRequests = (props) => {
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
 
-  const data = useSelector((state) => state.dashboard.purchaseRequests.list);
+  const listData = useSelector((state) => state.dashboard.purchaseRequests.list);
   const itemData = useSelector((state) => state.dashboard.purchaseRequests.itemData);
 
   const { company } = props;
@@ -69,18 +68,8 @@ const PurchaseRequests = (props) => {
     };
   }, [dispatch, company]);
 
-  useEffect(() => {
-    setDisplayData(itemData);
-  }, [itemData]);
-
-  const closeModal = () => {
-    setDisplayModal(false);
-    setDisplayData(null);
-    setLoadingItem(true);
-  };
-
   const handleAdd = () => {
-    setFormTitle('Create Purchase Order');
+    setFormTitle('Create Purchase Request');
     setFormMode('add');
     setFormData(null);
     dispatch(listI({ company, message })).then(() => {
@@ -89,7 +78,21 @@ const PurchaseRequests = (props) => {
   }
 
   const handleUpdate = (data) => {
-    history.push(`${path}/${data.id}`);
+    if(data.status === 'Pending'){
+      setFormTitle('Edit Purchase Request');
+      setFormMode('edit');
+      setLoading(true);
+      const itemData = listData.find((item) => item.id === data.id);
+      const inputData = loadDataForUpdate(itemData)
+      setFormData(inputData);
+      console.log(inputData)
+      dispatch(listI({ company, message })).then(() => {
+        history.push(`${path}/${data.id}`);
+      })
+    }
+    else {
+      message.error("This action may only be performed on pending purchase requests.")
+    }
   };
 
   const handleDelete = (data) => {
@@ -102,9 +105,8 @@ const PurchaseRequests = (props) => {
     });
   };
   const handleRetrieve = (data) => {
-    setLoadingItem(true);
-    setLoadingItem(false);
     setDisplayModal(true);
+    setSelectedData(data)
   };
 
   const handleApprove = (data) => {
@@ -123,20 +125,37 @@ const PurchaseRequests = (props) => {
 
   const onSubmit = (data) => {
     const payload = processDataForSubmission(data, company)
+
+    if (formMode === 'edit') {
+      payload.id = formData.id;
+    }
+
     dispatch(addPR(payload)).then((response) => {
       if (response.payload.status === 200) {
-        message.success('Successfully saved');
+        message.success(`Successfully saved ${response.payload.data.number}`);
         dispatch(listPR({ company: company, message })).then(() => {
           history.goBack();
+          setLoading(false)
         });
       } else {
-        message.error('Something went wrong. Unable to add item.');
+        setLoading(false);
+        if(formMode === 'add'){
+          message.error(`Unable to add Purchase Request. Please double check the provided information.`);
+        }
+        else {
+          message.error(`Something went wrong. Unable to update ${data.number}.`);
+        }
       }
     })
   };
   
   const handleCancelButton = () => {
     setFormData(null);
+  };
+
+  const closeModal = () => {
+    setDisplayModal(false);
+    setSelectedData(null);
   };
 
   return (
@@ -185,7 +204,7 @@ const PurchaseRequests = (props) => {
             <Col span={20}>
               <TableDisplay
                 columns={columns}
-                data={data}
+                data={listData}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
@@ -194,51 +213,70 @@ const PurchaseRequests = (props) => {
           )}
         </Row>
         <Modal
-          title="Purchase Request"
           visible={displayModal}
-          onOk={closeModal}
-          onCancel={closeModal}
+          onOk={() => {
+            setDisplayModal(false);
+            setSelectedData(null);
+          }}
+          onCancel={() => {
+            setDisplayModal(false);
+            setSelectedData(null);
+          }}
           width={1000}
           cancelButtonProps={{ style: { display: 'none' } }}
         >
-          {loadingItem ? (
+          {selectedData === null ? (
             <Skeleton />
           ) : (
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
-              <Descriptions bordered size="default" layout="vertical">
-                <Descriptions.Item label="Number">
-                  {displayData !== null ? displayData.number : 'No data'}
-                </Descriptions.Item>
-                <Descriptions.Item label="Date">
-                  {displayData !== null
-                    ? moment(new Date(displayData.date)).format('DD/MM/YYYY')
-                    : 'No data'}
-                </Descriptions.Item>
-                <Descriptions.Item label="Date Needed">
-                  {displayData !== null
-                    ? moment(new Date(displayData.dateNeeded)).format('DD/MM/YYYY')
-                    : 'No data'}
-                </Descriptions.Item>
-                <Descriptions.Item label="Department">
-                  {displayData !== null && displayData.department !== null
-                    ? displayData.department.name
-                    : 'No data'}
-                </Descriptions.Item>
-                <Descriptions.Item label="Status">
-                  {displayData !== null ? displayData.status : ''}
-                </Descriptions.Item>
-                <Descriptions.Item label="Remarks">
-                  {displayData !== null ? displayData.remarks : ''}
-                </Descriptions.Item>
+              <Descriptions
+                bordered
+                title={`Purchase Request ${selectedData.number} Details`}
+                size="default"
+                layout="vertical"
+              >
+                {formDetails.form_items.map((item) => {
+                  if (!item.writeOnly) {
+                    if (selectedData[item.name] === null && item.toggle) {
+                      return null;
+                    }
+                    if (item.type === 'select' || item.type === 'selectSearch') {
+                      const itemData = selectedData[item.name];
+                      return (
+                        <Descriptions.Item label={item.label}>
+                          {itemData[item.selectName]}
+                        </Descriptions.Item>
+                      );
+                    }
+                    if (item.type === 'date') {
+                      return (
+                        <Descriptions.Item label={item.label}>
+                          {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
+                        </Descriptions.Item>
+                      );
+                    }
+                    if (item.type === 'list') {
+                      return null;
+                    }
+
+                    return (
+                      <Descriptions.Item label={item.label}>
+                        {selectedData[item.name]}
+                      </Descriptions.Item>
+                    );
+                  }
+
+                  return null;
+                })}
               </Descriptions>
               <Text>{'Requested Items: '}</Text>
               <Table
-                dataSource={displayData !== null ? displayData.requestedItems : []}
+                dataSource={selectedData !== null ? selectedData.requestedItems : []}
                 columns={itemColumns}
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Seleted." /> }}
               />
-              {displayData.status === 'Pending' && ( // add approval permissions here
+              {selectedData.status === 'Pending' && ( // add approval permissions here
                 <>
                   <Text>{'Actions: '}</Text>
                   <Space>
@@ -246,7 +284,7 @@ const PurchaseRequests = (props) => {
                       style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
                       icon={<CheckOutlined />}
                       onClick={(e) => {
-                        handleApprove(displayData);
+                        handleApprove(selectedData);
                       }}
                       type="primary"
                     >
@@ -256,7 +294,7 @@ const PurchaseRequests = (props) => {
                       style={{ marginRight: '1%' }}
                       icon={<CloseOutlined />}
                       onClick={(e) => {
-                        handleReject(displayData);
+                        handleReject(selectedData);
                       }}
                       type="primary"
                       danger

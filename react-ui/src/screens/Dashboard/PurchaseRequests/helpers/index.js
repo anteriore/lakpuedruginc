@@ -1,13 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { getRequestedQuantityByItem } from '../redux';
 import { getOrderedQuantityByItem } from '../../../Purchasing/redux';
+import moment from 'moment';
 
 export const processDataForSubmission = (data, company) => {
     const requestedItems = []
     data.requestedItems.forEach((item) => {
         requestedItems.push({
+            id: item.id || null,
             item: {
-                id: item.id
+                id: item.itemID
             },
             unit: {
                 id: item.unit.id
@@ -30,6 +32,25 @@ export const processDataForSubmission = (data, company) => {
     }
 }
 
+export const loadDataForUpdate = (data) => {
+    const requestedItems = []
+    data.requestedItems.forEach((item) => {
+        requestedItems.push({
+            ...item,
+            ...item.item,
+            id: item.id,
+            itemID: item.item.id,
+        })
+    })
+    return {
+        ...data,
+        date: moment(new Date(data.date)) || moment(),
+        dateNeeded: moment(new Date(data.dateNeeded)) || moment(),
+        department: data.department !== null ? data.department.id : null,
+        requestedItems: requestedItems
+    };
+}
+
 const Helper = () => {
     const dispatch = useDispatch();
     const company = useSelector((state) => state.company.selectedCompany);
@@ -45,7 +66,7 @@ const Helper = () => {
             quarantinedQuantity = 0
             dispatch(getRequestedQuantityByItem({company, item: item.id})).then((response) => {
                 requestedQuantity = response.payload.data
-                dispatch(getRequestedQuantityByItem({company, item: item.id})).then((response) => {
+                dispatch(getOrderedQuantityByItem({company, item: item.id})).then((response) => {
                     orderedQuantity = response.payload.data
                     processedData.push({
                         ...item,
