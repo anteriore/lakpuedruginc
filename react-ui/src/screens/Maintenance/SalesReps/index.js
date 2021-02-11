@@ -18,7 +18,7 @@ const SalesReps = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
 
-  const { company } = props;
+  const { company, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.salesReps.list);
   const categories = useSelector((state) => state.maintenance.groupsCategories.categoryList);
@@ -232,6 +232,7 @@ const SalesReps = (props) => {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={20}>
+          {actions.includes("create") &&
           <Button
             style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
             icon={<PlusOutlined />}
@@ -240,7 +241,7 @@ const SalesReps = (props) => {
             }}
           >
             Add
-          </Button>
+          </Button>}
           {loading ? (
             <Skeleton />
           ) : (
@@ -250,6 +251,8 @@ const SalesReps = (props) => {
               handleRetrieve={handleRetrieve}
               handleUpdate={handleUpdate}
               handleDelete={handleDelete}
+              updateEnabled={actions.includes("update")}
+              deleteEnabled={actions.includes("delete")}
             />
           )}
         </Col>

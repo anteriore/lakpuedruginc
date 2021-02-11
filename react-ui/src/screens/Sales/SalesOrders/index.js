@@ -29,7 +29,7 @@ import {
 const { Title } = Typography;
 
 const SalesOrders = (props) => {
-  const { title, company } = props;
+  const { title, company, actions } = props;
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -228,13 +228,14 @@ const SalesOrders = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
+            {actions.includes("create") &&
             <Button
               loading={contentLoading}
               icon={<PlusOutlined />}
               onClick={() => handleAddButton()}
             >
               Add
-            </Button>
+            </Button>}
           </Col>
           <Col span={20}>
             {contentLoading ? (

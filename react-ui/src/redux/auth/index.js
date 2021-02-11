@@ -7,7 +7,8 @@ const initialState = {
   token: '',
   expired: false,
   user: null,
-  message: null,
+  permissions: null,
+  messsage: null,
 };
 
 export const login = createAsyncThunk('login', async (payload) => {
@@ -122,6 +123,7 @@ const authSlice = createSlice({
           status: 'succeeded',
           message: null,
           user: processUserData(action.payload.data, action.type),
+          permissions: action.payload.data.permissions
         };
       }
 

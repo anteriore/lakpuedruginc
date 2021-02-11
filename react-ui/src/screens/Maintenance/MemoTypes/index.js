@@ -11,7 +11,7 @@ import { listMemo, createMemo, updateMemo, deleteMemo, clearData } from './redux
 const { Title } = Typography;
 
 const MemoTypes = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -96,9 +96,10 @@ const MemoTypes = (props) => {
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
+        {actions.includes("create") &&
         <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
           Add
-        </Button>
+        </Button>}
       </Col>
       <Col span={20}>
         <TableDisplay
@@ -106,6 +107,8 @@ const MemoTypes = (props) => {
           data={memoList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes("update")}
+          deleteEnabled={actions.includes("delete")}
         />
       </Col>
       <SimpleForm

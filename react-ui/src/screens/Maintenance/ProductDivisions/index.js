@@ -60,7 +60,7 @@ const ProductDivisions = (props) => {
     ],
   };
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.productDivisions.list);
 
@@ -147,6 +147,7 @@ const ProductDivisions = (props) => {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={20}>
+          {actions.includes("create") &&
           <Button
             style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
             icon={<PlusOutlined />}
@@ -155,13 +156,15 @@ const ProductDivisions = (props) => {
             }}
           >
             Add
-          </Button>
+          </Button>}
           <TableDisplay
             columns={columns}
             data={data}
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdate}
             handleDelete={handleDelete}
+            updateEnabled={actions.includes("update")}
+            deleteEnabled={actions.includes("delete")}
           />
         </Col>
         <SimpleForm

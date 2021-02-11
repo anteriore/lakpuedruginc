@@ -24,7 +24,7 @@ import statusDialogue from '../../../components/StatusDialogue';
 const { Title } = Typography;
 
 const OrderSlips = (props) => {
-  const { title, company } = props;
+  const { title, company, actions } = props;
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
@@ -200,9 +200,10 @@ const OrderSlips = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
+            {actions.includes("create") &&
             <Button loading={contentLoading} icon={<PlusOutlined />} onClick={() => handleAddButton()}>
               Add
-            </Button>
+            </Button>}
           </Col>
           <Col span={20}>
             {contentLoading ? (
