@@ -1,6 +1,7 @@
 package com.wyvernlabs.ldicp.spring.events.superadmin.web.maintenance;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -96,10 +97,10 @@ public class ItemRestController {
     }
 
     @GetMapping("company/{companyId}/summary")
-    public HashMap listItemSummary(@PathVariable Long companyId) {
+    public List listItemSummary(@PathVariable Long companyId) {
 		Company company = companyRepository.getOne(companyId);
         List<Item> items = itemRepository.findAll();
-        HashMap itemSummaryList = new HashMap();
+        List itemSummaryList = new ArrayList();
 
         HashMap itemSummary;
 		int prfQuantity, poQuantity,stockQuantity, quarantineQuantity;
@@ -142,7 +143,7 @@ public class ItemRestController {
             itemSummary.put("poQuantity", poQuantity);
             itemSummary.put("stockQuantity", stockQuantity);
             itemSummary.put("quarantineQuantity", quarantineQuantity);
-            itemSummaryList.put(item.getId() + "", itemSummary);
+            itemSummaryList.add(itemSummary);
 		}
         return itemSummaryList;
     }
