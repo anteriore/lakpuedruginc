@@ -3,6 +3,7 @@ import Inventory from '../../screens/Dashboard/Inventory';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
+import FGIssuances from '../../screens/Dashboard/FGIssuances';
 
 export const modules = [
   {
@@ -57,8 +58,8 @@ export const modules = [
   },
   {
     title: 'FG-IS',
-    path: 'fgis',
-    component: PurchaseRequests,
+    path: '/fgis',
+    component: FGIssuances,
   },
   {
     title: 'FG-RS',

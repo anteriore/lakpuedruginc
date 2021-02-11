@@ -38,7 +38,6 @@ const TableHeader = (columnHeaders) => {
       <SearchOutlined style={{ color: filtered ? '#1890ff' : '#545454' }} />
     ),
     onFilter: (value, record) => {
-      console.log(record[dataIndex])
       if (record[dataIndex] === null) {
         return '';
       }
