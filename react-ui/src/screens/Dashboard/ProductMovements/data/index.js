@@ -6,8 +6,6 @@ export const tableHeader = [
     dataIndex: 'number',
     key: 'number',
     align: 'center',
-    defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
   },
   {
     title: 'Date',
@@ -22,15 +20,13 @@ export const tableHeader = [
     dataIndex: 'type',
     key: 'type',
     align: 'center',
-    defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.totalAmount - b.totalAmount,
+
   },
   {
     title: 'Depot',
     dataIndex: 'depot',
     key: 'depot',
     align: 'center',
-    defaultSortOrder: 'ascend',
     render: (depot) => `[${depot.code}] - ${depot.name}`
   },
 ];
