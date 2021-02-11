@@ -2,7 +2,10 @@ import PurchaseRequests from '../../screens/Dashboard/PurchaseRequests';
 import Inventory from '../../screens/Dashboard/Inventory';
 import ReceivingReceipts from '../../screens/Dashboard/ReceivingReceipts';
 import ApprovedReceipts from '../../screens/Dashboard/ApprovedReceipts';
+import ProductMovements from '../../screens/Dashboard/ProductMovements';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
+import FGIssuances from '../../screens/Dashboard/FGIssuances';
+import FGReceivings from '../../screens/Dashboard/FGReceivings';
 
 export const routes = [
   {
@@ -48,7 +51,7 @@ export const routes = [
   {
     title: 'Product Movements',
     path: '/product-movement',
-    component: PurchaseRequests,
+    component: ProductMovements,
   },
   {
     title: 'Product Inventory',
@@ -58,12 +61,12 @@ export const routes = [
   {
     title: 'FG-IS',
     path: '/fgis',
-    component: PurchaseRequests,
+    component: FGIssuances,
   },
   {
     title: 'FG-RS',
     path: '/fgrs',
-    component: PurchaseRequests,
+    component: FGReceivings,
   },
   {
     title: 'Depot Inventory',

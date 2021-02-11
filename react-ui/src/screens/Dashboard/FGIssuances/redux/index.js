@@ -11,12 +11,12 @@ const initialState = {
   action: '',
 };
 
-export const listProductInventory = createAsyncThunk('listProductInventory', async (payload, thunkAPI) => {
+export const listFGIssuance = createAsyncThunk('listFGIssuance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { company } = payload
 
   try {
-    const response = await axiosInstance.get(`rest/product-inventory/company/${company}?token=${accessToken}`);
+    const response = await axiosInstance.get(`rest/product-issuances/company/${company}?token=${accessToken}`);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -29,12 +29,12 @@ export const listProductInventory = createAsyncThunk('listProductInventory', asy
 
 });
 
-export const listProductInventoryByDepot = createAsyncThunk('listProductInventoryByDepot', async (payload, thunkAPI) => {
+export const listFGIssuanceByDepot = createAsyncThunk('listFGIssuanceByDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { depot } = payload
+  const { depot, status = "Pending" } = payload
 
   try {
-    const response = await axiosInstance.get(`rest/product-inventory/depot/${depot}?token=${accessToken}`);
+    const response = await axiosInstance.get(`rest/product-issuances/status/${status}/depot/${depot}?token=${accessToken}`);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -47,33 +47,33 @@ export const listProductInventoryByDepot = createAsyncThunk('listProductInventor
 
 });
 
-export const addProductInventory = createAsyncThunk('addProductInventory', async (payload, thunkAPI) => {
+export const addFGIssuance  = createAsyncThunk('addFGIssuance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-inventory/?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`rest/product-issuances/?token=${accessToken}`, payload);
   return response;
 });
 
-export const deleteProductInventory = createAsyncThunk('deleteProductInventory', async (payload, thunkAPI) => {
+export const deleteFGIssuance  = createAsyncThunk('deleteFGIssuance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-inventory/delete?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(`rest/product-issuances/delete?token=${accessToken}`, payload);
   return response;
 });
 
-const productInventorySlice = createSlice({
-  name: 'productInventories',
+const FGIssuanceSlice = createSlice({
+  name: 'FGIssuances',
   initialState,
   reducers: {
     clearData: () => initialState,
   },
   extraReducers: {
-    [listProductInventory.pending]: (state, action) => {
+    [listFGIssuance.pending]: (state, action) => {
       state.status = 'loading';
     },
-    [listProductInventory.fulfilled]: (state, action) => {
+    [listFGIssuance.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Product Inventory');
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance Slips');
 
       return {
         ...state,
@@ -83,7 +83,7 @@ const productInventorySlice = createSlice({
         statusMessage: message,
       };
     },
-    [listProductInventory.rejected]: (state, action) => {
+    [listFGIssuance.rejected]: (state, action) => {
       return {
         ...state,
         status: 'failed',
@@ -91,12 +91,12 @@ const productInventorySlice = createSlice({
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [listProductInventoryByDepot.pending]: (state, action) => {
+    [listFGIssuanceByDepot.pending]: (state, action) => {
       state.status = 'loading';
     },
-    [listProductInventoryByDepot.fulfilled]: (state, action) => {
+    [listFGIssuanceByDepot.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Product Inventory');
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance Slips');
 
       return {
         ...state,
@@ -106,7 +106,7 @@ const productInventorySlice = createSlice({
         statusMessage: message,
       };
     },
-    [listProductInventoryByDepot.rejected]: (state, action) => {
+    [listFGIssuanceByDepot.rejected]: (state, action) => {
       return {
         ...state,
         status: 'failed',
@@ -117,5 +117,5 @@ const productInventorySlice = createSlice({
   },
 });
 
-export const { clearData } = productInventorySlice.actions;
-export default productInventorySlice.reducer;
+export const { clearData } = FGIssuanceSlice.actions;
+export default FGIssuanceSlice.reducer;

@@ -125,10 +125,6 @@ const InputForm = (props) => {
     };
   });
 
-  useEffect(() => {
-    console.log(requestedProductList, 'Checking requestedProductList');
-  }, [requestedProductList]);
-
   // render Product Items with add button
   const renderProductItemColumns = (rawColumns) => {
     let filteredColumn = [

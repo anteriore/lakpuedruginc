@@ -10,16 +10,17 @@ import {
   Col,
   Typography,
   Table,
+  Space,
   Empty,
   message,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import FormItem from './FormItem';
+import FormItem from '../../../components/forms/FormItem';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-const FormScreen = (props) => {
+const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
   const [form] = Form.useForm();
   const history = useHistory();
@@ -31,10 +32,11 @@ const FormScreen = (props) => {
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+  const [selectedFGIS, setSelectedFGIS] = useState([]);
+
+  const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
 
   const toggleName = formDetails.toggle_name;
-
-  console.log(formDetails)
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -95,7 +97,7 @@ const FormScreen = (props) => {
             key: field.name,
             visible: false,
           });
-        } else if (field.type === 'select' === 'selectSearch') {
+        } else if (field.type === 'select') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -115,7 +117,6 @@ const FormScreen = (props) => {
               }
               return (
                 <Form.Item
-                  showSearch={item.type === 'selectSearch'}
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
@@ -228,14 +229,27 @@ const FormScreen = (props) => {
 
   const onValuesChange = (values) => {
     if (hasTable && values.hasOwnProperty(formTable.name)) {
-      setTableData(form.getFieldValue(formTable.name));
+      setTableData(values[formTable.name].inventoryList);
     }
 
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
-      }
+    if (values.hasOwnProperty('depot')) {
+      setSelectedFGIS([]);
+      setTableData(null);
+      form.setFieldsValue({ pis: null });
     }
+  };
+
+  const onTableSelect = (key, value) => {
+    const formValues = {};
+
+    if (key === 'pis') {
+      const selected = FGISList.find((slip) => slip.id === value);
+      formValues[key] = selected;
+    } else {
+      formValues[key] = value;
+    }
+    onValuesChange(formValues)
+    form.setFieldsValue(formValues)
   };
 
   return (
@@ -255,39 +269,31 @@ const FormScreen = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
-                }
-                return null;
+              const itemData = {
+                ...item,
+              };
+
+              if (item.name === 'pis') {
+                itemData.selectedData = selectedFGIS;
+                itemData.setSelectedData = setSelectedFGIS;
               }
 
-              return <FormItem item={item} onFail={onFail} />;
+              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
 
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
-                    <div style={{ float: 'right', marginBottom: '1%' }}>
-                      <Button
-                        onClick={() => {
-                          setDisplayModal(true);
-                          setLoadingModal(false);
-                        }}
-                        icon={<SelectOutlined />}
-                      >
-                        {`Select ${formTable.label}`}
-                      </Button>
-                    </div>
+                  <Space direction="vertical" size={20} style={{ width: '100%' }}>
+                    <Text style={{float: "left", marginLeft: "2%"}}>{'Received Items: '}</Text>
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
                       pagination={false}
-                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      locale={{ emptyText: <Empty description="No FG-IS Seleted." /> }}
                       summary={formTable.summary}
                     />
-                  </Col>
+                  </Space>
                 )}
               </Form.List>
             )}
@@ -341,7 +347,7 @@ const FormScreen = (props) => {
   );
 };
 
-export default FormScreen;
+export default InputForm;
 
 const styles = {
   layout: {
