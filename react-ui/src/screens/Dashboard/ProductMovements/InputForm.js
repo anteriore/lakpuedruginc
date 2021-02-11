@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import { Row, Col, Layout,Typography, Form, Skeleton, Table, Checkbox, Space, Button } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
 import { formDetails, tableProduct, tableProductInventory } from './data';
 import _ from 'lodash';
 import FormItem from '../../../components/forms/FormItem';
@@ -13,6 +14,7 @@ const {Title} = Typography;
 
 const InputForm = (props) => {
   const {title, onSubmit } = props;
+  const [form] = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
   const { list: depotList} = useSelector((state) => state.maintenance.depots)
@@ -31,8 +33,12 @@ const InputForm = (props) => {
   }
 
   const handleDepotChange = useCallback((value) => {
-    console.log(value)
-  }, [])
+    const selectedPI = _.filter(productInvList, (o) => {
+      return o.depot.id === value
+    })
+    setRequestedProductList([]);
+    setProductInv(selectedPI);
+  }, [productInvList])
 
   useEffect(() => {
     const newForm = tempFormDetails;
@@ -46,6 +52,51 @@ const InputForm = (props) => {
 
     setContentLoading(false);
   },[depotList, tempFormDetails, handleDepotChange])
+
+  const onItemSelect = (data, isSelected) => {
+    if(isSelected) {
+      const newData = _.clone(data);
+
+      if(requestedProductList.length !== 0) {
+        const { key } = _.last(requestedProductList);
+        newData.key = key + 1;
+      } else {
+        newData.key = 1;
+      }
+      
+      setRequestedProductList(requestedProductList.concat(newData));
+      form.setFieldsValue({product: requestedProductList.concat(newData)})
+    } else {
+      let selectedItems = _.remove(requestedProductList, (o) => o.id !== data.id);
+      setRequestedProductList(selectedItems);
+      form.setFieldsValue({product: selectedItems})
+    }
+  }
+
+  const renderProductItemColumns = (rawColumns) => {
+    let filteredColumn = [
+      {
+        title: 'Action',
+        key: 'action',
+        render: (row) => {
+          return (
+            <Checkbox
+              onChange={(e) => {
+                onItemSelect(row, e.target.checked);
+              }}
+              checked={!!requestedProductList.some((item) => item.id === row.id)} 
+            />
+          );
+        },
+      },
+    ];
+
+    const inputColumn = rawColumns.slice();
+
+    filteredColumn = filteredColumn.concat(inputColumn);
+
+    return filteredColumn;
+  }
   
   const modProductColumn = tableProduct.map((col) => {
     if (!col.editable) {
@@ -65,7 +116,13 @@ const InputForm = (props) => {
           precisionEnabled: col.precisionEnabled,
           precision: col.precision,
           handleSave: (row) => {
-            console.log(row)
+            const newData = [...requestedProductList];
+            const index = _.findIndex(newData, (o) => o.key === row.key);
+            const item = newData[index];
+            
+            newData.splice(index, 1, {...item, ...row});
+            form.setFieldsValue({product: newData});
+            setRequestedProductList(newData);
           }
         }
       }
@@ -74,6 +131,11 @@ const InputForm = (props) => {
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}/${path.split('/')[3]}`);
+  }
+
+  const onFinish = () => {
+    onSubmit(form.getFieldsValue());
+    history.goBack();
   }
 
   return (
@@ -89,31 +151,35 @@ const InputForm = (props) => {
             <Skeleton/>
           ) : (
             <Layout style={styles.layout}>
-              <Form {...styles.formLayout}>
+              <Form form={form} onFinish={onFinish} {...styles.formLayout}>
                 {_.dropRight(tempFormDetails.form_items).map((item) => (
-                  <FormItem onFail={onFail} key={item.name} onFail={onFail} item={item} />
+                  <FormItem onFail={onFail} key={item.name} item={item} />
                 ))}
-                <Form.Item 
-                  wrapperCol={{span: 15, offset: 4}}
-                  name="product"
-                  rules={[{ required: true, message: 'Please select a product' }]}
-                >
-                  <Table
-                    components={component}
-                    columns={modProductColumn}
-                    rowClassName={() => styles.editableRow}
-                    dataSource={null}
-                    pagination
-                  />
-                </Form.Item>
-                <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
-                  <Button
-                    onClick={() => setProductModal(true)}
-                    style={{ width: '40%', float: 'right' }}
+                { productInv.length !== 0 ? (
+                  <Form.Item 
+                    wrapperCol={{span: 15, offset: 4}}
+                    name="product"
+                    rules={[{ required: true, message: 'Please select a product' }]}
                   >
-                    Select/Remove Product item(s)
-                  </Button>
-                </Form.Item>
+                      <Table
+                        components={component}
+                        columns={modProductColumn}
+                        rowClassName={() => styles.editableRow}
+                        dataSource={requestedProductList}
+                        pagination={false}
+                      />
+                  </Form.Item>
+                ) : '' }
+                { productInv.length !== 0 ? (
+                  <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
+                    <Button
+                      onClick={() => setProductModal(true)}
+                      style={{ width: '40%', float: 'right' }}
+                    >
+                      Select/Remove Product item(s)
+                    </Button>
+                  </Form.Item>
+                ) : '' }
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
@@ -139,8 +205,9 @@ const InputForm = (props) => {
           footer={null}
         >
           <Table
-            columns={tableProductInventory}
-            dataSource={null}
+            columns={renderProductItemColumns(tableProductInventory)}
+            rowKey={(record) => record.uid}
+            dataSource={productInv}
             pagination={false}
           />
         </Modal>

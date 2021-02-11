@@ -1,18 +1,21 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
-import { Row, Col, Typography, Button, Skeleton } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader } from './data';
+import { formDetails, tableHeader } from './data';
 import {useDispatch, useSelector } from 'react-redux';
-import { listProductMovements, clearData } from './redux';
+import { listProductMovements, clearData, createProductMovement } from './redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearPI, tempListProductInventory } from '../../Maintenance/redux/productInventory'; 
+import { formatPMPayload } from './helpers';
 import _ from 'lodash';
+import moment from 'moment';
+
 
 const { Title } = Typography;
 
@@ -22,8 +25,11 @@ const ProductMovements = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [contentLoading, setContentLoading] = useState(true)
+  const [displayModal, setDisplayModal] = useState(false);
+  const [productMovement, setProductMovement] = useState(null);
 
   const { productMovementList, action, statusMessage, status, statusLevel } = useSelector((state) => state.dashboard.productMovements);
+  const { id } = useSelector((state) => state.auth.user);
 
   const {
     action: actionDepot,
@@ -145,8 +151,18 @@ const ProductMovements = (props) => {
     history.push(`${path}/new`);
   }
 
-  const onCreate = () => {
+  const handleRetrieve = (data) => {
+    setDisplayModal(true);
+    setProductMovement(data);
+  }
 
+  const onCreate = (values) => {
+    setContentLoading(true)
+    dispatch(createProductMovement(formatPMPayload(id, company,values))).then(() => {
+      dispatch(listProductMovements(company)).then(() => {
+        setContentLoading(false);
+      })
+    })
   }
 
   return (
@@ -178,10 +194,77 @@ const ProductMovements = (props) => {
                 data={productMovementList}
                 deleteEnabled={false}
                 updateEnabled={false}
+                handleRetrieve={handleRetrieve}
               />
             )}
           </Col>
         </Row>
+        <Modal
+          title="Product Movement Details"
+          visible={displayModal}
+          onOk={() => {
+            setDisplayModal(false);
+            setProductMovement(null);
+          }}
+          onCancel={() => {
+            setDisplayModal(false);
+            setProductMovement(null);
+          }}
+          width={1000}
+          cancelButtonProps={{ style: { display: 'none' } }}
+        >
+          { productMovement === null ? (
+            <Skeleton/>
+          ) : (
+            <>
+              <Descriptions
+                bordered
+                title={`Product Movement ${productMovement.number}`}
+                size="default"
+                layout="vertical"
+              >
+                {formDetails.form_items.map((item) => {
+                   if (item.type === 'select') {
+                    const itemData = productMovement[item.name];
+                    return (
+                      <Descriptions.Item key={item.name} label={item.label}>
+                        {typeof itemData === 'object' ? itemData.code : itemData}
+                      </Descriptions.Item>
+                    );
+                  }
+
+                  if (item.type === 'date') {
+                    return (
+                      <Descriptions.Item key={item.name} label={item.label}>
+                        {moment(new Date(productMovement[item.name])).format('DD/MM/YYYY')}
+                      </Descriptions.Item>
+                    );
+                  }
+
+                  return (
+                    <Descriptions.Item key={item.name} label={item.label}>
+                      {typeof productMovement[item.name] === 'object' && productMovement[item.name] !== null
+                        ? productMovement[item.name].code
+                        : productMovement[item.name]}
+                    </Descriptions.Item>
+                  );
+                })}
+              </Descriptions>
+              <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
+                Product Movement Items:
+              </Title>
+              {productMovement.products.map((item) => {
+                return (
+                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
+                    <Descriptions.Item label="ID">{item.id}</Descriptions.Item>
+                    <Descriptions.Item label="Quantity">{item.quantity}</Descriptions.Item>
+                    <Descriptions.Item label="Lot #">{item.product.lotNumber}</Descriptions.Item>
+                  </Descriptions>
+                );
+              })}
+            </>
+          )}
+        </Modal>
       </Route>
     </Switch>
   )

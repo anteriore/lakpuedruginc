@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export const tableHeader = [
   {
     title: 'Ref No.',
@@ -36,18 +38,19 @@ export const tableHeader = [
 export const tableProduct = [
   {
     title: 'FG ID',
-    dataIndex: 'finishedGoodID',
+    dataIndex: 'product',
+    render: (object) => object.finishedGood.id
   },
   {
     title: 'Code',
-    dataIndex: 'code',
-    render: (object) => object.code,
+    dataIndex: 'product',
+    render: (object) => object.finishedGood.code,
   },
   {
     title: 'Product Name',
     dataIndex: 'product',
     key: 'product',
-    render: (object) => object.name,
+    render: (object) => object.finishedGood.name,
   },
   {
     title: 'Stock on Hand',
@@ -55,6 +58,7 @@ export const tableProduct = [
   },
   {
     title: 'Quantity',
+    dataIndex: 'requestedQuantity',
     editable: true,
     limit: false,
   },
@@ -64,7 +68,7 @@ export const tableProductInventory = [
   {
     title: 'Lot #',
     dataIndex: 'product',
-    render: (object) => object.product.lotNumber,
+    render: (object) => object.lotNumber,
   },
   {
     title: 'FG Code',
@@ -80,6 +84,7 @@ export const tableProductInventory = [
     title: 'Expiration',
     dataIndex: ['product', 'expiration'],
     key: 'expiration',
+    render: (object) => moment(new Date(object)).format('DD/MM/YYYY')
   },
   {
     title: 'Stock on Hand',
