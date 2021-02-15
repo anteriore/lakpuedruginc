@@ -130,7 +130,7 @@ const InputForm = (props) => {
   })
 
   const onFail = () => {
-    history.push(`/${path.split('/')[1]}/${path.split('/')[2]}/${path.split('/')[3]}`);
+    history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   }
 
   const onFinish = () => {
