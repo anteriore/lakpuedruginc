@@ -22,7 +22,7 @@ const TableDisplay = (props) => {
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataCount, setDataCount] = useState(0);
-  const [columns, setColumns] = useState(TableHeader(col));
+  const [columns, setColumns] = useState(TableHeader({columns: col, hasSorter: true, hasFilter: true}));
 
   /*
     columns must have an id

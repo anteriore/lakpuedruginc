@@ -3,7 +3,8 @@ import { Input, Button, Space, DatePicker } from 'antd';
 import { SearchOutlined, CheckOutlined, CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-const TableHeader = (columnHeaders) => {
+const TableHeader = (props) => {
+  const { columns, hasSorter, hasFilter} = props
   const newColumnHeaders = [];
   const { hasOwnProperty } = Object.prototype;
   const dateFormat = 'YYYY/MM/DD';
@@ -111,9 +112,10 @@ const TableHeader = (columnHeaders) => {
   });
 
   const setColumnHeaders = () => {
-    columnHeaders.forEach((header) => {
+    columns.forEach((header) => {
+
       // add sorter
-      if (typeof header.sorter === 'undefined') {
+      if (typeof header.sorter === 'undefined' && hasSorter) {
         if (header.datatype === 'string') {
           header = {
             ...header,
@@ -164,7 +166,7 @@ const TableHeader = (columnHeaders) => {
         }
       }
 
-      // add filter/search bar
+      //change render based on data type
       if (typeof header.render === 'undefined') {
         if (header.datatype === 'date') {
           header = {
@@ -201,41 +203,45 @@ const TableHeader = (columnHeaders) => {
         }
       }
 
-      if (typeof header.filters !== 'undefined' && header.filters !== null) {
-        const filters = [];
-        header.filters.forEach((filter) => {
-          filters.push({
-            text: filter[header.filterKey],
-            value: filter[header.filterKey],
+      //add filter
+      if(hasFilter){
+        if (typeof header.filters !== 'undefined' && header.filters !== null) {
+          const filters = [];
+          header.filters.forEach((filter) => {
+            filters.push({
+              text: filter[header.filterKey],
+              value: filter[header.filterKey],
+            });
           });
-        });
-        header = {
-          ...header,
-          filters,
-          onFilter: (value, record) => record[header.key].includes(value),
-        };
-      } else if (header.datatype === 'boolean') {
-        header = {
-          ...header,
-          filters: [
-            { text: <CheckOutlined />, value: true },
-            { text: <CloseOutlined />, value: false },
-          ],
-          onFilter: (value, record) => record[header.key] === value,
-        };
-      } else if (header.datatype === 'date') {
-        header = {
-          ...header,
-          defaultSortOrder: header.defaultSortOrder || 'ascend',
-          ...filterDate(header.key, header.name),
-        };
-      } else if (header.datatype !== 'boolean' && header.datatype !== 'date') {
-        header = {
-          ...header,
-          defaultSortOrder: header.defaultSortOrder || 'ascend',
-          ...filterSearch(header.key, header.name, header.dataToString),
-        };
+          header = {
+            ...header,
+            filters,
+            onFilter: (value, record) => record[header.key].includes(value),
+          };
+        } else if (header.datatype === 'boolean') {
+          header = {
+            ...header,
+            filters: [
+              { text: <CheckOutlined />, value: true },
+              { text: <CloseOutlined />, value: false },
+            ],
+            onFilter: (value, record) => record[header.key] === value,
+          };
+        } else if (header.datatype === 'date') {
+          header = {
+            ...header,
+            defaultSortOrder: header.defaultSortOrder || 'ascend',
+            ...filterDate(header.key, header.name),
+          };
+        } else if (header.datatype !== 'boolean' && header.datatype !== 'date') {
+          header = {
+            ...header,
+            defaultSortOrder: header.defaultSortOrder || 'ascend',
+            ...filterSearch(header.key, header.name, header.dataToString),
+          };
+        }
       }
+      
       newColumnHeaders.push(header);
     });
 
