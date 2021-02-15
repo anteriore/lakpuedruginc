@@ -246,11 +246,13 @@ const PurchaseRequests = (props) => {
                     }
                     if (item.type === 'select' || item.type === 'selectSearch') {
                       const itemData = selectedData[item.name];
-                      return (
-                        <Descriptions.Item label={item.label}>
-                          {itemData[item.selectName]}
-                        </Descriptions.Item>
-                      );
+                      if(itemData !== null && typeof itemData !== 'undefined'){
+                        return (
+                          <Descriptions.Item label={item.label}>
+                            {itemData[item.selectName]}
+                          </Descriptions.Item>
+                        );
+                      }
                     }
                     if (item.type === 'date') {
                       return (
