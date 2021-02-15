@@ -1,6 +1,5 @@
 
 import { useSelector } from 'react-redux';
-import Helper from '../helpers'
 
 export const DisplayDetails = () => {
     const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
@@ -87,8 +86,6 @@ export const DisplayDetails = () => {
 export const FormDetails = () => {
     const items = useSelector((state) => state.maintenance.items.list); 
     const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
-    
-    const helper = Helper()
     
     const formDetails = {
       form_name: 'purchase_request',

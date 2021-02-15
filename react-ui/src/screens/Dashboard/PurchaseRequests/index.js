@@ -21,7 +21,7 @@ import { listPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
 import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 import { DisplayDetails, FormDetails } from './data';
-import Helper, { processDataForSubmission } from './helpers';
+import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
@@ -29,7 +29,6 @@ const { Title, Text } = Typography;
 
 const PurchaseRequests = (props) => {
   const [loading, setLoading] = useState(true);
-  const [loadingItem, setLoadingItem] = useState(true);
 
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
@@ -40,10 +39,8 @@ const PurchaseRequests = (props) => {
 
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
-  const { loadDataForUpdate } = Helper();
 
   const listData = useSelector((state) => state.dashboard.purchaseRequests.list);
-  const itemData = useSelector((state) => state.dashboard.purchaseRequests.itemData);
 
   const { company, title, actions } = props;
   const { path } = useRouteMatch();
