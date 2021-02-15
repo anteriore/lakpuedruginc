@@ -21,7 +21,7 @@ import { listPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
 import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 import { DisplayDetails, FormDetails } from './data';
-import { processDataForSubmission, loadDataForUpdate } from './helpers';
+import Helper, { processDataForSubmission } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 
@@ -40,6 +40,7 @@ const PurchaseRequests = (props) => {
 
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
+  const { loadDataForUpdate } = Helper();
 
   const listData = useSelector((state) => state.dashboard.purchaseRequests.list);
   const itemData = useSelector((state) => state.dashboard.purchaseRequests.itemData);
@@ -83,10 +84,9 @@ const PurchaseRequests = (props) => {
       setFormMode('edit');
       setLoading(true);
       const itemData = listData.find((item) => item.id === data.id);
-      const inputData = loadDataForUpdate(itemData)
-      setFormData(inputData);
-      console.log(inputData)
-      dispatch(listItemSummary({ company, message })).then(() => {
+      dispatch(listItemSummary({ company, message })).then((response) => {
+        const inputData = loadDataForUpdate(itemData, response.payload.data)
+        setFormData(inputData);
         history.push(`${path}/${data.id}`);
       })
     }
@@ -151,6 +151,7 @@ const PurchaseRequests = (props) => {
   
   const handleCancelButton = () => {
     setFormData(null);
+    setLoading(false)
   };
 
   const closeModal = () => {

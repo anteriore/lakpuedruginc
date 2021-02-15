@@ -15,6 +15,9 @@ export const processDataForSubmission = (data, company) => {
                 id: item.unit.id
             },
             quantityRequested: item.quantityRequested,
+            quantityRequired: item.quantityRequested,
+            quantityLacking: item.stockQuantity - item.quantityRequested < 0 ? -(item.stockQuantity - item.quantityRequested) : 0,
+            quantityRemaining: item.stockQuantity - item.quantityRequested > 0 ? item.stockQuantity - item.quantityRequested : 0,
             company: {
                 id: company
             },
@@ -53,35 +56,35 @@ export const loadDataForUpdate = (data) => {
 
 const Helper = () => {
     const dispatch = useDispatch();
-    const company = useSelector((state) => state.company.selectedCompany);
 
-    const processItemSummaryData = (itemData) => {
-        const processedData = []
-        var requestedQuantity, orderedQuantity, quarantinedQuantity
-
-        //TODO: FIX ASYNC EXECUTION
-        itemData.forEach((item) => {
-            requestedQuantity = 0
-            orderedQuantity = 0
-            quarantinedQuantity = 0
-            dispatch(getRequestedQuantityByItem({company, item: item.id})).then((response) => {
-                requestedQuantity = response.payload.data
-                dispatch(getOrderedQuantityByItem({company, item: item.id})).then((response) => {
-                    orderedQuantity = response.payload.data
-                    processedData.push({
-                        ...item,
-                        requestedQuantity,
-                        orderedQuantity,
-                    })
-                })
+    const loadDataForUpdate = (data, itemSummaryList) => {
+        const requestedItems = []
+        console.log(itemSummaryList)
+        data.requestedItems.forEach((item) => {
+            var itemSummary = {
+                ...itemSummaryList.find((itemData) => itemData.item.id === item.item.id)
+            }
+            console.log(itemSummary)
+            delete itemSummary.item
+            requestedItems.push({
+                ...item,
+                ...itemSummary,
+                ...item.item,
+                id: item.id,
+                itemID: item.item.id,
             })
-            
-        });
-
-        return processedData
+        })
+        return {
+            ...data,
+            date: moment(new Date(data.date)) || moment(),
+            dateNeeded: moment(new Date(data.dateNeeded)) || moment(),
+            department: data.department !== null ? data.department.id : null,
+            requestedItems: requestedItems
+        };
     }
+
     return {
-        processItemSummaryData,
+        loadDataForUpdate,
     }
 }
 

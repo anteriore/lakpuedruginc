@@ -69,14 +69,14 @@ export const DisplayDetails = () => {
             render: (object) => object.unit.name,
         },
         {
-            title: 'Current Stocks',
-            dataIndex: 'stocks',
-            key: 'stocks',
-        },
-        {
             title: 'Quantity Requested',
             dataIndex: 'quantityRequested',
             key: 'quantityRequested',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
         },
     ];
 
@@ -146,10 +146,6 @@ export const FormDetails = () => {
                 name: 'name',
             },
             {
-                label: 'Item Name',
-                name: 'name',
-            },
-            {
                 label: 'Code',
                 name: 'code',
             },
@@ -163,34 +159,43 @@ export const FormDetails = () => {
                 name: 'unit',
                 render: (object) => object.name,
             },
-            /*
             {
-                title: 'Current Stocks',
-                dataIndex: 'stocks',
-                key: 'stocks',   
+                label: 'Current Stocks',
+                name: 'stockQuantity',
+                type: 'readOnly',
             },
             {
-                title: 'Pending PR',
-                dataIndex: 'purchase_request',
-                key: 'purchase_request',   
+                label: 'Pending PR',
+                name: 'prfQuantity',
             },
             {
-                title: 'Pending PO',
-                dataIndex: 'purchase_order',
-                key: 'purchase_order',   
+                label: 'Pending PO',
+                name: 'poQuantity',
             },
             {
-                title: 'Quarantined',
-                dataIndex: 'quarantined',
-                key: 'quarantined',   
-            }
-            */
+                label: 'Quarantined',
+                name: 'quarantineQuantity',  
+            },
             {
                 label: 'Quantity Requested',
                 name: 'quantityRequested',
                 type: 'number',
                 rules: [{ required: true }],
                 min: 0,
+            },
+            {
+              label: 'Lacking',
+              name: 'quantityLacking',
+              render: (object) => {
+                return object.stockQuantity - object.quantityRequested < 0 ? -(object.stockQuantity - object.quantityRequested) : 0
+              },
+            },
+            {
+              label: 'Quantity Remaining',
+              name: 'quantityRemaining',
+              render: (object) => {
+                return object.stockQuantity - object.quantityRequested > 0 ? object.stockQuantity - object.quantityRequested : 0
+              },
             },
         ],
         foreignKey: 'itemID',
@@ -245,13 +250,15 @@ export const FormDetails = () => {
         processData: (data) => {
             var processedData = {
                 ...data,
-                itemID: data.id
+                ...data.item,
+                itemID: data.item.id
             }
+            delete processedData.item;
             delete processedData.id;
             return processedData
         },
         checkSelected: (selectedData, rowData) => {
-            if (typeof selectedData !== 'undefined' && selectedData !== null && selectedData.some((item) => item.itemID === rowData.id)) {
+            if (typeof selectedData !== 'undefined' && selectedData !== null && selectedData.some((item) => item.itemID === rowData.item.id)) {
                 return true;
             }
         },

@@ -51,6 +51,9 @@ const InputForm = (props) => {
       }
     });
 
+    console.log(data)
+    console.log(tableData)
+
     onSubmit(data);
   };
 
@@ -97,6 +100,8 @@ const InputForm = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
+                  labelCol={0}
+                  wrapperCol={24}
                 >
                   <Input bordered={false} />
                 </Form.Item>
@@ -276,7 +281,7 @@ const InputForm = (props) => {
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
+                  <Col span={24} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
                       <Button
                         onClick={() => {
@@ -376,7 +381,8 @@ const styles = {
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    width: '87.5%',
+    marginTop: '2%',
+    width: '100%',
   },
   listTailLayout: {
     labelCol: {
