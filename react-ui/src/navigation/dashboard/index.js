@@ -6,6 +6,7 @@ import ProductMovements from '../../screens/Dashboard/ProductMovements';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
+import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 
 export const routes = [
   {
@@ -36,7 +37,7 @@ export const routes = [
   {
     title: 'Material Issuance Slips',
     path: '/material-issueance',
-    component: PurchaseRequests,
+    component: MaterialIssuances,
   },
   {
     title: 'Material Receiving Slips',
