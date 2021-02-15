@@ -26,7 +26,7 @@ export const routes = [
   {
     title: 'Material Re-evaluations',
     path: '/material-reevaluations',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Inventory',
@@ -36,17 +36,17 @@ export const routes = [
   {
     title: 'Material Issuance Slips',
     path: '/material-issueance',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Material Receiving Slips',
     path: '/material-receiving',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Inventory Movement Slips',
     path: '/inventory-movement',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Product Movements',
@@ -71,36 +71,36 @@ export const routes = [
   {
     title: 'Depot Inventory',
     path: '/depot-inventory',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Employee',
     path: '/employees',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Job Order',
     path: '/job-orders',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Engineering Items',
     path: '/engineering-items',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Engineering Inventory',
     path: '/engineering-inventory',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Account Summary Reports',
     path: '/account-summary',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Sales Reports',
     path: '/sales-reports',
-    component: PurchaseRequests,
+    component: '',
   },
 ];
