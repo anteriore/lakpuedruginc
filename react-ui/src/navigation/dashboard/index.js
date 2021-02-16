@@ -6,6 +6,7 @@ import ProductMovements from '../../screens/Dashboard/ProductMovements';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
+import InventoryMovements from '../../screens/Dashboard/InventoryMovements';
 
 export const routes = [
   {
@@ -46,7 +47,7 @@ export const routes = [
   {
     title: 'Inventory Movement Slips',
     path: '/inventory-movement',
-    component: PurchaseRequests,
+    component: InventoryMovements,
   },
   {
     title: 'Product Movements',
