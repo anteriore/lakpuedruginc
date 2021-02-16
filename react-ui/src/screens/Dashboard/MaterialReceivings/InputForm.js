@@ -32,9 +32,9 @@ const InputForm = (props) => {
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
-  const [selectedFGIS, setSelectedFGIS] = useState([]);
+  const [selectedMIS, setSelectedMIS] = useState([]);
 
-  const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
+  const MISList = useSelector((state) => state.dashboard.materialIssuances.list);
 
   const toggleName = formDetails.toggle_name;
 
@@ -233,7 +233,7 @@ const InputForm = (props) => {
     }
 
     if (values.hasOwnProperty('depot')) {
-      setSelectedFGIS([]);
+      setSelectedMIS([]);
       setTableData(null);
       form.setFieldsValue({ pis: null });
     }
@@ -242,8 +242,8 @@ const InputForm = (props) => {
   const onTableSelect = (key, value) => {
     const formValues = {};
 
-    if (key === 'pis') {
-      const selected = FGISList.find((slip) => slip.id === value);
+    if (key === 'mis') {
+      const selected = MISList.find((slip) => slip.id === value);
       formValues[key] = selected;
     } else {
       formValues[key] = value;
@@ -273,9 +273,9 @@ const InputForm = (props) => {
                 ...item,
               };
 
-              if (item.name === 'pis') {
-                itemData.selectedData = selectedFGIS;
-                itemData.setSelectedData = setSelectedFGIS;
+              if (item.name === 'mis') {
+                itemData.selectedData = selectedMIS;
+                itemData.setSelectedData = setSelectedMIS;
               }
 
               return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
@@ -284,13 +284,13 @@ const InputForm = (props) => {
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Space direction="vertical" size={20} style={{ width: '100%' }}>
+                  <Space direction="vertical" size={20} style={{ width: '80%' }}>
                     <Text style={{float: "left", marginLeft: "2%"}}>{'Received Items: '}</Text>
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
                       pagination={false}
-                      locale={{ emptyText: <Empty description="No FG-IS Selected." /> }}
+                      locale={{ emptyText: <Empty description="No Material Issuance Slip Selected." /> }}
                       summary={formTable.summary}
                     />
                   </Space>
