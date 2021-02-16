@@ -34,7 +34,6 @@ const MaterialReceivings = (props) => {
 
   const listData = useSelector((state) => state.dashboard.materialReceivings.list);
   const user = useSelector((state) => state.auth.user);
-  const MISList = useSelector((state) => state.dashboard.materialIssuances.list);
 
   const { company } = props;
   const { formDetails, tableDetails } = FormDetails();
@@ -51,11 +50,13 @@ const MaterialReceivings = (props) => {
 
       if (isCancelled) {
         dispatch(clearData());
+        dispatch(clearMaterialIssuance());
       }
     });
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearMaterialIssuance());
       isCancelled = true;
     };
   }, [dispatch, company]);
