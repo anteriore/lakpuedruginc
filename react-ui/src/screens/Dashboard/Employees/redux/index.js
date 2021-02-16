@@ -21,6 +21,44 @@ export const listEmployees = createAsyncThunk('listEmployees', async(_, thunkAPI
   }
 });
 
+export const createEmployee = createAsyncThunk('createEmployee', async(payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try{
+    const response = await axiosInstance.post(
+      `/rest/employees?token=${accessToken}`,
+      payload
+    );
+
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const deleteEmployee = createAsyncThunk('deleteEmployee', async(payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try{
+    const response = await axiosInstance.post(
+      `/rest/employees/delete?token=${accessToken}`,
+      payload.id
+    );
+
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
 const initialState = {
   employeeList: [],
   status: 'loading',
@@ -73,6 +111,86 @@ const employeesSlice = createSlice({
         statusLevel: level,
         responseCode: status,
         action: 'fetch',
+        statusMessage,
+      };
+    },
+    [createEmployee.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for employee`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [createEmployee.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Employee'
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [createEmployee.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Employee'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteEmployee.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for employee`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [deleteEmployee.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Employee'
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteEmployee.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Employee'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
