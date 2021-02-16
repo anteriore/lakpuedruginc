@@ -135,13 +135,11 @@ const FormDetails = () => {
         if (typeof field.render === 'undefined' || field.render === null) {
           field.render = (object) => object[field.name];
         }
-        if(field.name !== 'stockOnHand' && field.name !== 'quantityRemaining' ){
-          columns.push({
-            title: field.label,
-            key: field.name,
-            render: (object) => field.render(object),
-          });
-        }
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => field.render(object),
+        });
         
       });
   

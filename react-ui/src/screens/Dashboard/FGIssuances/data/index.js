@@ -150,7 +150,7 @@ const FormDetails = () => {
     ],
     foreignKey: 'id',
     selectedKey: 'id',
-    selectData: productInventories, // to be provided in the InputForm
+    selectData: productInventories,
     selectFields: [
       {
         title: 'Lot Number',
@@ -236,7 +236,6 @@ const FormDetails = () => {
   
       return columns;
     },
-    emptyText: 'Please select a delivery receipt (DR) or an order slip (OS).',
   };
 
   return { formDetails, tableDetails };
