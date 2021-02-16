@@ -65,13 +65,15 @@ public class ProductData {
 		productRepository.save(product);
 
 
+
+		product = new Product();
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
 		product.setCategory(categoryRepository.getOne(1L));
 		product.setCompany(company);
 		product.setExpiration(new Date());
 		product.setLotNumber("LOT#8888");
-		product.setQuantityPerBox(25);
+		product.setQuantityPerBox(15);
 		product.setReorderLevel(1000);
 		product.setBigUnit(unitRepository.findByCode("g"));
 		product.setSmallUnit(unitRepository.findByCode("kg"));
@@ -80,7 +82,7 @@ public class ProductData {
 		productRepository.save(product);
 
 
-
+		product = new Product();
 		fg = finishedGoodRepository.getOne(2L);
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
@@ -153,7 +155,7 @@ public class ProductData {
 					inventory.setQuantity(0);
 					productInventoryRepository.save(inventory);
 					*/
-
+					
               
             }
 
