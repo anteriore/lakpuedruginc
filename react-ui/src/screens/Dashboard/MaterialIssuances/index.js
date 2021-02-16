@@ -211,6 +211,7 @@ const MaterialIssuances = (props) => {
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
                 updateEnabled={false}
+                deleteEnabled={false}
               />
             )}
           </Col>
