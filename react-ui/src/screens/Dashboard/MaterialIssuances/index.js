@@ -17,8 +17,9 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listMaterialIssuance, addMaterialIssuance, clearData } from './redux';
+import { listMaterialIssuance, addMaterialIssuance, deleteMaterialIssuance, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listInventory, clearData as clearInventory } from '../Inventory/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
 
@@ -65,8 +66,10 @@ const MaterialIssuances = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(listDepot({ company, message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
+      dispatch(listInventory({ company, message })).then(() => {
+        history.push(`${path}/new`);
+        setLoading(false);
+      })
     });
   };
 
@@ -74,6 +77,23 @@ const MaterialIssuances = (props) => {
   };
 
   const handleDelete = (data) => {
+    if(data.status === "Pending"){
+      dispatch(deleteMaterialIssuance(data.id)).then((response) => {
+        setLoading(true);
+        if (response.payload.status === 200) {
+          dispatch(listMaterialIssuance({ company, message })).then(() => {
+            setLoading(false);
+            message.success(`Successfully deleted ${data.misNo}`);
+          });
+        } else {
+          setLoading(false);
+          message.error(`Unable to delete ${data.misNo}`);
+        }
+      });
+    }
+    else {
+      message.error("This action can only be performed on pending material issuances.")
+    }
   };
 
   const handleRetrieve = (data) => {
@@ -82,26 +102,20 @@ const MaterialIssuances = (props) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
     const inventoryList = [];
     data.inventoryList.forEach((inventory) => {
       inventoryList.push({
-        product: {
-          id: inventory.product.id,
+        item: {
+          id: inventory.item.id,
         },
-        quantity: inventory.quantity
+        quantity: inventory.quantity,
+        controlNumber: inventory.controlNumber,
       });
     });
     const payload = {
       ...data,
       company: {
         id: company,
-      },
-      fromDepot: {
-        id: data.fromDepot,
-      },
-      toDepot: {
-        id: data.toDepot,
       },
       requestedBy: {
         id: user.id,
@@ -116,11 +130,11 @@ const MaterialIssuances = (props) => {
           dispatch(listMaterialIssuance({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully updated ${data.number}`);
+            message.success(`Successfully updated ${data.misNo}`);
           });
         } else {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
+          message.error(`Unable to update ${data.misNo}`);
         }
       });
     } else if (formMode === 'add') {
@@ -130,7 +144,7 @@ const MaterialIssuances = (props) => {
           dispatch(listMaterialIssuance({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
+            message.success(`Successfully added ${response.payload.data.misNo}`);
           });
         } else {
           setLoading(false);
@@ -197,7 +211,6 @@ const MaterialIssuances = (props) => {
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
                 updateEnabled={false}
-                deleteEnabled={false}
               />
             )}
           </Col>
@@ -219,7 +232,7 @@ const MaterialIssuances = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.pisNo} Details`} 
+                  title={`${selectedData.misNo} Details`} 
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
