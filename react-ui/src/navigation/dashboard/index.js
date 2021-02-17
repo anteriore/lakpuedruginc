@@ -6,6 +6,7 @@ import ProductMovements from '../../screens/Dashboard/ProductMovements';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
+import Employees from '../../screens/Dashboard/Employees';
 
 export const routes = [
   {
@@ -76,7 +77,7 @@ export const routes = [
   {
     title: 'Employee',
     path: '/employees',
-    component: PurchaseRequests,
+    component: Employees,
   },
   {
     title: 'Job Order',
