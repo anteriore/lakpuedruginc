@@ -7,6 +7,7 @@ import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
 import InventoryMovements from '../../screens/Dashboard/InventoryMovements';
+import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 import Employees from '../../screens/Dashboard/Employees';
 
 export const routes = [
@@ -28,7 +29,7 @@ export const routes = [
   {
     title: 'Material Re-evaluations',
     path: '/material-reevaluations',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Inventory',
@@ -38,12 +39,12 @@ export const routes = [
   {
     title: 'Material Issuance Slips',
     path: '/material-issueance',
-    component: PurchaseRequests,
+    component: MaterialIssuances,
   },
   {
     title: 'Material Receiving Slips',
     path: '/material-receiving',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Inventory Movement Slips',
@@ -73,7 +74,7 @@ export const routes = [
   {
     title: 'Depot Inventory',
     path: '/depot-inventory',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Employee',
@@ -83,26 +84,26 @@ export const routes = [
   {
     title: 'Job Order',
     path: '/job-orders',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Engineering Items',
     path: '/engineering-items',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Engineering Inventory',
     path: '/engineering-inventory',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Account Summary Reports',
     path: '/account-summary',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Sales Reports',
     path: '/sales-reports',
-    component: PurchaseRequests,
+    component: '',
   },
 ];

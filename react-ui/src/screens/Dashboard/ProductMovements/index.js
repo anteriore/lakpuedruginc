@@ -148,7 +148,6 @@ const ProductMovements = (props) => {
         }
       })
     })
-    history.push(`${path}/new`);
   }
 
   const handleRetrieve = (data) => {
