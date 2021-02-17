@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import moment from 'moment';
-
-import { listProductInventoryByDepot, clearData as clearPI } from '../../ProductInventories/redux';
 
 export const columns = [
   {
@@ -36,6 +34,18 @@ export const columns = [
 
 const FormDetails = () => {
   const inventories = useSelector((state) => state.dashboard.inventory.list);
+  const [classifications, setClassifications] = useState([
+    {
+      id: "RETURN",
+      code: "Return",
+      name: "Return"
+    },
+    {
+      id: "ADJUSTMENT",
+      code: "Adjustment",
+      name: "Adjustment"
+    },
+  ]) //hard coded assuming that editing inventory movements is not possible and the default value for type is always "IN"
 
   const formDetails = {
     form_name: 'inventory_movement',
@@ -51,6 +61,75 @@ const FormDetails = () => {
         name: 'date',
         type: 'date',
         rules: [{ required: true }],
+      },
+      {
+        label: 'Type',
+        name: 'type',
+        type: 'radioGroup',
+        selectName: 'name',
+        initialValue: 'IN',
+        choices: [
+          {
+            id: 'IN',
+            name: 'IN',
+          },
+          {
+            id: 'OUT',
+            name: 'OUT',
+          },
+        ],
+        onChange: (e) => {
+          if(e.target.value === 'IN'){
+            setClassifications([
+              {
+                id: "RETURN",
+                code: "RETURN",
+                name: "Return"
+              },
+              {
+                id: "ADJUSTMENT",
+                code: "ADJUSTMENT",
+                name: "Adjustment"
+              },
+            ])
+          }
+          else if(e.target.value === 'OUT'){
+            setClassifications([
+              {
+                id: "EXPIRED",
+                code: "EXPIRED",
+                name: "Expired"
+              },
+              {
+                id: "ADJUSTMENT",
+                code: "ADJUSTMENT",
+                name: "Adjustment"
+              },
+              {
+                id: "MO",
+                code: "MO",
+                name: "MO"
+              },
+            ])
+
+          }
+        },
+        rules: [{ required: true }],
+      },
+      {
+        label: 'Classification',
+        name: 'classification',
+        type: 'select',
+        selectName: 'name',
+        choices: classifications,
+        allowEmpty: true,
+        rules: [{ required: true, message: 'Please select a valid classification' }],
+      },
+      {
+        label: 'MO Number',
+        name: 'moNumber',
+        rules: [{ required: true, message: 'Please provide a valid MO number' }],
+        placeholder: 'MO Number',
       },
       {
         label: 'Remarks',
@@ -130,8 +209,8 @@ const FormDetails = () => {
       },
       {
         title: 'Expiration',
-        dataIndex: 'item',
-        key: 'item',
+        dataIndex: 'expiration',
+        key: 'expiration',
         render: (object) => {
           return moment(new Date(object)).format('DD/MM/YYYY');
         },

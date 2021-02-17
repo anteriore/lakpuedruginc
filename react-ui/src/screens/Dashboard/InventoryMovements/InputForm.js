@@ -32,6 +32,8 @@ const InputForm = (props) => {
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
+  const [requireMO, setRequireMO] = useState(false) //for toggling MO input
+
   const toggleName = formDetails.toggle_name;
 
   useEffect(() => {
@@ -229,6 +231,18 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
+    if(values.hasOwnProperty("classification")){
+      if(values.classification === "MO") {
+        setRequireMO(true)
+      } 
+      else {
+        setRequireMO(false)
+      }
+    }
+    else if(values.hasOwnProperty("type")){
+      form.setFieldsValue({classification: null})
+    }
+
     if (toggleName !== null && typeof toggleName !== 'undefined') {
       if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
         setToggleValue(values[toggleName]);
@@ -253,13 +267,14 @@ const InputForm = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
+              if (item.name === 'moNumber') {
+                if (requireMO) {
                   return <FormItem item={item} onFail={onFail} />;
                 }
-                return null;
+                else {
+                  return null;
+                }
               }
-
               return <FormItem item={item} onFail={onFail} />;
             })}
 

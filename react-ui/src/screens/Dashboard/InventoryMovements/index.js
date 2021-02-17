@@ -83,6 +83,17 @@ const InventoryMovements = (props) => {
   };
 
   const onSubmit = (data) => {
+    const inventory = []
+
+    data.inventory.forEach((item) => {
+      inventory.push({
+        controlNumber: item.controlNumber,
+        item: {
+          id: item.item.id
+        },
+        quantity: item.quantity
+      })
+    })
     const payload = {
       ...data,
       company: {
@@ -91,6 +102,7 @@ const InventoryMovements = (props) => {
       requestedBy: {
         id: user.id,
       },
+      inventory: inventory
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -207,7 +219,7 @@ const InventoryMovements = (props) => {
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
-                <Text>{'Issued Items: '}</Text>
+                <Text>{'Items: '}</Text>
                 <Table
                   dataSource={
                     selectedData[tableDetails.name] !== null &&
