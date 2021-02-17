@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
-import { listI, listItemByType, addI, deleteI, clearData } from '../../Maintenance/Items/redux';
+import { listItemByType, addI, deleteI, clearData } from '../../Maintenance/Items/redux';
 import { listIT, clearData as clearIT } from '../../Maintenance/ItemTypes/redux';
 import { listUnit } from '../../Maintenance/Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
