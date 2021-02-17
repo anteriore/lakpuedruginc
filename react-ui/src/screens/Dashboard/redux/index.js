@@ -7,6 +7,7 @@ import FGReceivings from '../FGReceivings/redux';
 import inventory from '../Inventory/redux';
 import productMovements from '../ProductMovements/redux';
 import inventoryMovements from '../InventoryMovements/redux';
+import employees from '../Employees/redux';
 
 const dashboard = combineReducers({
   purchaseRequests,
@@ -16,6 +17,7 @@ const dashboard = combineReducers({
   inventory, 
   productMovements,
   inventoryMovements,
+  employees
 });
 
 export default dashboard;
