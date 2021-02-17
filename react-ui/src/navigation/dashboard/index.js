@@ -8,6 +8,7 @@ import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
 import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 import Employees from '../../screens/Dashboard/Employees';
+import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
 
 export const routes = [
   {
@@ -93,7 +94,7 @@ export const routes = [
   {
     title: 'Engineering Inventory',
     path: '/engineering-inventory',
-    component: '',
+    component: EngineeringInventories,
   },
   {
     title: 'Account Summary Reports',
