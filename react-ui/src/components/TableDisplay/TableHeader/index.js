@@ -131,7 +131,6 @@ const TableHeader = (columnHeaders) => {
           if(typeof header.dataToString !== 'function'){
             header.dataToString = (object) => object[header.name]
           }
-
           header = {
             ...header,
             sorter: (a, b) => {

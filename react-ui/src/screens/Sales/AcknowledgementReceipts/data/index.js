@@ -43,6 +43,7 @@ export const columns = [
       } else {
         b = '';
       }
+      console.log(a)
       return a.localeCompare(b);
     },
     render: (object) => {

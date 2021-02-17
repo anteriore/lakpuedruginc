@@ -7,6 +7,7 @@ import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
 import Employees from '../../screens/Dashboard/Employees';
+import JobOrder from '../../screens/Dashboard/JobOrder';
 
 export const routes = [
   {
@@ -82,7 +83,7 @@ export const routes = [
   {
     title: 'Job Order',
     path: '/job-orders',
-    component: PurchaseRequests,
+    component: JobOrder,
   },
   {
     title: 'Engineering Items',
