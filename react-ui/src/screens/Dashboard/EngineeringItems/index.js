@@ -3,86 +3,31 @@ import { Row, Col, Typography, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
+import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
-import { listI, addI, deleteI, clearData } from './redux';
-import { listIT, clearData as clearIT } from '../ItemTypes/redux';
-import { listUnit } from '../Units/redux';
+import { listI, listItemByType, addI, deleteI, clearData } from '../../Maintenance/Items/redux';
+import { listIT, clearData as clearIT } from '../../Maintenance/ItemTypes/redux';
+import { listUnit } from '../../Maintenance/Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 
-const Items = (props) => {
+const EngineeringItems = (props) => {
   const [displayForm, setDisplayForm] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
 
+  const { formDetails } = FormDetails();
+
   const { company, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.items.list);
-  const types = useSelector((state) => state.maintenance.itemTypes.list);
-  const units = useSelector((state) => state.maintenance.units.unitList);
 
-  const columns = [
-    {
-      title: 'Code',
-      dataIndex: 'code',
-      key: 'code',
-      datatype: 'string',
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      datatype: 'string',
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      datatype: 'object',
-    },
-    {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'unit',
-      datatype: 'object',
-    },
-  ];
-
-  const formDetail = {
-    form_name: 'itemtypes',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid item name' }],
-        placeholder: 'Item name',
-      },
-      {
-        label: 'Code',
-        name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid item code' }],
-        placeholder: 'Item code',
-      },
-      {
-        label: 'Type',
-        name: 'type',
-        type: 'select',
-        choices: types,
-      },
-      {
-        label: 'Unit',
-        name: 'unit',
-        type: 'select',
-        choices: units,
-      },
-    ],
-  };
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listI({ company, message })).then(() => {
+    dispatch(listItemByType({ type: "ENG", message })).then(() => {
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -124,7 +69,7 @@ const Items = (props) => {
 
   const handleDelete = (data) => {
     dispatch(deleteI(data.id)).then((response) => {
-      dispatch(listI({ company, message }));
+      dispatch(listItemByType({ type: "ENG", message }));
       message.success(`Successfully deleted Item ${data.name}`);
     });
   };
@@ -153,11 +98,11 @@ const Items = (props) => {
       payload.id = formData.id;
 
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company, message }));
+        dispatch(listItemByType({ type: "ENG", message }));
       });
     } else if (formMode === 'add') {
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company, message }));
+        dispatch(listItemByType({ type: "ENG", message }));
       });
     }
 
@@ -203,7 +148,7 @@ const Items = (props) => {
             onSubmit={onSubmit}
             values={formData}
             onCancel={handleCancelButton}
-            formDetails={formDetail}
+            formDetails={formDetails}
           />
         )}
       </Row>
@@ -211,4 +156,4 @@ const Items = (props) => {
   );
 };
 
-export default Items;
+export default EngineeringItems;
