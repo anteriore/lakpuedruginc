@@ -50,6 +50,7 @@ const FGIssuances = (props) => {
 
       if (isCancelled) {
         dispatch(clearData());
+        dispatch(clearDepot());
       }
     });
 

@@ -51,6 +51,8 @@ const MaterialIssuances = (props) => {
 
       if (isCancelled) {
         dispatch(clearData());
+        dispatch(clearDepot());
+        dispatch(clearInventory());
       }
     });
 
