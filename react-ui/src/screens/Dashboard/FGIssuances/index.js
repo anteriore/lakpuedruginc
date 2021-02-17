@@ -55,6 +55,7 @@ const FGIssuances = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearDepot());
       isCancelled = true;
     };
   }, [dispatch, company]);

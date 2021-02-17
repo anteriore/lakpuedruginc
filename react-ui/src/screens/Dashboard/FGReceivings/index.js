@@ -18,7 +18,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listFGReceiving, addFGReceiving, clearData } from './redux';
-import { listFGIssuance, clearData as clearFGIS } from '../FGIssuances/redux';
+import { clearData as clearFGIS } from '../FGIssuances/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
@@ -56,6 +56,8 @@ const FGReceivings = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearFGIS());
       isCancelled = true;
     };
   }, [dispatch, company]);

@@ -4,8 +4,6 @@ import {
   Button,
   InputNumber,
   Select,
-  Checkbox,
-  Modal,
   Row,
   Col,
   Typography,
@@ -27,24 +25,16 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
-  const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
 
-  const [loadingModal, setLoadingModal] = useState(true);
-  const [displayModal, setDisplayModal] = useState(false);
   const [selectedFGIS, setSelectedFGIS] = useState([]);
 
   const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
-
-  const toggleName = formDetails.toggle_name;
 
   useEffect(() => {
     form.setFieldsValue(values);
     if(hasTable){
       setTableData(form.getFieldValue(formTable.name));
-    }
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
     }
     // eslint-disable-next-line
   }, [values, form]);
@@ -147,82 +137,6 @@ const InputForm = (props) => {
     return columns;
   };
 
-  // for selecting selecting a new row in a table
-  const onModalSelect = (data, isSelected) => {
-    let selectedItems = [];
-    if (hasTable) {
-      if (isSelected) {
-        // add existing data
-        if (tableData !== null && typeof tableData !== 'undefined') {
-          selectedItems = selectedItems.concat(tableData);
-        }
-
-        // process the new data before adding if necessary
-        let processedData = data;
-        if (typeof formTable.processData === 'function') {
-          processedData = formTable.processData(data);
-        }
-        selectedItems = selectedItems.concat(processedData);
-      } else if (tableData !== null && typeof tableData !== 'undefined') {
-        selectedItems = tableData;
-
-        // key for the selected item
-        if (typeof formTable.selectedKey === 'undefined') {
-          formTable.selectedKey = 'id';
-        }
-        // foreign key that corresponds to the selected item
-        if (typeof formTable.foreignKey === 'undefined') {
-          formTable.foreignKey = 'id';
-        }
-        selectedItems = selectedItems.filter(
-          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
-        );
-      }
-      const fieldsValue = {};
-      fieldsValue[formTable.name] = selectedItems;
-      setTableData(selectedItems);
-      form.setFieldsValue(fieldsValue);
-    }
-  };
-
-  // for rendering the columns inside the row selection modal
-  const renderModalColumns = (columns) => {
-    let modalColumns = [
-      {
-        key: 'select',
-        render: (row) => {
-          return (
-            <Checkbox
-              onChange={(e) => {
-                onModalSelect(row, e.target.checked);
-              }}
-              defaultChecked={formTable.checkSelected(tableData, row)}
-            />
-          );
-        },
-      },
-    ];
-
-    modalColumns = modalColumns.concat(columns);
-
-    return modalColumns;
-  };
-
-  const expandedRowRender = (row) => {
-    if (formTable.hasOwnProperty('nestedData')) {
-      return (
-        <>
-          <Title level={5}>{formTable.nestedData.label}</Title>
-          <Table
-            columns={formTable.nestedData.fields}
-            dataSource={row[formTable.nestedData.data]}
-            pagination={false}
-          />
-        </>
-      );
-    }
-  };
-
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
@@ -313,34 +227,6 @@ const InputForm = (props) => {
               Cancel
             </Button>
           </div>
-          {!loadingModal && hasTable && (
-            <Modal
-              visible={displayModal}
-              title="Modal"
-              onOk={() => setDisplayModal(false)}
-              onCancel={() => setDisplayModal(false)}
-              cancelButtonProps={{ style: { display: 'none' } }}
-              width={1000}
-            >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
-                // for nested tables
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  expandable={{ expandedRowRender }}
-                  rowKey={formTable.foreignKey}
-                />
-              ) : (
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  rowKey={formTable.foreignKey}
-                />
-              )}
-            </Modal>
-          )}
         </Col>
       </Row>
     </>
