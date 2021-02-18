@@ -3,7 +3,6 @@ import {
   Form,
   Button,
   InputNumber,
-  Input,
   Select,
   Checkbox,
   Modal,
@@ -15,7 +14,6 @@ import {
   message,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
@@ -28,22 +26,20 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
-  const [tableData, setTableData] = useState(null);
-  const [orderedProducts, setOrderedProducts] = useState([]);
-  const [selectedSaleSlip, setSelectedSaleSlip] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
+  const [tableData, setTableData] = useState();
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
-  const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
+  const [requireMO, setRequireMO] = useState(false) //for toggling MO input
 
   const toggleName = formDetails.toggle_name;
 
   useEffect(() => {
     form.setFieldsValue(values);
-    if (hasTable && values !== null) {
-      setTableData(formTable.getValues(values));
+    if(hasTable){
+      setTableData(form.getFieldValue(formTable.name));
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
@@ -64,26 +60,11 @@ const InputForm = (props) => {
       }
     });
 
-    if (hasTable) {
-      if (tableData !== null) {
-        data[formTable.name] = tableData;
-        onSubmit(data);
-      } else {
-        onFinishFailed(
-          `Unable to submit. Please provide the necessary information on ${formTable.label}`
-        );
-      }
-    } else {
-      onSubmit(data);
-    }
+    onSubmit(data);
   };
 
-  const onFinishFailed = (errorInfo) => {
-    if (typeof errorInfo === 'string') {
-      message.error(errorInfo);
-    } else {
-      message.error("An error has occurred. Please double check the information you've provided.");
-    }
+  const onFinishFailed = () => {
+    message.error("An error has occurred. Please double check the information you've provided.");
   };
 
   // for rendering tables
@@ -114,24 +95,7 @@ const InputForm = (props) => {
             key: field.name,
             visible: false,
           });
-        } else if (field.type === 'readOnly') {
-          columns.push({
-            title: field.label,
-            key: field.name,
-            render: (row) => {
-              const index = tableData.indexOf(row);
-              return (
-                <Form.Item
-                  name={[index, field.name]}
-                  fieldKey={[index, field.name]}
-                  rules={field.rules}
-                >
-                  <Input bordered={false} />
-                </Form.Item>
-              );
-            },
-          });
-        } else if (field.type === 'select') {
+        } else if (field.type === 'select' === 'selectSearch') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -151,6 +115,7 @@ const InputForm = (props) => {
               }
               return (
                 <Form.Item
+                  showSearch={item.type === 'selectSearch'}
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
@@ -216,7 +181,6 @@ const InputForm = (props) => {
       fieldsValue[formTable.name] = selectedItems;
       setTableData(selectedItems);
       form.setFieldsValue(fieldsValue);
-      onValuesChange(fieldsValue);
     }
   };
 
@@ -263,38 +227,27 @@ const InputForm = (props) => {
   };
 
   const onValuesChange = (values) => {
+    if (hasTable && values.hasOwnProperty(formTable.name)) {
+      setTableData(form.getFieldValue(formTable.name));
+    }
+
+    if(values.hasOwnProperty("classification")){
+      if(values.classification === "MO") {
+        setRequireMO(true)
+      } 
+      else {
+        setRequireMO(false)
+      }
+    }
+    else if(values.hasOwnProperty("type")){
+      form.setFieldsValue({classification: null})
+    }
+
     if (toggleName !== null && typeof toggleName !== 'undefined') {
       if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
         setToggleValue(values[toggleName]);
       }
     }
-    if (values.hasOwnProperty(formTable.name)) {
-      setTableData(form.getFieldValue(formTable.name));
-      console.log(form.getFieldsValue());
-      console.log(tableData);
-    }
-
-    if (values.hasOwnProperty('depot')) {
-      setOrderedProducts([]);
-      setSelectedSaleSlip([]);
-      setTableData(null);
-      form.setFieldsValue({ salesNumber: null, client: null });
-    }
-  };
-
-  const onTableSelect = (key, value) => {
-    const formValues = {};
-
-    if (key === 'salesNumber') {
-      const selectedSaleSlip = orderSlips.find((slip) => slip.id === value);
-      formValues[key] = selectedSaleSlip.number;
-      formValues.client = selectedSaleSlip.salesOrder.client.id;
-      setOrderedProducts(selectedSaleSlip.orderedProducts);
-    } else {
-      formValues[key] = value;
-    }
-    onValuesChange(formValues)
-    form.setFieldsValue(formValues)
   };
 
   return (
@@ -314,21 +267,17 @@ const InputForm = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
+              if (item.name === 'moNumber') {
+                if (requireMO) {
+                  return <FormItem item={item} onFail={onFail} />;
+                }
+                else {
+                  return null;
+                }
+              }
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {formDetails.rs_items.map((item) => {
-              const itemData = {
-                ...item,
-              };
-
-              if (item.name === 'salesNumber') {
-                itemData.selectedData = selectedSaleSlip;
-                itemData.setSelectedData = setSelectedSaleSlip;
-              }
-
-              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
-            })}
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
@@ -355,21 +304,22 @@ const InputForm = (props) => {
                 )}
               </Form.List>
             )}
-            <div style={styles.tailLayout}>
-              <Button type="primary" onClick={() => form.submit()}>
-                Submit
-              </Button>
-              <Button
-                style={{ marginRight: '2%' }}
-                onClick={() => {
-                  onCancel();
-                  history.goBack();
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
           </Form>
+
+          <div style={styles.tailLayout}>
+            <Button type="primary" onClick={() => form.submit()}>
+              Submit
+            </Button>
+            <Button
+              style={{ marginRight: '2%' }}
+              onClick={() => {
+                onCancel();
+                history.goBack();
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
           {!loadingModal && hasTable && (
             <Modal
               visible={displayModal}
@@ -382,18 +332,18 @@ const InputForm = (props) => {
               {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
                 // for nested tables
                 <Table
-                  dataSource={orderedProducts}
+                  dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
                   expandable={{ expandedRowRender }}
-                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
+                  rowKey={formTable.foreignKey}
                 />
               ) : (
                 <Table
-                  dataSource={orderedProducts}
+                  dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
                   pagination={false}
-                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
+                  rowKey={formTable.foreignKey}
                 />
               )}
             </Modal>

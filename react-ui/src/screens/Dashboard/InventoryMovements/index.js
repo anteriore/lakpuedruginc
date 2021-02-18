@@ -17,15 +17,14 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listFGReceiving, addFGReceiving, clearData } from './redux';
-import { clearData as clearFGIS } from '../FGIssuances/redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listInventoryMovement, addInventoryMovement, clearData } from './redux';
+import { listInventory, clearData as clearInventory } from '../Inventory/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 
 const { Title, Text } = Typography;
 
-const FGReceivings = (props) => {
+const InventoryMovements = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
@@ -33,7 +32,7 @@ const FGReceivings = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const listData = useSelector((state) => state.dashboard.FGReceivings.list);
+  const listData = useSelector((state) => state.dashboard.inventoryMovements.list);
   const user = useSelector((state) => state.auth.user);
 
   const { company } = props;
@@ -46,34 +45,30 @@ const FGReceivings = (props) => {
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listFGReceiving({ company, message })).then(() => {
+    dispatch(listInventoryMovement({ company, message })).then(() => {
       setLoading(false);
 
       if (isCancelled) {
         dispatch(clearData());
-        dispatch(clearDepot());
-        dispatch(clearFGIS());
       }
     });
 
     return function cleanup() {
       dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearFGIS());
+      dispatch(clearInventory());
       isCancelled = true;
     };
   }, [dispatch, company]);
   
   const handleAdd = () => {
-    setFormTitle('Create FG Receiving Slip');
+    setFormTitle('Create Inventory Movement Slip');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then(() => {
-        dispatch(clearFGIS())
-        history.push(`${path}/new`);
-        setLoading(false);
-    });
+    dispatch(listInventory({ company, message })).then(() => {
+      history.push(`${path}/new`);
+    })
+    setLoading(false);
   };
 
   const handleUpdate = (data) => {
@@ -88,28 +83,33 @@ const FGReceivings = (props) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
+    const inventory = []
+
+    data.inventory.forEach((item) => {
+      inventory.push({
+        controlNumber: item.controlNumber,
+        item: {
+          id: item.item.id
+        },
+        quantity: item.quantity
+      })
+    })
     const payload = {
       ...data,
       company: {
         id: company,
       },
-      depot: {
-        id: data.depot,
-      },
-      receivedBy: {
+      requestedBy: {
         id: user.id,
       },
-      pis: {
-        id: data.pis.id,
-      },
+      inventory: inventory
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addFGReceiving(payload)).then((response) => {
+      dispatch(addInventoryMovement(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listFGReceiving({ company, message })).then(() => {
+          dispatch(listInventoryMovement({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully updated ${data.number}`);
@@ -120,17 +120,17 @@ const FGReceivings = (props) => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addFGReceiving(payload)).then((response) => {
+      dispatch(addInventoryMovement(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listFGReceiving({ company, message })).then(() => {
+          dispatch(listInventoryMovement({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
             message.success(`Successfully added ${response.payload.data.number}`);
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create FG Issuance. Please double check the provided information.`);
+          message.error(`Unable to create Inventory Movement Slip. Please double check the provided information.`);
         }
       });
     }
@@ -215,14 +215,17 @@ const FGReceivings = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.prsNo} Details`} 
+                  title={`${selectedData.number} Details`} 
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
-                <Text>{'Received Items: '}</Text>
+                <Text>{'Items: '}</Text>
                 <Table
                   dataSource={
-                    selectedData.pis.inventoryList
+                    selectedData[tableDetails.name] !== null &&
+                    typeof selectedData[tableDetails.name] !== 'undefined'
+                      ? selectedData[tableDetails.name]
+                      : []
                   }
                   columns={tableDetails.renderTableColumns(tableDetails.fields)}
                   pagination={false}
@@ -237,4 +240,4 @@ const FGReceivings = (props) => {
   );
 };
 
-export default FGReceivings;
+export default InventoryMovements;
