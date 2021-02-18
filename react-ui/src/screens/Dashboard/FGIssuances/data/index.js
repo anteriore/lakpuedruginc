@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
@@ -151,7 +150,7 @@ const FormDetails = () => {
     ],
     foreignKey: 'id',
     selectedKey: 'id',
-    selectData: productInventories, // to be provided in the InputForm
+    selectData: productInventories,
     selectFields: [
       {
         title: 'Lot Number',
@@ -237,7 +236,6 @@ const FormDetails = () => {
   
       return columns;
     },
-    emptyText: 'Please select a delivery receipt (DR) or an order slip (OS).',
   };
 
   return { formDetails, tableDetails };

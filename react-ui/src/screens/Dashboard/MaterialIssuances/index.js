@@ -51,11 +51,15 @@ const MaterialIssuances = (props) => {
 
       if (isCancelled) {
         dispatch(clearData());
+        dispatch(clearDepot());
+        dispatch(clearInventory());
       }
     });
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearInventory());
       isCancelled = true;
     };
   }, [dispatch, company]);

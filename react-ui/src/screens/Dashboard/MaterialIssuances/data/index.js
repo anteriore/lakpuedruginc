@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import moment from 'moment';
-
-import { listProductInventoryByDepot, clearData as clearPI } from '../../ProductInventories/redux';
 
 export const columns = [
   {
@@ -35,9 +32,6 @@ export const columns = [
 ];
 
 const FormDetails = () => {
-  const dispatch = useDispatch();
-  const depots = useSelector((state) => state.maintenance.depots.list);
-  const company = useSelector((state) => state.company.selectedCompany);
   const inventories = useSelector((state) => state.dashboard.inventory.list);
 
   const formDetails = {
@@ -115,7 +109,7 @@ const FormDetails = () => {
     ],
     foreignKey: 'key',
     selectedKey: 'id',
-    selectData: inventories, // to be provided in the InputForm
+    selectData: inventories, 
     selectFields: [
       {
         title: 'Control Number',
@@ -206,7 +200,6 @@ const FormDetails = () => {
   
       return columns;
     },
-    emptyText: 'Please select a delivery receipt (DR) or an order slip (OS).',
   };
 
   return { formDetails, tableDetails };
