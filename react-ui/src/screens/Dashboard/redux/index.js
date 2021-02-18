@@ -5,6 +5,7 @@ import productInventories from '../ProductInventories/redux';
 import FGIssuances from '../FGIssuances/redux';
 import FGReceivings from '../FGReceivings/redux';
 import materialIssuances from '../MaterialIssuances/redux';
+import materialReceivings from '../MaterialReceivings/redux';
 import inventory from '../Inventory/redux';
 import productMovements from '../ProductMovements/redux';
 import inventoryMovements from '../InventoryMovements/redux';
@@ -16,7 +17,8 @@ const dashboard = combineReducers({
   FGIssuances,
   FGReceivings,
   materialIssuances,
-  inventory, 
+  materialReceivings,
+  inventory,
   productMovements,
   inventoryMovements,
   employees

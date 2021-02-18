@@ -8,7 +8,9 @@ import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
 import InventoryMovements from '../../screens/Dashboard/InventoryMovements';
 import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
+import MaterialReceivings from '../../screens/Dashboard/MaterialReceivings';
 import Employees from '../../screens/Dashboard/Employees';
+import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
 
 export const routes = [
   {
@@ -17,7 +19,7 @@ export const routes = [
     component: PurchaseRequests,
   },
   {
-    title: 'Receiving Receipts',
+    title: 'Receiving Receipts', 
     path: '/receiving-receipts',
     component: ReceivingReceipts,
   },
@@ -44,7 +46,7 @@ export const routes = [
   {
     title: 'Material Receiving Slips',
     path: '/material-receiving',
-    component: '',
+    component: MaterialReceivings,
   },
   {
     title: 'Inventory Movement Slips',
@@ -89,7 +91,7 @@ export const routes = [
   {
     title: 'Engineering Items',
     path: '/engineering-items',
-    component: '',
+    component: EngineeringItems,
   },
   {
     title: 'Engineering Inventory',
