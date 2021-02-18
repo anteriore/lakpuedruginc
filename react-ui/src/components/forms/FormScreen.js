@@ -12,6 +12,7 @@ import {
   Table,
   Empty,
   message,
+  TimePicker,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -33,8 +34,6 @@ const FormScreen = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
 
   const toggleName = formDetails.toggle_name;
-
-  console.log(formDetails)
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -90,7 +89,27 @@ const FormScreen = (props) => {
               );
             },
           });
-        } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+        
+        } else if (field.type === 'timepicker') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <TimePicker use12Hours format="h:mm a"/>
+                </Form.Item>
+              )
+            }
+          })
+        }else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
             visible: false,
