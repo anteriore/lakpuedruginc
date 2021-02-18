@@ -29,7 +29,6 @@ const InputForm = (props) => {
 
   const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
 
-
   useEffect(() => {
     form.setFieldsValue(values);
     if(hasTable){
