@@ -45,6 +45,7 @@ const ReturnSlips = (props) => {
   const { formDetails, tableDetails } = FormDetails();
 
   const listData = useSelector((state) => state.sales.returnSlips.list);
+  const companies = useSelector((state) => state.company.companyList);
 
   useEffect(() => {
     dispatch(listReturnSlip({ company, message })).then(() => {
@@ -127,6 +128,28 @@ const ReturnSlips = (props) => {
     history.push(`${path}/report`);
     setLoading(false);
   };
+
+  const renderReportDetails = () => {
+    return (
+        <>
+          <Row>
+            <Col span={12} style={{ display: 'flex' }}>
+              <Title level={5}>{`Report: ${formTitle}`}</Title>
+            </Col>
+            <Col span={12} style={{ display: 'flex' }}>
+              <Title level={5}>{`Dates: ${'all'}`}</Title>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12} style={{ display: 'flex' }}>
+              <Title level={5}>{`Company: ${
+                companies.find((companyData) => companyData.id === company).name
+              }`}</Title>
+            </Col>
+          </Row>
+        </>
+      )
+  }
 
   const onSubmit = (data) => {
     // TODO: Data Validation
@@ -219,7 +242,7 @@ const ReturnSlips = (props) => {
         />
       </Route>
       <Route exact path={`${path}/report`}>
-        <Report title={formTitle} data={formData} columns={reportColumns} company={company} />
+        <Report data={formData} columns={reportColumns} renderReportDetails={renderReportDetails} />
       </Route>
       <Route path={`${path}/:id`}>
         <InputForm

@@ -4,7 +4,7 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
-  list: null,
+  list: [],
   status: '',
   statusMessage: '',
   action: '',

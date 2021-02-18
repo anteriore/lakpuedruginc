@@ -181,6 +181,7 @@ const InputForm = (props) => {
   };
 
   const onFail = () => {
+    console.log("Fail item detected", `/${path.split('/')[1]}/${path.split('/')[2]}`)
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 

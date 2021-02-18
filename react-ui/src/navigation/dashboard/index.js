@@ -6,8 +6,11 @@ import ProductMovements from '../../screens/Dashboard/ProductMovements';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
+import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
+import MaterialReceivings from '../../screens/Dashboard/MaterialReceivings';
 import Employees from '../../screens/Dashboard/Employees';
 import JobOrder from '../../screens/Dashboard/JobOrder';
+import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
 
 export const routes = [
   {
@@ -16,7 +19,7 @@ export const routes = [
     component: PurchaseRequests,
   },
   {
-    title: 'Receiving Receipts',
+    title: 'Receiving Receipts', 
     path: '/receiving-receipts',
     component: ReceivingReceipts,
   },
@@ -28,7 +31,7 @@ export const routes = [
   {
     title: 'Material Re-evaluations',
     path: '/material-reevaluations',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Inventory',
@@ -38,17 +41,17 @@ export const routes = [
   {
     title: 'Material Issuance Slips',
     path: '/material-issueance',
-    component: PurchaseRequests,
+    component: MaterialIssuances,
   },
   {
     title: 'Material Receiving Slips',
     path: '/material-receiving',
-    component: PurchaseRequests,
+    component: MaterialReceivings,
   },
   {
     title: 'Inventory Movement Slips',
     path: '/inventory-movement',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Product Movements',
@@ -73,7 +76,7 @@ export const routes = [
   {
     title: 'Depot Inventory',
     path: '/depot-inventory',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Employee',
@@ -88,21 +91,21 @@ export const routes = [
   {
     title: 'Engineering Items',
     path: '/engineering-items',
-    component: PurchaseRequests,
+    component: EngineeringItems,
   },
   {
     title: 'Engineering Inventory',
     path: '/engineering-inventory',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Account Summary Reports',
     path: '/account-summary',
-    component: PurchaseRequests,
+    component: '',
   },
   {
     title: 'Sales Reports',
     path: '/sales-reports',
-    component: PurchaseRequests,
+    component: '',
   },
 ];

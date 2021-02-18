@@ -4,13 +4,13 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
-  list: null,
+  list: [],
   status: '',
   statusMessage: '',
   action: '',
 };
 
-export const listI = createAsyncThunk('listI', async (payload, thunkAPI, rejectWithValue) => {
+export const listI = createAsyncThunk('listI', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(`rest/items?token=${accessToken}`);
@@ -22,7 +22,45 @@ export const listI = createAsyncThunk('listI', async (payload, thunkAPI, rejectW
     }
   } else {
     payload.message.error(message.ITEMS_GET_REJECTED);
-    return rejectWithValue(response);
+    return thunkAPI.rejectWithValue(response);
+  }
+
+  return response;
+});
+
+export const listItemByType = createAsyncThunk('listItemByType', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { type } = payload;
+
+  const response = await axiosInstance.get(`rest/items/type/${type}?token=${accessToken}`);
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for items');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
+  }
+
+  return response;
+});
+
+export const listItemSummary = createAsyncThunk('listItemSummary', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company } = payload
+
+  const response = await axiosInstance.get(`rest/items/company/${company}/summary/?token=${accessToken}`);
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for items');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
   }
 
   return response;
@@ -69,6 +107,60 @@ const itemSlice = createSlice({
       };
     },
     [listI.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'error',
+        statusMessage: message.ITEM_DELETE_REJECTED,
+      };
+    },
+    [listItemByType.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listItemByType.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for items';
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listItemByType.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'error',
+        statusMessage: message.ITEM_DELETE_REJECTED,
+      };
+    },
+    [listItemSummary.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listItemSummary.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for items';
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listItemSummary.rejected]: (state, action) => {
       return {
         ...state,
         status: 'failed',

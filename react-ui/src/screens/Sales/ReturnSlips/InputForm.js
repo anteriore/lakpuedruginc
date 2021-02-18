@@ -37,9 +37,6 @@ const InputForm = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
-  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
-  let salesSlips = [];
-  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const toggleName = formDetails.toggle_name;
 

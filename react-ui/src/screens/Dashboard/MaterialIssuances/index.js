@@ -17,15 +17,15 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listFGReceiving, addFGReceiving, clearData } from './redux';
-import { clearData as clearFGIS } from '../FGIssuances/redux';
+import { listMaterialIssuance, addMaterialIssuance, deleteMaterialIssuance, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import InputForm from './InputForm';
+import { listInventory, clearData as clearInventory } from '../Inventory/redux';
+import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
 
 const { Title, Text } = Typography;
 
-const FGReceivings = (props) => {
+const MaterialIssuances = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
@@ -33,7 +33,7 @@ const FGReceivings = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const listData = useSelector((state) => state.dashboard.FGReceivings.list);
+  const listData = useSelector((state) => state.dashboard.materialIssuances.list);
   const user = useSelector((state) => state.auth.user);
 
   const { company } = props;
@@ -46,33 +46,34 @@ const FGReceivings = (props) => {
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listFGReceiving({ company, message })).then(() => {
+    dispatch(listMaterialIssuance({ company, message })).then(() => {
       setLoading(false);
 
       if (isCancelled) {
         dispatch(clearData());
         dispatch(clearDepot());
-        dispatch(clearFGIS());
+        dispatch(clearInventory());
       }
     });
 
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
-      dispatch(clearFGIS());
+      dispatch(clearInventory());
       isCancelled = true;
     };
   }, [dispatch, company]);
   
   const handleAdd = () => {
-    setFormTitle('Create FG Receiving Slip');
+    setFormTitle('Create Material Issuance');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(listDepot({ company, message })).then(() => {
-        dispatch(clearFGIS())
+      dispatch(listInventory({ company, message })).then(() => {
         history.push(`${path}/new`);
         setLoading(false);
+      })
     });
   };
 
@@ -80,6 +81,23 @@ const FGReceivings = (props) => {
   };
 
   const handleDelete = (data) => {
+    if(data.status === "Pending"){
+      dispatch(deleteMaterialIssuance(data.id)).then((response) => {
+        setLoading(true);
+        if (response.payload.status === 200) {
+          dispatch(listMaterialIssuance({ company, message })).then(() => {
+            setLoading(false);
+            message.success(`Successfully deleted ${data.misNo}`);
+          });
+        } else {
+          setLoading(false);
+          message.error(`Unable to delete ${data.misNo}`);
+        }
+      });
+    }
+    else {
+      message.error("This action can only be performed on pending material issuances.")
+    }
   };
 
   const handleRetrieve = (data) => {
@@ -88,49 +106,53 @@ const FGReceivings = (props) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
+    const inventoryList = [];
+    data.inventoryList.forEach((inventory) => {
+      inventoryList.push({
+        item: {
+          id: inventory.item.id,
+        },
+        quantity: inventory.quantity,
+        controlNumber: inventory.controlNumber,
+      });
+    });
     const payload = {
       ...data,
       company: {
         id: company,
       },
-      depot: {
-        id: data.depot,
-      },
-      receivedBy: {
+      requestedBy: {
         id: user.id,
       },
-      pis: {
-        id: data.pis.id,
-      },
+      inventoryList: inventoryList
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addFGReceiving(payload)).then((response) => {
+      dispatch(addMaterialIssuance(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listFGReceiving({ company, message })).then(() => {
+          dispatch(listMaterialIssuance({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully updated ${data.number}`);
+            message.success(`Successfully updated ${data.misNo}`);
           });
         } else {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
+          message.error(`Unable to update ${data.misNo}`);
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addFGReceiving(payload)).then((response) => {
+      dispatch(addMaterialIssuance(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listFGReceiving({ company, message })).then(() => {
+          dispatch(listMaterialIssuance({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
+            message.success(`Successfully added ${response.payload.data.misNo}`);
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create FG Issuance. Please double check the provided information.`);
+          message.error(`Unable to create Material Issuance. Please double check the provided information.`);
         }
       });
     }
@@ -140,7 +162,7 @@ const FGReceivings = (props) => {
   return (
     <Switch>
       <Route exact path={`${path}/new`}>
-        <InputForm
+        <FormScreen
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -152,7 +174,7 @@ const FGReceivings = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <InputForm
+        <FormScreen
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -215,14 +237,17 @@ const FGReceivings = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.prsNo} Details`} 
+                  title={`${selectedData.misNo} Details`} 
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
-                <Text>{'Received Items: '}</Text>
+                <Text>{'Issued Items: '}</Text>
                 <Table
                   dataSource={
-                    selectedData.pis.inventoryList
+                    selectedData[tableDetails.name] !== null &&
+                    typeof selectedData[tableDetails.name] !== 'undefined'
+                      ? selectedData[tableDetails.name]
+                      : []
                   }
                   columns={tableDetails.renderTableColumns(tableDetails.fields)}
                   pagination={false}
@@ -237,4 +262,4 @@ const FGReceivings = (props) => {
   );
 };
 
-export default FGReceivings;
+export default MaterialIssuances;
