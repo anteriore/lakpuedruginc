@@ -102,6 +102,7 @@ public class ApprovedReceiptData {
 		ar2.setReevaluation(new Date());
 		ar2.setRetest(new Date());
 		ar2.setItem(i2);
+		System.out.println("-I2:-"+i2.getUnit().getCode());
 		ar2.setUnit(i2.getUnit().getCode());
 		ar2.setControlNumber("CN-2");
 		ar2.setRemarks("REmarks For AR");
