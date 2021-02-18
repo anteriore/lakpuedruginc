@@ -8,6 +8,7 @@ import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
 import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 import Employees from '../../screens/Dashboard/Employees';
+import SalesReports from '../../screens/Dashboard/SalesReports';
 
 export const routes = [
   {
@@ -103,6 +104,6 @@ export const routes = [
   {
     title: 'Sales Reports',
     path: '/sales-reports',
-    component: '',
+    component: SalesReports,
   },
 ];
