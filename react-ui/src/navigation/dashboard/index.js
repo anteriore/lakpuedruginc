@@ -6,10 +6,12 @@ import ProductMovements from '../../screens/Dashboard/ProductMovements';
 import ProductInventories from '../../screens/Dashboard/ProductInventories';
 import FGIssuances from '../../screens/Dashboard/FGIssuances';
 import FGReceivings from '../../screens/Dashboard/FGReceivings';
+import InventoryMovements from '../../screens/Dashboard/InventoryMovements';
 import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 import MaterialReceivings from '../../screens/Dashboard/MaterialReceivings';
 import Employees from '../../screens/Dashboard/Employees';
 import JobOrder from '../../screens/Dashboard/JobOrder';
+import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
 import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
 
 export const routes = [
@@ -51,7 +53,7 @@ export const routes = [
   {
     title: 'Inventory Movement Slips',
     path: '/inventory-movement',
-    component: '',
+    component: InventoryMovements,
   },
   {
     title: 'Product Movements',
@@ -96,7 +98,7 @@ export const routes = [
   {
     title: 'Engineering Inventory',
     path: '/engineering-inventory',
-    component: '',
+    component: EngineeringInventories,
   },
   {
     title: 'Account Summary Reports',
