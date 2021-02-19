@@ -10,6 +10,7 @@ import InventoryMovements from '../../screens/Dashboard/InventoryMovements';
 import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 import MaterialReceivings from '../../screens/Dashboard/MaterialReceivings';
 import Employees from '../../screens/Dashboard/Employees';
+import JobOrder from '../../screens/Dashboard/JobOrder';
 import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
 import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
 
@@ -87,7 +88,7 @@ export const routes = [
   {
     title: 'Job Order',
     path: '/job-orders',
-    component: '',
+    component: JobOrder,
   },
   {
     title: 'Engineering Items',

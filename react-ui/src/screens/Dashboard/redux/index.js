@@ -21,6 +21,7 @@ const dashboard = combineReducers({
   materialReceivings,
   inventory,
   productMovements,
+  jobOrders,
   engineeringInventories,
   inventoryMovements,
   employees
