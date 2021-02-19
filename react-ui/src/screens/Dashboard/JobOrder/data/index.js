@@ -65,7 +65,7 @@ export const tableHeader = [
 const FormDetails = () => {
   const { moInventoryList } = useSelector((state) => state.rnd.moInventories)
   const { employeeList } = useSelector((state) => state.dashboard.employees)
-  const { productionAreaList } = useSelector((state) => state.maintenance.productionArea);
+  const { procedureList } = useSelector((state) => state.maintenance.procedures);
 
   const formDetails = {
     form_name: 'jobOrder',
@@ -84,7 +84,7 @@ const FormDetails = () => {
 
   const tableDetails = {
     label: 'Employees',
-    name: 'employee',
+    name: 'employees',
     key: 'id',
     rules: [{ required: true }],
     isVisible: true,
@@ -97,17 +97,20 @@ const FormDetails = () => {
       {
         label: 'Name',
         name: 'name',
+        width: '15%',
         render: (object) => `${object?.firstName ?? ""} ${object?.middleName ?? ""} ${object?.lastName ?? ""}`
       },
       {
         label: 'Time In',
         name: 'timeIn',
+        width: '15%',
         type: 'timepicker',
         rules: [{required: true, message: "Please select a time in"}]
       },
       {
         label: 'Time Out',
         name: 'timeOut',
+        width: '15%',
         type: 'timepicker',
         rules: [{required: true, message: "Please select a time in"}]
       },
@@ -119,12 +122,22 @@ const FormDetails = () => {
         min: 0
       },
       {
-        label: 'Area',
-        name: 'productionArea',
+        label: 'Procedure & Area',
+        name: 'procedure',
         type: 'selectSearch',
-        choices: productionAreaList,
+        width: '25%',
+        choices: procedureList,
         rules: [{ required: true }],
         placeholder: 'Area',
+        render: (object) => `${object.code ?? ""} - ${object.procedureArea?.code ?? ""}`
+      },
+      {
+        label: 'Output',
+        name: 'output',
+        type: 'input',
+        width: '20%',
+        rules: [{required: true, message: "Please provide number of hours"}],
+        placeholder: "Output"
       },
     ],
     foreignKey: 'id',
@@ -158,7 +171,6 @@ const FormDetails = () => {
       }
     ],
     checkSelected: (selectedData, rowData) => {
-      console.log(selectedData, rowData)
       if (
         typeof selectedData !== 'undefined' &&
         selectedData !== null &&

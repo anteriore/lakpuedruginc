@@ -21,6 +21,25 @@ export const listJobOrders= createAsyncThunk('listJobOrders', async(_, thunkAPI 
   }
 });
 
+export const createJobOrder = createAsyncThunk('createJobOrder', async(payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try {
+    const response = await axiosInstance.post(
+      `/rest/job-orders?token=${accessToken}`,
+      payload
+    );
+
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+})
+
 const initialState = {
   jobOrderList: [],
   status: 'loading',
@@ -73,6 +92,46 @@ const jobOrderSlice = createSlice({
         statusLevel: level,
         responseCode: status,
         action: 'fetch',
+        statusMessage,
+      };
+    },
+    [createJobOrder.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for job order`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [createJobOrder.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Job Order'
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [createJobOrder.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Job Order'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

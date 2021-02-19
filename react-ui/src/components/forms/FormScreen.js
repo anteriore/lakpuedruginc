@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Form,
   Button,
+  Input,
   InputNumber,
   Select,
   Checkbox,
@@ -71,9 +72,29 @@ const FormScreen = (props) => {
     const columns = [];
     item.fields.forEach((field) => {
       if (!field.readOnly) {
-        if (field.type === 'number') {
+        if (field.type === 'input'){
           columns.push({
             title: field.label,
+            width: field.width,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <Input placeholder={field.placeholder ?? ""} />
+                </Form.Item>
+              );
+            },
+          });
+        } else if (field.type === 'number') {
+          columns.push({
+            title: field.label,
+            width: field.width,
             key: field.name,
             render: (row) => {
               const index = tableData.indexOf(row);
@@ -93,6 +114,7 @@ const FormScreen = (props) => {
         } else if (field.type === 'timepicker') {
           columns.push({
             title: field.label,
+            width: field.width,
             key: field.name,
             render: (row) => {
               const index = tableData.indexOf(row);
@@ -112,12 +134,14 @@ const FormScreen = (props) => {
         }else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
+            width: field.width,
             visible: false,
           });
-        } else if (field.type === 'select' === 'selectSearch') {
+        } else if (field.type === 'select' || field.type === 'selectSearch') {
           columns.push({
             title: field.label,
             key: field.name,
+            width: field.width,
             visible: false,
             render: (row) => {
               const index = tableData.indexOf(row);
@@ -134,13 +158,12 @@ const FormScreen = (props) => {
               }
               return (
                 <Form.Item
-                  showSearch={item.type === 'selectSearch'}
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                   initialValue={field.initialValue}
                 >
-                  <Select placeholder={field.placeholder}>
+                  <Select showSearch={field.type === 'selectSearch'} placeholder={field.placeholder}>
                     {field.choices.map((choice) => (
                       <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
                     ))}
@@ -156,6 +179,7 @@ const FormScreen = (props) => {
           columns.push({
             title: field.label,
             key: field.name,
+            width: field.width,
             render: (object) => field.render(object),
           });
         }

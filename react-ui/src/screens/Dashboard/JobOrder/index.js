@@ -5,16 +5,17 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails ,{ tableHeader } from './data';
-import { listJobOrders, clearData } from './redux';
+import { listJobOrders, clearData, createJobOrder } from './redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import statusDialogue from '../../../components/StatusDialogue';
 import { listEmployees, clearData as clearDataEmployees } from '../Employees/redux/';
 import { listMoInventories, clearData as clearDataMO } from '../../RND/MOInventory/redux';
-import { listProductionArea, clearData as clearDataProdArea } from '../../Maintenance/ProductionArea/redux';
 import { listProcedure, clearData as clearDataProcedure } from '../../Maintenance/Procedures/redux';
 import _ from 'lodash';
 import FormScreen from '../../../components/forms/FormScreen';
+import { formatEmployeePayload } from './helpers';
+import moment from 'moment';
 
 const { Title } = Typography;
 
@@ -24,7 +25,8 @@ const JobOrder = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { formDetails, tableDetails } = FormDetails();
-  
+  const [modalDisplay, setModalDisplay] = useState(false);
+  const [selectedJobOrder, setSelectedJobOrder] = useState(null)
   const { jobOrderList, action, statusMessage, status, statusLevel } = useSelector(state => state.dashboard.jobOrders)
   
   const { 
@@ -117,7 +119,6 @@ const JobOrder = (props) => {
       dispatch(clearDataEmployees());
       dispatch(clearDataMO());
       dispatch(clearDataProcedure());
-      dispatch(clearDataProdArea());
       isCancelled = true;
     }
 
@@ -127,37 +128,42 @@ const JobOrder = (props) => {
     setContentLoading(true);
     dispatch(listEmployees()).then((dataEmployee) => {
       dispatch(listMoInventories(company)).then((dataMO) => {
-        dispatch(listProductionArea()).then((dataPA) => {
-          dispatch(listProcedure()).then((dataProcedure) => {
-            const promiseList = [dataEmployee, dataMO, dataPA, dataProcedure];
-            const promiseResult = _.some(promiseList, (o) => {
-              return o.type.split(/[/?]/g)[1] === 'rejected';
-            })
-  
-            if(!promiseResult) {
-              const promiseValues = _.some(promiseList, (o) => {
-                return o.payload.status !== 200 && o.payload.data.length === 0;
-              })
-              if(!promiseValues) {
-                history.push(`${path}/new`);
-              }
-              setContentLoading(false);
-            } else {
-              const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
-              pushErrorPage(payload.status);
-            }  
+        dispatch(listProcedure()).then((dataProcedure) => {
+          const promiseList = [dataEmployee, dataMO, dataProcedure];
+          const promiseResult = _.some(promiseList, (o) => {
+            return o.type.split(/[/?]/g)[1] === 'rejected';
           })
+
+          if(!promiseResult) {
+            const promiseValues = _.some(promiseList, (o) => {
+              return o.payload.status !== 200 && o.payload.data.length === 0;
+            })
+            if(!promiseValues) {
+              history.push(`${path}/new`);
+            }
+            setContentLoading(false);
+          } else {
+            const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
+            pushErrorPage(payload.status);
+          }  
         })
       })
     })
   }
 
-  const handleRetrieve = () => {
-
+  const handleRetrieve = (value) => {
+    setSelectedJobOrder(value);
+    setModalDisplay(true)
   }
 
-  const onSubmit = () => {
-
+  const onSubmit = (values) => {
+    setContentLoading(true)
+    dispatch(createJobOrder(formatEmployeePayload(values))).then(() => {
+      dispatch(listJobOrders()).then(() => {
+        setContentLoading(false);
+        history.goBack();
+      })
+    })
   }
 
   return (
@@ -197,6 +203,69 @@ const JobOrder = (props) => {
             )}
           </Col>
         </Row>
+        <Modal
+          title="Job Order Details"
+          visible={modalDisplay}
+          onOk={() => {
+            setModalDisplay(false)
+            setSelectedJobOrder(null)
+          }}
+          onCancel={() => {
+            setModalDisplay(false)
+            setSelectedJobOrder(null)
+          }}
+          width={1000}
+          cancelButtonProps={{ style: { display: 'none' } }}
+        >
+          { selectedJobOrder === null ? (
+              <Skeleton/>
+            ) : (
+              <>
+                <Descriptions
+                  bordered
+                  title={
+                    `JobOrder ${selectedJobOrder.employee?.firstName ?? ""} 
+                    ${selectedJobOrder.employee?.lastName ?? ""} - 
+                    [${selectedJobOrder.procedure?.procedureArea?.code ?? ""}]
+                    ${selectedJobOrder.procedure?.code ?? ""}`
+                  }
+                  size="default"
+                  layout="vertical"
+                >
+                  <Descriptions.Item label="MO Inventory">
+                    {selectedJobOrder.moInventory?.id ?? ""}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Date Created">
+                    {moment(new Date(selectedJobOrder.date)).format('DD/MM/YYYY')}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Employee">
+                    {`${selectedJobOrder.employee?.firstName ?? ""} 
+                    ${selectedJobOrder.employee?.middleName ?? ""} 
+                    ${selectedJobOrder.employee?.lastName ?? ""}`}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Procedure">
+                    {`[${selectedJobOrder.procedure?.code ?? ""}] ${selectedJobOrder.procedure?.name ?? ""}`}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Procedure Area">
+                    {selectedJobOrder.procedure?.procedureArea?.code ?? ""}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Output">
+                    {selectedJobOrder.output}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Number of Hours">
+                    {selectedJobOrder.numberOfHours}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Time In">
+                    {moment(new Date(selectedJobOrder.timeIn)).format("LT")}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Time Out">
+                    {moment(new Date(selectedJobOrder.timeOut)).format("LT")}
+                  </Descriptions.Item>
+                </Descriptions>
+              </>
+            )
+          }
+        </Modal>
       </Route>
     </Switch>
   )
