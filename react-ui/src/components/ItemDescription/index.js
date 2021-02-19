@@ -23,7 +23,7 @@ const ItemDescription = (props) => {
             const itemData = selectedData[item.name];
             return (
               <Descriptions.Item label={item.label}>
-                {itemData[item.selectName]}
+                {itemData !== null ? itemData[item.selectName] : null}
               </Descriptions.Item>
             );
           }
