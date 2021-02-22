@@ -1,6 +1,3 @@
-import { useSelector } from 'react-redux';
-const { list: poList } = useSelector((state) => state.purchaseOrders.list);
-
 export const columns = [
     {
         title: 'Date',
@@ -11,16 +8,24 @@ export const columns = [
     },
     {
         title: 'R.R No',
-        dataIndex: 'rrNumb',
+        dataIndex: 'number',
         key: 'rrNum',
         align: 'center',
         defaultSortOrder: 'ascend',
         sorter: (a, b) => a.number.length - b.number.length,
     },
     {
-        title: 'DR/SI',
-        dataIndex: 'drSI',
-        key: 'drSI',
+        title: 'DR',
+        dataIndex: 'drNumber',
+        key: 'drNumber',
+        align: 'center',
+        defaultSortOrder: 'ascend',
+        sorter: (a, b) => a.number.length - b.number.length,
+    },
+    {
+        title: 'SI',
+        dataIndex: 'siNumber',
+        key: 'siNumber',
         align: 'center',
         defaultSortOrder: 'ascend',
         sorter: (a, b) => a.number.length - b.number.length,
@@ -48,7 +53,7 @@ export const columns = [
 ];
 
 export const formDetails = {
-    form_name: 'inventory',
+    form_name: 'receivingReceipts',
     form_items: [
         {
             label: 'R.R. Number',
@@ -58,7 +63,7 @@ export const formDetails = {
         },
         {
             label: 'Date Created',
-            name: 'dateCreated',
+            name: 'date',
             type: 'date',
             rules: [{ required: true, message: 'Please select a date' }],
         },
@@ -74,9 +79,11 @@ export const formDetails = {
             label: 'Purchase Order',
             name: 'purchaseOrder',
             rules: [{ required: true, message: 'Please select a Purchase Order' }],
-            placeholder: 'Purchase Order',
+            render: (object) => {
+                return `[${object.code}] ${object.name}`;
+            },
             type: 'select',
-            choices: poList,
+            choices: [],
         },
         {
             label: 'Delivery Receipt No.',
@@ -111,8 +118,7 @@ export const formDetails = {
         {
             label: 'Status',
             name: 'status',
-            rules: [{ required: true, message: 'Please select a sales order status' }],
-            placeholder: 'Receiving Receipt Status',
+            rules: [{ required: true, message: 'Please select a receipt status' }],
             type: 'select',
             choices: [
                 { id: 'pending', name: 'Pending' },
@@ -130,68 +136,50 @@ export const formDetails = {
     ]
 };
 
-export const tablePurchaseRequest = [
+  export const tabelDetails = [
     {
-        title: 'ID',
-        dataIndex: 'id',
-        key: 'id',
-    },
-    {
-        title: 'PRF #',
-        dataindex: 'prfNum',
-        key: 'prfNum',
-    },
-    {
-        title: 'Code',
-        dataIndex: 'code',
-        key: 'code',
+        title: 'Item Code',
+        dataIndex: 'item',
+        key: 'itemCode',
+        render: (object) => object.code,
+        
     },
     {
         title: 'Name',
-        dataIndex: 'itemName',
+        dataIndex: 'item',
         key: 'itemName',
+        render: (object) => object.name,
+    },
+    {
+        title: 'Type',
+        dataIndex: 'item',
+        key: 'itemType',
+        render: (object) => object.type.name,
     },
     {
         title: 'Quantity',
         dataIndex: 'quantity',
-        key: 'quantity',
+        type: 'number',
+        key: 'itemQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
     },
     {
-        title: 'Previous RR',
-        dataIndex: 'prevRR',
-        key: 'prevRR',
+        title: 'Unit',
+        dataIndex: 'item',
+        key: 'itemUnit',
+        render: (object) => object.unit.name,
     },
     {
-        title: 'Lacking',
-        dataIndex: 'lacking',
-        key: 'lacking',
-    },
-    {
-        title: 'Quantity Received',
-        dataIndex: 'quantityReceived',
-        key: 'quantityReceived',
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'itemStatus',
+        type: 'select',
+        rules: [{ required: true, message: 'Please select an item status' }],
+        choices: [
+            { id: 'quarantined', name: 'Quarantined' },
+            { id: 'tempStat1', name: 'Temp Status 1' },
+            { id: 'tempStat2', name: 'Temp Status 2' },
+        ],
     },
   ];
-  
-  export const tableSelectPR = [
-    {
-        title: 'PRF #',
-        dataindex: 'prfNum',
-    },
-    {
-        title: 'Code',
-        dataIndex: 'code',
-    },
-    {
-        title: 'Name',
-        dataIndex: 'itemName',
-    },
-    {
-        title: 'Quantity Requested',
-        dataIndex: 'quantityRequested',
-    },
-  ];
-
-
-
-
