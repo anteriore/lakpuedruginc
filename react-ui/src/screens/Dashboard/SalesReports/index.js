@@ -16,6 +16,7 @@ import { FileTextOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import Report from '../../../components/Report';
+import GeneralHelper from '../../../helpers/general-helper';
 import { reportColumns } from './data'
 
 import { listS, clearData as clearSalesReps } from '../../Maintenance/SalesReps/redux';
@@ -23,7 +24,7 @@ import { listI, clearData as clearItems } from '../../Maintenance/Items/redux';
 import { listPD, clearData as clearDivision } from '../../Maintenance/ProductDivisions/redux';
 import { listPC, clearData as clearCategory } from '../../Maintenance/ProductCategories/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { listClientBySalesRepAndDateAndDepot, clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { listClientBySalesRep, clearData as clearClient } from '../../Maintenance/Clients/redux';
 
 const { Title, Text } = Typography;
 
@@ -31,6 +32,7 @@ const SalesReports = (props) => {
     
   const { company } = props;
   const { path } = useRouteMatch();
+  const { handleRequestResponse } = GeneralHelper()
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -287,7 +289,12 @@ const SalesReports = (props) => {
 
   const handleReport = (type) => {
     setReportType(type)
-    setDisplayModal(true)
+    if(type === 'salesRep'){
+      generateReport(type)
+    }
+    else {
+      setDisplayModal(true)
+    }
   };
 
   const renderReportDetails = () => {
@@ -363,15 +370,17 @@ const SalesReports = (props) => {
     }
   }
   
-  const generateReport = () => {
-    switch (reportType) {
+  const generateReport = (type) => {
+    switch (type) {
       case 'general':
         break;
       case 'salesRep':
-        console.log(reportDetails)
-        dispatch(listClientBySalesRepAndDateAndDepot({...reportDetails, company})).then((response) => {
-          setReportData(response.payload.data)
-          history.push(`${path}/report`);
+        dispatch(listClientBySalesRep({...reportDetails, company})).then((response) => {
+          const onSuccess = () => {
+            setReportData(response.payload.data)
+            history.push(`${path}/report`);
+          }
+          handleRequestResponse([response], onSuccess, null, "")
         })
         break;
       case 'itemProduct': 
@@ -441,7 +450,7 @@ const SalesReports = (props) => {
             setDisplayModal(false)
           }}
           onOk={() => {
-            generateReport()
+            generateReport(reportType)
           }}
           afterClose={() => {
           }}

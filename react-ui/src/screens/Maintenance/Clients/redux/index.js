@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import moment from 'moment';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
@@ -66,7 +67,7 @@ export const listClient = createAsyncThunk('listClient', async (payload, thunkAP
   }
 });
 
-export const listClientBySalesRepAndDateAndDepot = createAsyncThunk('listClientBySalesRepAndDateAndDepot', async (payload, thunkAPI) => {
+export const listClientBySalesRep = createAsyncThunk('listClientBySalesRepAndDateAndDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   let { company, salesRep, date, depot, fnCallback } = payload;
   if (typeof fnCallback === 'undefined') {
@@ -176,14 +177,14 @@ const clientSlice = createSlice({
         statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
-    [listClientBySalesRepAndDateAndDepot.pending]: (state) => {
+    [listClientBySalesRep.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
         statusMessage: `${message.ITEMS_GET_PENDING} for depot`,
       };
     },
-    [listClientBySalesRepAndDateAndDepot.fulfilled]: (state, action) => {
+    [listClientBySalesRep.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Depot');
 
@@ -196,7 +197,7 @@ const clientSlice = createSlice({
         statusMessage: message,
       };
     },
-    [listClientBySalesRepAndDateAndDepot.rejected]: (state, action) => {
+    [listClientBySalesRep.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Depot');
 
