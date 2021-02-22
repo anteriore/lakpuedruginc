@@ -13,6 +13,7 @@ import Employees from '../../screens/Dashboard/Employees';
 import JobOrder from '../../screens/Dashboard/JobOrder';
 import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
 import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
+import MaterialReevaluations from '../../screens/Dashboard/MaterialReevalutaions';
 
 export const routes = [
   {
@@ -33,7 +34,7 @@ export const routes = [
   {
     title: 'Material Re-evaluations',
     path: '/material-reevaluations',
-    component: '',
+    component: MaterialReevaluations,
   },
   {
     title: 'Inventory',
