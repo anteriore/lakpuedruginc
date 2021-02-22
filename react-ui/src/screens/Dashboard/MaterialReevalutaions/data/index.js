@@ -31,3 +31,12 @@ export const tableHeader = [
     align: 'center',
   },
 ];
+
+export const formDetails = {
+  form_name: 'approvedReceipts',
+  form_items: [
+    {
+  
+    }
+  ]
+}

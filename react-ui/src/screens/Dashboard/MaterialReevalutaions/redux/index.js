@@ -3,11 +3,11 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listMaterialReevaluations = createAsyncThunk('listMaterialReevaluations', async(_, thunkAPI ) => {
+export const listMaterialReevaluations = createAsyncThunk('listMaterialReevaluations', async(payload, thunkAPI ) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.get(
-      `/rest/material-reevaluations?token=${accessToken}`
+      `/rest/material-reevaluations/company/${payload}?token=${accessToken}`
     );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);

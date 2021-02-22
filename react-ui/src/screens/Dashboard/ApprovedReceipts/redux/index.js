@@ -1,10 +1,10 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
-  list: null,
+  approvedReceiptsList: null,
   status: 'loading',
   statusLevel: '',
   responseCode: null,
@@ -14,35 +14,19 @@ const initialState = {
 
 export const listApprovedReceipts = createAsyncThunk('listApprovedReceipts', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  let { company, fnCallback } = payload;
-  if (typeof fnCallback === 'undefined') {
-    fnCallback = () => {};
-  }
-  const response = await axiosInstance.get(`rest/approved-receipts/company/${company}?token=${accessToken}`);
+  try {
+    const response = await axiosInstance.get(
+      `/rest/approved-receipts/company/${payload}?token=${accessToken}`
+    );
 
-  if (typeof response !== 'undefined') {
-    const { status } = response;
-    if (status === 200) {
-      if (response.data.length === 0) {
-        response.statusText = `${message.API_200_EMPTY} in approved receipts`;
-      } else {
-        response.statusText = `${message.API_200_SUCCESS} in approved receipts`;
-      }
-      fnCallback(response);
-      return response;
-    }
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (status === 500 || status === 400) {
-      fnCallback(response);
-      return thunkAPI.rejectWithValue(response);
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    const newReponse = {
-      status: 500,
-      statusText: message.API_UNDEFINED,
-    };
-    fnCallback(newReponse);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
 });
 
@@ -74,31 +58,43 @@ const approvedReceiptSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listApprovedReceipts.pending]: (state, action) => {
-      state.status = 'loading';
+    [listApprovedReceipts.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for approved receipts`,
+      };
     },
     [listApprovedReceipts.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for approved receipts';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Approved Receipts'
+      );
 
       return {
         ...state,
-        list: data,
+        approvedReceiptsList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
     [listApprovedReceipts.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Approved Receipts'
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
       };
     },
   },
