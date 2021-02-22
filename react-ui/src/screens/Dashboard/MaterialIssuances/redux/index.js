@@ -29,6 +29,24 @@ export const listMaterialIssuance = createAsyncThunk('listMaterialIssuance', asy
 
 });
 
+export const listMaterialIssuanceByStatus = createAsyncThunk('listMaterialIssuanceByStatus', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { status } = payload
+
+  try {
+    const response = await axiosInstance.get(`rest/material-issuances/status/${status}?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+
+});
+
 export const addMaterialIssuance  = createAsyncThunk('addMaterialIssuance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
@@ -66,6 +84,29 @@ const materialIssuanceSlice = createSlice({
       };
     },
     [listMaterialIssuance.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listMaterialIssuanceByStatus.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listMaterialIssuanceByStatus.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Material Issuance Slips');
+
+      return {
+        ...state,
+        list: data,
+        responseCode: status,
+        statusLevel: level,
+        statusMessage: message,
+      };
+    },
+    [listMaterialIssuanceByStatus.rejected]: (state, action) => {
       return {
         ...state,
         status: 'failed',

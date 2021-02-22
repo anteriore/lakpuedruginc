@@ -1,10 +1,6 @@
 import React from 'react';
-import { Col, Row, Typography, Table, Empty } from 'antd';
-import { useSelector } from 'react-redux';
+import { Col, Row, Table, Empty } from 'antd';
 import TableHeader from '../TableDisplay/TableHeader';
-
-const { Title } = Typography;
-
 const Report = (props) => {
   const { data, columns, renderReportDetails } = props;
 

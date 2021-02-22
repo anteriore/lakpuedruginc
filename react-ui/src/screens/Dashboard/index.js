@@ -88,7 +88,7 @@ const Dashboard = () => {
             actions.push("read")
           }
           return (
-            <Route path={path + module.path}>
+            <Route key={path} path={path + module.path}>
               <Container location={{ pathname: path + module.path }}>
                 <module.component title={module.title} company={selectedCompany} actions={actions} />
               </Container>
