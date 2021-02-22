@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity } from '../../../../helpers/general-helper';
 
 const initialState = {
   list: [],
@@ -31,21 +32,21 @@ export const listI = createAsyncThunk('listI', async (payload, thunkAPI) => {
 
 export const listItemReportSummaryByProduct = createAsyncThunk('listItemReportSummaryByProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { depot, dateRange, item } = payload; 
+  const { depot, dateRange, product } = payload; 
 
-  const response = await axiosInstance.get(`rest/sales-reports/item-sales-report/depot/${depot}/start/${dateRange[0]}/end/${dateRange[1]}/item/${item}?token=${accessToken}`);
+  try {
+    const response = await axiosInstance.get(`rest/sales-reports/item-sales-report/depot/${depot}/start/${dateRange[0]}/end/${dateRange[1]}/item/${product}?token=${accessToken}`);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for items');
-    }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 
 });
 

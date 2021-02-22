@@ -21,6 +21,7 @@ import { reportColumns } from './data'
 
 import { listS, clearData as clearSalesReps } from '../../Maintenance/SalesReps/redux';
 import { listItemReportSummaryByProduct, listI, clearData as clearItems } from '../../Maintenance/Items/redux';
+import { listProduct, clearData as clearProducs } from '../../Maintenance/Products/redux';
 import { listPD, clearData as clearDivision } from '../../Maintenance/ProductDivisions/redux';
 import { listPC, clearData as clearCategory } from '../../Maintenance/ProductCategories/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
@@ -43,7 +44,7 @@ const SalesReports = (props) => {
   const [reportDetails, setReportDetails] = useState({})
 
   const salesReps = useSelector((state) => state.maintenance.salesReps.list);
-  const items = useSelector((state) => state.maintenance.items.list);
+  const products = useSelector((state) => state.maintenance.products.productList);
   const categories = useSelector((state) => state.maintenance.productCategories.list);
   const divisions = useSelector((state) => state.maintenance.productDivisions.list);
   const depots = useSelector((state) => state.maintenance.depots.list);
@@ -53,7 +54,7 @@ const SalesReports = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listS({ company, message })).then(() => {
-      dispatch(listI({ company, message })).then(() => {
+      dispatch(listProduct({ company, message })).then(() => {
         dispatch(listPD({ company, message })).then(() => {
           dispatch(listPC({ company, message })).then(() => {
             dispatch(listDepot({ company, message })).then(() => {
@@ -130,7 +131,7 @@ const SalesReports = (props) => {
             <Button
                 icon={<FileTextOutlined />}
                 onClick={() => {
-                  handleReport("general")
+                  generateReport("general")
                 }}
             >
                 View Report
@@ -171,7 +172,7 @@ const SalesReports = (props) => {
             <Button
                 icon={<FileTextOutlined />}
                 onClick={() => {
-                  handleReport("salesRep")
+                  generateReport("salesRep")
                 }}
             >
                 View Report
@@ -187,21 +188,69 @@ const SalesReports = (props) => {
         render: () => (
             <Select 
               style={{width: '95%'}} 
-              placeholder={"Select Item"}
+              placeholder={"Select Product"}
               onChange={(e) => {
                 //const itemData = items.find((item) => item.id === e)
                 setReportDetails({
                   ...reportDetails,
-                  item: e,
+                  product: e,
                 })
               }}
             >
-                {items.map((item) => {
+                {products.map((item) => {
+                  return (
+                    <Select.Option value={item.id}>{`[${item.finishedGood.code}] ${item.finishedGood.name}`}</Select.Option>
+                  )
+                })}
+            </Select>
+        )
+      },
+      {
+        title: 'Depot',
+        dataIndex: 'depot',
+        key: 'depot',
+        render: () => (
+            <Select 
+              style={{width: '95%'}} 
+              placeholder={"Select Depot"}
+              onChange={(e) => {
+                //const itemData = items.find((item) => item.id === e)
+                setReportDetails({
+                  ...reportDetails,
+                  depot: e,
+                })
+              }}
+            >
+                {depots.map((item) => {
                   return (
                     <Select.Option value={item.id}>{`[${item.code}] ${item.name}`}</Select.Option>
                   )
                 })}
             </Select>
+        )
+      },
+      {
+        title: 'Date Range',
+        dataIndex: 'dateRange',
+        key: 'dateRange',
+        render: () => (
+          <DatePicker.RangePicker
+            onChange={(e) => {
+              if(e !== null){
+                setReportDetails({
+                  ...reportDetails,
+                  dateRange: e
+                })
+              }
+              else if(reportDetails.hasOwnProperty("dateRange")){
+                var reportDetailsTemp = {
+                  ...reportDetails
+                }
+                delete reportDetailsTemp.dateRange
+                setReportDetails(reportDetailsTemp)
+              }
+            }}
+          />
         )
       },
       {
@@ -212,7 +261,7 @@ const SalesReports = (props) => {
             <Button
                 icon={<FileTextOutlined />}
                 onClick={() => {
-                  handleReport("itemProduct")
+                  generateReport("itemProduct")
                 }}
             >
                 View Report
@@ -276,7 +325,7 @@ const SalesReports = (props) => {
             <Button
                 icon={<FileTextOutlined />}
                 onClick={() => {
-                  handleReport("itemCategory")
+                  generateReport("itemCategory")
                 }}
             >
                 View Report
@@ -286,16 +335,6 @@ const SalesReports = (props) => {
     
 };
 
-
-  const handleReport = (type) => {
-    setReportType(type)
-    if(type === 'salesRep'){
-      generateReport(type)
-    }
-    else {
-      setDisplayModal(true)
-    }
-  };
 
   //header for the report
   const renderReportDetails = () => {
@@ -341,6 +380,9 @@ const SalesReports = (props) => {
               <Col span={12} style={{ display: 'flex' }}>
                 <Title level={5}>{`Report: Item Sales Report`}</Title>
               </Col>
+              <Col span={12} style={{ display: 'flex' }}>
+                <Title level={5}>{`Dates: ${reportDetails?.dateRange[0].format('DD/MM/YYYY')} - ${reportDetails?.dateRange[1].format('DD/MM/YYYY')}`}</Title>
+              </Col>
             </Row>
             <Row>
               <Col span={12} style={{ display: 'flex' }}>
@@ -372,6 +414,7 @@ const SalesReports = (props) => {
   }
   
   const generateReport = (type) => {
+    setReportType(type)
     switch (type) {
       case 'general':
         break;
@@ -386,12 +429,11 @@ const SalesReports = (props) => {
         break;
       case 'itemProduct':
         dispatch(listItemReportSummaryByProduct({...reportDetails, company})).then((response) => {
-         const itemData = items.find((item) => item.id === reportDetails?.item)
-         console.log(itemData)
+         const productData = products.find((item) => item.id === reportDetails?.product)
           const onSuccess = () => {
             setReportData([{
               ...response.payload.data,
-              item: itemData
+              product: productData
             }])
             history.push(`${path}/report`);
           }

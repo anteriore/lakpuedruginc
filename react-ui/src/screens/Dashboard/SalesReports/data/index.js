@@ -39,10 +39,13 @@ export const reportColumns = {
   ],
   itemProduct: [
     {
-      title: 'Item',
-      dataIndex: 'item',
-      key: 'item',
+      title: 'Product',
+      dataIndex: 'product',
+      key: 'product',
       datatype: 'object',
+      dataToString: (object) => {
+        return `[${object.finishedGood.code}] ${object.finishedGood.name}`
+      }
     },
     {
       title: 'Quantity',
