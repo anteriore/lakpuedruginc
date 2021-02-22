@@ -20,7 +20,7 @@ import GeneralHelper from '../../../helpers/general-helper';
 import { reportColumns } from './data'
 
 import { listS, clearData as clearSalesReps } from '../../Maintenance/SalesReps/redux';
-import { listI, clearData as clearItems } from '../../Maintenance/Items/redux';
+import { listItemReportSummaryByProduct, listI, clearData as clearItems } from '../../Maintenance/Items/redux';
 import { listPD, clearData as clearDivision } from '../../Maintenance/ProductDivisions/redux';
 import { listPC, clearData as clearCategory } from '../../Maintenance/ProductCategories/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
@@ -297,6 +297,7 @@ const SalesReports = (props) => {
     }
   };
 
+  //header for the report
   const renderReportDetails = () => {
     switch (reportType) {
       case 'general':
@@ -383,7 +384,19 @@ const SalesReports = (props) => {
           handleRequestResponse([response], onSuccess, null, "")
         })
         break;
-      case 'itemProduct': 
+      case 'itemProduct':
+        dispatch(listItemReportSummaryByProduct({...reportDetails, company})).then((response) => {
+         const itemData = items.find((item) => item.id === reportDetails?.item)
+         console.log(itemData)
+          const onSuccess = () => {
+            setReportData([{
+              ...response.payload.data,
+              item: itemData
+            }])
+            history.push(`${path}/report`);
+          }
+          handleRequestResponse([response], onSuccess, null, "")
+        }) 
         break;
       case 'itemCategories':
         break;

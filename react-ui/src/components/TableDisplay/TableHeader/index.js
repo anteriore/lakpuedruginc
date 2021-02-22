@@ -103,6 +103,7 @@ const TableHeader = (props) => {
       <FilterOutlined style={{ color: filtered ? '#1890ff' : '#545454' }} />
     ),
     onFilter: (value, record) => {
+      console.log(new Date(record[dataIndex]))
       return (
         moment(new Date(record[dataIndex])).isBetween(value[0], value[1], 'day') ||
         moment(new Date(record[dataIndex])).isSame(value[0], 'day') ||
@@ -189,7 +190,7 @@ const TableHeader = (props) => {
             render: (object) => {
               if (typeof object !== 'undefined' && object !== null) {
                 if(typeof header.dataToString !== 'function'){
-                  return object[header.name];
+                  return object[header.name ?? 'name'];
                 }
                 else {
                   return header.dataToString(object)

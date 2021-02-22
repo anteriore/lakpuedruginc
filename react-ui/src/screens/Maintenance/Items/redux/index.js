@@ -5,6 +5,7 @@ import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   list: [],
+  report: null,
   status: '',
   statusMessage: '',
   action: '',
@@ -26,6 +27,26 @@ export const listI = createAsyncThunk('listI', async (payload, thunkAPI) => {
   }
 
   return response;
+});
+
+export const listItemReportSummaryByProduct = createAsyncThunk('listItemReportSummaryByProduct', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { depot, dateRange, item } = payload; 
+
+  const response = await axiosInstance.get(`rest/sales-reports/item-sales-report/depot/${depot}/start/${dateRange[0]}/end/${dateRange[1]}/item/${item}?token=${accessToken}`);
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for items');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
+  }
+
+  return response;
+
 });
 
 export const listItemByType = createAsyncThunk('listItemByType', async (payload, thunkAPI) => {
@@ -168,6 +189,33 @@ const itemSlice = createSlice({
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
     },
+    /*[listItemReportSummaryByProduct.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listItemReportSummaryByProduct.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for items';
+      }
+
+      return {
+        ...state,
+        report: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listItemReportSummaryByProduct.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'error',
+        statusMessage: message.ITEM_DELETE_REJECTED,
+      };
+    },*/
   },
 });
 

@@ -37,4 +37,22 @@ export const reportColumns = {
       datatype: 'string',
     },
   ],
+  itemProduct: [
+    {
+      title: 'Item',
+      dataIndex: 'item',
+      key: 'item',
+      datatype: 'object',
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'itemQuantity',
+      key: 'itemQuantity',
+    },
+    {
+      title: 'Total Amount',
+      dataIndex: 'itemAmount',
+      key: 'itemAmount',
+    },
+  ],
 }
