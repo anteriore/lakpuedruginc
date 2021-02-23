@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Tabs, Skeleton, Descriptions, Modal, Table, message } from 'antd';
+import { Row, Col, Typography, Tabs, Skeleton } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouteMatch, useHistory } from 'react-router-dom';
-import moment from 'moment';
 import { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
@@ -10,18 +8,14 @@ import TableDisplay from '../../../components/TableDisplay';
 import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
 import { listSalesInvoice, clearData as clearSalesInvoice } from '../SalesInvoice/redux';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const AcknowledgementReceipts = (props) => {
   const dispatch = useDispatch();
-  const history = useHistory();
-  const { path } = useRouteMatch();
-  const { company, title, actions } = props;
+  const { company, title } = props;
 
   const [loading, setLoading] = useState(true);
-  const [displayModal, setDisplayModal] = useState(false);
-  const [selectedData, setSelectedData] = useState(null);
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
@@ -49,26 +43,6 @@ const AcknowledgementReceipts = (props) => {
   };
 
   const handleRetrieve = (data) => {
-    setSelectedData(data);
-    setDisplayModal(true);
-  };
-
-  const renderTableColumns = (item) => {
-    const columns = [];
-    item.fields.forEach((field) => {
-      if (!field.writeOnly) {
-        if (typeof field.render === 'undefined' || field.render === null) {
-          field.render = (object) => object[field.name];
-        }
-        columns.push({
-          title: field.label,
-          key: field.name,
-          render: (object) => field.render(object),
-        });
-      }
-    });
-
-    return columns;
   };
 
   return (
