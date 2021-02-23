@@ -5,16 +5,20 @@ import {
   Skeleton,
   Typography, 
   Button,
+  Modal,
+  Descriptions
 } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { listMaterialReevaluations, clearData } from './redux';
+import { listMaterialReevaluations, clearData, createMaterialReevaluations } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader } from './data';
+import { formDetails, tableHeader } from './data';
 import InputForm from './InputForm';
 import { listApprovedReceipts } from '../../Dashboard/ApprovedReceipts/redux';
 import GeneralHelper from '../../../helpers/general-helper';
+import { formatPayload } from './helpers';
+import moment from 'moment';
 
 const {Title} = Typography;
 
@@ -24,6 +28,8 @@ const MaterialReevaluations = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [contentLoading, setContentLoading] = useState(true);
+  const [displayModal, setDisplayModal] = useState(false);
+  const [matReev, setMatReev] = useState(null);
   const  { handleRequestResponse } = GeneralHelper();
   const { materialReevaluationsList: matReevList } = useSelector(state => state.dashboard.materialReevaluations)
 
@@ -42,7 +48,10 @@ const MaterialReevaluations = (props) => {
       if(isCancelled){
         dispatch(clearData());
       }
+    }).catch((rejectedValueOrSerializedError) => {
+      console.log(rejectedValueOrSerializedError);
     });
+;
 
     return function cleanup() {
       dispatch(clearData());
@@ -56,8 +65,20 @@ const MaterialReevaluations = (props) => {
     });
   }
 
-  const onCreate = () => {
+  const handleRetrieve = (data) => {
+    setDisplayModal(true);
+    setMatReev(data);
+  }
 
+  const onCreate = (value) => {
+    setContentLoading(true)
+    const payload = formatPayload(value, matReevList, company);
+    console.log(payload);
+    dispatch(createMaterialReevaluations(payload)).then(() => {
+      dispatch(listMaterialReevaluations(company)).then(() => {
+        setContentLoading(false);
+      })
+    })
   }
 
   return (
@@ -89,12 +110,67 @@ const MaterialReevaluations = (props) => {
               <TableDisplay
                 columns={tableHeader}
                 data={matReevList}
+                handleRetrieve={handleRetrieve}
                 deleteEnabled={false}
                 updateEnabled={false}
               />
             )}
           </Col>
         </Row>
+        <Modal
+          title="Material Reevaluation Details"
+          visible={displayModal}
+          onOk={() => {
+            setDisplayModal(false);
+            setMatReev(null);
+          }}
+          onCancel={() => {
+            setDisplayModal(false);
+            setMatReev(null);
+          }}
+          width={1000}
+          cancelButtonProps={{ style: { display: 'none' } }}
+        >
+          { matReev === null ? (
+            <Skeleton/>
+          ) : (
+            <>
+              <Descriptions
+                bordered
+                title={`Material Reevaluation ${matReev?.approvedReceipt?.number ?? ""}`}
+                size="default"
+                layout="vertical"
+              >
+                {formDetails.form_items.map((item) => {
+                   if (item.type === 'select' || item.type === 'selectSearch') {
+                    const itemData = matReev.approvedReceipt;
+                    return (
+                      <Descriptions.Item key={item.name} label={item.label}>
+                        {typeof itemData === 'object' ? itemData.controlNumber : itemData}
+                      </Descriptions.Item>
+                    );
+                  }
+
+                  if (item.type === 'date') {
+                    return (
+                      <Descriptions.Item key={item.name} label={item.label}>
+                        {moment(new Date(matReev[item.name])).format('DD/MM/YYYY')}
+                      </Descriptions.Item>
+                    );
+                  }
+
+                  return (
+                    <Descriptions.Item key={item.name} label={item.label}>
+                      {typeof matReev[item.name] === 'object' && matReev[item.name] !== null
+                        ? matReev[item.name].code
+                        : matReev[item.name]}
+                    </Descriptions.Item>
+                  );
+                })}
+              </Descriptions>
+            </>
+          )}
+        </Modal>
       </Route>
     </Switch>
   )

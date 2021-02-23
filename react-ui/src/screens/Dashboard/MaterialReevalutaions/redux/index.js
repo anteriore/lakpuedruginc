@@ -21,6 +21,24 @@ export const listMaterialReevaluations = createAsyncThunk('listMaterialReevaluat
   }
 });
 
+export const createMaterialReevaluations = createAsyncThunk('createMaterialReevaluations', async(payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try{
+    const response = await axiosInstance.post(
+      `/rest/material-reevaluations?token=${accessToken}`,
+      payload
+    );
+
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+})
+
 const initialState = {
   materialReevaluationsList: [],
   status: 'loading',
@@ -33,7 +51,7 @@ const initialState = {
 const materialReevaluationsSlice = createSlice({
   name: 'materialReevaluations',
   initialState,
-  reducer: {
+  reducers: {
     clearData: () => initialState,
   },
   extraReducers: {
@@ -75,7 +93,47 @@ const materialReevaluationsSlice = createSlice({
         action: 'fetch',
         statusMessage,
       };
-    }
+    },
+    [createMaterialReevaluations.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for material reevaluations`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [createMaterialReevaluations.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Material Reevaluations'
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [createMaterialReevaluations.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Material Reevaluations'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
   }
 })
 
