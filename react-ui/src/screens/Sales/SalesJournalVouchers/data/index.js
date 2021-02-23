@@ -1,10 +1,25 @@
 export const columns = {
   all: [
     {
-      title: 'Number',
+      title: 'DR/SI Number',
       dataIndex: 'number',
       key: 'number',
       datatype: 'string',
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      datatype: 'date',
+    },
+    {
+      title: 'Client',
+      dataIndex: 'salesOrder',
+      key: 'salesOrder',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `[${object.client.code}] ${object.client.name}`
+      }
     },
     {
       title: 'Total Amount',
@@ -14,10 +29,25 @@ export const columns = {
   ],
   siOnly: [
     {
-      title: 'Number',
+      title: 'SI Number',
       dataIndex: 'number',
       key: 'number',
       datatype: 'string',
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      datatype: 'date',
+    },
+    {
+      title: 'Client',
+      dataIndex: 'salesOrder',
+      key: 'salesOrder',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `[${object.client.code}] ${object.client.name}`
+      }
     },
     {
       title: 'Amount',
