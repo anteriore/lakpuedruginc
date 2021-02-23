@@ -1,7 +1,7 @@
 export const columns = {
   all: [
     {
-      title: 'DR/SI Number',
+      title: 'DR/SI/OS Number',
       dataIndex: 'number',
       key: 'number',
       datatype: 'string',
