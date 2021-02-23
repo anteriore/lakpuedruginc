@@ -36,4 +36,9 @@ export const routes = [
     path: '/official-receipts',
     component: OfficialReceipts,
   },
+  {
+    title: 'Sales Journal Vouchers',
+    path: '/sales-journal-vouchers',
+    component: null,
+  },
 ];
