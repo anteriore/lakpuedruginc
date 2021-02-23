@@ -22,7 +22,7 @@ const TableDisplay = (props) => {
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataCount, setDataCount] = useState(0);
-  const [columns, setColumns] = useState(TableHeader(col));
+  const [columns, setColumns] = useState(TableHeader({columns: col, hasSorter: true, hasFilter: true}));
 
   /*
     columns must have an id
@@ -59,41 +59,41 @@ const TableDisplay = (props) => {
           return (
             <div style={styles.crudColumn}>
               {(typeof updateEnabled === 'undefined' || updateEnabled) && (
-              <Button
-                icon={<EditOutlined />}
-                type="text"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleUpdate(row);
-                }}
-              >
-                Edit
-              </Button>
-              )}
-              {(deleteEnabled || typeof deleteEnabled === 'undefined') && (
-              <Popconfirm
-                title="Would you like to delete this item?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={(e) => {
-                  e.stopPropagation();
-                  handleDelete(row);
-                }}
-                onCancel={(e) => {
-                  e.stopPropagation();
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
                 <Button
-                  icon={<DeleteOutlined />}
+                  icon={<EditOutlined />}
                   type="text"
                   onClick={(e) => {
                     e.stopPropagation();
+                    handleUpdate(row);
                   }}
                 >
-                  Delete
+                  Edit
                 </Button>
-              </Popconfirm>
+              )}
+              {(deleteEnabled || typeof deleteEnabled === 'undefined') && (
+                <Popconfirm
+                  title="Would you like to delete this item?"
+                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                  onConfirm={(e) => {
+                    e.stopPropagation();
+                    handleDelete(row);
+                  }}
+                  onCancel={(e) => {
+                    e.stopPropagation();
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button
+                    icon={<DeleteOutlined />}
+                    type="text"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Popconfirm>
               )}
             </div>
           );
@@ -101,7 +101,12 @@ const TableDisplay = (props) => {
       },
     ];
 
-    if((typeof updateEnabled === 'undefined' || updateEnabled) || (deleteEnabled || typeof deleteEnabled === 'undefined')){
+    if (
+      typeof updateEnabled === 'undefined' ||
+      updateEnabled ||
+      deleteEnabled ||
+      typeof deleteEnabled === 'undefined'
+    ) {
       filteredColumn = filteredColumn.concat(editpart);
     }
 
@@ -111,6 +116,7 @@ const TableDisplay = (props) => {
   return (
     <Table
       dataSource={data}
+      rowKey={(record) => record.uid}
       columns={columnfilter()}
       pagination={{
         onChange: (page, size) => {

@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Form, InputNumber } from 'antd';
 
-const EditableContext = React.createContext();
+const EditableContext = React.createContext(null);
 
 export const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
@@ -29,7 +29,14 @@ export const EditableCell = ({
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
+  const inputRef = useRef(null);
   const form = useContext(EditableContext);
+
+  useEffect(() => {
+    if (editing) {
+      inputRef.current.focus();
+    }
+  }, [editing]);
 
   const toggleEdit = () => {
     setEditing(!editing);
@@ -39,7 +46,7 @@ export const EditableCell = ({
   const save = async () => {
     try {
       const values = await form.validateFields();
-      handleSave(values, record);
+      handleSave({ ...record, ...values });
       return values;
     } catch (errInfo) {
       return errInfo;
@@ -62,8 +69,9 @@ export const EditableCell = ({
       >
         {limit ? (
           <InputNumber
-            inputRef
-            onChange={save}
+            ref={inputRef}
+            onBlur={save}
+            onPressEnter={save}
             min={minLimit}
             max={maxLimit}
             precision={precisionEnabled ? precision : 0}
@@ -71,9 +79,10 @@ export const EditableCell = ({
           />
         ) : (
           <InputNumber
-            inputRef
+            ref={inputRef}
             min={minLimit}
-            onChange={save}
+            onBlur={save}
+            onPressEnter={save}
             precision={precisionEnabled ? precision : 0}
             formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />

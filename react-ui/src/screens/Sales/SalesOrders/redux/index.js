@@ -1,57 +1,43 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 export const listSalesOrder = createAsyncThunk('listSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company, fnCallback } = payload;
-  const response = await axiosInstance.get(
-    `/rest/sales-orders/company/${company}?token=${accessToken}`
-  );
 
-  if (typeof response !== 'undefined') {
-    const { status } = response;
-    if (status === 200) {
-      if (response.data.length === 0) {
-        response.statusText = `${message.API_200_EMPTY} in sales order.`;
-      } else {
-        response.statusText = `${message.API_200_SUCCESS} in sales order.`;
-      }
-      fnCallback(response);
-      return response;
-    }
+  try {
+    const response = await axiosInstance.get(
+      `/rest/sales-orders/company/${payload}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (status === 500 || status === 400) {
-      fnCallback(response);
-      return thunkAPI.rejectWithValue(response);
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/sales-orders?token=${accessToken}`, payload);
 
-  return response;
-});
+  try {
+    const response = await axiosInstance.post(
+      `/rest/sales-orders?token=${accessToken}`,
+      payload
+    );
 
-export const updateSalesOrder = createAsyncThunk('updateSalesOrder', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/sales-orders?token=${accessToken}`, payload);
-
-  return response;
-});
-
-export const deleteSalesOrder = createAsyncThunk('deleteSalesOrder', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload;
-  const response = await axiosInstance.post(`/rest/sales-orders/delete?token=${accessToken}`, id);
-
-  return response;
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const approveSalesOrder = createAsyncThunk(
@@ -98,7 +84,9 @@ export const listSalesOrderByDepot = createAsyncThunk(
 );
 const initialState = {
   salesOrderList: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -113,28 +101,40 @@ const salesOrdersSlice = createSlice({
     [listSalesOrder.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for sales orders`,
       };
     },
     [listSalesOrder.fulfilled]: (state, action) => {
-      const { data } = action.payload;
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Order'
+      );
 
       return {
         ...state,
         salesOrderList: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [listSalesOrder.rejected]: (state, _) => {
+    [listSalesOrder.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Order'
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
       };
     },
     [listSalesOrderByDepot.pending]: (state) => {
@@ -174,73 +174,41 @@ const salesOrdersSlice = createSlice({
     [createSalesOrder.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for sales orders`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [createSalesOrder.fulfilled]: (state) => {
+    [createSalesOrder.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders'
+      );
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [createSalesOrder.rejected]: (state) => {
+    [createSalesOrder.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders'
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
-      };
-    },
-    [updateSalesOrder.pending]: (state) => {
-      return {
-        ...state,
-        status: 'Loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
-      };
-    },
-    [updateSalesOrder.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
-      };
-    },
-    [updateSalesOrder.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
-      };
-    },
-    [deleteSalesOrder.pending]: (state) => {
-      return {
-        ...state,
-        status: 'Loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
-      };
-    },
-    [deleteSalesOrder.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
-      };
-    },
-    [deleteSalesOrder.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

@@ -31,7 +31,7 @@ export const routes = [
   },
   {
     title: 'Client',
-    path: 'clients',
+    path: '/clients',
     component: Clients,
   },
   {

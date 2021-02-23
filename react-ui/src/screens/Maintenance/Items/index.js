@@ -11,7 +11,7 @@ import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 
-const ItemTypes = (props) => {
+const Items = (props) => {
   const [displayForm, setDisplayForm] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -211,4 +211,4 @@ const ItemTypes = (props) => {
   );
 };
 
-export default ItemTypes;
+export default Items;

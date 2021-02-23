@@ -3,12 +3,13 @@ import { Input, Button, Space, DatePicker } from 'antd';
 import { SearchOutlined, CheckOutlined, CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-const TableSearch = (columnHeaders) => {
+const TableHeader = (props) => {
+  const { columns, hasSorter, hasFilter} = props
   const newColumnHeaders = [];
   const { hasOwnProperty } = Object.prototype;
   const dateFormat = 'YYYY/MM/DD';
 
-  const filterSearch = (dataIndex, dataValue) => ({
+  const filterSearch = (dataIndex, dataValue, dataToString) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
         <Input
@@ -41,25 +42,33 @@ const TableSearch = (columnHeaders) => {
       if (record[dataIndex] === null) {
         return '';
       }
-      if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
+      else if(typeof dataToString === 'function'){
+        return record[dataIndex]
+        ? dataToString(record[dataIndex]).toLowerCase().includes(value.toLowerCase())
+        : '';
+      }
+      else if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
         return record[dataIndex].code
           ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      if (hasOwnProperty.call(record[dataIndex], 'name') && dataValue === 'name') {
+      else if (hasOwnProperty.call(record[dataIndex], 'name') && dataValue === 'name') {
         return record[dataIndex].name
           ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      if (hasOwnProperty.call(record[dataIndex], 'title') && dataValue === 'title') {
+      else if (hasOwnProperty.call(record[dataIndex], 'title') && dataValue === 'title') {
         return record[dataIndex].title
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
+      else {
+        return record[dataIndex]
+          ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+          : '';
+      }
 
-      return record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-        : '';
+      
     },
   });
 
@@ -103,9 +112,10 @@ const TableSearch = (columnHeaders) => {
   });
 
   const setColumnHeaders = () => {
-    columnHeaders.forEach((header) => {
+    columns.forEach((header) => {
+
       // add sorter
-      if (typeof header.sorter === 'undefined') {
+      if (typeof header.sorter === 'undefined' && hasSorter) {
         if (header.datatype === 'string') {
           header = {
             ...header,
@@ -119,19 +129,23 @@ const TableSearch = (columnHeaders) => {
           if (typeof header.name === 'undefined' || header.name === null) {
             header.name = 'name';
           }
+          
+          if(typeof header.dataToString !== 'function'){
+            header.dataToString = (object) => object[header.name]
+          }
           header = {
             ...header,
             sorter: (a, b) => {
               if (typeof a[header.key] !== 'undefined' && a[header.key] !== null) {
                 a = a[header.key];
-                a = a[header.name];
+                a = header.dataToString(a);
               } else {
                 a = '';
               }
 
               if (typeof b[header.key] !== 'undefined' && b[header.key] !== null) {
                 b = b[header.key];
-                b = b[header.name];
+                b = header.dataToString(b);
               } else {
                 b = '';
               }
@@ -151,7 +165,7 @@ const TableSearch = (columnHeaders) => {
         }
       }
 
-      // add filter/search bar
+      //change render based on data type
       if (typeof header.render === 'undefined') {
         if (header.datatype === 'date') {
           header = {
@@ -174,7 +188,12 @@ const TableSearch = (columnHeaders) => {
             ...header,
             render: (object) => {
               if (typeof object !== 'undefined' && object !== null) {
-                return object[header.name];
+                if(typeof header.dataToString !== 'function'){
+                  return object[header.name];
+                }
+                else {
+                  return header.dataToString(object)
+                }
               }
 
               return null;
@@ -183,41 +202,45 @@ const TableSearch = (columnHeaders) => {
         }
       }
 
-      if (typeof header.filters !== 'undefined' && header.filters !== null) {
-        const filters = [];
-        header.filters.forEach((filter) => {
-          filters.push({
-            text: filter[header.filterKey],
-            value: filter[header.filterKey],
+      //add filter
+      if(hasFilter){
+        if (typeof header.filters !== 'undefined' && header.filters !== null) {
+          const filters = [];
+          header.filters.forEach((filter) => {
+            filters.push({
+              text: filter[header.filterKey],
+              value: filter[header.filterKey],
+            });
           });
-        });
-        header = {
-          ...header,
-          filters,
-          onFilter: (value, record) => record[header.key].includes(value),
-        };
-      } else if (header.datatype === 'boolean') {
-        header = {
-          ...header,
-          filters: [
-            { text: <CheckOutlined />, value: true },
-            { text: <CloseOutlined />, value: false },
-          ],
-          onFilter: (value, record) => record[header.key] === value,
-        };
-      } else if (header.datatype === 'date') {
-        header = {
-          ...header,
-          defaultSortOrder: header.defaultSortOrder || 'ascend',
-          ...filterDate(header.key, header.name),
-        };
-      } else if (header.datatype !== 'boolean' && header.datatype !== 'date') {
-        header = {
-          ...header,
-          defaultSortOrder: header.defaultSortOrder || 'ascend',
-          ...filterSearch(header.key, header.name),
-        };
+          header = {
+            ...header,
+            filters,
+            onFilter: (value, record) => record[header.key].includes(value),
+          };
+        } else if (header.datatype === 'boolean') {
+          header = {
+            ...header,
+            filters: [
+              { text: <CheckOutlined />, value: true },
+              { text: <CloseOutlined />, value: false },
+            ],
+            onFilter: (value, record) => record[header.key] === value,
+          };
+        } else if (header.datatype === 'date') {
+          header = {
+            ...header,
+            defaultSortOrder: header.defaultSortOrder || 'ascend',
+            ...filterDate(header.key, header.name),
+          };
+        } else if (header.datatype !== 'boolean' && header.datatype !== 'date') {
+          header = {
+            ...header,
+            defaultSortOrder: header.defaultSortOrder || 'ascend',
+            ...filterSearch(header.key, header.name, header.dataToString),
+          };
+        }
       }
+      
       newColumnHeaders.push(header);
     });
 
@@ -227,4 +250,4 @@ const TableSearch = (columnHeaders) => {
   return setColumnHeaders();
 };
 
-export default TableSearch;
+export default TableHeader;

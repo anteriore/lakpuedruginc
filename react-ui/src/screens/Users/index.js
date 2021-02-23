@@ -25,7 +25,13 @@ import {
 import Container from '../../components/container';
 import InputForm from './InputForm';
 
-import { listUser, addUser, updateUser, /* deleteUser, */ clearData, listPermission } from './redux';
+import {
+  listUser,
+  addUser,
+  updateUser,
+  /* deleteUser, */ clearData,
+  listPermission,
+} from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
@@ -50,34 +56,35 @@ const Users = () => {
   const [displayDrawer, setDisplayDrawer] = useState(false);
   const [contentLoading, setContentLoading] = useState(true);
   const [userDepartments, setUserDepartments] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [actions, setActions] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const depots = useSelector((state) => state.maintenance.depots.list);
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    var actionsList = []
+    var actionList = []
     if(typeof permissions["users"] !== 'undefined'){
       if( permissions["users"].actions.search('u') !== -1){
-        actionsList.push("update")
+        actionList.push("update")
       }
       if(permissions["users"].actions.search('c') !== -1){
-        actionsList.push("create")
+        actionList.push("create")
       }
       if(permissions["users"].actions.search('d') !== -1){
-        actionsList.push("delete")
+        actionList.push("delete")
       }
       if(permissions["users"].actions.search('r') !== -1){
-        actionsList.push("read")
+        actionList.push("read")
       }
     }
-    setActions(actionsList)
+    setActions(actionList)
+
     dispatch(listCompany()).then(() => {
       setFormData(null);
       setCompanyLoading(false);
       setSelectedUser(null);
-      if(actions.includes("read")){
+      if(actionList.includes("read")){
         updateUserDepartments(selectedCompany);
       }
       else{
@@ -300,7 +307,6 @@ const Users = () => {
     
     if (formMode === 'edit') {
       payload.id = formData.id;
-      console.log(payload)
       dispatch(updateUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
@@ -455,9 +461,9 @@ const Users = () => {
                 {contentLoading ? (
                   <Skeleton />
                 ) : (
+                  
                   <>
-                    {actions.includes("create") &&
-                    <Button
+                    {actions.includes("create") && (<Button
                       style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                       icon={<UserAddOutlined />}
                       onClick={(e) => {
@@ -465,9 +471,9 @@ const Users = () => {
                       }}
                     >
                       Add
-                    </Button>}
+                    </Button>)}
                     {actions.includes("read") ? 
-                      (departments.map((department) => {
+                      (departments !== null ? departments.map((department) => {
                         const departmentUsers = userDepartments.find(
                           (userDepartment) => userDepartment.id === department.id
                         );
@@ -477,7 +483,10 @@ const Users = () => {
                             {renderUsers(departmentUsers)}
                           </>
                         );
-                    })) : (
+                      }) : (
+                        <Empty style={{width: "87.5%"}} description="No data." /> 
+                      )
+                    ) : (
                       <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />  
                     )}
                     <Drawer
@@ -509,16 +518,6 @@ const Users = () => {
                                     Edit User
                                   </Button>
                                 </Col>}
-                                {/* <Col>
-                              <Button danger
-                                icon={<DeleteOutlined />}
-                                onClick={(e) => {
-                                  handleDelete(selectedUser)
-                                }}
-                              >
-                                Deactivate User
-                              </Button>
-                              </Col> */}
                               </Row>
                             }
                           >

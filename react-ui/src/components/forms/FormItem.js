@@ -11,6 +11,8 @@ import {
   Typography,
   Space,
   Radio,
+  Modal,
+  Table,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
@@ -19,7 +21,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 
-const FormItem = ({ item, onFail, formMode }) => {
+const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   if (item.type === 'select' || item.type === 'selectSearch') {
     if (typeof item.render === 'undefined') {
       if (typeof item.selectName === 'undefined') {
@@ -33,7 +35,11 @@ const FormItem = ({ item, onFail, formMode }) => {
       }
     }
 
-    if (item.choices === null || typeof item.choices === 'undefined' || item.choices.length === 0) {
+    if (
+      item.choices === null ||
+      typeof item.choices === 'undefined' ||
+      (item.choices.length === 0 && !item.allowEmpty)
+    ) {
       onFail();
       return null;
     }
@@ -50,6 +56,7 @@ const FormItem = ({ item, onFail, formMode }) => {
           onChange={item.onChange}
           placeholder={item.placeholder}
           optionFilterProp="children"
+          disabled={item.type === 'readOnly' || item.readOnly}
         >
           {item.choices.map((choice) => (
             <Select.Option key={choice.id} value={choice.id}>
@@ -79,6 +86,7 @@ const FormItem = ({ item, onFail, formMode }) => {
         name={item.name}
         rules={item.rules}
         initialValue={item.initialValue}
+        hasFeedback={item.hasFeedback}
       >
         <InputNumber
           style={styles.inputNumber}
@@ -143,7 +151,10 @@ const FormItem = ({ item, onFail, formMode }) => {
         rules={item.rules}
         initialValue={item.initialValue}
       >
-        <Radio.Group style={{ float: 'left' }}>
+        <Radio.Group 
+          style={{ float: 'left' }} 
+          onChange={item.onChange}
+        >
           {item.choices.map((choice) => (
             <Radio.Button value={choice.id}>{item.render(choice)}</Radio.Button>
           ))}
@@ -273,13 +284,86 @@ const FormItem = ({ item, onFail, formMode }) => {
       </div>
     );
   }
+  if (item.type === 'selectTable') {
+    if (
+      (item.dataSource === null ||
+        typeof item.dataSource === 'undefined' ||
+        item.dataSource.length === 0) &&
+      !item.allowEmpty
+    ) {
+      onFail();
+      return null;
+    }
+    return (
+      <>
+        <Form.Item
+          label={item.label}
+          name={item.name}
+          rules={item.rules}
+          initialValue={item.initialValue}
+          getValueProps={item.getValueProps}
+        >
+          <Input
+            suffix={
+              <Button
+                type="primary"
+                onClick={() => {
+                  item.setDisplayModal(true);
+                }}
+                icon={<SelectOutlined />}
+              >
+                Select
+              </Button>
+            }
+            readOnly
+            placeholder={item.placeholder}
+          />
+        </Form.Item>
+        <Modal
+          visible={item.displayModal}
+          title={`Select ${item.label}`}
+          onOk={() => item.setDisplayModal(false)}
+          onCancel={() => item.setDisplayModal(false)}
+          cancelButtonProps={{ style: { display: 'none' } }}
+          width={1000}
+        >
+          <Table
+            rowSelection={{
+              type: 'radio',
+              selectedRowKeys: item.selectedData,
+              onChange: (e) => {
+                item.setSelectedData(e);
+                onTableSelect(item.name, e[0]);
+              },
+              preserveSelectedRowKeys: false,
+            }}
+            columns={item.columns}
+            dataSource={item.dataSource}
+            rowKey={item.rowKey}
+            pagination={{ size: 'small' }}
+            locale={{ emptyText: item.emptyText || 'No Data' }}
+          />
+        </Modal>
+      </>
+    );
+  }
   if (item.type === 'custom' || item.type === 'customList') {
     return null;
   }
 
   return (
-    <Item label={item.label} name={item.name} rules={item.rules} initialValue={item.initialValue}>
-      <Input disabled={item.type === 'readOnly' || item.readOnly} placeholder={item.placeholder} />
+    <Item
+      label={item.label}
+      name={item.name}
+      rules={item.rules}
+      initialValue={item.initialValue}
+      hasFeedback={item.hasFeedback}
+    >
+      <Input
+        disabled={item.type === 'readOnly' || item.readOnly}
+        placeholder={item.placeholder}
+        suffix={item.suffix}
+      />
     </Item>
   );
 };

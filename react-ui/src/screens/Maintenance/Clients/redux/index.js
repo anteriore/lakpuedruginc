@@ -2,17 +2,42 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
   list: null,
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
 
+export const tempListClient = createAsyncThunk('tempListClient', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try {
+    const response = await axiosInstance.get(
+      `/rest/clients/company/${payload}?token=${accessToken}`
+    );
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
 export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company, fnCallback } = payload;
+  let { company, fnCallback } = payload;
+  if (typeof fnCallback === 'undefined') {
+    fnCallback = () => {};
+  }
   const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
 
   if (typeof response !== 'undefined') {
@@ -69,6 +94,39 @@ const clientSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
+    [tempListClient.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for depot`,
+      };
+    },
+    [tempListClient.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depot');
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [tempListClient.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depot');
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
+      };
+    },
     [listClient.pending]: (state, action) => {
       state.status = 'loading';
     },

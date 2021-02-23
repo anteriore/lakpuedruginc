@@ -70,6 +70,13 @@ const GroupsCategories = (props) => {
     };
   }, [dispatch, company]);
 
+  useEffect(() => {
+    if(selectedGroup !== null){
+      const group = groupData.find((group) => group.id === selectedGroup.id);
+      setselectedGroup(group);
+    }
+  }, [groupData, selectedGroup])
+
   const handleAddG = () => {
     setFormTitle('Add Group');
     setFormMode('add');
@@ -92,8 +99,10 @@ const GroupsCategories = (props) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Group ${data.name}`);
         dispatch(listG({ company, message })).then(() => {
-          setLoading(false);
-          setselectedGroup(null);
+          dispatch(listC({ company, message })).then(() => {
+            setLoading(false);
+            setselectedGroup(null);
+          })
         });
       } else {
         message.error(`Unable to delete Group ${data.name}`);
@@ -126,8 +135,10 @@ const GroupsCategories = (props) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Category ${data.name}`);
         dispatch(listG({ company, message })).then(() => {
-          setLoading(false);
-          setselectedCategory(null);
+          dispatch(listC({ company, message })).then(() => {
+            setLoading(false);
+            setselectedCategory(null);
+          });
         });
       } else {
         message.error(`Unable to delete Category ${data.name}`);

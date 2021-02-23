@@ -18,7 +18,7 @@ import {
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
 import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
-import { listPR, listPRByStatus, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
+import { listPRByStatus, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -47,23 +47,26 @@ const Purchasing = () => {
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    let isCancelled = false;
     var actionsList = []
-    if(typeof permissions["purchase-order"] !== 'undefined'){
-      if( permissions["users"].actions.search('u') !== -1){
+    if(typeof permissions["purchase-orders"] !== 'undefined'){
+      if( permissions["purchase-orders"].actions.search('u') !== -1){
         actionsList.push("update")
       }
-      if(permissions["purchase-order"].actions.search('c') !== -1){
+      if(permissions["purchase-orders"].actions.search('c') !== -1){
         actionsList.push("create")
       }
-      if(permissions["purchase-order"].actions.search('d') !== -1){
+      if(permissions["purchase-orders"].actions.search('d') !== -1){
         actionsList.push("delete")
       }
-      if(permissions["purchase-order"].actions.search('r') !== -1){
+      if(permissions["purchase-orders"].actions.search('r') !== -1){
         actionsList.push("read")
       }
     }
     setActions(actionsList)
+  }, [permissions])
+
+  useEffect(() => {
+    let isCancelled = false;
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
       if(actions.includes("read")){
@@ -88,7 +91,7 @@ const Purchasing = () => {
       dispatch(clearUnit());
       isCancelled = true;
     };
-  }, [dispatch, selectedCompany]);
+  }, [actions, dispatch, selectedCompany]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
@@ -112,11 +115,12 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            // dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
-            dispatch(listPR({ company: selectedCompany, message })).then(() => {
-              history.push(`${path}/new`);
-              setLoadingCompany(false);
-            });
+            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+              // dispatch(listPR({ company: selectedCompany, message }))
+              .then(() => {
+                history.push(`${path}/new`);
+                setLoadingCompany(false);
+              });
           });
         });
       });
@@ -150,11 +154,12 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            // dispatch(listPRByStatus({ company: selectedCompany, message, status: "Approved" }))
-            dispatch(listPR({ company: selectedCompany, message })).then(() => {
-              history.push(`${path}/${data.id}`);
-              setLoadingCompany(false);
-            });
+            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+              // dispatch(listPR({ company: selectedCompany, message }))
+              .then(() => {
+                history.push(`${path}/${data.id}`);
+                setLoadingCompany(false);
+              });
           });
         });
       });

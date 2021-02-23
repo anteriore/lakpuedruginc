@@ -34,10 +34,8 @@ const Dashboard = () => {
   const getPermittedRoutes = () => {
     var routeList = []
     routes.forEach((route) => {
-      if(typeof route.key !== 'undefined'){
-        if(typeof permissions[route.key] !== 'undefined'){
-          routeList.push(route)
-        }
+      if(typeof permissions[route.path.split("/")[1]] !== 'undefined'){
+        routeList.push(route)
       }
     })
     return routeList
@@ -90,7 +88,7 @@ const Dashboard = () => {
             actions.push("read")
           }
           return (
-            <Route path={path + module.path}>
+            <Route key={path} path={path + module.path}>
               <Container location={{ pathname: path + module.path }}>
                 <module.component title={module.title} company={selectedCompany} actions={actions} />
               </Container>
