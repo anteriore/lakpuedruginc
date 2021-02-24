@@ -1,12 +1,13 @@
 export const formatPayload = (approvalId, company, data) => {
-    let rrItemList = [];
+    const receivedItems = []
 
-    data.rrItemList.forEach((rrItem) => {
-      rrItemList.push({
+    data.receivedItems.forEach((rrItem) => {
+      receivedItems.push({
+        
         id: rrItem.id || null,
-        item: { id: rrItem.item },
+        item: { id: rrItem.itemID },
         quantity: rrItem.quantity,
-        unit: { id: rrItem.unit },
+        unit: { id: rrItem.unit.id },
         status: 'Quarantined',
       })
     })
@@ -15,18 +16,19 @@ export const formatPayload = (approvalId, company, data) => {
       ...data, 
       number: data.number,
       date: data.date,
-      status: 'Pending',
       receivedBy: { id: approvalId },
       purchaseOrder: { id: data.purchaseOrder },
       company: { id: company },
       drNumber: data.drNumber,
       siNumber: data.siNumber,
-      remarks: data.remarks,
       poNumber: data.poNumber,
+      deliveryType: data.deliveryType,
       origin: data.origin,
-      tolling: false,
+      status: data.status,
+      remarks: data.remarks,
+      tolling: true,
       
-      rrItemList,
+      receivedItems,
     }
   };
   

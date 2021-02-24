@@ -17,7 +17,7 @@ export const listApprovedReceipts = createAsyncThunk('listApprovedReceipts', asy
 
   try{
     const response = await axiosInstance.get(
-      `/rest/approved-receipts/company/${payload}?token=${accessToken}`
+      `/rest/approved-receipts/company/${payload.company}?token=${accessToken}`
     )
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);

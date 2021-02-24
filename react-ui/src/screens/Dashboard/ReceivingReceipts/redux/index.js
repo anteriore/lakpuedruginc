@@ -14,7 +14,7 @@ export const listRR = createAsyncThunk('listRR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
-    `rest/receiving-receipt/company/${payload.company}?token=${accessToken}`
+    `rest/receiving-receipts/company/${payload.company}?token=${accessToken}`
   );
 
   if (typeof response !== 'undefined' && response.status === 200) {
@@ -35,8 +35,7 @@ export const addRR = createAsyncThunk('addRR', async (payload, thunkAPI) => {
 
   try {
     const response = await axiosInstance.post(
-      `/rest/receiving-receipt?token=${accessToken}`,
-      payload
+      `/rest/receiving-receipts?token=${accessToken}`, payload
     );
 
     const { response: validateResponse, valid } = checkResponseValidity(response);

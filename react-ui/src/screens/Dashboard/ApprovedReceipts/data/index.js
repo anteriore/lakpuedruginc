@@ -13,12 +13,13 @@ export const DisplayDetails = () => {
         {
             title: 'R.R. No',
             dataIndex: 'receivingReceipt',
-            key: 'rrNumber',
+            key: 'receivingReceipt',
             align: 'center',
             defaultSortOrder: 'ascend',
+            datatype: 'object',
             dataToString: (object) => {
                 return object.number
-            },
+            }
         },
         {
             title: 'Material Type',
@@ -26,6 +27,7 @@ export const DisplayDetails = () => {
             key: 'itemType',
             align: 'center',
             defaultSortOrder: 'ascend',
+            datatype: 'object',
             dataToString: (object) => {
                 return object.type.name
             }
@@ -52,6 +54,7 @@ export const DisplayDetails = () => {
             key: 'drNumber',
             align: 'center',
             defaultSortOrder: 'ascend',
+            datatype: 'object',
             dataToString: (object) => {
                 return object.drNumber
             }
@@ -62,6 +65,7 @@ export const DisplayDetails = () => {
             key: 'siNumber',
             align: 'center',
             defaultSortOrder: 'ascend',
+            datatype: 'object',
             dataToString: (object) => {
                 return object.siNumber
             }

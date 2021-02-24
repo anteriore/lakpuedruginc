@@ -34,12 +34,12 @@ const ReceivingReceipts = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listRR({ company, message })).then(() => {
-      dispatch(listPO({ company, message })).then(() => {
+      //dispatch(listPO({ company, message })).then(() => {
         setLoading(false);
         if (isCancelled) {
           dispatch(clearData());
         }
-      });
+      //});
     });
 
     return function cleanup() {
@@ -68,7 +68,7 @@ const ReceivingReceipts = (props) => {
 
   const onSubmit = (data) => {
     const payload = formatPayload(id, company, data)
-
+    
     if (formMode === 'edit') {
       payload.id = receivingReceipt.id;
     }

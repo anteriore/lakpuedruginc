@@ -212,7 +212,7 @@ const ApprovedReceipts = (props) => {
               </Descriptions>
               <Text>{'Approved Item:'}</Text>
               <Table
-                dataSource={approvedReceipt !== null ? approvedReceipt.item : []}
+                dataSource={approvedReceipt !== null ? approvedReceipt : []}
                 columns={itemColumns}
                 pagination={false}
                 locale={{ emptyText: <Empty description = "No Item Selected." /> }}

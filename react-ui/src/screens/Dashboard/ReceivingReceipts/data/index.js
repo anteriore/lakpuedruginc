@@ -12,7 +12,7 @@ export const DisplayDetails = () => {
         {
             title: 'R.R No',
             dataIndex: 'number',
-            key: 'rrNum',
+            key: 'number',
             align: 'center',
             defaultSortOrder: 'ascend',
             sorter: (a, b) => a.number.length - b.number.length,
@@ -41,9 +41,9 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             render: (object) => object.firstName.concat(` ${object.lastName}`),
             sorter: (a, b) =>
-            a.preparedBy.firstName
-                .concat(` ${a.preparedBy.lastName}`)
-                .localeCompare(b.preparedBy.firstName.concat(` ${b.preparedBy.lastName}`)),
+            a.receivedBy.firstName
+                .concat(` ${a.receivedBy.lastName}`)
+                .localeCompare(b.receivedBy.firstName.concat(` ${b.receivedBy.lastName}`)),
         },
         {
             title: 'Status',
@@ -90,7 +90,7 @@ export const FormDetails = () => {
         form_items: [
             {
                 label: 'R.R. Number',
-                name: 'rrNum',
+                name: 'number',
                 rules: [{ required: true, message: 'Please provide a valid R.R. Number' }],
                 placeholder: 'R.R. Number',
             },
@@ -114,7 +114,7 @@ export const FormDetails = () => {
                 type: 'selectSearch',
                 selectName: 'name',
                 choices: poList,
-                render: (object) => `${object.number}`,
+                render: (object) => object.number,
                 rules: [{ required: true }],
             },
             {
@@ -154,6 +154,17 @@ export const FormDetails = () => {
                 placeholder: 'Remarks (optional)',
                 type: 'textArea',
             },
+            {
+                label: 'Status',
+                name: 'status',
+                type: 'select',
+                rules: [{required: true}],
+                choices: [
+                    { id: 'pending', name: 'Pending' },
+                    { id: 'completed', name: 'Completed' },
+                    { id: 'incomplete', name: 'Incomplete' },
+                ],
+            },
         ]
     };
 
@@ -191,7 +202,7 @@ export const FormDetails = () => {
             {
                 label: 'Unit',
                 name: 'unit',
-                render: (object) => object.code,
+                render: (object) => object.unit.code,
             },
         ],
 

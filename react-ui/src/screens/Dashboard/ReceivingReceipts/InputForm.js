@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Form, Button, InputNumber, Input, Select, Checkbox, Modal, Row, Col, Typography, Table, Empty, message,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
@@ -15,15 +16,26 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState();
-
+  const [contentLoading, setContentLoading] = useState(true);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
     // eslint-disable-next-line
   }, [values, form]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      receivedBy: `${user.firstName} ${user.lastName}`,
+    });
+
+    setContentLoading(false);
+  }, [user, form]);
+
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
