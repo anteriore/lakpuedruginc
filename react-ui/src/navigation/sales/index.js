@@ -4,6 +4,7 @@ import AcknowledgementReceipts from '../../screens/Sales/AcknowledgementReceipts
 import OfficialReceipts from '../../screens/Sales/OfficialReceipts';
 import ReturnSlips from '../../screens/Sales/ReturnSlips';
 import SalesInvoice from '../../screens/Sales/SalesInvoice';
+import SalesJournalVouchers from '../../screens/Sales/SalesJournalVouchers';
 
 export const routes = [
   {
@@ -39,6 +40,6 @@ export const routes = [
   {
     title: 'Sales Journal Vouchers',
     path: '/sales-journal-vouchers',
-    component: null,
+    component: SalesJournalVouchers,
   },
 ];
