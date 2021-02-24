@@ -12,6 +12,8 @@ import inventoryMovements from '../InventoryMovements/redux';
 import employees from '../Employees/redux';
 import engineeringInventories from '../EngineeringInventories/redux';
 import jobOrders from '../JobOrder/redux';
+import receivingReceipts from '../ReceivingReceipts/redux';
+import approvedReceipts from '../ApprovedReceipts/redux';
 
 const dashboard = combineReducers({
   purchaseRequests,
@@ -25,7 +27,9 @@ const dashboard = combineReducers({
   jobOrders,
   engineeringInventories,
   inventoryMovements,
-  employees
+  employees,
+  receivingReceipts,
+  approvedReceipts,
 });
 
 export default dashboard;

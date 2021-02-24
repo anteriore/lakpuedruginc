@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import {checkResponseValidity, generateStatusMessage} from '../../../../helpers/general-helper';
 
 const initialState = {
-  list: null,
+  list: [],
   status: '',
   statusMessage: '',
   action: '',
@@ -12,28 +12,18 @@ const initialState = {
 
 export const listRR = createAsyncThunk('listRR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company, fnCallback } = payload;
+
   const response = await axiosInstance.get(
-    `/rest/receiving-receipts/company/${company}?token=${accessToken}`
+    `rest/receiving-receipt/company/${payload.company}?token=${accessToken}`
   );
 
-  if (typeof response !== 'undefined') {
-    const { status } = response;
-    if (status === 200) {
-      if (response.data.length === 0) {
-        response.statusText = `${message.API_200_EMPTY} in receiving receipts.`;
-      } else {
-        response.statusText = `${message.API_200_SUCCESS} in receiving receipts.`;
-      }
-      fnCallback(response);
-      return response;
-    }
-
-    if (status === 500 || status === 400) {
-      fnCallback(response);
-      return thunkAPI.rejectWithValue(response);
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for receiving receipts');
     }
   } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
     return thunkAPI.rejectWithValue(response);
   }
 
@@ -42,16 +32,21 @@ export const listRR = createAsyncThunk('listRR', async (payload, thunkAPI) => {
 
 export const addRR = createAsyncThunk('addRR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/receiving-receipts?token=${accessToken}`, payload);
 
-  return response;
-});
+  try {
+    const response = await axiosInstance.post(
+      `/rest/receiving-receipt?token=${accessToken}`,
+      payload
+    );
 
-export const updateRR = createAsyncThunk('updateRR', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/receiving-receipts?token=${accessToken}`, payload);
-
-  return response;
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deleteRR = createAsyncThunk('deleteRR', async (payload, thunkAPI) => {
@@ -116,41 +111,87 @@ export const listRRByPO = createAsyncThunk(
 });
 
 const receivingReceiptsSlice = createSlice({
-  name: 'receivingReceipts',
+  name: 'receivingReceipt',
   initialState,
   reducers: {
-    clearData: () => initialState,
+    clearData: () => initialState
   },
   extraReducers: {
-    [listRR.pending]: (state, action) => {
-      state.status = 'loading';
+    [listRR.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for receiving receipts`
+      }
     },
     [listRR.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for receiving receipts';
-      }
+      const { data, status } = action.payload;
+      const {message: statusMessage, level} = generateStatusMessage(action.payload, 'Product Movement');
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
-      };
+        statusLevel: level,
+        responseCode: status,
+        statusMessage
+      }
     },
-    [listRR.rejected]: (state) => {
+    [listRR.rejected]: (state, action) => {
+      const {status} = action.payload;
+      const {message: statusMessage, level} = generateStatusMessage(action.payload, 'Product Movement');
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage
+      }
+    },
+    [addRR.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for receiving receipts`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-  },
-});
+    [addRR.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Receiving Receipt'
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [addRR.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Receiving Receipt'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+  }
+})
 
 export const { clearData } = receivingReceiptsSlice.actions;
 export default receivingReceiptsSlice.reducer;
