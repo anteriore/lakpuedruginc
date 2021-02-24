@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, Modal, Empty, message } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, Modal, Empty, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import Container from '../../components/container';
 import TableDisplay from '../../components/TableDisplay';
 import FormScreen from '../../components/forms/FormScreen';
 import FormDetails, { columns } from './data';
+import ItemDescription from '../../components/ItemDescription'
 
 import { listPO, addPO, deletePO, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
@@ -316,84 +317,23 @@ const Purchasing = () => {
                   <Skeleton />
                 ) : (
                   <>
-                    <Descriptions
-                      bordered
-                      title={`Purchase Order ${selectedPO.number}`}
-                      size="default"
-                      layout="vertical"
-                    >
-                      {formDetails.form_items.map((item) => {
-                        if (!item.writeOnly) {
-                          if (item.type === 'select') {
-                            const itemData = selectedPO[item.name];
-                            return (
-                              <Descriptions.Item label={item.label}>
-                                {itemData[item.selectName]}
-                              </Descriptions.Item>
-                            );
-                          }
-                          if (item.type === 'date') {
-                            return (
-                              <Descriptions.Item label={item.label}>
-                                {moment(new Date(selectedPO[item.name])).format('DD/MM/YYYY')}
-                              </Descriptions.Item>
-                            );
-                          }
-
-                          return (
-                            <Descriptions.Item label={item.label}>
-                              {selectedPO[item.name]}
-                            </Descriptions.Item>
-                          );
-                        }
-
-                        return null;
-                      })}
-                    </Descriptions>
+                    <ItemDescription
+                      title={`Purchase Order ${selectedPO.number} Details`} 
+                      selectedData={selectedPO}
+                      formItems={formDetails.form_items}
+                    />
                     <Title
                       level={5}
                       style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
                     >
                       Ordered Items:
                     </Title>
-                    {selectedPO[tableDetails.name].map((item) => {
-                      return (
-                        <Descriptions
-                          title={`[${item.item.code}] ${item.item.name}`}
-                          size="default"
-                        >
-                          {tableDetails.fields.map((field) => {
-                            if (field.type === 'hidden' || field.type === 'hiddenNumber') {
-                              return null;
-                            }
-                            if (typeof field.render === 'function') {
-                              return (
-                                <Descriptions.Item label={field.label}>
-                                  {field.render(item)}
-                                </Descriptions.Item>
-                              );
-                            }
-                            if (field.type === 'select') {
-                              if (typeof field.selectName === 'undefined') {
-                                field.selectName = 'name';
-                              }
-                              const fieldData = item[field.name];
-                              return (
-                                <Descriptions.Item label={field.label}>
-                                  {fieldData[field.selectName]}
-                                </Descriptions.Item>
-                              );
-                            }
-
-                            return (
-                              <Descriptions.Item label={field.label}>
-                                {item[field.name]}
-                              </Descriptions.Item>
-                            );
-                          })}
-                        </Descriptions>
-                      );
-                    })}
+                    <Table
+                      dataSource={selectedPO[tableDetails.name] ?? []}
+                      columns={tableDetails.renderTableColumns(tableDetails.fields)}
+                      pagination={false}
+                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                    />
                   </>
                 )}
               </Modal>
