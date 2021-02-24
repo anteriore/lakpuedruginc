@@ -36,7 +36,7 @@ public class ReceivingReceiptService {
 		}
 
 		receivingReceipt.setNumber("RR-" + ++id);
-		if (!receivingReceipt.getTolling()) {
+		if (receivingReceipt.getTolling()) {
 			PurchaseOrder po = purchaseOrderRepository.getOne(receivingReceipt.getPurchaseOrder().getId());
 			Set<ReceivingReceipt> receivingReceipts = po.getReceivingReceipts();
 
