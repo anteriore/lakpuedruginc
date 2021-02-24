@@ -63,8 +63,4 @@ public class ReceivedItem {
 		this.status = status;
 	}
 
-	public boolean isReceivedItemNotRmAndPm() {
-		return !item.getType().getCode().equals("RM") && !item.getType().getCode().equals("PM");
-	}
-
 }
