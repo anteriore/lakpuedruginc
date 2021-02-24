@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import moment from 'moment';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
@@ -69,7 +68,7 @@ export const listClient = createAsyncThunk('listClient', async (payload, thunkAP
 
 export const listClientBySalesRep = createAsyncThunk('listClientBySalesRepAndDateAndDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  let { company, salesRep, date, depot, fnCallback } = payload;
+  let { company, salesRep, fnCallback } = payload;
   if (typeof fnCallback === 'undefined') {
     fnCallback = () => {};
   }

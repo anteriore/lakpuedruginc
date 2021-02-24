@@ -20,12 +20,12 @@ import GeneralHelper from '../../../helpers/general-helper';
 import { reportColumns } from './data'
 
 import { listS, clearData as clearSalesReps } from '../../Maintenance/SalesReps/redux';
-import { listItemReportSummaryByProduct, listI, clearData as clearItems } from '../../Maintenance/Items/redux';
-import { listProduct, clearData as clearProducs } from '../../Maintenance/Products/redux';
+import { listItemReportSummaryByProduct } from '../../Maintenance/Items/redux';
+import { listProduct, clearData as clearProducts } from '../../Maintenance/Products/redux';
 import { listPD, clearData as clearDivision } from '../../Maintenance/ProductDivisions/redux';
 import { listPC, clearData as clearCategory } from '../../Maintenance/ProductCategories/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { listClientBySalesRep, clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { listClientBySalesRep } from '../../Maintenance/Clients/redux';
 
 const { Title, Text } = Typography;
 
@@ -62,7 +62,7 @@ const SalesReports = (props) => {
 
               if (isCancelled) {
                 dispatch(clearSalesReps());
-                dispatch(clearItems());
+                dispatch(clearProducts());
                 dispatch(clearDivision());
                 dispatch(clearCategory());
                 dispatch(clearDepot());
@@ -75,7 +75,7 @@ const SalesReports = (props) => {
 
     return function cleanup() {
       dispatch(clearSalesReps());
-      dispatch(clearItems());
+      dispatch(clearProducts());
       dispatch(clearDivision());
       dispatch(clearCategory());
       dispatch(clearDepot());
@@ -410,6 +410,8 @@ const SalesReports = (props) => {
             </Row>
           </>
         )
+      default:
+        break;
     }
   }
   
@@ -441,6 +443,8 @@ const SalesReports = (props) => {
         }) 
         break;
       case 'itemCategories':
+        break;
+      default:
         break;
     }
   }
