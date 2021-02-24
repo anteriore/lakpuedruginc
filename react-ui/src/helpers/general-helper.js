@@ -162,7 +162,7 @@ const GeneralHelper = (props) => {
   const handleRequestResponse = ( responseList, onSuccess, onFail, returnPath) => {
     let hasFailed = false
     responseList.forEach((response) => {
-      if(response?.meta?.requestStatus === 'rejected') {
+      if(response.hasOwnProperty('error') && !hasFailed) {
         hasFailed = true
         if(typeof onFail === 'function'){
           onFail()

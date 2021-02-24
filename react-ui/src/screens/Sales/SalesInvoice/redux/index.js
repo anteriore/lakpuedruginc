@@ -9,6 +9,7 @@ export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payl
     const response = await axiosInstance.get(
       `/rest/sales-invoices/company/${payload}?token=${accessToken}`
     );
+    console.log("Response: ", response)
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -180,9 +181,10 @@ const salesInvoiceSlice = createSlice({
       };
     },
     [listSalesInvoice.rejected]: (state, action) => {
-      const { status } = action.payload;
+      const { status } = action?.payload ?? { status: 400 };
+      console.log(status)
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
+        action?.payload ?? { status: 400 },
         'Sales Invoice'
       );
 

@@ -45,10 +45,6 @@ public class ApprovedReceipt {
 
     private String remarks;
 
-    public String getRrNumber() {
-        return receivingReceipt.getNumber();
-    }
-
     private int getContainerSeries() {
         return 0;
     }
