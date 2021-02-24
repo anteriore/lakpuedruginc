@@ -20,21 +20,27 @@ import FormItem from '../../../components/forms/FormItem';
 
 const { Title } = Typography;
 
-const InputForm = (props) => {
+const FormScreen = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
+  const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
+  const toggleName = formDetails.toggle_name;
+
   useEffect(() => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
+    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
+      setToggleValue(values[toggleName]);
+    }
     // eslint-disable-next-line
   }, [values, form]);
 
@@ -97,8 +103,6 @@ const InputForm = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
-                  labelCol={0}
-                  wrapperCol={24}
                 >
                   <Input bordered={false} />
                 </Form.Item>
@@ -241,17 +245,10 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
-    if (values.hasOwnProperty('payments')) {
-      let paymentSum = 0;
-      const paymentValues = form.getFieldValue('payments');
-      paymentValues.forEach((payment) => {
-        if (payment.appliedAmount > 0) {
-          paymentSum += payment.appliedAmount;
-        }
-      });
-      const formValues = {};
-      formValues.amountPaid = paymentSum;
-      form.setFieldsValue(formValues);
+    if (toggleName !== null && typeof toggleName !== 'undefined') {
+      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
+        setToggleValue(values[toggleName]);
+      }
     }
   };
 
@@ -272,13 +269,32 @@ const InputForm = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
+              if (item.toggle) {
+                if (item.toggleCondition(toggleValue)) {
+                  return <FormItem item={item} onFail={onFail} />;
+                }
+                return null;
+              }
+
               return <FormItem item={item} onFail={onFail} />;
             })}
+
+            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) &&
+              formDetails.payment_items.map((item) => {
+                if (item.toggle) {
+                  if (item.toggleCondition(toggleValue)) {
+                    return <FormItem item={item} onFail={onFail} />;
+                  }
+                  return null;
+                }
+
+                return <FormItem item={item} onFail={onFail} />;
+              })}
 
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={24} offset={1}>
+                  <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
                       <Button
                         onClick={() => {
@@ -351,7 +367,7 @@ const InputForm = (props) => {
   );
 };
 
-export default InputForm;
+export default FormScreen;
 
 const styles = {
   layout: {
@@ -378,8 +394,7 @@ const styles = {
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    marginTop: '2%',
-    width: '100%',
+    width: '87.5%',
   },
   listTailLayout: {
     labelCol: {

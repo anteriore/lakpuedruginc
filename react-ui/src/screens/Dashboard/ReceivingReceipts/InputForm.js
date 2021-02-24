@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Form,
-  Button,
-  InputNumber,
-  Input,
-  Select,
-  Checkbox,
-  Modal,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Empty,
-  message,
+import { useSelector } from 'react-redux';
+import { Form, Button, InputNumber, Input, Select, Checkbox, Modal, Row, Col, Typography, Table, Empty, message,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -28,15 +16,26 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState();
-
+  const [contentLoading, setContentLoading] = useState(true);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
     // eslint-disable-next-line
   }, [values, form]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      receivedBy: `${user.firstName} ${user.lastName}`,
+    });
+
+    setContentLoading(false);
+  }, [user, form]);
+
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
@@ -50,6 +49,9 @@ const InputForm = (props) => {
         )}`;
       }
     });
+
+    console.log(data)
+    console.log(tableData)
 
     onSubmit(data);
   };
@@ -239,19 +241,6 @@ const InputForm = (props) => {
   const onValuesChange = (values) => {
     if (values.hasOwnProperty(formTable.name)) {
       setTableData(form.getFieldValue(formTable.name));
-    }
-
-    if (values.hasOwnProperty('payments')) {
-      let paymentSum = 0;
-      const paymentValues = form.getFieldValue('payments');
-      paymentValues.forEach((payment) => {
-        if (payment.appliedAmount > 0) {
-          paymentSum += payment.appliedAmount;
-        }
-      });
-      const formValues = {};
-      formValues.amountPaid = paymentSum;
-      form.setFieldsValue(formValues);
     }
   };
 

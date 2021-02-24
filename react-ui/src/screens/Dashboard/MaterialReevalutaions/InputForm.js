@@ -42,6 +42,18 @@ const InputForm = (props) => {
   }
 
   const onFinish = (value) => {
+    formDetails.form_items.forEach((item) => {
+      if (
+        item.type === 'date' &&
+        typeof value[item.name] !== 'undefined' &&
+        value[item.name] !== null
+      ) {
+        value[item.name] = `${value[item.name].format('YYYY-MM-DD')}T${value[item.name].format(
+          'HH:mm:ss'
+        )}`;
+      }
+    });
+
     onSubmit(value);
     history.goBack();
   }
@@ -109,7 +121,7 @@ const InputForm = (props) => {
                         {appReceipts?.receivingReceipt?.drNumber ?? ""}
                       </Descriptions.Item>
                       {_.dropRight(_.drop(tempFormDetails.form_items, 1), 1).map((item) => (
-                        <Descriptions.Item label={item.label}>
+                        <Descriptions.Item key={item.name} label={item.label}>
                           <FormItem onFail={onFail} key={item.name} item={item} />
                         </Descriptions.Item>
                       ))}

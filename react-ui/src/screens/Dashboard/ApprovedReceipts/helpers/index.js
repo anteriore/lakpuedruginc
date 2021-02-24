@@ -1,36 +1,34 @@
- export const formatPayload = (selectedRR, selectedRRItem, approvalId, company, value) => {
+export const formatPayload = (approvalId, company, data) => {
     let formattedValue = {};
   
     formattedValue = {
         ...formattedValue,
-        number: value.number,
-        date: value.date,
+        number: data.number,
         receivedBy: { id: approvalId },
         company: { id: company },
-        date: value.date,
-        controlNumber: value.controlNumber,
-        maxContainers: value.maxContainers,
-        specifiedGravity: value.specifiedGravity,
-        remarks: value.remarks,
-        dateCreated: value.dateCreated,
-        modified: value.modified,
-        remarks: value.remarks,
+        date: data.date,
+        controlNumber: data.controlNumber,
+        maxContainers: data.maxContainers,
+        specifiedGravity: data.specifiedGravity,
+        dateCreated: data.dateCreated,
+        modified: data.modified,
+        remarks: data.remarks,
 
-        receivingReceipt: { id: selectedRR },
-        item: { id: selectedRRItem },
-        unit: { id: selectedRRItem.type },
+        receivingReceipt: { id: data.receivingReceipt},
+        item: { id: data.item },
+        unit: { id: data.item.unit },
 
-        receivedQuantity: value.reveivedQuantity,
-        approvedQuantity: value.approvedQuantity,
-        rejectedQuantity: value.rejectedQuantity,
-        qcSamples: value.qcSamples,
-        totalQuantity: value.totalQuantity,
-        expiration: value.expiration,
-        bestBefore: value.bestBefore,
-        reevaluation: value.reevaluation,
-        retest: value.retest,
+        receivedQuantity: data.reveivedQuantity,
+        approvedQuantity: data.approvedQuantity,
+        rejectedQuantity: data.rejectedQuantity,
+        qcSamples: data.qcSamples,
+        totalQuantity: data.totalQuantity,
+        expiration: data.expiration,
+        bestBefore: data.bestBefore,
+        reevaluation: data.reevaluation,
+        retest: data.retest,
     };
   
     return formattedValue;
-  };
+};
   

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import moment from 'moment';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
@@ -63,6 +64,28 @@ export const listClient = createAsyncThunk('listClient', async (payload, thunkAP
     };
     fnCallback(newReponse);
     return thunkAPI.rejectWithValue(response);
+  }
+});
+
+export const listClientBySalesRep = createAsyncThunk('listClientBySalesRepAndDateAndDepot', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  let { company, salesRep, date, depot, fnCallback } = payload;
+  if (typeof fnCallback === 'undefined') {
+    fnCallback = () => {};
+  }
+  
+  try {
+    const response = await axiosInstance.get(`rest/clients/report/company/${company}/sales-rep/${salesRep}?token=${accessToken}`);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
 });
 
@@ -152,6 +175,39 @@ const clientSlice = createSlice({
         status: 'failed',
         action: 'get',
         statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listClientBySalesRep.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for depot`,
+      };
+    },
+    [listClientBySalesRep.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depot');
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listClientBySalesRep.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depot');
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
       };
     },
   },

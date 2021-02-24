@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.PurchaseOrder;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ReceivedItem;
+import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Item;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ReceivingReceipt;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PurchaseOrderRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ItemRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ReceivingReceiptRepository;
 
 @Component
@@ -19,6 +21,8 @@ public class ReceivingReceiptService {
 	private ReceivingReceiptRepository receivingReceiptRepository;
 	@Autowired
 	private PurchaseOrderRepository purchaseOrderRepository;
+	@Autowired
+	private ItemRepository itemRepository;
 	@Autowired
 	private EngineeringInventoryService engineeringInventoryService;
 	@Autowired
@@ -32,17 +36,18 @@ public class ReceivingReceiptService {
 		}
 
 		receivingReceipt.setNumber("RR-" + ++id);
-		if (!receivingReceipt.getTolling()) {
+		if (receivingReceipt.getTolling()) {
 			PurchaseOrder po = purchaseOrderRepository.getOne(receivingReceipt.getPurchaseOrder().getId());
 			Set<ReceivingReceipt> receivingReceipts = po.getReceivingReceipts();
 
-			for (ReceivedItem item : receivingReceipt.getReceivedItems()) {
-				if (item.isReceivedItemNotRmAndPm()) {
-					item.setStatus("Approved");
-					engineeringInventoryService.addEngineeringInventory(item.getItem(), item.getQuantity(),
+			for (ReceivedItem receivedItem : receivingReceipt.getReceivedItems()) {
+				Item item = itemRepository.getOne(receivedItem.getItem().getId());
+				if (!item.getType().getCode().equals("RM") && !item.getType().getCode().equals("PM")) {
+					receivedItem.setStatus("Approved");
+					engineeringInventoryService.addEngineeringInventory(item, receivedItem.getQuantity(),
 							receivingReceipt.getCompany());
-					stockCardService.saveStockCard("RR", receivingReceipt.getCompany(), item.getItem().getCode(),
-							receivingReceipt.getDate(), item.getQuantity(), receivingReceipt.getRemarks(), "IN",
+					stockCardService.saveStockCard("RR", receivingReceipt.getCompany(), item.getCode(),
+							receivingReceipt.getDate(), receivedItem.getQuantity(), receivingReceipt.getRemarks(), "IN",
 							receivingReceipt.getReceivedBy());
 				}
 			}

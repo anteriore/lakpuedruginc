@@ -30,3 +30,4 @@ app-ui/anteriore.pem
 app-ui/anteriore.pem
 react-ui/src/utils/axios-instance.js
 superadmin/ssh-link.txt
+*.pem

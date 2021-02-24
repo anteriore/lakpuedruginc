@@ -19,6 +19,7 @@ import { listApprovedReceipts } from '../../Dashboard/ApprovedReceipts/redux';
 import GeneralHelper from '../../../helpers/general-helper';
 import { formatPayload } from './helpers';
 import moment from 'moment';
+import statusDialogue from '../../../components/StatusDialogue';
 
 const {Title} = Typography;
 
@@ -31,15 +32,28 @@ const MaterialReevaluations = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
   const [matReev, setMatReev] = useState(null);
   const  { handleRequestResponse } = GeneralHelper();
-  const { materialReevaluationsList: matReevList } = useSelector(state => state.dashboard.materialReevaluations)
+  const { materialReevaluationsList: matReevList, status, action, statusMessage, statusLevel } = useSelector(state => state.dashboard.materialReevaluations)
+  const { approvedReceiptsList: ARList } = useSelector(state => state.dashboard.approvedReceipts)
 
   const onSuccess = useCallback(() => {
     history.push(`${path}/new`);
   },[history, path]);
 
   const onFailed = useCallback(() => {
-    console.log("Failing")
+    console.log("FAiling")
   }, [])
+
+  useEffect(() => {
+    if (status !== 'loading') {
+      if (action === 'fetch' && statusLevel !== 'success') {
+        statusDialogue({statusMessage, statusLevel}, 'message');
+      }
+
+      if (action !== 'fetch') {
+        statusDialogue({statusMessage, statusLevel}, 'message');
+      }
+    }
+  },[status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -72,10 +86,10 @@ const MaterialReevaluations = (props) => {
 
   const onCreate = (value) => {
     setContentLoading(true)
-    const payload = formatPayload(value, matReevList, company);
-    console.log(payload);
-    dispatch(createMaterialReevaluations(payload)).then(() => {
-      dispatch(listMaterialReevaluations(company)).then(() => {
+    const payload = formatPayload(value, ARList, company);
+    dispatch(createMaterialReevaluations(payload)).then((dataMR) => {
+      dispatch(listMaterialReevaluations(company)).then((dataListMR) => {
+        handleRequestResponse([dataMR, dataListMR], null, onFailed, "/material-reevaluations")
         setContentLoading(false);
       })
     })

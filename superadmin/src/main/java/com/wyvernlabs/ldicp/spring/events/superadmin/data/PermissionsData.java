@@ -163,7 +163,17 @@ public class PermissionsData {
         p1.setCategory("Accounting");
         p1.setSortOrder(3);
         p1Subs = new ArrayList<>();
-        p1Subs.add(new PermissionSub(null, "PDC Disbursements", "pdc-disbursements", 1));
+        p1Subs.add(new PermissionSub(null, "Purchase Vouchers", "purchase-vouchers", 1));
+        p1Subs.add(new PermissionSub(null, "Journal Vouchers", "journal-vouchers", 2));
+        p1Subs.add(new PermissionSub(null, "Vouchers Payables", "vouchers-payables", 3));
+        p1Subs.add(new PermissionSub(null, "Account Titles", "account-titles", 4));
+        p1Subs.add(new PermissionSub(null, "Cheque Printings", "cheque-printings", 5));
+        p1Subs.add(new PermissionSub(null, "Cheque Disbursement Vouchers", "cheque-disbursement-vouchers", 6));
+        p1Subs.add(new PermissionSub(null, "Credit Memos", "credit-memos", 7));
+        p1Subs.add(new PermissionSub(null, "Debit Memos", "debit-memos", 8));
+        p1Subs.add(new PermissionSub(null, "Cash Receipt Vouchers", "cash-receipt-vouchers", 9));
+        p1Subs.add(new PermissionSub(null, "PDC Disbursements", "pdc-disbursements", 10));
+        p1Subs.add(new PermissionSub(null, "PDC Vouchers", "pdc-vouchers", 11));
 
         p1 = new Permission();
         p1.setCategory("Sales");
