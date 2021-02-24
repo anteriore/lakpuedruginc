@@ -265,7 +265,7 @@ const FormDetails = () => {
           title: 'Unit',
           dataIndex: 'unit',
           key: 'unit',
-          render: (object) => object.name,
+          render: (object) => object?.name ?? null,
         },
       ],
       data: 'requestedItems',
@@ -295,6 +295,28 @@ const FormDetails = () => {
       ) {
         return true;
       }
+    },
+    renderTableColumns: (fields) => {
+      const columns = [];
+      fields.forEach((field) => {
+        if (typeof field.render === 'undefined' || field.render === null) {
+          field.render = (object) => object[field.name];
+        }
+        if(field.type === 'select'){
+          field.render = (object) => object[field.name]?.name ?? "No data";
+        }
+
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => {
+            return field.render(object)
+          },
+        });
+        
+      });
+  
+      return columns;
     },
   };
 
