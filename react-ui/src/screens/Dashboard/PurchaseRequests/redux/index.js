@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
   list: [],
@@ -30,24 +31,42 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
 
 export const listPRByStatus = createAsyncThunk(
   'listPRByStatus',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    const { company, status } = payload
 
-    const response = await axiosInstance.get(
-      `rest/purchase-requests/company/${payload.company}/status/${payload.status}?token=${accessToken}`
-    );
-
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for purchase requests');
+    try {
+      const response = await axiosInstance.get(`rest/purchase-requests/company/${company}/status/${status}?token=${accessToken}`);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+  
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
+  }
+);
 
-    return response;
+
+export const listPRByStatusAndDepartment = createAsyncThunk(
+  'listPRByStatus',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company, department, status } = payload
+
+    try {
+      const response = await axiosInstance.get(`rest/purchase-requests/company/${company}/department/${department}/status/${status}?token=${accessToken}`);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+  
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
 );
 
@@ -145,31 +164,73 @@ const purchaseRequestSlice = createSlice({
       };
     },
 
-    [listPRByStatus.pending]: (state, action) => {
-      state.status = 'loading';
+    
+    [listPRByStatus.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
+      };
     },
     [listPRByStatus.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for sales orders';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
     [listPRByStatus.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
+      };
+    },
+
+    
+    [listPRByStatusAndDepartment.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
+      };
+    },
+    [listPRByStatusAndDepartment.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listPRByStatusAndDepartment.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
       };
     },
   },

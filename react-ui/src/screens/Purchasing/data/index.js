@@ -1,6 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Table, Typography } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
+import { Table, Typography, message } from 'antd';
+import { listPRByStatus, clearData as clearPR } from '../../Dashboard/PurchaseRequests/redux';
 
 const { Text } = Typography;
 
@@ -48,11 +49,13 @@ export const columns = [
 ];
 
 const FormDetails = () => {
+  const dispatch = useDispatch();
   const vendors = useSelector((state) => state.maintenance.vendors.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
   const units = useSelector((state) => state.maintenance.units.unitList);
   const purchaseRequests = useSelector((state) => state.dashboard.purchaseRequests.list);
+  const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
   const formDetails = {
     form_name: 'depot',
@@ -85,6 +88,10 @@ const FormDetails = () => {
         selectName: 'name',
         choices: departments,
         rules: [{ required: true }],
+        onChange: (e) => {
+          dispatch(clearPR())
+          dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+        },
       },
       {
         label: 'Area',
@@ -150,6 +157,7 @@ const FormDetails = () => {
     name: 'orderedItems',
     key: 'id',
     rules: [{ required: true }],
+    isVisible: purchaseRequests.length > 0,
     fields: [
       {
         label: 'Item',
