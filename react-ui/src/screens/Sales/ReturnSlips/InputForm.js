@@ -293,8 +293,8 @@ const InputForm = (props) => {
     } else {
       formValues[key] = value;
     }
-    onValuesChange(formValues)
-    form.setFieldsValue(formValues)
+    onValuesChange(formValues);
+    form.setFieldsValue(formValues);
   };
 
   return (

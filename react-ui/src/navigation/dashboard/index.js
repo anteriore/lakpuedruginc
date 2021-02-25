@@ -10,9 +10,11 @@ import InventoryMovements from '../../screens/Dashboard/InventoryMovements';
 import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 import MaterialReceivings from '../../screens/Dashboard/MaterialReceivings';
 import Employees from '../../screens/Dashboard/Employees';
+import SalesReports from '../../screens/Dashboard/SalesReports';
 import JobOrder from '../../screens/Dashboard/JobOrder';
 import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
 import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
+import MaterialReevaluations from '../../screens/Dashboard/MaterialReevalutaions';
 
 export const routes = [
   {
@@ -21,7 +23,7 @@ export const routes = [
     component: PurchaseRequests,
   },
   {
-    title: 'Receiving Receipts', 
+    title: 'Receiving Receipts',
     path: '/receiving-receipts',
     component: ReceivingReceipts,
   },
@@ -33,7 +35,7 @@ export const routes = [
   {
     title: 'Material Re-evaluations',
     path: '/material-reevaluations',
-    component: '',
+    component: MaterialReevaluations,
   },
   {
     title: 'Inventory',
@@ -108,6 +110,6 @@ export const routes = [
   {
     title: 'Sales Reports',
     path: '/sales-reports',
-    component: '',
+    component: SalesReports,
   },
 ];

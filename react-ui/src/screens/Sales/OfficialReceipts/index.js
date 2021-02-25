@@ -94,7 +94,6 @@ const OfficialReceipts = (props) => {
   };
 
   const onSubmit = (data) => {
-
     const payload = {
       ...data,
       company: {

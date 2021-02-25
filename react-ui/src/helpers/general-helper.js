@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import moment from 'moment';
+import { useHistory } from 'react-router-dom';
 import * as code from '../data/constants/status-code';
 
 // for adding values on list form inputs
@@ -143,3 +144,40 @@ export const generateStatusMessage = (payload, currentModule) => {
       };
   }
 };
+
+// for helper functions that use hooks
+const GeneralHelper = (props) => {
+  const history = useHistory();
+
+  const pushErrorPage = (statusCode, returnPath) => {
+    history.push({
+      pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
+      state: {
+        moduleList: returnPath || '/',
+      },
+    });
+  };
+
+  const handleRequestResponse = (responseList, onSuccess, onFail, returnPath) => {
+    let hasFailed = false;
+    responseList.forEach((response) => {
+      if (response.hasOwnProperty('error') && !hasFailed) {
+        hasFailed = true;
+        if (typeof onFail === 'function') {
+          onFail();
+        } else {
+          pushErrorPage(response?.payload?.status ?? 400, returnPath);
+        }
+      }
+    });
+    if (!hasFailed) {
+      if (onSuccess !== null) {
+        onSuccess();
+      }
+    }
+  };
+
+  return { handleRequestResponse };
+};
+
+export default GeneralHelper;

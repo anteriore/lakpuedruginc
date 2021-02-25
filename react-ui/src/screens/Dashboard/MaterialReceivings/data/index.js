@@ -21,8 +21,8 @@ export const columns = [
     key: 'receivedBy',
     datatype: 'object',
     dataToString: (object) => {
-      return `${object.firstName} ${object.lastName}`
-    }
+      return `${object.firstName} ${object.lastName}`;
+    },
   },
 ];
 
@@ -72,16 +72,16 @@ const FormDetails = () => {
             dataIndex: 'company',
             key: 'company',
             render: (object) => {
-              return `${object.name}`
-            }
+              return `${object.name}`;
+            },
           },
           {
             title: 'Requested By',
             dataIndex: 'requestedBy',
             key: 'requestedBy',
             render: (object) => {
-              return `${object.firstName} ${object.lastName}`
-            }
+              return `${object.firstName} ${object.lastName}`;
+            },
           },
         ],
         rowKey: 'id',
@@ -100,7 +100,6 @@ const FormDetails = () => {
       },
     ],
   };
-
 
   const tableDetails = {
     name: 'mis',
@@ -140,9 +139,8 @@ const FormDetails = () => {
           key: field.name,
           render: (object) => field.render(object),
         });
-        
       });
-  
+
       return columns;
     },
   };

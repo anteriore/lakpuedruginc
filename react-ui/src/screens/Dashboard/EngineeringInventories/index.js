@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Skeleton, message} from 'antd';
+import { Row, Col, Typography, Skeleton, message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 
@@ -33,15 +33,11 @@ const EngineeringInventories = (props) => {
     };
   }, [dispatch, company]);
 
+  const handleUpdate = (data) => {};
 
-  const handleUpdate = (data) => {
-  };
+  const handleDelete = (data) => {};
 
-  const handleDelete = (data) => {
-  };
-
-  const handleRetrieve = (data) => {
-  };
+  const handleRetrieve = (data) => {};
 
   return (
     <Switch>

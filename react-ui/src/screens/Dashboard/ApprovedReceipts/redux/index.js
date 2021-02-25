@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import {checkResponseValidity} from '../../../../helpers/general-helper';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
-  list: [],
+  approvedReceiptsList: null,
   status: 'loading',
   statusLevel: '',
   responseCode: null,
@@ -12,46 +12,64 @@ const initialState = {
   action: '',
 };
 
-export const listApprovedReceipts = createAsyncThunk('listApprovedReceipts', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const listApprovedReceipts = createAsyncThunk(
+  'listApprovedReceipts',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/approved-receipts/company/${payload}?token=${accessToken}`
+      );
 
-  try{
-    const response = await axiosInstance.get(
-      `/rest/approved-receipts/company/${payload.company}?token=${accessToken}`
-    )
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
-    
-    if(valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
-export const addApprovedReceipt = createAsyncThunk('addApprovedReceipt', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const addApprovedReceipt = createAsyncThunk(
+  'addApprovedReceipt',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/approved-receipts/?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/approved-receipts/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-export const deleteApprovedReceipt = createAsyncThunk('deleteApprovedReceipt', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const deleteApprovedReceipt = createAsyncThunk(
+  'deleteApprovedReceipt',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/approved-receipts/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/approved-receipts/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-export const getApprovedReceipt = createAsyncThunk('getApprovedReceipt', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const getApprovedReceipt = createAsyncThunk(
+  'getApprovedReceipt',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/approved-receipts/${payload.id}?token=${accessToken}`);
-  return response;
-});
+    const response = await axiosInstance.get(
+      `rest/approved-receipts/${payload.id}?token=${accessToken}`
+    );
+    return response;
+  }
+);
 
 const approvedReceiptSlice = createSlice({
   name: 'approvedReceipts',
@@ -60,31 +78,43 @@ const approvedReceiptSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listApprovedReceipts.pending]: (state, action) => {
-      state.status = 'loading';
+    [listApprovedReceipts.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for approved receipts`,
+      };
     },
     [listApprovedReceipts.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for approved receipts';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Approved Receipts'
+      );
 
       return {
         ...state,
-        list: data,
+        approvedReceiptsList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
     [listApprovedReceipts.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Approved Receipts'
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
       };
     },
   },

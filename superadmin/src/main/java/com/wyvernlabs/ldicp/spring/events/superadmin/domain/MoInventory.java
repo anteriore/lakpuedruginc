@@ -29,8 +29,8 @@ public class MoInventory {
 
 	private String type;
 
-	@Transient
-	private String moName;
+	//@Transient
+	//private String moName;
 	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Inventory> inventoryList;
 	private int batchSize;
@@ -43,11 +43,11 @@ public class MoInventory {
 	protected void onCreate() {
 		dateCreated = new Date();
 	}
-
+	/*
 	public String getMoName() {
 		return finishedGood.getName() + " " + getTypeLabel();
 	}
-
+	*/
 	public String getTypeLabel() {
 		if (type.equals("RM")) {
 			return ingredientGroup.getName();
@@ -87,10 +87,11 @@ public class MoInventory {
 	public void setMoNumber(Integer moNumber) {
 		this.moNumber = moNumber;
 	}
-
+	/*
 	public void setMoName(String moName) {
 		this.moName = moName;
 	}
+	*/
 
 	public Long getId() {
 		return id;

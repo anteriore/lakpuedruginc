@@ -44,7 +44,7 @@ public class MaterialIssuanceData {
 		IssuedInventory issuedInventory = new IssuedInventory();
 		issuedInventory.setControlNumber(inventory.getControlNumber());
 		issuedInventory.setItem(inventory.getItem());
-		issuedInventory.setQuantity(50);
+		issuedInventory.setQuantity(503);
 
 		inventoryList.add(issuedInventory);
 

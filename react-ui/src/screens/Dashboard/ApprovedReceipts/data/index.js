@@ -61,64 +61,64 @@ export const DisplayDetails = () => {
         },
     ];
 
-    const itemColumns = [
-        {
-            title: 'Item',
-            dataIndex: 'item',
-            render: (object) => `[${object.code}] ${object.name}`,
-        },
-        {
-            title: 'Received',
-            dataIndex: 'receivedQuantity',
-            key: 'receivedQuantity',
-        },
-        {
-            title: 'Approved',
-            dataIndex: 'approvedQuantity',
-            key: 'approvedQuantity',
-        },
-        {
-            title: 'Rejected',
-            dataIndex: 'rejectedQuantity',
-            key: 'rejectedQuantity',
-        },
-        {
-            title: 'QC Samples',
-            dataIndex: 'qcSamples',
-            key: 'qcSamples',
-        },
-        {
-            title: 'Total',
-            dataIndex: 'totalQuantity',
-            key: 'totalQuantity',
-        },
-        {
-            label: 'Expiration',
-            dataIndex: 'expiration',
-            key: 'expiration',
-        },
-        {
-            label: 'Best Before',
-            dataIndex: 'bestBefore',
-            key: 'bestBefore',
-        },
-        {
-            label: 'Re-eval',
-            dataIndex: 'reevaluation',
-            key: 'reevaluation',
-        },
-        {
-            label: 'Re-test',
-            dataIndex: 'retest',
-            key: 'retest',
-        },
-    ];
+  const itemColumns = [
+    {
+      title: 'Item',
+      dataIndex: 'item',
+      render: (object) => `[${object.code}] ${object.name}`,
+    },
+    {
+      title: 'Received',
+      dataIndex: 'receivedQuantity',
+      key: 'receivedQuantity',
+    },
+    {
+      title: 'Approved',
+      dataIndex: 'approvedQuantity',
+      key: 'approvedQuantity',
+    },
+    {
+      title: 'Rejected',
+      dataIndex: 'rejectedQuantity',
+      key: 'rejectedQuantity',
+    },
+    {
+      title: 'QC Samples',
+      dataIndex: 'qcSamples',
+      key: 'qcSamples',
+    },
+    {
+      title: 'Total',
+      dataIndex: 'totalQuantity',
+      key: 'totalQuantity',
+    },
+    {
+      label: 'Expiration',
+      dataIndex: 'expiration',
+      key: 'expiration',
+    },
+    {
+      label: 'Best Before',
+      dataIndex: 'bestBefore',
+      key: 'bestBefore',
+    },
+    {
+      label: 'Re-eval',
+      dataIndex: 'reevaluation',
+      key: 'reevaluation',
+    },
+    {
+      label: 'Re-test',
+      dataIndex: 'retest',
+      key: 'retest',
+    },
+  ];
 
-    return { columns, itemColumns}
+  return { columns, itemColumns };
 };
 
-
 export const FormDetails = () => {
+
     const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
     const itemList = useSelector((state) => state.maintenance.items.list);
 
@@ -276,6 +276,80 @@ export const FormDetails = () => {
         
     };
 
-    return { formDetails, tableDetails }
-};
+  const tableDetails = {
+    label: 'Received Item',
+    name: 'receivedItem',
+    key: 'id',
+    rules: [{ required: true }],
+    fields: [
+      {
+        label: 'Item',
+        key: 'item',
+        name: 'item',
+        type: 'readOnly',
+        render: (object) => `[${object.code}] ${object.name}`,
+      },
+      {
+        label: 'Received Quantity',
+        type: 'number',
+        name: 'receivingQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Approved Quantity',
+        type: 'number',
+        name: 'approvedQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Rejected Quantity',
+        type: 'number',
+        name: 'rejectedQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'QC Samples',
+        type: 'number',
+        name: 'qcSamples',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Total Quantity',
+        type: 'number',
+        name: 'totalQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Expiration',
+        name: 'expiration',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select an expiration date' }],
+      },
+      {
+        label: 'Best Before',
+        name: 'bestBefore',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select an best before date' }],
+      },
+      {
+        label: 'Re-eval',
+        name: 'reevaluation',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a reevaluation date' }],
+      },
+      {
+        label: 'Re-test',
+        name: 'retest',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a retest date' }],
+      },
+    ],
+  };
 
+  return { formDetails, tableDetails };
+};

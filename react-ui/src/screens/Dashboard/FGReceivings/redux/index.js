@@ -13,10 +13,12 @@ const initialState = {
 
 export const listFGReceiving = createAsyncThunk('listFGReceiving', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+  const { company } = payload;
 
   try {
-    const response = await axiosInstance.get(`rest/product-receivings/company/${company}?token=${accessToken}`);
+    const response = await axiosInstance.get(
+      `rest/product-receivings/company/${company}?token=${accessToken}`
+    );
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -26,20 +28,25 @@ export const listFGReceiving = createAsyncThunk('listFGReceiving', async (payloa
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data);
   }
-
 });
 
-export const addFGReceiving  = createAsyncThunk('addFGReceiving', async (payload, thunkAPI) => {
+export const addFGReceiving = createAsyncThunk('addFGReceiving', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-receivings/?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/product-receivings/?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 
-export const deleteFGIssuance  = createAsyncThunk('deleteFGIssuance', async (payload, thunkAPI) => {
+export const deleteFGIssuance = createAsyncThunk('deleteFGIssuance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/product-receivings/delete?token=${accessToken}`, payload);
+  const response = await axiosInstance.post(
+    `rest/product-receivings/delete?token=${accessToken}`,
+    payload
+  );
   return response;
 });
 

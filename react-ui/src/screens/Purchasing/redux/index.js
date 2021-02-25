@@ -31,26 +31,29 @@ export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI, rejec
   return response;
 });
 
-export const getOrderedQuantityByItem = createAsyncThunk('getOrderedQuantityByItem', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company, item } = payload
+export const getOrderedQuantityByItem = createAsyncThunk(
+  'getOrderedQuantityByItem',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company, item } = payload;
 
-  const response = await axiosInstance.get(
-    `rest/purchase-orders/company/${company}/stock/${item}?token=${accessToken}`
-  );
+    const response = await axiosInstance.get(
+      `rest/purchase-orders/company/${company}/stock/${item}?token=${accessToken}`
+    );
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for requested items');
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for requested items');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return thunkAPI.rejectWithValue(response);
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
-  }
 
-  return response;
-});
+    return response;
+  }
+);
 
 export const addPO = createAsyncThunk('addPO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;

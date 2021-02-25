@@ -4,7 +4,7 @@ import { SearchOutlined, CheckOutlined, CloseOutlined, FilterOutlined } from '@a
 import moment from 'moment';
 
 const TableHeader = (props) => {
-  const { columns, hasSorter, hasFilter} = props
+  const { columns, hasSorter, hasFilter } = props;
   const newColumnHeaders = [];
   const { hasOwnProperty } = Object.prototype;
   const dateFormat = 'YYYY/MM/DD';
@@ -42,33 +42,30 @@ const TableHeader = (props) => {
       if (record[dataIndex] === null) {
         return '';
       }
-      else if(typeof dataToString === 'function'){
+      if (typeof dataToString === 'function') {
         return record[dataIndex]
-        ? dataToString(record[dataIndex]).toLowerCase().includes(value.toLowerCase())
-        : '';
+          ? dataToString(record[dataIndex]).toLowerCase().includes(value.toLowerCase())
+          : '';
       }
-      else if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
+      if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
         return record[dataIndex].code
           ? record[dataIndex].code.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      else if (hasOwnProperty.call(record[dataIndex], 'name') && dataValue === 'name') {
+      if (hasOwnProperty.call(record[dataIndex], 'name') && dataValue === 'name') {
         return record[dataIndex].name
           ? record[dataIndex].name.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      else if (hasOwnProperty.call(record[dataIndex], 'title') && dataValue === 'title') {
+      if (hasOwnProperty.call(record[dataIndex], 'title') && dataValue === 'title') {
         return record[dataIndex].title
           ? record[dataIndex].title.toString().toLowerCase().includes(value.toLowerCase())
           : '';
       }
-      else {
-        return record[dataIndex]
-          ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-          : '';
-      }
 
-      
+      return record[dataIndex]
+        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+        : '';
     },
   });
 
@@ -103,6 +100,7 @@ const TableHeader = (props) => {
       <FilterOutlined style={{ color: filtered ? '#1890ff' : '#545454' }} />
     ),
     onFilter: (value, record) => {
+      console.log(new Date(record[dataIndex]));
       return (
         moment(new Date(record[dataIndex])).isBetween(value[0], value[1], 'day') ||
         moment(new Date(record[dataIndex])).isSame(value[0], 'day') ||
@@ -113,7 +111,6 @@ const TableHeader = (props) => {
 
   const setColumnHeaders = () => {
     columns.forEach((header) => {
-
       // add sorter
       if (typeof header.sorter === 'undefined' && hasSorter) {
         if (header.datatype === 'string') {
@@ -129,9 +126,9 @@ const TableHeader = (props) => {
           if (typeof header.name === 'undefined' || header.name === null) {
             header.name = 'name';
           }
-          
-          if(typeof header.dataToString !== 'function'){
-            header.dataToString = (object) => object[header.name]
+
+          if (typeof header.dataToString !== 'function') {
+            header.dataToString = (object) => object[header.name];
           }
           header = {
             ...header,
@@ -165,7 +162,7 @@ const TableHeader = (props) => {
         }
       }
 
-      //change render based on data type
+      // change render based on data type
       if (typeof header.render === 'undefined') {
         if (header.datatype === 'date') {
           header = {
@@ -188,12 +185,11 @@ const TableHeader = (props) => {
             ...header,
             render: (object) => {
               if (typeof object !== 'undefined' && object !== null) {
-                if(typeof header.dataToString !== 'function'){
-                  return object[header.name];
+                if (typeof header.dataToString !== 'function') {
+                  return object[header.name ?? 'name'];
                 }
-                else {
-                  return header.dataToString(object)
-                }
+
+                return header.dataToString(object);
               }
 
               return null;
@@ -202,8 +198,8 @@ const TableHeader = (props) => {
         }
       }
 
-      //add filter
-      if(hasFilter){
+      // add filter
+      if (hasFilter) {
         if (typeof header.filters !== 'undefined' && header.filters !== null) {
           const filters = [];
           header.filters.forEach((filter) => {
@@ -240,7 +236,7 @@ const TableHeader = (props) => {
           };
         }
       }
-      
+
       newColumnHeaders.push(header);
     });
 

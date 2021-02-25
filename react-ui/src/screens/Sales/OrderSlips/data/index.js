@@ -59,8 +59,9 @@ export const salesOrderHeader = [
     title: 'Expiration',
     dataIndex: 'product',
     key: 'expiration',
-    render: (object) => moment(new Date(object.expiration)).format('DD/MM/YYYY'),
-    datatype: 'date',
+    render: (object) => object.expiration
+    //render: (object) => moment(new Date(object.expiration)).format('DD/MM/YYYY'),
+    //datatype: 'date',
   },
   {
     title: 'Stock on Hand',
@@ -148,8 +149,8 @@ export const formDetails = {
       placeholder: 'Sales order',
       type: 'selectSearch',
       render: (sales) => {
-        console.log(sales)
-        return `[${sales.number} ] ${sales.client.name}, Sales Rep: ${sales.client.salesRep.name}`
+        console.log(sales);
+        return `[${sales.number} ] ${sales.client.name}, Sales Rep: ${sales.client.salesRep.name}`;
       },
       choices: [],
     },

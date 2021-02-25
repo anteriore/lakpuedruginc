@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
-  Skeleton,
-  Typography, 
-  Button,
-  Modal,
-  Space,
-  Table,
-  Empty,
-  message,  
-} from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -42,7 +31,6 @@ const FGReceivings = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  
 
   useEffect(() => {
     let isCancelled = false;
@@ -63,24 +51,22 @@ const FGReceivings = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
-  
+
   const handleAdd = () => {
     setFormTitle('Create FG Receiving Slip');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(listDepot({ company, message })).then(() => {
-        dispatch(clearFGIS())
-        history.push(`${path}/new`);
-        setLoading(false);
+      dispatch(clearFGIS());
+      history.push(`${path}/new`);
+      setLoading(false);
     });
   };
 
-  const handleUpdate = (data) => {
-  };
+  const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -88,7 +74,7 @@ const FGReceivings = (props) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
+    console.log(data);
     const payload = {
       ...data,
       company: {
@@ -130,7 +116,9 @@ const FGReceivings = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create FG Issuance. Please double check the provided information.`);
+          message.error(
+            `Unable to create FG Issuance. Please double check the provided information.`
+          );
         }
       });
     }
@@ -215,15 +203,13 @@ const FGReceivings = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.prsNo} Details`} 
+                  title={`${selectedData.prsNo} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
                 <Text>{'Received Items: '}</Text>
                 <Table
-                  dataSource={
-                    selectedData.pis.inventoryList
-                  }
+                  dataSource={selectedData.pis.inventoryList}
                   columns={tableDetails.renderTableColumns(tableDetails.fields)}
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}

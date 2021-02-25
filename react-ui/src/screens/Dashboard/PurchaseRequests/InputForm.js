@@ -51,9 +51,6 @@ const InputForm = (props) => {
       }
     });
 
-    console.log(data)
-    console.log(tableData)
-
     onSubmit(data);
   };
 

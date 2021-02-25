@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Table, Typography, Button, Modal, Skeleton, Empty, Descriptions, Space, message, } from 'antd';
+import {
+  Row,
+  Col,
+  Table,
+  Typography,
+  Button,
+  Modal,
+  Skeleton,
+  Empty,
+  Descriptions,
+  Space,
+  message,
+} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -10,7 +22,7 @@ import { formatPayload } from './helpers';
 import InputForm from './InputForm';
 import { listRR, addRR, clearData } from './redux';
 import { clearData as clearPO, listPO } from '../../Purchasing/redux';
-import { clearData as clearItem, listItemSummary} from '../../Maintenance/Items/redux';
+import { clearData as clearItem, listItemSummary } from '../../Maintenance/Items/redux';
 
 const { Title, Text } = Typography;
 
@@ -23,6 +35,7 @@ const ReceivingReceipts = (props) => {
   
   const [displayModal, setDisplayModal] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
 
@@ -34,12 +47,12 @@ const ReceivingReceipts = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listRR({ company, message })).then(() => {
-      //dispatch(listPO({ company, message })).then(() => {
-        setLoading(false);
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      //});
+      // dispatch(listPO({ company, message })).then(() => {
+      setLoading(false);
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+      // });
     });
 
     return function cleanup() {
@@ -57,8 +70,8 @@ const ReceivingReceipts = (props) => {
     dispatch(listPO({ company, message })).then(() => {
       dispatch(listItemSummary({ company, message })).then(() => {
         history.push(`${path}/new`);
-      })
-    })
+      });
+    });
   };
 
   const handleRetrieve = (data) => {
@@ -67,8 +80,8 @@ const ReceivingReceipts = (props) => {
   };
 
   const onSubmit = (data) => {
-    const payload = formatPayload(id, company, data)
-    
+    const payload = formatPayload(id, company, data);
+
     if (formMode === 'edit') {
       payload.id = receivingReceipt.id;
     }
@@ -76,25 +89,26 @@ const ReceivingReceipts = (props) => {
     dispatch(addRR(payload)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listRR({ company: company, message })).then(() => {
+        dispatch(listRR({ company, message })).then(() => {
           history.goBack();
-          setLoading(false)
+          setLoading(false);
         });
       } else {
         setLoading(false);
-        if(formMode === 'add'){
-          message.error(`Unable to add Receiving Receipt. Please double check the provided information.`);
-        }
-        else {
+        if (formMode === 'add') {
+          message.error(
+            `Unable to add Receiving Receipt. Please double check the provided information.`
+          );
+        } else {
           message.error(`Something went wrong. Unable to update ${data.number}.`);
         }
       }
-    })
+    });
   };
-  
+
   const handleCancelButton = () => {
     setReceivingReceipt(null);
-    setLoading(false)
+    setLoading(false);
   };
 
   return (
@@ -125,17 +139,17 @@ const ReceivingReceipts = (props) => {
             <Title level={3} style={{ float: 'left' }}>
               {title}
             </Title>
-            {actions.includes("create") && 
-            <Button
-              style={{ float: 'right', marginRight: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={(e) => {
-                handleAdd()
-              }}
-            >
-              Add
-            </Button>
-            }
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={(e) => {
+                  handleAdd();
+                }}
+              >
+                Add
+              </Button>
+            )}
           </Col>
         </Row>
         <Row>
@@ -183,7 +197,7 @@ const ReceivingReceipts = (props) => {
                     }
                     if (item.type === 'select' || item.type === 'selectSearch') {
                       const itemData = receivingReceipt[item.name];
-                      if(itemData !== null && typeof itemData !== 'undefined'){
+                      if (itemData !== null && typeof itemData !== 'undefined') {
                         return (
                           <Descriptions.Item label={item.label}>
                             {itemData[item.selectName]}
@@ -212,12 +226,12 @@ const ReceivingReceipts = (props) => {
                   return null;
                 })}
               </Descriptions>
-              <Text>{'Received Items:'}</Text>
+              <Text>Received Items:</Text>
               <Table
                 dataSource={receivingReceipt !== null ? receivingReceipt.receivedItems : []}
                 columns={itemColumns}
                 pagination={false}
-                locale={{ emptyText: <Empty description = "No Item Selected." /> }}
+                locale={{ emptyText: <Empty description="No Item Selected." /> }}
               />
             </Space>
           )}

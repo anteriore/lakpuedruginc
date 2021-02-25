@@ -13,14 +13,16 @@ const InputForm = (props) => {
   const permissions = useSelector((state) => state.users.listPermission);
 
   useEffect(() => {
-    if(values !== null && typeof values !== 'undefined'){
+    if (values !== null && typeof values !== 'undefined') {
       form.setFieldsValue(values);
     }
   }, [values, form]);
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
-    message.error("An error has occured. Please double check the information that you have provided.")
+    message.error(
+      'An error has occured. Please double check the information that you have provided.'
+    );
   };
 
   const onFail = () => {
@@ -28,7 +30,7 @@ const InputForm = (props) => {
   };
 
   const renderPermissions = () => {
-    if(permissions !== null && typeof permissions !== 'undefined'){
+    if (permissions !== null && typeof permissions !== 'undefined') {
       return (
         <Form.List
           {...{ wrapperCol: { span: 24 }, labelCol: { span: 24 } }}
@@ -80,9 +82,9 @@ const InputForm = (props) => {
                                 label={permissionSub.name}
                                 name={[permissionSub.code, 'actions']}
                                 fieldKey={[permissionSub.code, 'actions']}
-                                initialValue={formMode === 'edit' ? [] : ["c", "r", "u", "d"]}
+                                initialValue={formMode === 'edit' ? [] : ['c', 'r', 'u', 'd']}
                               >
-                                <Checkbox.Group> 
+                                <Checkbox.Group>
                                   <Checkbox value="c">Create</Checkbox>
                                   <Checkbox value="r">Read</Checkbox>
                                   <Checkbox value="u">Update</Checkbox>
@@ -101,12 +103,11 @@ const InputForm = (props) => {
             </>
           )}
         </Form.List>
-      )
+      );
     }
-    else {
-      return null
-    }
-  }
+
+    return null;
+  };
 
   return (
     <>
