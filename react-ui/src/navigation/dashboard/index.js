@@ -78,11 +78,6 @@ export const routes = [
     component: FGReceivings,
   },
   {
-    title: 'Depot Inventory',
-    path: '/depot-inventory',
-    component: '',
-  },
-  {
     title: 'Employee',
     path: '/employees',
     component: Employees,
@@ -102,11 +97,11 @@ export const routes = [
     path: '/engineering-inventory',
     component: EngineeringInventories,
   },
-  {
+  /*{
     title: 'Account Summary Reports',
     path: '/account-summary',
     component: '',
-  },
+  },*/
   {
     title: 'Sales Reports',
     path: '/sales-reports',
