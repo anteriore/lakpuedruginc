@@ -283,5 +283,6 @@ export const FormDetails = () => {
                 rules: [{ required: true, message: 'Please select a retest date' }],
             },
         ],
+    };
   return { formDetails, tableDetails };
 };

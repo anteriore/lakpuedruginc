@@ -32,23 +32,6 @@ export const listApprovedReceipts = createAsyncThunk('listRR', async (payload, t
   return response;
 });
 
-  const response = await axiosInstance.get(
-    `rest/approved-receipts/company/${payload.company}?token=${accessToken}`
-  );
-
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for approved receipts');
-    }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
-  }
-
-  return response;
-});
-
 export const addApprovedReceipt = createAsyncThunk(
   'addApprovedReceipt',
   async (payload, thunkAPI) => {
