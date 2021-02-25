@@ -173,7 +173,9 @@ const GeneralHelper = (props) => {
       }
     }) 
     if(!hasFailed){
-      onSuccess()
+      if(onSuccess !== null) {
+        onSuccess();
+      }
     }
 
   }
