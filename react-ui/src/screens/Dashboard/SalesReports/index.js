@@ -10,7 +10,8 @@ import {
   Table,
   DatePicker,
   Modal,
-  message,  
+  message,
+  Skeleton,  
 } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -463,42 +464,47 @@ const SalesReports = (props) => {
             
           </Col>
         </Row>
-        {!loading && <Row>
-          <Space direction="vertical" size={10} style={{ width: '100%' }}>
-            <Divider orientation="left">
-              General Sales Report
-            </Divider>
-            <Table
-              dataSource={[{}]}
-              columns={columns.general}
-              pagination={false}
-            />
-            <Divider orientation="left">
-              Sales Rep Client Report
-            </Divider>
-            <Table
-              dataSource={[{}]}
-              columns={columns.salesRep}
-              pagination={false}
-            />
-            <Divider orientation="left">
-              Item Sales Report (By Product)
-            </Divider>
-            <Table
-              dataSource={[{}]}
-              columns={columns.itemProduct}
-              pagination={false}
-            />
-            <Divider orientation="left">
-              Item Sales Report (By Category/Division)
-            </Divider>
-            <Table
-              dataSource={[{}]}
-              columns={columns.itemCategory}
-              pagination={false}
-            />
-          </Space>
-        </Row>}
+        {loading ? (
+            <Skeleton/>
+          ) : (
+            <Row>
+              <Space direction="vertical" size={10} style={{ width: '100%' }}>
+                <Divider orientation="left">
+                  General Sales Report
+                </Divider>
+                <Table
+                  dataSource={[{}]}
+                  columns={columns.general}
+                  pagination={false}
+                />
+                <Divider orientation="left">
+                  Sales Rep Client Report
+                </Divider>
+                <Table
+                  dataSource={[{}]}
+                  columns={columns.salesRep}
+                  pagination={false}
+                />
+                <Divider orientation="left">
+                  Item Sales Report (By Product)
+                </Divider>
+                <Table
+                  dataSource={[{}]}
+                  columns={columns.itemProduct}
+                  pagination={false}
+                />
+                <Divider orientation="left">
+                  Item Sales Report (By Category/Division)
+                </Divider>
+                <Table
+                  dataSource={[{}]}
+                  columns={columns.itemCategory}
+                  pagination={false}
+                />
+              </Space>
+            </Row>
+          )
+        }
         {displayModal && <Modal
           visible={displayModal}
           cancelText="Cancel"
