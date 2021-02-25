@@ -17,7 +17,7 @@ export const columns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.code;
+      return product?.finishedGood?.code;
     },
   },
   {
@@ -26,7 +26,7 @@ export const columns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.name;
+      return product?.finishedGood?.name;
     },
   },
   {
@@ -40,7 +40,7 @@ export const columns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return `${product.bigUnit.name} (${product.bigUnit.code}) / ${product.smallUnit.name} (${product.smallUnit.code})`;
+      return `${product.bigUnit?.name} (${product.bigUnit?.code}) / ${product?.smallUnit?.name} (${product?.smallUnit?.code})`;
     },
   },
 ];
@@ -58,7 +58,7 @@ export const reportColumns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.code;
+      return product?.finishedGood?.code;
     },
   },
   {
@@ -67,7 +67,7 @@ export const reportColumns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.name;
+      return product?.finishedGood?.name;
     },
   },
   {
@@ -81,7 +81,7 @@ export const reportColumns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return `${product.bigUnit.name} (${product.bigUnit.code}) / ${product.smallUnit.name} (${product.smallUnit.code})`;
+      return `${product?.bigUnit?.name} (${product?.bigUnit?.code}) / ${product?.smallUnit?.name} (${product?.smallUnit?.code})`;
     },
   },
 ];

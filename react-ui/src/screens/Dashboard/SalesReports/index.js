@@ -147,6 +147,8 @@ const SalesReports = (props) => {
         key: 'srCode',
         render: () => (
           <Select
+            showSearch
+            optionFilterProp="children"
             style={{ width: '95%' }}
             placeholder="Select Sales Rep"
             onChange={(e) => {
@@ -190,6 +192,8 @@ const SalesReports = (props) => {
         key: 'item',
         render: () => (
           <Select
+            showSearch
+            optionFilterProp="children"
             style={{ width: '95%' }}
             placeholder="Select Product"
             onChange={(e) => {
@@ -216,6 +220,8 @@ const SalesReports = (props) => {
         key: 'depot',
         render: () => (
           <Select
+            showSearch
+            optionFilterProp="children"
             style={{ width: '95%' }}
             placeholder="Select Depot"
             onChange={(e) => {
