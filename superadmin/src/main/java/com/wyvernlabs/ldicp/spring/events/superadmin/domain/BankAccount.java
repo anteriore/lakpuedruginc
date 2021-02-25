@@ -24,8 +24,8 @@ public class BankAccount {
 		
 	}
 
-	public BankAccount(String id, String code, String name) {
-		this.accountNumber =id;
+	public BankAccount(String accountNumber, String code, String name) {
+		this.accountNumber =accountNumber;
 		this.code = code;
 		this.name = name;
 
@@ -37,6 +37,17 @@ public class BankAccount {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+	public String getAccountNumber() {
+		return accountNumber;
+	}
+
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+
+
+
 
 	public String getCode() {
 		return code;

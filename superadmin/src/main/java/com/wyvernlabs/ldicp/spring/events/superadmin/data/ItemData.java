@@ -23,8 +23,8 @@ public class ItemData {
 		ItemType rawMaterial = itemTypeRepository.getOne(1L);
 		ItemType packagingMaterial = itemTypeRepository.getOne(2L);
 		ItemType engineeringMaterial = itemTypeRepository.getOne(3L);
-		Unit grams = unitRepository.findByCode("g");
-		Unit pieces = unitRepository.findByCode("pc");
+		Unit grams = unitRepository.findByCode("G");
+		Unit pieces = unitRepository.findByCode("PCS");
 		Unit liter = unitRepository.findByCode("L");
 
 		Item tuna = new Item();

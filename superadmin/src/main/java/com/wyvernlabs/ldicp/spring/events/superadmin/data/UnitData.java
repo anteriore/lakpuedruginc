@@ -19,6 +19,8 @@ public class UnitData {
 	private UnitRepository unitRepository;
 	
 	public void init() {
+
+		/*
 		Unit g = new Unit();
 		g.setName("Gram");
 		g.setCode("g");
@@ -38,9 +40,9 @@ public class UnitData {
 		liter.setName("Liter");
 		liter.setCode("L");
 		unitRepository.save(liter);
-		
+		*/
 
-	//	readCSV("unitData.csv");
+		readCSV("unitData.csv");
 	}
 
 
@@ -63,8 +65,8 @@ public class UnitData {
 				
 
 					Unit tempunit = new Unit();
-					tempunit.setName(data[0].replace("\"", ""));
-					tempunit.setCode(data[1].replace("\"", ""));
+					tempunit.setCode(data[0].replace("\"", ""));
+					tempunit.setName(data[1].replace("\"", ""));
 				
 					unitRepository.save(tempunit);
 

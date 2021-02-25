@@ -55,7 +55,7 @@ public class OrderSlipData {
 			OrderedProduct orderedProduct = new OrderedProduct();
 			orderedProduct.setOrderSlipNo(orderSlip.getNumber());
 			// orderedProduct.setProduct(productRepository.getOne(soProduct.getProduct().getId()));
-			orderedProduct.setQuantity(50);
+			orderedProduct.setQuantity(504);
 			orderedProduct.setSalesOrderProductId(soProduct.getId());
 			orderedProducts.add(orderedProduct);
 		}

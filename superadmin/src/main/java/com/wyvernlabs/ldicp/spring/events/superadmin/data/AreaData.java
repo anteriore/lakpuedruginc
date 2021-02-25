@@ -21,21 +21,53 @@ public class AreaData {
 	public void init() {
 		Company c1 = companyRepository.getOne(1L);
 		Area area1 = new Area();
-		area1.setCode("L");
-		area1.setName("LUZON");
+		area1.setCode("1");
+		area1.setName("QC HO");
 		area1.setCompany(c1);
 		areaRepository.save(area1);
-		Area area2 = new Area();
-		area2.setCode("V");
-		area2.setName("VISAYAS");
-		area2.setCompany(c1);
-		areaRepository.save(area2);
-		Area area3 = new Area();
-		area3.setCode("M");
-		area3.setName("MINDANAO");
-		area3.setCompany(c1);
-		areaRepository.save(area3);
+
+
+		area1 = new Area();
+		area1.setCode("2");
+		area1.setName("BINAN");
+		area1.setCompany(c1);
+		areaRepository.save(area1);
 		
-		
+		area1 = new Area();
+		area1.setCode("3");
+		area1.setName("MATATAG");
+		area1.setCompany(c1);
+		areaRepository.save(area1);
+
+		area1 = new Area();
+		area1.setCode("4");
+		area1.setName("BACOLOD");
+		area1.setCompany(c1);
+		areaRepository.save(area1);
+
+		area1 = new Area();
+		area1.setCode("5");
+		area1.setName("CEBU");
+		area1.setCompany(c1);
+		areaRepository.save(area1);
+
+		area1 = new Area();
+		area1.setCode("6");
+		area1.setName("ILOILO");
+		area1.setCompany(c1);
+		areaRepository.save(area1);
+
+
+		area1 = new Area();
+		area1.setCode("7");
+		area1.setName("DAVAO");
+		area1.setCompany(c1);
+		areaRepository.save(area1);
+
+		area1 = new Area();
+		area1.setCode("8");
+		area1.setName("CDO");
+		area1.setCompany(c1);
+		areaRepository.save(area1);
 	}
 }

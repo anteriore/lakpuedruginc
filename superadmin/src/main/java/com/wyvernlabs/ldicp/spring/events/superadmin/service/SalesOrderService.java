@@ -23,6 +23,21 @@ public class SalesOrderService {
 
 			System.out.println(salesOrder.getNumber());
 		}
+
+
+		Long id = salesOrderRepository.getMaxId();
+		//di sya number dapat sales order so number
+		if (id == null) {
+			salesOrder.setNumber("SO-1");
+		} else {
+			salesOrder.setNumber("SO-" +( ++id));
+		}
+
+		if(salesOrder.getId()!=null){
+			salesOrder.setNumber("SO-"+salesOrder.getId());
+		}
+
+		
 		return salesOrderRepository.save(salesOrder);
 	}
 }
