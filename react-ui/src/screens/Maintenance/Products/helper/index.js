@@ -37,9 +37,9 @@ export const formatPayload = (rawValues, selectedFinishedGoods) => {
 export const formatInitialFormVal = (rawValues) => {
   const newValue = _.clone(rawValues);
   Object.entries(newValue).forEach(([key, values]) => {
-    if (key === 'expiration') {
+    /*if (key === 'expiration') {
       newValue[key] = moment(new Date(values));
-    }
+    }*/
 
     if (
       typeof values === 'object' &&

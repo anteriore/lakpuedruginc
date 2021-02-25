@@ -59,8 +59,9 @@ export const salesOrderHeader = [
     title: 'Expiration',
     dataIndex: 'product',
     key: 'expiration',
-    render: (object) => moment(new Date(object.expiration)).format('DD/MM/YYYY'),
-    datatype: 'date',
+    render: (object) => object.expiration
+    //render: (object) => moment(new Date(object.expiration)).format('DD/MM/YYYY'),
+    //datatype: 'date',
   },
   {
     title: 'Stock on Hand',

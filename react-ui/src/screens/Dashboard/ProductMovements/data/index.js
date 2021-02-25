@@ -80,7 +80,7 @@ export const tableProductInventory = [
     title: 'Expiration',
     dataIndex: ['product', 'expiration'],
     key: 'expiration',
-    render: (object) => moment(new Date(object)).format('DD/MM/YYYY')
+    //render: (object) => moment(new Date(object)).format('DD/MM/YYYY')
   },
   {
     title: 'Stock on Hand',

@@ -180,9 +180,6 @@ const FormDetails = () => {
         title: 'Expiration',
         dataIndex: 'product',
         key: 'product',
-        render: (object) => {
-          return moment(new Date(object.expiration)).format('DD/MM/YYYY');
-        },
       },
       {
         title: 'Stock',
