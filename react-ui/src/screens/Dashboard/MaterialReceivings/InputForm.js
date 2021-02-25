@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Space,
-  Empty,
-  message,
-} from 'antd';
+import { Form, Button, Row, Col, Typography, Table, Space, Empty, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
@@ -28,10 +18,9 @@ const InputForm = (props) => {
 
   const MISList = useSelector((state) => state.dashboard.materialIssuances.list);
 
-
   useEffect(() => {
     form.setFieldsValue(values);
-    if(hasTable){
+    if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
     // eslint-disable-next-line
@@ -99,8 +88,8 @@ const InputForm = (props) => {
     } else {
       formValues[key] = value;
     }
-    onValuesChange(formValues)
-    form.setFieldsValue(formValues)
+    onValuesChange(formValues);
+    form.setFieldsValue(formValues);
   };
 
   return (
@@ -136,12 +125,14 @@ const InputForm = (props) => {
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
                   <Space direction="vertical" size={20} style={{ width: '80%' }}>
-                    <Text style={{float: "left", marginLeft: "2%"}}>{'Received Items: '}</Text>
+                    <Text style={{ float: 'left', marginLeft: '2%' }}>{'Received Items: '}</Text>
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
                       pagination={false}
-                      locale={{ emptyText: <Empty description="No Material Issuance Slip Selected." /> }}
+                      locale={{
+                        emptyText: <Empty description="No Material Issuance Slip Selected." />,
+                      }}
                       summary={formTable.summary}
                     />
                   </Space>

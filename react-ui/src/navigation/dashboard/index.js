@@ -23,7 +23,7 @@ export const routes = [
     component: PurchaseRequests,
   },
   {
-    title: 'Receiving Receipts', 
+    title: 'Receiving Receipts',
     path: '/receiving-receipts',
     component: ReceivingReceipts,
   },

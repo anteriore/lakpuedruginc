@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
-import * as code from '../data/constants/status-code';
 import { useHistory } from 'react-router-dom';
+import * as code from '../data/constants/status-code';
 
 // for adding values on list form inputs
 export const updateList = (form, choices) => {
@@ -145,7 +145,7 @@ export const generateStatusMessage = (payload, currentModule) => {
   }
 };
 
-//for helper functions that use hooks
+// for helper functions that use hooks
 const GeneralHelper = (props) => {
   const history = useHistory();
 
@@ -157,33 +157,27 @@ const GeneralHelper = (props) => {
       },
     });
   };
-  
-  
-  const handleRequestResponse = ( responseList, onSuccess, onFail, returnPath) => {
-    let hasFailed = false
+
+  const handleRequestResponse = (responseList, onSuccess, onFail, returnPath) => {
+    let hasFailed = false;
     responseList.forEach((response) => {
-      if(response.hasOwnProperty('error') && !hasFailed) {
-        hasFailed = true
-        if(typeof onFail === 'function'){
-          onFail()
-        }
-        else {
-          pushErrorPage(response?.payload?.status ?? 400, returnPath)
+      if (response.hasOwnProperty('error') && !hasFailed) {
+        hasFailed = true;
+        if (typeof onFail === 'function') {
+          onFail();
+        } else {
+          pushErrorPage(response?.payload?.status ?? 400, returnPath);
         }
       }
-    }) 
-    if(!hasFailed){
-      if(onSuccess !== null) {
+    });
+    if (!hasFailed) {
+      if (onSuccess !== null) {
         onSuccess();
       }
     }
+  };
 
-  }
+  return { handleRequestResponse };
+};
 
-
-  return { handleRequestResponse }
-
-}
-
-export default GeneralHelper
-
+export default GeneralHelper;

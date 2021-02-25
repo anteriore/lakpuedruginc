@@ -9,7 +9,7 @@ export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payl
     const response = await axiosInstance.get(
       `/rest/sales-invoices/company/${payload}?token=${accessToken}`
     );
-    console.log("Response: ", response)
+    console.log('Response: ', response);
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -43,40 +43,45 @@ export const listSalesInvoiceByDepot = createAsyncThunk(
   }
 );
 
-export const listSalesInvoiceByDepotAndBalance = createAsyncThunk('listSalesInvoiceByDepotAndBalance', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(
-      `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
-    );
+export const listSalesInvoiceByDepotAndBalance = createAsyncThunk(
+  'listSalesInvoiceByDepotAndBalance',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+      );
 
-    const processedResponse = {
-      ...response,
-      data: filterSIByBalance(response.data, payload.hasBalance)
+      const processedResponse = {
+        ...response,
+        data: filterSIByBalance(response.data, payload.hasBalance),
+      };
+
+      const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-
-    const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
-
-    if (valid) {
-      return validatedResponse;
-    }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
-export const listSalesInvoiceByDepotAndStatus = createAsyncThunk('listSalesInvoiceByDepotAndStatus', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(
-      `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
-    );
+export const listSalesInvoiceByDepotAndStatus = createAsyncThunk(
+  'listSalesInvoiceByDepotAndStatus',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+      );
 
-    const processedResponse = {
-      ...response,
-      data: filterSIByStatus(response.data, payload.statuses)
-    }
+      const processedResponse = {
+        ...response,
+        data: filterSIByStatus(response.data, payload.statuses),
+      };
 
       const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
 
@@ -113,17 +118,14 @@ export const createSalesInvoice = createAsyncThunk(
 );
 
 const filterSIByBalance = (data, hasBalance) => {
-  const processedData = []
+  const processedData = [];
   data.forEach((salesInvoice) => {
-    if(hasBalance){
-      if(salesInvoice.remainingBalance > 0){
-        processedData.push(salesInvoice)
+    if (hasBalance) {
+      if (salesInvoice.remainingBalance > 0) {
+        processedData.push(salesInvoice);
       }
-    }
-    else {
-      if(salesInvoice.remainingBalance === 0){
-        processedData.push(salesInvoice)
-      }
+    } else if (salesInvoice.remainingBalance === 0) {
+      processedData.push(salesInvoice);
     }
   });
 
@@ -131,15 +133,14 @@ const filterSIByBalance = (data, hasBalance) => {
 };
 
 const filterSIByStatus = (data, statuses) => {
-  const processedData = []
+  const processedData = [];
   data.forEach((salesInvoice) => {
-    if(statuses.includes(salesInvoice.status)){
-      processedData.push(salesInvoice)
+    if (statuses.includes(salesInvoice.status)) {
+      processedData.push(salesInvoice);
     }
-  })
-  return processedData
-
-}
+  });
+  return processedData;
+};
 
 const initialState = {
   salesInvoiceList: [],
@@ -182,7 +183,7 @@ const salesInvoiceSlice = createSlice({
     },
     [listSalesInvoice.rejected]: (state, action) => {
       const { status } = action?.payload ?? { status: 400 };
-      console.log(status)
+      console.log(status);
       const { message: statusMessage, level } = generateStatusMessage(
         action?.payload ?? { status: 400 },
         'Sales Invoice'

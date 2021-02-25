@@ -131,25 +131,25 @@ const ReturnSlips = (props) => {
 
   const renderReportDetails = () => {
     return (
-        <>
-          <Row>
-            <Col span={12} style={{ display: 'flex' }}>
-              <Title level={5}>{`Report: ${formTitle}`}</Title>
-            </Col>
-            <Col span={12} style={{ display: 'flex' }}>
-              <Title level={5}>{`Dates: ${'all'}`}</Title>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12} style={{ display: 'flex' }}>
-              <Title level={5}>{`Company: ${
-                companies.find((companyData) => companyData.id === company).name
-              }`}</Title>
-            </Col>
-          </Row>
-        </>
-      )
-  }
+      <>
+        <Row>
+          <Col span={12} style={{ display: 'flex' }}>
+            <Title level={5}>{`Report: ${formTitle}`}</Title>
+          </Col>
+          <Col span={12} style={{ display: 'flex' }}>
+            <Title level={5}>{`Dates: ${'all'}`}</Title>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12} style={{ display: 'flex' }}>
+            <Title level={5}>{`Company: ${
+              companies.find((companyData) => companyData.id === company).name
+            }`}</Title>
+          </Col>
+        </Row>
+      </>
+    );
+  };
 
   const onSubmit = (data) => {
     // TODO: Data Validation

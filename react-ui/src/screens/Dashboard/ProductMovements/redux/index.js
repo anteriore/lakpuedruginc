@@ -1,47 +1,52 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import {checkResponseValidity, generateStatusMessage} from '../../../../helpers/general-helper';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
+export const listProductMovements = createAsyncThunk(
+  'listProductMovements',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const listProductMovements = createAsyncThunk('listProductMovements', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/product-movements/company/${payload}?token=${accessToken}`
+      );
 
-  try{
-    const response = await axiosInstance.get(
-      `/rest/product-movements/company/${payload}?token=${accessToken}`
-    )
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
-    
-    if(valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
-export const createProductMovement = createAsyncThunk('createProductMovement', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const createProductMovement = createAsyncThunk(
+  'createProductMovement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  try {
-    const response = await axiosInstance.post(
-      `/rest/product-movements?token=${accessToken}`,
-      payload
-    );
+    try {
+      const response = await axiosInstance.post(
+        `/rest/product-movements?token=${accessToken}`,
+        payload
+      );
 
-    const { response: validateResponse, valid } = checkResponseValidity(response);
-    if (valid) {
-      return validateResponse;
+      const { response: validateResponse, valid } = checkResponseValidity(response);
+      if (valid) {
+        return validateResponse;
+      }
+      return thunkAPI.rejectWithValue(validateResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validateResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
 const initialState = {
   productMovementList: [],
@@ -56,19 +61,22 @@ const productMovementSlice = createSlice({
   name: 'productMovement',
   initialState,
   reducers: {
-    clearData: () => initialState
+    clearData: () => initialState,
   },
   extraReducers: {
     [listProductMovements.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for product movements`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for product movements`,
+      };
     },
     [listProductMovements.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(action.payload, 'Product Movement');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Product Movement'
+      );
 
       return {
         ...state,
@@ -76,12 +84,15 @@ const productMovementSlice = createSlice({
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage
-      }
+        statusMessage,
+      };
     },
     [listProductMovements.rejected]: (state, action) => {
-      const {status} = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(action.payload, 'Product Movement');
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Product Movement'
+      );
 
       return {
         ...state,
@@ -89,8 +100,8 @@ const productMovementSlice = createSlice({
         statusLevel: level,
         responseCode: status,
         action: 'fetch',
-        statusMessage
-      }
+        statusMessage,
+      };
     },
     [createProductMovement.pending]: (state) => {
       return {
@@ -132,8 +143,8 @@ const productMovementSlice = createSlice({
         statusMessage,
       };
     },
-  }
-})
+  },
+});
 
-export const {clearData} = productMovementSlice.actions;
+export const { clearData } = productMovementSlice.actions;
 export default productMovementSlice.reducer;

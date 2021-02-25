@@ -149,8 +149,8 @@ export const formDetails = {
       placeholder: 'Sales order',
       type: 'selectSearch',
       render: (sales) => {
-        console.log(sales)
-        return `[${sales.number} ] ${sales.client.name}, Sales Rep: ${sales.client.salesRep.name}`
+        console.log(sales);
+        return `[${sales.number} ] ${sales.client.name}, Sales Rep: ${sales.client.salesRep.name}`;
       },
       choices: [],
     },

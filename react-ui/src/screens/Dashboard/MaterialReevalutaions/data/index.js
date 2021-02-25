@@ -4,7 +4,7 @@ export const tableHeader = [
     dataIndex: 'approvedReceipt',
     key: 'approvedReceipt',
     align: 'center',
-    render: (object) => object?.controlNumber ?? ""
+    render: (object) => object?.controlNumber ?? '',
   },
   {
     title: 'Date',
@@ -40,7 +40,10 @@ export const formDetails = {
       name: 'controlNumber',
       rules: [{ required: true, message: 'Please select a control number' }],
       placeholder: 'Approved Reciepts ',
-      render: (object) => `${object?.controlNumber ?? ""} - ${object?.item?.name ?? ""} - ${object?.item?.code ?? ""} - ${object?.item?.type?.name ?? ""}`,
+      render: (object) =>
+        `${object?.controlNumber ?? ''} - ${object?.item?.name ?? ''} - ${
+          object?.item?.code ?? ''
+        } - ${object?.item?.type?.name ?? ''}`,
       type: 'selectSearch',
       choices: [],
     },
@@ -94,5 +97,5 @@ export const formDetails = {
       placeholder: 'Remarks (optional)',
       type: 'textArea',
     },
-  ]
-}
+  ],
+};

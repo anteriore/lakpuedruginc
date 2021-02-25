@@ -12,11 +12,13 @@ const initialState = {
 
 export const listInventory = createAsyncThunk('listInventory', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  var { company, fnCallback } = payload;
-  if(typeof fnCallback === 'undefined'){
-    fnCallback = () => {}
+  let { company, fnCallback } = payload;
+  if (typeof fnCallback === 'undefined') {
+    fnCallback = () => {};
   }
-  const response = await axiosInstance.get(`rest/inventory/company/${company}?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `rest/inventory/company/${company}?token=${accessToken}`
+  );
 
   if (typeof response !== 'undefined') {
     const { status } = response;
@@ -45,65 +47,65 @@ export const listInventory = createAsyncThunk('listInventory', async (payload, t
 });
 
 export const addInventory = createAsyncThunk('addInventory', async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`rest/inventory/?token=${accessToken}`, payload);
-    
-    return response;
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.post(`rest/inventory/?token=${accessToken}`, payload);
+
+  return response;
 });
 
 export const updateInventory = createAsyncThunk('updateInventory', async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`/rest/inventory/?token=${accessToken}`, payload);
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.post(`/rest/inventory/?token=${accessToken}`, payload);
 
-    return response;
+  return response;
 });
-  
+
 export const deleteInventory = createAsyncThunk('deleteInventory', async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`rest/inventory/delete?token=${accessToken}`, payload);
-    
-    return response;
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.post(`rest/inventory/delete?token=${accessToken}`, payload);
+
+  return response;
 });
 
 export const getInventory = createAsyncThunk('getInventory', async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(`rest/inventory/${payload.id}?token=${accessToken}`);
-    
-    return response;
+  const accessToken = thunkAPI.getState().auth.token;
+  const response = await axiosInstance.get(`rest/inventory/${payload.id}?token=${accessToken}`);
+
+  return response;
 });
 
 const inventorySlice = createSlice({
-    name: 'inventory',
-    initialState,
-    reducers: {
-      clearData: () => initialState,
+  name: 'inventory',
+  initialState,
+  reducers: {
+    clearData: () => initialState,
+  },
+  extraReducers: {
+    [listInventory.pending]: (state, action) => {
+      state.status = 'loading';
     },
-    extraReducers: {
-      [listInventory.pending]: (state, action) => {
-        state.status = 'loading';
-      },
-      [listInventory.fulfilled]: (state, action) => {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
-  
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for inventory';
-        }
-  
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
-      },
-      [listInventory.rejected]: (state, action) => {
-        return {
-          ...state,
-          status: 'failed',
-          action: 'get',
-          statusMessage: message.ITEMS_GET_REJECTED,
+    [listInventory.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for inventory';
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listInventory.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
       };
     },
   },

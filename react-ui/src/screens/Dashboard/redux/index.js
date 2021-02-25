@@ -17,7 +17,6 @@ import receivingReceipts from '../ReceivingReceipts/redux';
 import approvedReceipts from '../ApprovedReceipts/redux';
 
 const dashboard = combineReducers({
-  approvedReceipts,
   purchaseRequests,
   productInventories,
   FGIssuances,

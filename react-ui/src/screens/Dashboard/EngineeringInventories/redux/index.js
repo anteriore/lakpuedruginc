@@ -11,38 +11,53 @@ const initialState = {
   action: '',
 };
 
-export const listEngineeringInventory = createAsyncThunk('listEngineeringInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+export const listEngineeringInventory = createAsyncThunk(
+  'listEngineeringInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
 
-  try {
-    const response = await axiosInstance.get(`rest/engineering-inventory/company/${company}?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/engineering-inventory/company/${company}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
+);
 
-});
+export const addEngineeringInventory = createAsyncThunk(
+  'addEngineeringInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
+    const response = await axiosInstance.post(
+      `rest/engineering-inventory/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-export const addEngineeringInventory = createAsyncThunk('addEngineeringInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const deleteEngineeringInventory = createAsyncThunk(
+  'deleteEngineeringInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/engineering-inventory/?token=${accessToken}`, payload);
-  return response;
-});
-
-export const deleteEngineeringInventory = createAsyncThunk('deleteEngineeringInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-
-  const response = await axiosInstance.post(`rest/engineering-inventory/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/engineering-inventory/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const engineeringInventorySlice = createSlice({
   name: 'engineeringInventories',

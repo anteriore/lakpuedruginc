@@ -72,23 +72,22 @@ const PurchaseRequests = (props) => {
     setFormData(null);
     dispatch(listItemSummary({ company, message })).then(() => {
       history.push(`${path}/new`);
-    })
-  }
+    });
+  };
 
   const handleUpdate = (data) => {
-    if(data.status === 'Pending'){
+    if (data.status === 'Pending') {
       setFormTitle('Edit Purchase Request');
       setFormMode('edit');
       setLoading(true);
       const itemData = listData.find((item) => item.id === data.id);
       dispatch(listItemSummary({ company, message })).then((response) => {
-        const inputData = loadDataForUpdate(itemData, response.payload.data)
+        const inputData = loadDataForUpdate(itemData, response.payload.data);
         setFormData(inputData);
         history.push(`${path}/${data.id}`);
-      })
-    }
-    else {
-      message.error("This action may only be performed on pending purchase requests.")
+      });
+    } else {
+      message.error('This action may only be performed on pending purchase requests.');
     }
   };
 
@@ -103,7 +102,7 @@ const PurchaseRequests = (props) => {
   };
   const handleRetrieve = (data) => {
     setDisplayModal(true);
-    setSelectedData(data)
+    setSelectedData(data);
   };
 
   const handleApprove = (data) => {
@@ -121,7 +120,7 @@ const PurchaseRequests = (props) => {
   };
 
   const onSubmit = (data) => {
-    const payload = processDataForSubmission(data, company)
+    const payload = processDataForSubmission(data, company);
 
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -130,25 +129,26 @@ const PurchaseRequests = (props) => {
     dispatch(addPR(payload)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listPR({ company: company, message })).then(() => {
+        dispatch(listPR({ company, message })).then(() => {
           history.goBack();
-          setLoading(false)
+          setLoading(false);
         });
       } else {
         setLoading(false);
-        if(formMode === 'add'){
-          message.error(`Unable to add Purchase Request. Please double check the provided information.`);
-        }
-        else {
+        if (formMode === 'add') {
+          message.error(
+            `Unable to add Purchase Request. Please double check the provided information.`
+          );
+        } else {
           message.error(`Something went wrong. Unable to update ${data.number}.`);
         }
       }
-    })
+    });
   };
-  
+
   const handleCancelButton = () => {
     setFormData(null);
-    setLoading(false)
+    setLoading(false);
   };
 
   const closeModal = () => {
@@ -184,17 +184,17 @@ const PurchaseRequests = (props) => {
             <Title level={3} style={{ float: 'left' }}>
               {title}
             </Title>
-            {actions.includes("create") && 
-            <Button
-              style={{ float: 'right', marginRight: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={(e) => {
-                handleAdd()
-              }}
-            >
-              Add
-            </Button>
-            }
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={(e) => {
+                  handleAdd();
+                }}
+              >
+                Add
+              </Button>
+            )}
           </Col>
         </Row>
         <Row>
@@ -208,8 +208,8 @@ const PurchaseRequests = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={actions.includes("update")}
-                deleteEnabled={actions.includes("delete")}
+                updateEnabled={actions.includes('update')}
+                deleteEnabled={actions.includes('delete')}
               />
             </Col>
           )}
@@ -244,7 +244,7 @@ const PurchaseRequests = (props) => {
                     }
                     if (item.type === 'select' || item.type === 'selectSearch') {
                       const itemData = selectedData[item.name];
-                      if(itemData !== null && typeof itemData !== 'undefined'){
+                      if (itemData !== null && typeof itemData !== 'undefined') {
                         return (
                           <Descriptions.Item label={item.label}>
                             {itemData[item.selectName]}

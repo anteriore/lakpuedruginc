@@ -23,6 +23,8 @@ public interface PurchaseRequestRepository extends JpaRepository<PurchaseRequest
 
 	Set<PurchaseRequest> findByCompanyAndStatus(Company company, String string);
 
+	Set<PurchaseRequest> findByCompanyAndDepartmentAndStatus(Company company, Department d, String string);
+
 	List<PurchaseRequest> findByCompanyAndDepartment(Company company, Department d);
 
 	@Query("SELECT MAX(prf.id) FROM PurchaseRequest prf")

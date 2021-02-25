@@ -1,14 +1,12 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listEmployees = createAsyncThunk('listEmployees', async(_, thunkAPI ) => {
+export const listEmployees = createAsyncThunk('listEmployees', async (_, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
-    const response = await axiosInstance.get(
-      `/rest/employees?token=${accessToken}`
-    );
+    const response = await axiosInstance.get(`/rest/employees?token=${accessToken}`);
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -21,14 +19,11 @@ export const listEmployees = createAsyncThunk('listEmployees', async(_, thunkAPI
   }
 });
 
-export const createEmployee = createAsyncThunk('createEmployee', async(payload, thunkAPI) => {
+export const createEmployee = createAsyncThunk('createEmployee', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
-    const response = await axiosInstance.post(
-      `/rest/employees?token=${accessToken}`,
-      payload
-    );
+  try {
+    const response = await axiosInstance.post(`/rest/employees?token=${accessToken}`, payload);
 
     const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
@@ -40,10 +35,10 @@ export const createEmployee = createAsyncThunk('createEmployee', async(payload, 
   }
 });
 
-export const deleteEmployee = createAsyncThunk('deleteEmployee', async(payload, thunkAPI) => {
+export const deleteEmployee = createAsyncThunk('deleteEmployee', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
+  try {
     const response = await axiosInstance.post(
       `/rest/employees/delete?token=${accessToken}`,
       payload.id
@@ -66,7 +61,7 @@ const initialState = {
   responseCode: null,
   statusMessage: '',
   action: '',
-}
+};
 
 const employeesSlice = createSlice({
   name: 'employees',
@@ -84,10 +79,7 @@ const employeesSlice = createSlice({
     },
     [listEmployees.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Employees'
-      );
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employees');
 
       return {
         ...state,
@@ -100,10 +92,7 @@ const employeesSlice = createSlice({
     },
     [listEmployees.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Employees'
-      );
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employees');
 
       return {
         ...state,
@@ -126,10 +115,7 @@ const employeesSlice = createSlice({
     },
     [createEmployee.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Employee'
-      );
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
 
       return {
         ...state,
@@ -141,10 +127,7 @@ const employeesSlice = createSlice({
     },
     [createEmployee.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Employee'
-      );
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
 
       return {
         ...state,
@@ -166,10 +149,7 @@ const employeesSlice = createSlice({
     },
     [deleteEmployee.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Employee'
-      );
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
 
       return {
         ...state,
@@ -181,10 +161,7 @@ const employeesSlice = createSlice({
     },
     [deleteEmployee.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Employee'
-      );
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
 
       return {
         ...state,
@@ -194,8 +171,8 @@ const employeesSlice = createSlice({
         statusMessage,
       };
     },
-  }
-})
+  },
+});
 
 export const { clearData } = employeesSlice.actions;
 export default employeesSlice.reducer;

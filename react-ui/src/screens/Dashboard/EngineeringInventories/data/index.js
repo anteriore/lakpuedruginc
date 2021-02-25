@@ -5,8 +5,8 @@ export const columns = [
     key: 'item',
     datatype: 'object',
     dataToString: (item) => {
-      return item.code
-    }
+      return item.code;
+    },
   },
   {
     title: 'Item',
@@ -14,13 +14,13 @@ export const columns = [
     key: 'item',
     datatype: 'object',
     dataToString: (item) => {
-      return item.name
-    }
+      return item.name;
+    },
   },
   {
     title: 'Quantity',
     dataIndex: 'quantity',
-    key: 'quantity'
+    key: 'quantity',
   },
   {
     title: 'Unit',
@@ -28,7 +28,7 @@ export const columns = [
     key: 'item',
     datatype: 'object',
     dataToString: (item) => {
-      return `${item.unit.name}`
+      return `${item.unit.name}`;
     },
   },
 ];

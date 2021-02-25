@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
-  Skeleton,
-  Typography, 
-  Button,
-  Modal,
-  Space,
-  Table,
-  Empty,
-  message,  
-} from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listMaterialIssuance, addMaterialIssuance, deleteMaterialIssuance, clearData } from './redux';
+import {
+  listMaterialIssuance,
+  addMaterialIssuance,
+  deleteMaterialIssuance,
+  clearData,
+} from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listInventory, clearData as clearInventory } from '../Inventory/redux';
 import FormScreen from '../../../components/forms/FormScreen';
@@ -42,7 +36,6 @@ const MaterialIssuances = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  
 
   useEffect(() => {
     let isCancelled = false;
@@ -63,7 +56,7 @@ const MaterialIssuances = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
-  
+
   const handleAdd = () => {
     setFormTitle('Create Material Issuance');
     setFormMode('add');
@@ -73,15 +66,14 @@ const MaterialIssuances = (props) => {
       dispatch(listInventory({ company, message })).then(() => {
         history.push(`${path}/new`);
         setLoading(false);
-      })
+      });
     });
   };
 
-  const handleUpdate = (data) => {
-  };
+  const handleUpdate = (data) => {};
 
   const handleDelete = (data) => {
-    if(data.status === "Pending"){
+    if (data.status === 'Pending') {
       dispatch(deleteMaterialIssuance(data.id)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
@@ -94,9 +86,8 @@ const MaterialIssuances = (props) => {
           message.error(`Unable to delete ${data.misNo}`);
         }
       });
-    }
-    else {
-      message.error("This action can only be performed on pending material issuances.")
+    } else {
+      message.error('This action can only be performed on pending material issuances.');
     }
   };
 
@@ -124,7 +115,7 @@ const MaterialIssuances = (props) => {
       requestedBy: {
         id: user.id,
       },
-      inventoryList: inventoryList
+      inventoryList,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -152,7 +143,9 @@ const MaterialIssuances = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create Material Issuance. Please double check the provided information.`);
+          message.error(
+            `Unable to create Material Issuance. Please double check the provided information.`
+          );
         }
       });
     }
@@ -237,7 +230,7 @@ const MaterialIssuances = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.misNo} Details`} 
+                  title={`${selectedData.misNo} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />

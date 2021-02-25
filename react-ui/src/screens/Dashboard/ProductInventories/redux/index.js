@@ -11,55 +11,75 @@ const initialState = {
   action: '',
 };
 
-export const listProductInventory = createAsyncThunk('listProductInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+export const listProductInventory = createAsyncThunk(
+  'listProductInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
 
-  try {
-    const response = await axiosInstance.get(`rest/product-inventory/company/${company}?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/product-inventory/company/${company}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
+);
 
-});
+export const listProductInventoryByDepot = createAsyncThunk(
+  'listProductInventoryByDepot',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { depot } = payload;
 
-export const listProductInventoryByDepot = createAsyncThunk('listProductInventoryByDepot', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { depot } = payload
+    try {
+      const response = await axiosInstance.get(
+        `rest/product-inventory/depot/${depot}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  try {
-    const response = await axiosInstance.get(`rest/product-inventory/depot/${depot}?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
+);
 
-});
+export const addProductInventory = createAsyncThunk(
+  'addProductInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const addProductInventory = createAsyncThunk('addProductInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `rest/product-inventory/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-  const response = await axiosInstance.post(`rest/product-inventory/?token=${accessToken}`, payload);
-  return response;
-});
+export const deleteProductInventory = createAsyncThunk(
+  'deleteProductInventory',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const deleteProductInventory = createAsyncThunk('deleteProductInventory', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-
-  const response = await axiosInstance.post(`rest/product-inventory/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/product-inventory/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const productInventorySlice = createSlice({
   name: 'productInventories',

@@ -5,20 +5,16 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
+import { unwrapResult } from '@reduxjs/toolkit';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import InputForm from './InputForm';
 import { formatPayload } from './helpers';
-import {
-  listOrderSlips,
-  createOrderSlips,
-  clearData,
-} from './redux';
+import { listOrderSlips, createOrderSlips, clearData } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
-import { unwrapResult } from '@reduxjs/toolkit';
 import statusDialogue from '../../../components/StatusDialogue';
 
 const { Title } = Typography;
@@ -28,7 +24,9 @@ const OrderSlips = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
-  const { orderSlipsList, action, statusMessage, status, statusLevel } = useSelector((state) => state.sales.orderSlips);
+  const { orderSlipsList, action, statusMessage, status, statusLevel } = useSelector(
+    (state) => state.sales.orderSlips
+  );
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedOS, setSelectedOS] = useState(null);
   const dispatch = useDispatch();
@@ -133,14 +131,17 @@ const OrderSlips = (props) => {
   useEffect(() => {
     setContentLoading(true);
     let isCancelled = false;
-    dispatch(listOrderSlips(company)).then(unwrapResult).then(() => {
-      if(isCancelled) {
-        dispatch(clearData());
-      }
-      setContentLoading(false)
-    }).catch((rejectValueOrSerializedError) => {
-      console.log(rejectValueOrSerializedError)
-    })
+    dispatch(listOrderSlips(company))
+      .then(unwrapResult)
+      .then(() => {
+        if (isCancelled) {
+          dispatch(clearData());
+        }
+        setContentLoading(false);
+      })
+      .catch((rejectValueOrSerializedError) => {
+        console.log(rejectValueOrSerializedError);
+      });
 
     return function cleanup() {
       dispatch(clearData());
@@ -200,10 +201,15 @@ const OrderSlips = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            {actions.includes("create") &&
-            <Button loading={contentLoading} icon={<PlusOutlined />} onClick={() => handleAddButton()}>
-              Add
-            </Button>}
+            {actions.includes('create') && (
+              <Button
+                loading={contentLoading}
+                icon={<PlusOutlined />}
+                onClick={() => handleAddButton()}
+              >
+                Add
+              </Button>
+            )}
           </Col>
           <Col span={20}>
             {contentLoading ? (

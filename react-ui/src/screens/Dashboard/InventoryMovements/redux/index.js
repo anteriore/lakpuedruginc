@@ -11,37 +11,53 @@ const initialState = {
   action: '',
 };
 
-export const listInventoryMovement = createAsyncThunk('listInventoryMovement', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+export const listInventoryMovement = createAsyncThunk(
+  'listInventoryMovement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
 
-  try {
-    const response = await axiosInstance.get(`rest/inventory-movements/company/${company}?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/inventory-movements/company/${company}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
+);
 
-});
+export const addInventoryMovement = createAsyncThunk(
+  'addInventoryMovement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const addInventoryMovement  = createAsyncThunk('addInventoryMovement', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `rest/inventory-movements/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-  const response = await axiosInstance.post(`rest/inventory-movements/?token=${accessToken}`, payload);
-  return response;
-});
+export const deleteInventoryMovement = createAsyncThunk(
+  'deleteInventoryMovement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const deleteInventoryMovement  = createAsyncThunk('deleteInventoryMovement', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-
-  const response = await axiosInstance.post(`rest/inventory-movements/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/inventory-movements/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const inventoryMovementSlice = createSlice({
   name: 'inventoryMovements',
