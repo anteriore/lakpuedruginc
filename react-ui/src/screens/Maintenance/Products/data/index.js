@@ -82,10 +82,11 @@ export const formDetails = {
       placeholder: 'Lot Number',
     },
     {
-      label: 'Expiration Date',
+      label: 'Expiration (in years)',
       name: 'expiration',
-      type: 'date',
-      rules: [{ type: 'object', required: true, message: 'Please select expiration date' }],
+      type: 'number',
+      min: 0,
+      rules: [{ type: 'object', required: true, message: 'Please enter a valid value for expiration (in years)' }],
       placeholder: 'Product expiration',
     },
     {
