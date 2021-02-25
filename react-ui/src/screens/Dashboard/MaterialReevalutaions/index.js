@@ -72,7 +72,7 @@ const MaterialReevaluations = (props) => {
   }, [dispatch, company]);
 
   const handleAddButton = () => {
-    dispatch(listApprovedReceipts(company)).then((dataAR) => {
+    dispatch(listApprovedReceipts({company})).then((dataAR) => {
       handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
     });
   };
