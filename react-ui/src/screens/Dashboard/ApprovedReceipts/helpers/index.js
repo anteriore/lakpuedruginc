@@ -14,11 +14,11 @@ export const formatPayload = (approvalId, company, data) => {
         modified: data.modified,
         remarks: data.remarks,
 
-        receivingReceipt: { id: data.receivingReceipt},
+        receivingReceipt: { id: data.receivingReceipt },
         item: { id: data.item },
-        unit: { id: data.item.unit },
+        unit: { id: data.item.unit.id },
 
-        receivedQuantity: data.reveivedQuantity,
+        receivedQuantity: data.receivedQuantity,
         approvedQuantity: data.approvedQuantity,
         rejectedQuantity: data.rejectedQuantity,
         qcSamples: data.qcSamples,

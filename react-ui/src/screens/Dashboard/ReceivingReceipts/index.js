@@ -20,9 +20,9 @@ const ReceivingReceipts = (props) => {
   const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const { id } = useSelector((state) => state.auth.user);
+  
   const [displayModal, setDisplayModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
 
