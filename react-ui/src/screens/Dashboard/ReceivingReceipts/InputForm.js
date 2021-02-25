@@ -16,7 +16,6 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState();
-  const [contentLoading, setContentLoading] = useState(true);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
@@ -33,7 +32,6 @@ const InputForm = (props) => {
       receivedBy: `${user.firstName} ${user.lastName}`,
     });
 
-    setContentLoading(false);
   }, [user, form]);
 
 
