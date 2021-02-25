@@ -32,13 +32,13 @@ const InputForm = (props) => {
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
-  const [requireMO, setRequireMO] = useState(false) //for toggling MO input
+  const [requireMO, setRequireMO] = useState(false); // for toggling MO input
 
   const toggleName = formDetails.toggle_name;
 
   useEffect(() => {
     form.setFieldsValue(values);
-    if(hasTable){
+    if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
@@ -95,7 +95,7 @@ const InputForm = (props) => {
             key: field.name,
             visible: false,
           });
-        } else if (field.type === 'select' === 'selectSearch') {
+        } else if ((field.type === 'select') === 'selectSearch') {
           columns.push({
             title: field.label,
             key: field.name,
@@ -231,16 +231,14 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
-    if(values.hasOwnProperty("classification")){
-      if(values.classification === "MO") {
-        setRequireMO(true)
-      } 
-      else {
-        setRequireMO(false)
+    if (values.hasOwnProperty('classification')) {
+      if (values.classification === 'MO') {
+        setRequireMO(true);
+      } else {
+        setRequireMO(false);
       }
-    }
-    else if(values.hasOwnProperty("type")){
-      form.setFieldsValue({classification: null})
+    } else if (values.hasOwnProperty('type')) {
+      form.setFieldsValue({ classification: null });
     }
 
     if (toggleName !== null && typeof toggleName !== 'undefined') {
@@ -271,9 +269,8 @@ const InputForm = (props) => {
                 if (requireMO) {
                   return <FormItem item={item} onFail={onFail} />;
                 }
-                else {
-                  return null;
-                }
+
+                return null;
               }
               return <FormItem item={item} onFail={onFail} />;
             })}

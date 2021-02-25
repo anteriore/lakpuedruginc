@@ -96,10 +96,11 @@ const Units = (props) => {
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
-        {actions.includes("create") &&
-        <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
-          Add
-        </Button>}
+        {actions.includes('create') && (
+          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+            Add
+          </Button>
+        )}
       </Col>
       <Col span={20}>
         <TableDisplay
@@ -107,8 +108,8 @@ const Units = (props) => {
           data={unitList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes("update")}
-          deleteEnabled={actions.includes("delete")}
+          updateEnabled={actions.includes('update')}
+          deleteEnabled={actions.includes('delete')}
         />
       </Col>
       <SimpleForm

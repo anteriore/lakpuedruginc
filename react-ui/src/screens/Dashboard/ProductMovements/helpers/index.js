@@ -4,24 +4,24 @@ export const formatPMPayload = (approvalId, company, value) => {
   formattedValue = {
     ...formattedValue,
     date: value.date,
-    depot: {id: value.depot},
+    depot: { id: value.depot },
     type: value.type,
-    company: {id: company},
-    requestedBy: {id: approvalId},
+    company: { id: company },
+    requestedBy: { id: approvalId },
     remarks: value.remarks,
-    products: []
-  }
+    products: [],
+  };
 
   value.product.forEach((prod) => {
     let newProductValue = {};
     newProductValue = {
       ...newProductValue,
-      product: {id: prod.id},
-      quantity: prod.requestedQuantity
-    }
+      product: { id: prod.id },
+      quantity: prod.requestedQuantity,
+    };
 
     formattedValue.products.push(newProductValue);
-  })
+  });
 
   return formattedValue;
-}
+};

@@ -120,8 +120,8 @@ const FormDetails = () => {
         onChange: (e) => {
           dispatch(clearOS());
           dispatch(clearSI());
-          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ["Pending"] }));
-          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ["Pending"] }));
+          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] }));
+          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] }));
         },
       },
       {

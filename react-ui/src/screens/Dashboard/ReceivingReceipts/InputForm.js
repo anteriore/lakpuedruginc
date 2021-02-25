@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Form, Button, InputNumber, Input, Select, Checkbox, Modal, Row, Col, Typography, Table, Empty, message,
+import {
+  Form,
+  Button,
+  InputNumber,
+  Input,
+  Select,
+  Checkbox,
+  Modal,
+  Row,
+  Col,
+  Typography,
+  Table,
+  Empty,
+  message,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -31,9 +44,7 @@ const InputForm = (props) => {
     form.setFieldsValue({
       receivedBy: `${user.firstName} ${user.lastName}`,
     });
-
   }, [user, form]);
-
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
@@ -48,8 +59,8 @@ const InputForm = (props) => {
       }
     });
 
-    console.log(data)
-    console.log(tableData)
+    console.log(data);
+    console.log(tableData);
 
     onSubmit(data);
   };

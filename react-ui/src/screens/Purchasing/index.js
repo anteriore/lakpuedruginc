@@ -9,7 +9,7 @@ import Container from '../../components/container';
 import TableDisplay from '../../components/TableDisplay';
 import FormScreen from '../../components/forms/FormScreen';
 import FormDetails, { columns } from './data';
-import ItemDescription from '../../components/ItemDescription'
+import ItemDescription from '../../components/ItemDescription';
 
 import { listPO, addPO, deletePO, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
@@ -48,29 +48,29 @@ const Purchasing = () => {
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    var actionsList = []
-    if(typeof permissions["purchase-orders"] !== 'undefined'){
-      if( permissions["purchase-orders"].actions.search('u') !== -1){
-        actionsList.push("update")
+    const actionsList = [];
+    if (typeof permissions['purchase-orders'] !== 'undefined') {
+      if (permissions['purchase-orders'].actions.search('u') !== -1) {
+        actionsList.push('update');
       }
-      if(permissions["purchase-orders"].actions.search('c') !== -1){
-        actionsList.push("create")
+      if (permissions['purchase-orders'].actions.search('c') !== -1) {
+        actionsList.push('create');
       }
-      if(permissions["purchase-orders"].actions.search('d') !== -1){
-        actionsList.push("delete")
+      if (permissions['purchase-orders'].actions.search('d') !== -1) {
+        actionsList.push('delete');
       }
-      if(permissions["purchase-orders"].actions.search('r') !== -1){
-        actionsList.push("read")
+      if (permissions['purchase-orders'].actions.search('r') !== -1) {
+        actionsList.push('read');
       }
     }
-    setActions(actionsList)
-  }, [permissions])
+    setActions(actionsList);
+  }, [permissions]);
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
-      if(actions.includes("read")){
+      if (actions.includes('read')) {
         dispatch(listPO({ company: selectedCompany, message })).then(() => {
           setLoading(false);
           setSelectedPO(null);
@@ -78,8 +78,7 @@ const Purchasing = () => {
             dispatch(clearData());
           }
         });
-      }
-      else {
+      } else {
         setLoading(false);
         setSelectedPO(null);
       }
@@ -97,12 +96,11 @@ const Purchasing = () => {
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
     setLoading(true);
-    if(actions.includes("read")){
+    if (actions.includes('read')) {
       dispatch(listPO({ company: id, message })).then(() => {
         setLoading(false);
       });
-    }
-    else{
+    } else {
       setLoading(false);
     }
   };
@@ -116,10 +114,10 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            //dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
-              // dispatch(listPR({ company: selectedCompany, message }))
-              history.push(`${path}/new`);
-              setLoadingCompany(false);
+            // dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+            // dispatch(listPR({ company: selectedCompany, message }))
+            history.push(`${path}/new`);
+            setLoadingCompany(false);
           });
         });
       });
@@ -153,10 +151,10 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            //dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
-              // dispatch(listPR({ company: selectedCompany, message }))
-              history.push(`${path}/${data.id}`);
-              setLoadingCompany(false);
+            // dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+            // dispatch(listPR({ company: selectedCompany, message }))
+            history.push(`${path}/${data.id}`);
+            setLoadingCompany(false);
           });
         });
       });
@@ -264,35 +262,35 @@ const Purchasing = () => {
                     <TabPane tab={val.name} key={val.id} />
                   ))}
                 </Tabs>
-                {actions.includes("create") &&
-                <Button
-                  style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-                  icon={<PlusOutlined />}
-                  onClick={(e) => {
-                    handleAdd();
-                  }}
-                >
-                  Add
-                </Button>}
+                {actions.includes('create') && (
+                  <Button
+                    style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                    icon={<PlusOutlined />}
+                    onClick={(e) => {
+                      handleAdd();
+                    }}
+                  >
+                    Add
+                  </Button>
+                )}
 
                 {loading ? (
                   <Skeleton />
+                ) : actions.includes('read') ? (
+                  <TableDisplay
+                    columns={columns}
+                    data={purchaseOrders}
+                    handleRetrieve={handleRetrieve}
+                    handleUpdate={handleUpdate}
+                    handleDelete={handleDelete}
+                    updateEnabled={actions.includes('update')}
+                    deleteEnabled={actions.includes('delete')}
+                  />
                 ) : (
-                  actions.includes("read") ?
-                  (
-                    <TableDisplay
-                      columns={columns}
-                      data={purchaseOrders}
-                      handleRetrieve={handleRetrieve}
-                      handleUpdate={handleUpdate}
-                      handleDelete={handleDelete}
-                      updateEnabled={actions.includes("update")}
-                      deleteEnabled={actions.includes("delete")}
-                    />
-                  ):(
-                    <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />
-                  )
-
+                  <Empty
+                    style={{ width: '87.5%' }}
+                    description="You do not have the permission to access this module."
+                  />
                 )}
               </Col>
               <Modal
@@ -314,7 +312,7 @@ const Purchasing = () => {
                 ) : (
                   <>
                     <ItemDescription
-                      title={`Purchase Order ${selectedPO.number} Details`} 
+                      title={`Purchase Order ${selectedPO.number} Details`}
                       selectedData={selectedPO}
                       formItems={formDetails.form_items}
                     />

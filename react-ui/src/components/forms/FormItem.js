@@ -151,10 +151,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
         rules={item.rules}
         initialValue={item.initialValue}
       >
-        <Radio.Group 
-          style={{ float: 'left' }} 
-          onChange={item.onChange}
-        >
+        <Radio.Group style={{ float: 'left' }} onChange={item.onChange}>
           {item.choices.map((choice) => (
             <Radio.Button value={choice.id}>{item.render(choice)}</Radio.Button>
           ))}

@@ -89,8 +89,8 @@ const FormDetails = () => {
         choices: departments,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearPR())
-          dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+          dispatch(clearPR());
+          dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }));
         },
       },
       {
@@ -310,20 +310,19 @@ const FormDetails = () => {
         if (typeof field.render === 'undefined' || field.render === null) {
           field.render = (object) => object[field.name];
         }
-        if(field.type === 'select'){
-          field.render = (object) => object[field.name]?.name ?? "No data";
+        if (field.type === 'select') {
+          field.render = (object) => object[field.name]?.name ?? 'No data';
         }
 
         columns.push({
           title: field.label,
           key: field.name,
           render: (object) => {
-            return field.render(object)
+            return field.render(object);
           },
         });
-        
       });
-  
+
       return columns;
     },
   };

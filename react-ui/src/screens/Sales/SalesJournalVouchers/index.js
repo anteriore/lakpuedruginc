@@ -22,12 +22,11 @@ const AcknowledgementReceipts = (props) => {
   let salesSlips = [];
   salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
-
   useEffect(() => {
     dispatch(listSalesInvoice(company)).then(() => {
       dispatch(listOrderSlips(company)).then(() => {
         setLoading(false);
-      })
+      });
     });
 
     return function cleanup() {
@@ -36,14 +35,11 @@ const AcknowledgementReceipts = (props) => {
     };
   }, [dispatch, company]);
 
-  const handleUpdate = (data) => {
-  };
+  const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
-  const handleRetrieve = (data) => {
-  };
+  const handleRetrieve = (data) => {};
 
   return (
     <>
@@ -83,9 +79,6 @@ const AcknowledgementReceipts = (props) => {
                 />
               </TabPane>
             </Tabs>
-
-
-            
           )}
         </Col>
       </Row>
