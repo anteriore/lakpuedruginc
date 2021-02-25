@@ -20,9 +20,10 @@ import TableDisplay from '../../../components/TableDisplay';
 import { DisplayDetails, FormDetails } from './data';
 import { formatPayload } from './helpers';
 import InputForm from './InputForm';
-import { listApprovedReceipts, addApprovedReceipt, clearData } from './redux';
-import { clearData as clearRR, listRR } from '../ReceivingReceipts/redux';
-import { clearData as clearItem, listItemSummary } from '../../Maintenance/Items/redux';
+import { listApprovedReceipts, addApprovedReceipt, clearData,} from './redux';
+import { clearData as clearRR, listRR } from '../../Dashboard/ReceivingReceipts/redux';
+import { clearData as clearItem, listItemSummary} from '../../Maintenance/Items/redux';
+
 
 const { Title, Text } = Typography;
 
@@ -30,8 +31,9 @@ const ApprovedReceipts = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { title, company, actions } = props;
-  const { path } = useRouteMatch();
   const { id } = useSelector((state) => state.auth.user);
+  const { path } = useRouteMatch();
+
   const [displayModal, setDisplayModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -40,11 +42,13 @@ const ApprovedReceipts = (props) => {
 
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
-  const [approvedReceipt, setApprovedReceipt] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
   const arList = useSelector((state) => state.dashboard.approvedReceipts.list);
+
 
   useEffect(() => {
     let isCancelled = false;
+    
     dispatch(listApprovedReceipts({ company, message })).then(() => {
       setLoading(false);
       if (isCancelled) {
@@ -63,7 +67,7 @@ const ApprovedReceipts = (props) => {
   const handleAdd = () => {
     setFormTitle('Create Approved Receipt');
     setFormMode('add');
-    setApprovedReceipt(null);
+    setSelectedData(null);
     dispatch(listRR({ company, message })).then(() => {
       dispatch(listItemSummary({ company, message })).then(() => {
         history.push(`${path}/new`);
@@ -73,14 +77,14 @@ const ApprovedReceipts = (props) => {
 
   const handleRetrieve = (data) => {
     setDisplayModal(true);
-    setApprovedReceipt(data);
+    setSelectedData(data);
   };
 
   const onSubmit = (data) => {
     const payload = formatPayload(id, company, data);
-
+    
     if (formMode === 'edit') {
-      payload.id = approvedReceipt.id;
+      payload.id = selectedData.id;
     }
 
     dispatch(addApprovedReceipt(payload)).then((response) => {
@@ -104,8 +108,8 @@ const ApprovedReceipts = (props) => {
   };
 
   const handleCancelButton = () => {
-    setApprovedReceipt(null);
-    setLoading(false);
+    setSelectedData(null);
+    setLoading(false)
   };
 
   return (
@@ -114,7 +118,7 @@ const ApprovedReceipts = (props) => {
         <InputForm
           title={formTitle}
           onSubmit={onSubmit}
-          values={approvedReceipt}
+          values={selectedData}
           onCancel={handleCancelButton}
           formDetails={formDetails}
           formTable={tableDetails}
@@ -124,7 +128,7 @@ const ApprovedReceipts = (props) => {
         <InputForm
           title={formTitle}
           onSubmit={onSubmit}
-          values={approvedReceipt}
+          values={selectedData}
           onCancel={handleCancelButton}
           formDetails={formDetails}
           formTable={tableDetails}
@@ -168,33 +172,34 @@ const ApprovedReceipts = (props) => {
           visible={displayModal}
           onOk={() => {
             setDisplayModal(false);
-            setApprovedReceipt(null);
+            setSelectedData(null);
           }}
           onCancel={() => {
             setDisplayModal(false);
-            setApprovedReceipt(null);
+            setSelectedData(null);
           }}
           width={1000}
           cancelButtonProps={{ style: { display: 'none' } }}
         >
-          {approvedReceipt === null ? (
+          {selectedData === null ? (
             <Skeleton />
           ) : (
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               <Descriptions
                 bordered
-                title={`Approved Receipt ${approvedReceipt.number} Details`}
+                title={`Approved Receipt ${selectedData.number} Details`}
                 size="default"
                 layout="vertical"
               >
                 {formDetails.form_items.map((item) => {
                   if (!item.writeOnly) {
-                    if (approvedReceipt[item.name] === null && item.toggle) {
+                    if (selectedData[item.name] === null && item.toggle) {
                       return null;
                     }
                     if (item.type === 'select' || item.type === 'selectSearch') {
-                      const itemData = approvedReceipt[item.name];
-                      if (itemData !== null && typeof itemData !== 'undefined') {
+                      const itemData = selectedData[item.name];
+                      if(itemData !== null && typeof itemData !== 'undefined'){
+
                         return (
                           <Descriptions.Item label={item.label}>
                             {itemData[item.selectName]}
@@ -205,7 +210,7 @@ const ApprovedReceipts = (props) => {
                     if (item.type === 'date') {
                       return (
                         <Descriptions.Item label={item.label}>
-                          {moment(new Date(approvedReceipt[item.name])).format('DD/MM/YYYY')}
+                          {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
                         </Descriptions.Item>
                       );
                     }
@@ -215,7 +220,7 @@ const ApprovedReceipts = (props) => {
 
                     return (
                       <Descriptions.Item label={item.label}>
-                        {approvedReceipt[item.name]}
+                        {selectedData[item.name]}
                       </Descriptions.Item>
                     );
                   }
@@ -223,9 +228,35 @@ const ApprovedReceipts = (props) => {
                   return null;
                 })}
               </Descriptions>
-              <Text>Approved Item:</Text>
+              <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
+                Approved Item:
+              </Title>
+              <Descriptions title={`[${selectedData.item.code}] ${selectedData.item.name}`} size="default">
+                <Descriptions.Item label="Received">{selectedData.receivedQuantity}</Descriptions.Item>
+                <Descriptions.Item label="Approved">{selectedData.approvedQuantity}</Descriptions.Item>
+                <Descriptions.Item label="Rejected">{selectedData.rejectedQuantity}</Descriptions.Item>
+                <Descriptions.Item label="QC Sample">{selectedData.qcSamples}</Descriptions.Item>
+                <Descriptions.Item label="Total">{selectedData.totalQuantity}</Descriptions.Item>
+                <Descriptions.Item label="Expiration">{selectedData.expiration}</Descriptions.Item>
+                <Descriptions.Item label="Best Before">{selectedData.bestBefore}</Descriptions.Item>
+                <Descriptions.Item label="Reevaluation">{selectedData.reevaluation}</Descriptions.Item>
+                <Descriptions.Item label="Retest">{selectedData.retest}</Descriptions.Item>
+              </Descriptions>
+              
+              <Text>{'Approved Item:'}</Text>
               <Table
-                dataSource={approvedReceipt !== null ? approvedReceipt : []}
+                dataSource={[
+                  `[${selectedData.item.code}] ${selectedData.item.name}`,
+                  selectedData.receivedQuantity,
+                  selectedData.approvedQuantit,
+                  selectedData.rejectedQuantity,
+                  selectedData.qcSamples,
+                  selectedData.totalQuantity,
+                  selectedData.expiration,
+                  selectedData.bestBefore,
+                  selectedData.reevaluation,
+                  selectedData.retest
+                ]}
                 columns={itemColumns}
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Selected." /> }}

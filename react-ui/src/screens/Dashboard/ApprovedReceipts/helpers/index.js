@@ -16,7 +16,7 @@ export const formatPayload = (approvalId, company, data) => {
 
     receivingReceipt: { id: data.receivingReceipt },
     item: { id: data.item },
-    unit: { id: data.item.unit },
+    unit: { id: data.item.unit.id },
 
     receivedQuantity: data.reveivedQuantity,
     approvedQuantity: data.approvedQuantity,
