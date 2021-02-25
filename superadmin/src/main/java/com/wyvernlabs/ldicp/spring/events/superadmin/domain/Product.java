@@ -21,7 +21,7 @@ public class Product {
 	@OneToOne
 	private FinishedGood finishedGood;
 	private String lotNumber;
-	private Date expiration;
+	private int expiration;
 	@OneToOne
 	private Classification classification;
 	@OneToOne
@@ -58,11 +58,11 @@ public class Product {
 		this.lotNumber = lotNumber;
 	}
 
-	public Date getExpiration() {
+	public int getExpiration() {
 		return expiration;
 	}
 
-	public void setExpiration(Date expiration) {
+	public void setExpiration(int expiration) {
 		this.expiration = expiration;
 	}
 
