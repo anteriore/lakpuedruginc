@@ -9,32 +9,45 @@ export const tableHeader = [
     title: 'Name',
     align: 'center',
     key: 'name',
-    render: (o) => `${o.firstName} ${o.middleName} ${o.lastName}`,
-    sorter: (a,b) => a.length - b.length 
+    datatype: 'string',
+    render: (object) => `${object?.firstName ?? ""} ${object?.middleName ?? ""} ${object?.lastName ?? ""}`,
+    sorter: (a,b) => {
+      const left = `${a.employee?.firstName ?? ""} ${a.employee?.middleName ?? ""} ${a.employee?.lastName ?? ""}`
+      const right = `${b.employee?.firstName ?? ""} ${b.employee?.middleName ?? ""} ${b.employee?.lastName ?? ""}`
+      return left.length - right.length;
+    }
   },
   {
     title: 'Given Name',
     dataIndex: 'givenName',
     key: 'givenName',
     align: 'center',
+    sorter: (a,b) => {
+      return a.givenName.length - b.givenName.length 
+    }
   },
   {
     title: 'Gender',
     dataIndex: 'gender',
     key: 'gender',
     align: 'center',
+    sorter: (a,b) => {
+      return a.gender.length - b.gender.length 
+    }
   },
   {
     title: 'Monthly Salary',
     dataIndex: 'monthlySalary',
     key: 'monthlySalary',
     align: 'center',
+    sorter: (a,b) => a.mothlySalary - b.mothlySalary 
   },
   {
     title: 'Hourly Rate',
     dataIndex: 'hourlyRate',
     key: 'hourlyRate',
     align: 'center',
+    sorter: (a,b) => a.hourlyRate - b.hourlyRate 
   },
 ];
 
