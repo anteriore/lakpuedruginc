@@ -11,6 +11,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.FinishedGood;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Product;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ProductCategory;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ProductDivision;
+import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ProductInventory;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ClassificationRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.FinishedGoodRepository;
@@ -18,7 +19,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductCategoryR
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductDivisionRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UnitRepository;
-
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductInventoryRepository;
 
 
 import java.io.BufferedReader;
@@ -42,6 +43,9 @@ public class ProductData {
 	private ClassificationRepository classificationRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+	@Autowired
+	private ProductInventoryRepository productInventoryRepository;
+
 
 	public void init() {
 		FinishedGood fg = finishedGoodRepository.getOne(1L);
@@ -171,22 +175,15 @@ public class ProductData {
 
 
 
-
-
-					//tempproduct.setName(data[1].replace("\"", ""));
-					//tempproduct.setCompany(company);
-					//productRepository.save(tempproduct);
-
-
-					/*
+					
 					ProductInventory inventory = new ProductInventory();
-					inventory.setCompany(product.getCompany());
+					inventory.setCompany(tempproduct.getCompany());
 					inventory.setDateCreated(new Date());
-					inventory.setDepot(product.getDepot());
-					inventory.setProduct(product);
+					//inventory.setDepot(tempproduct.getDepot());
+					inventory.setProduct(tempproduct);
 					inventory.setQuantity(0);
 					productInventoryRepository.save(inventory);
-					*/
+					
 					
               
             }
