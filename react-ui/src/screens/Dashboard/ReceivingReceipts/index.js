@@ -32,7 +32,7 @@ const ReceivingReceipts = (props) => {
   const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const { id } = useSelector((state) => state.auth.user);
-  
+
   const [displayModal, setDisplayModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -47,12 +47,10 @@ const ReceivingReceipts = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listRR({ company, message })).then(() => {
-      // dispatch(listPO({ company, message })).then(() => {
-      setLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
-      }
-      // });
+        setLoading(false);
+        if (isCancelled) {
+          dispatch(clearData());
+        }
     });
 
     return function cleanup() {
