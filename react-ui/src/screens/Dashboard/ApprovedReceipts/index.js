@@ -14,7 +14,7 @@ import { clearData as clearRR, listRR } from '../../Dashboard/ReceivingReceipts/
 import { clearData as clearItem, listItemSummary} from '../../Maintenance/Items/redux';
 
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const ApprovedReceipts = (props) => {
   const dispatch = useDispatch();
