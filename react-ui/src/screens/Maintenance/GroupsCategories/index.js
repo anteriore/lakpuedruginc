@@ -71,11 +71,11 @@ const GroupsCategories = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    if(selectedGroup !== null){
+    if (selectedGroup !== null) {
       const group = groupData.find((group) => group.id === selectedGroup.id);
       setselectedGroup(group);
     }
-  }, [groupData, selectedGroup])
+  }, [groupData, selectedGroup]);
 
   const handleAddG = () => {
     setFormTitle('Add Group');
@@ -102,7 +102,7 @@ const GroupsCategories = (props) => {
           dispatch(listC({ company, message })).then(() => {
             setLoading(false);
             setselectedGroup(null);
-          })
+          });
         });
       } else {
         message.error(`Unable to delete Group ${data.name}`);
@@ -295,7 +295,7 @@ const GroupsCategories = (props) => {
       ) : (
         <Row gutter={[16, 16]}>
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
-            {actions.includes("create") &&
+            {actions.includes('create') && (
               <Button
                 style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
                 icon={<PlusOutlined />}
@@ -305,7 +305,7 @@ const GroupsCategories = (props) => {
               >
                 Add Group
               </Button>
-            }
+            )}
             <Select
               placeholder="Select a group"
               onChange={onSelectGroup}
@@ -318,7 +318,7 @@ const GroupsCategories = (props) => {
 
             {selectedGroup !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                {actions.includes("delete") &&
+                {actions.includes('delete') && (
                   <Popconfirm
                     title="Would you like to delete this item?"
                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
@@ -332,9 +332,9 @@ const GroupsCategories = (props) => {
                       Delete
                     </Button>
                   </Popconfirm>
-                }
+                )}
 
-                {actions.includes("update") &&
+                {actions.includes('update') && (
                   <Button
                     style={{ width: '30%' }}
                     icon={<EditOutlined />}
@@ -344,14 +344,14 @@ const GroupsCategories = (props) => {
                   >
                     Rename
                   </Button>
-                }
+                )}
               </div>
             )}
           </Col>
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
             {selectedGroup !== null && (
               <>
-                {actions.includes("create") !== -1 &&
+                {actions.includes('create') !== -1 && (
                   <Button
                     style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
                     icon={<PlusOutlined />}
@@ -362,7 +362,7 @@ const GroupsCategories = (props) => {
                   >
                     Add Category
                   </Button>
-                }               
+                )}
                 <Select
                   placeholder="Select a category"
                   onChange={onSelectCategory}
@@ -378,7 +378,7 @@ const GroupsCategories = (props) => {
 
             {selectedCategory !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                {actions.includes("delete") &&
+                {actions.includes('delete') && (
                   <Popconfirm
                     title="Would you like to delete this item?"
                     icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
@@ -388,15 +388,12 @@ const GroupsCategories = (props) => {
                     okText="Yes"
                     cancelText="No"
                   >
-                    <Button
-                      style={{ width: '30%', marginLeft: '2%' }}
-                      icon={<DeleteOutlined />}
-                    >
+                    <Button style={{ width: '30%', marginLeft: '2%' }} icon={<DeleteOutlined />}>
                       Delete
                     </Button>
                   </Popconfirm>
-                }
-                {actions.includes("update") &&
+                )}
+                {actions.includes('update') && (
                   <Button
                     style={{ width: '30%' }}
                     icon={<EditOutlined />}
@@ -406,7 +403,7 @@ const GroupsCategories = (props) => {
                   >
                     Rename
                   </Button>
-                }
+                )}
               </div>
             )}
           </Col>

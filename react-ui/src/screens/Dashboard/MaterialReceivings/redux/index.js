@@ -11,37 +11,53 @@ const initialState = {
   action: '',
 };
 
-export const listMaterialReceiving = createAsyncThunk('listMaterialReceiving', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+export const listMaterialReceiving = createAsyncThunk(
+  'listMaterialReceiving',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
 
-  try {
-    const response = await axiosInstance.get(`rest/material-receivings/company/${company}?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/material-receivings/company/${company}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
+);
 
-});
+export const addMaterialReceiving = createAsyncThunk(
+  'addMaterialReceiving',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const addMaterialReceiving  = createAsyncThunk('addMaterialReceiving', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `rest/material-receivings/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-  const response = await axiosInstance.post(`rest/material-receivings/?token=${accessToken}`, payload);
-  return response;
-});
+export const deleteMaterialReceiving = createAsyncThunk(
+  'deleteMaterialReceiving',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const deleteMaterialReceiving  = createAsyncThunk('deleteMaterialReceiving', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-
-  const response = await axiosInstance.post(`rest/material-receivings/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/material-receivings/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const materialReceivingSlice = createSlice({
   name: 'materialReceivings',

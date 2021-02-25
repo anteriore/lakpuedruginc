@@ -1,4 +1,4 @@
-import _ from 'lodash'; 
+import _ from 'lodash';
 
 export const formatPayload = (value, list, company) => {
   let formattedValue = {};
@@ -6,9 +6,9 @@ export const formatPayload = (value, list, company) => {
 
   formattedValue = {
     ...formattedValue,
-    approvedReceipt: {id: value.controlNumber},
+    approvedReceipt: { id: value.controlNumber },
     reevaluatedBy: { id: selectedAR.receivedBy.id },
-    company: {id: company},
+    company: { id: company },
     date: value.date,
     expiration: value.expiration,
     retest: value.retest,
@@ -16,8 +16,8 @@ export const formatPayload = (value, list, company) => {
     bestBefore: value.bestBefore,
     extended: value.date,
     allowance: value.allowance,
-    remarks: value.remarks
-  }
+    remarks: value.remarks,
+  };
 
   return formattedValue;
-}
+};

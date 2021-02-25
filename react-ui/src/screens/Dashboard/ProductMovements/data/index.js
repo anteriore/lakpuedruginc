@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment';
 
 export const tableHeader = [
   {
@@ -20,14 +20,13 @@ export const tableHeader = [
     dataIndex: 'type',
     key: 'type',
     align: 'center',
-
   },
   {
     title: 'Depot',
     dataIndex: 'depot',
     key: 'depot',
     align: 'center',
-    render: (depot) => `[${depot.code}] - ${depot.name}`
+    render: (depot) => `[${depot.code}] - ${depot.name}`,
   },
 ];
 
@@ -35,7 +34,7 @@ export const tableProduct = [
   {
     title: 'FG ID',
     dataIndex: 'product',
-    render: (object) => object.finishedGood.id
+    render: (object) => object.finishedGood.id,
   },
   {
     title: 'Code',
@@ -58,7 +57,7 @@ export const tableProduct = [
     editable: true,
     limit: false,
   },
-]
+];
 
 export const tableProductInventory = [
   {
@@ -80,13 +79,13 @@ export const tableProductInventory = [
     title: 'Expiration',
     dataIndex: ['product', 'expiration'],
     key: 'expiration',
-    render: (object) => moment(new Date(object)).format('DD/MM/YYYY')
+    render: (object) => moment(new Date(object)).format('DD/MM/YYYY'),
   },
   {
     title: 'Stock on Hand',
     dataIndex: 'quantity',
   },
-]
+];
 
 export const formDetails = {
   form_name: 'productMovement',
@@ -118,7 +117,10 @@ export const formDetails = {
         return `${type.name}`;
       },
       type: 'select',
-      choices: [{id: "IN", name: "IN"}, {id: "OUT", name: "OUT"}],
+      choices: [
+        { id: 'IN', name: 'IN' },
+        { id: 'OUT', name: 'OUT' },
+      ],
     },
     {
       label: 'Remarks',
@@ -127,5 +129,5 @@ export const formDetails = {
       placeholder: 'Remarks (optional)',
       type: 'textArea',
     },
-  ]
-}
+  ],
+};

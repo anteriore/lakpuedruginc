@@ -32,7 +32,7 @@ const DepartmentArea = (props) => {
     },
   ];
 
-  const tableName = "department-areas"
+  const tableName = 'department-areas';
 
   const areaColumns = [
     {
@@ -236,17 +236,17 @@ const DepartmentArea = (props) => {
           <Title level={5} style={{ float: 'left' }}>
             Departments
           </Title>
-          {actions.includes("create") &&
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            onClick={() => {
-              handleAddD();
-            }}
-          >
-            Add
-          </Button>
-          }
+          {actions.includes('create') && (
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<PlusOutlined />}
+              onClick={() => {
+                handleAddD();
+              }}
+            >
+              Add
+            </Button>
+          )}
           <TableDisplay
             name={tableName}
             columns={deptColumns}
@@ -255,8 +255,8 @@ const DepartmentArea = (props) => {
             handleUpdate={handleUpdateD}
             handleDelete={handleDeleteD}
             pagination={{ size: 'small' }}
-            updateEnabled={actions.includes("update")}
-            deleteEnabled={actions.includes("delete")}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
           />
         </Col>
         <Col span={12}>
@@ -280,8 +280,8 @@ const DepartmentArea = (props) => {
             handleUpdate={handleUpdateA}
             handleDelete={handleDeleteA}
             pagination={{ size: 'small' }}
-            updateEnabled={actions.includes("update")}
-            deleteEnabled={actions.includes("delete")}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
           />
         </Col>
         <SimpleForm

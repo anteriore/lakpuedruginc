@@ -27,8 +27,8 @@ export const columns = [
     key: 'requestedBy',
     datatype: 'object',
     dataToString: (object) => {
-      return `${object.firstName} ${object.lastName}`
-    }
+      return `${object.firstName} ${object.lastName}`;
+    },
   },
 ];
 
@@ -36,16 +36,16 @@ const FormDetails = () => {
   const inventories = useSelector((state) => state.dashboard.inventory.list);
   const [classifications, setClassifications] = useState([
     {
-      id: "RETURN",
-      code: "Return",
-      name: "Return"
+      id: 'RETURN',
+      code: 'Return',
+      name: 'Return',
     },
     {
-      id: "ADJUSTMENT",
-      code: "Adjustment",
-      name: "Adjustment"
+      id: 'ADJUSTMENT',
+      code: 'Adjustment',
+      name: 'Adjustment',
     },
-  ]) //hard coded assuming that editing inventory movements is not possible and the default value for type is always "IN"
+  ]); // hard coded assuming that editing inventory movements is not possible and the default value for type is always "IN"
 
   const formDetails = {
     form_name: 'inventory_movement',
@@ -79,39 +79,37 @@ const FormDetails = () => {
           },
         ],
         onChange: (e) => {
-          if(e.target.value === 'IN'){
+          if (e.target.value === 'IN') {
             setClassifications([
               {
-                id: "RETURN",
-                code: "RETURN",
-                name: "Return"
+                id: 'RETURN',
+                code: 'RETURN',
+                name: 'Return',
               },
               {
-                id: "ADJUSTMENT",
-                code: "ADJUSTMENT",
-                name: "Adjustment"
+                id: 'ADJUSTMENT',
+                code: 'ADJUSTMENT',
+                name: 'Adjustment',
               },
-            ])
-          }
-          else if(e.target.value === 'OUT'){
+            ]);
+          } else if (e.target.value === 'OUT') {
             setClassifications([
               {
-                id: "EXPIRED",
-                code: "EXPIRED",
-                name: "Expired"
+                id: 'EXPIRED',
+                code: 'EXPIRED',
+                name: 'Expired',
               },
               {
-                id: "ADJUSTMENT",
-                code: "ADJUSTMENT",
-                name: "Adjustment"
+                id: 'ADJUSTMENT',
+                code: 'ADJUSTMENT',
+                name: 'Adjustment',
               },
               {
-                id: "MO",
-                code: "MO",
-                name: "MO"
+                id: 'MO',
+                code: 'MO',
+                name: 'MO',
               },
-            ])
-
+            ]);
           }
         },
         rules: [{ required: true }],
@@ -140,7 +138,6 @@ const FormDetails = () => {
       },
     ],
   };
-
 
   const tableDetails = {
     label: 'Inventory List',
@@ -255,16 +252,15 @@ const FormDetails = () => {
         if (typeof field.render === 'undefined' || field.render === null) {
           field.render = (object) => object[field.name];
         }
-        if(field.name !== 'stockOnHand' && field.name !== 'quantityRemaining' ){
+        if (field.name !== 'stockOnHand' && field.name !== 'quantityRemaining') {
           columns.push({
             title: field.label,
             key: field.name,
             render: (object) => field.render(object),
           });
         }
-        
       });
-  
+
       return columns;
     },
   };

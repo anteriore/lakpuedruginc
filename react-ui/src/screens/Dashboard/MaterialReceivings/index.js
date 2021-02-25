@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
-  Skeleton,
-  Typography, 
-  Button,
-  Modal,
-  Space,
-  Table,
-  Empty,
-  message,  
-} from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listMaterialReceiving, addMaterialReceiving, deleteMaterialReceiving, clearData } from './redux';
-import { listMaterialIssuanceByStatus, clearData as clearMaterialIssuance } from '../MaterialIssuances/redux';
+import {
+  listMaterialReceiving,
+  addMaterialReceiving,
+  deleteMaterialReceiving,
+  clearData,
+} from './redux';
+import {
+  listMaterialIssuanceByStatus,
+  clearData as clearMaterialIssuance,
+} from '../MaterialIssuances/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 
@@ -41,7 +38,6 @@ const MaterialReceivings = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  
 
   useEffect(() => {
     let isCancelled = false;
@@ -60,28 +56,26 @@ const MaterialReceivings = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
-  
+
   const handleAdd = () => {
     setFormTitle('Create Material Receiving');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listMaterialIssuanceByStatus({ status: "Pending", message })).then((response) => {
-      if(response.payload.data === null || response.payload.data.length === 0){
-        message.error("There are currently no pending material issuance slips to be received.")
-      }
-      else {
+    dispatch(listMaterialIssuanceByStatus({ status: 'Pending', message })).then((response) => {
+      if (response.payload.data === null || response.payload.data.length === 0) {
+        message.error('There are currently no pending material issuance slips to be received.');
+      } else {
         history.push(`${path}/new`);
       }
       setLoading(false);
     });
   };
 
-  const handleUpdate = (data) => {
-  };
+  const handleUpdate = (data) => {};
 
   const handleDelete = (data) => {
-    if(data.status === "Pending"){
+    if (data.status === 'Pending') {
       dispatch(deleteMaterialReceiving(data.id)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
@@ -94,9 +88,8 @@ const MaterialReceivings = (props) => {
           message.error(`Unable to delete ${data.mrsNo}`);
         }
       });
-    }
-    else {
-      message.error("This action can only be performed on pending material issuances.")
+    } else {
+      message.error('This action can only be performed on pending material issuances.');
     }
   };
 
@@ -106,7 +99,6 @@ const MaterialReceivings = (props) => {
   };
 
   const onSubmit = (data) => {
-    
     const payload = {
       ...data,
       company: {
@@ -116,8 +108,8 @@ const MaterialReceivings = (props) => {
         id: user.id,
       },
       mis: {
-        id: data.mis.id
-      }
+        id: data.mis.id,
+      },
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -145,7 +137,9 @@ const MaterialReceivings = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create Material Issuance. Please double check the provided information.`);
+          message.error(
+            `Unable to create Material Issuance. Please double check the provided information.`
+          );
         }
       });
     }
@@ -230,15 +224,13 @@ const MaterialReceivings = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.mrsNo} Details`} 
+                  title={`${selectedData.mrsNo} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
                 <Text>{'Received Items: '}</Text>
                 <Table
-                  dataSource={
-                    selectedData.mis.inventoryList
-                  }
+                  dataSource={selectedData.mis.inventoryList}
                   columns={tableDetails.renderTableColumns(tableDetails.fields)}
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}

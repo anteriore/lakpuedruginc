@@ -100,10 +100,11 @@ const Product = (props) => {
           <Row gutter={[8, 24]}>
             <Col style={styles.headerPage} span={20}>
               <Title level={3}>{title}</Title>
-              {actions.includes("create") &&
-              <Button icon={<PlusOutlined />} onClick={() => history.push(`${path}/new`)}>
-                Add
-              </Button>}
+              {actions.includes('create') && (
+                <Button icon={<PlusOutlined />} onClick={() => history.push(`${path}/new`)}>
+                  Add
+                </Button>
+              )}
             </Col>
             <Col span={20}>
               <TableDisplay
@@ -111,8 +112,8 @@ const Product = (props) => {
                 data={productList}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={actions.includes("update")}
-                deleteEnabled={actions.includes("delete")}
+                updateEnabled={actions.includes('update')}
+                deleteEnabled={actions.includes('delete')}
               />
             </Col>
           </Row>

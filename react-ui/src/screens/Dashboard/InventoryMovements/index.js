@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
-  Skeleton,
-  Typography, 
-  Button,
-  Modal,
-  Space,
-  Table,
-  Empty,
-  message,  
-} from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -41,7 +30,6 @@ const InventoryMovements = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  
 
   useEffect(() => {
     let isCancelled = false;
@@ -59,7 +47,7 @@ const InventoryMovements = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
-  
+
   const handleAdd = () => {
     setFormTitle('Create Inventory Movement Slip');
     setFormMode('add');
@@ -67,15 +55,13 @@ const InventoryMovements = (props) => {
     setLoading(true);
     dispatch(listInventory({ company, message })).then(() => {
       history.push(`${path}/new`);
-    })
+    });
     setLoading(false);
   };
 
-  const handleUpdate = (data) => {
-  };
+  const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -83,17 +69,17 @@ const InventoryMovements = (props) => {
   };
 
   const onSubmit = (data) => {
-    const inventory = []
+    const inventory = [];
 
     data.inventory.forEach((item) => {
       inventory.push({
         controlNumber: item.controlNumber,
         item: {
-          id: item.item.id
+          id: item.item.id,
         },
-        quantity: item.quantity
-      })
-    })
+        quantity: item.quantity,
+      });
+    });
     const payload = {
       ...data,
       company: {
@@ -102,7 +88,7 @@ const InventoryMovements = (props) => {
       requestedBy: {
         id: user.id,
       },
-      inventory: inventory
+      inventory,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -130,7 +116,9 @@ const InventoryMovements = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create Inventory Movement Slip. Please double check the provided information.`);
+          message.error(
+            `Unable to create Inventory Movement Slip. Please double check the provided information.`
+          );
         }
       });
     }
@@ -215,7 +203,7 @@ const InventoryMovements = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.number} Details`} 
+                  title={`${selectedData.number} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />

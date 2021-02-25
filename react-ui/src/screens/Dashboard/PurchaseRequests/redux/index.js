@@ -29,37 +29,37 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
   return response;
 });
 
-export const listPRByStatus = createAsyncThunk(
-  'listPRByStatus',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    const { company, status } = payload
+export const listPRByStatus = createAsyncThunk('listPRByStatus', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, status } = payload;
 
-    try {
-      const response = await axiosInstance.get(`rest/purchase-requests/company/${company}/status/${status}?token=${accessToken}`);
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+  try {
+    const response = await axiosInstance.get(
+      `rest/purchase-requests/company/${company}/status/${status}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-);
-
+});
 
 export const listPRByStatusAndDepartment = createAsyncThunk(
   'listPRByStatus',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const { company, department, status } = payload
+    const { company, department, status } = payload;
 
     try {
-      const response = await axiosInstance.get(`rest/purchase-requests/company/${company}/department/${department}/status/${status}?token=${accessToken}`);
+      const response = await axiosInstance.get(
+        `rest/purchase-requests/company/${company}/department/${department}/status/${status}?token=${accessToken}`
+      );
       const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
+
       if (valid) {
         return validatedResponse;
       }
@@ -70,26 +70,29 @@ export const listPRByStatusAndDepartment = createAsyncThunk(
   }
 );
 
-export const getRequestedQuantityByItem = createAsyncThunk('getRequestedItemByItem', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company, item } = payload
+export const getRequestedQuantityByItem = createAsyncThunk(
+  'getRequestedItemByItem',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company, item } = payload;
 
-  const response = await axiosInstance.get(
-    `rest/purchase-requests/company/${company}/stock/${item}?token=${accessToken}`
-  );
+    const response = await axiosInstance.get(
+      `rest/purchase-requests/company/${company}/stock/${item}?token=${accessToken}`
+    );
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for requested items');
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for requested items');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return thunkAPI.rejectWithValue(response);
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
-  }
 
-  return response;
-});
+    return response;
+  }
+);
 
 export const addPR = createAsyncThunk('addPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -164,7 +167,6 @@ const purchaseRequestSlice = createSlice({
       };
     },
 
-    
     [listPRByStatus.pending]: (state) => {
       return {
         ...state,
@@ -199,7 +201,6 @@ const purchaseRequestSlice = createSlice({
       };
     },
 
-    
     [listPRByStatusAndDepartment.pending]: (state) => {
       return {
         ...state,

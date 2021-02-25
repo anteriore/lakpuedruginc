@@ -23,8 +23,8 @@ export const columns = [
     key: 'receivedBy',
     datatype: 'object',
     dataToString: (object) => {
-      return `${object.firstName} ${object.lastName}`
-    }
+      return `${object.firstName} ${object.lastName}`;
+    },
   },
   {
     title: 'Shipped From',
@@ -32,8 +32,8 @@ export const columns = [
     key: 'depot',
     datatype: 'object',
     dataToString: (object) => {
-      return `[${object.code}] ${object.name}`
-    }
+      return `[${object.code}] ${object.name}`;
+    },
   },
 ];
 
@@ -100,24 +100,24 @@ const FormDetails = () => {
             dataIndex: 'fromDepot',
             key: 'fromDepot',
             render: (object) => {
-              return `[${object.code}] ${object.name}`
-            }
+              return `[${object.code}] ${object.name}`;
+            },
           },
           {
             title: 'Ship To',
             dataIndex: 'toDepot',
             key: 'toDepot',
             render: (object) => {
-              return `[${object.code}] ${object.name}`
-            }
+              return `[${object.code}] ${object.name}`;
+            },
           },
           {
             title: 'Requested By',
             dataIndex: 'requestedBy',
             key: 'requestedBy',
             render: (object) => {
-              return `${object.firstName} ${object.lastName}`
-            }
+              return `${object.firstName} ${object.lastName}`;
+            },
           },
         ],
         rowKey: 'id',
@@ -138,7 +138,7 @@ const FormDetails = () => {
       },
     ],
   };
-  
+
   const tableDetails = {
     name: 'pis',
     key: 'pis',
@@ -173,9 +173,8 @@ const FormDetails = () => {
           key: field.name,
           render: (object) => field.render(object),
         });
-        
       });
-  
+
       return columns;
     },
   };

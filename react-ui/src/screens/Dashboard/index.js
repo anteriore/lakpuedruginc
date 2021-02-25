@@ -17,29 +17,29 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [moduleRoutes, setModuleRoutes] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
-  
+
   const companies = useSelector((state) => state.company.companyList);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
-      //setModuleRoutes(routes)
-      setModuleRoutes(getPermittedRoutes())
+      // setModuleRoutes(routes)
+      setModuleRoutes(getPermittedRoutes());
       setContentLoading(false);
     });
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [dispatch]);
 
   const getPermittedRoutes = () => {
-    var routeList = []
+    const routeList = [];
     routes.forEach((route) => {
-      if(typeof permissions[route.path.split("/")[1]] !== 'undefined'){
-        routeList.push(route)
+      if (typeof permissions[route.path.split('/')[1]] !== 'undefined') {
+        routeList.push(route);
       }
-    })
-    return routeList
-  }
+    });
+    return routeList;
+  };
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
@@ -66,7 +66,12 @@ const Dashboard = () => {
                     );
                   })}
                 </Tabs>
-                {moduleRoutes.length === 0 && <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />}
+                {moduleRoutes.length === 0 && (
+                  <Empty
+                    style={{ width: '87.5%' }}
+                    description="You do not have the permission to access this module."
+                  />
+                )}
               </Col>
             </Row>
           )}
@@ -74,23 +79,27 @@ const Dashboard = () => {
       </Route>
       {!contentLoading &&
         moduleRoutes.map((module) => {
-          var actions = []
-          if(permissions[module.path.split("/")[1]].actions.search('u') !== -1){
-            actions.push("update")
+          const actions = [];
+          if (permissions[module.path.split('/')[1]].actions.search('u') !== -1) {
+            actions.push('update');
           }
-          if(permissions[module.path.split("/")[1]].actions.search('c') !== -1){
-            actions.push("create")
+          if (permissions[module.path.split('/')[1]].actions.search('c') !== -1) {
+            actions.push('create');
           }
-          if(permissions[module.path.split("/")[1]].actions.search('d') !== -1){
-            actions.push("delete")
+          if (permissions[module.path.split('/')[1]].actions.search('d') !== -1) {
+            actions.push('delete');
           }
-          if(permissions[module.path.split("/")[1]].actions.search('r') !== -1){
-            actions.push("read")
+          if (permissions[module.path.split('/')[1]].actions.search('r') !== -1) {
+            actions.push('read');
           }
           return (
             <Route key={path} path={path + module.path}>
               <Container location={{ pathname: path + module.path }}>
-                <module.component title={module.title} company={selectedCompany} actions={actions} />
+                <module.component
+                  title={module.title}
+                  company={selectedCompany}
+                  actions={actions}
+                />
               </Container>
             </Route>
           );

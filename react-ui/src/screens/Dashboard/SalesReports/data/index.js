@@ -44,8 +44,8 @@ export const reportColumns = {
       key: 'product',
       datatype: 'object',
       dataToString: (object) => {
-        return `[${object.finishedGood.code}] ${object.finishedGood.name}`
-      }
+        return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
+      },
     },
     {
       title: 'Quantity',
@@ -58,4 +58,4 @@ export const reportColumns = {
       key: 'itemAmount',
     },
   ],
-}
+};

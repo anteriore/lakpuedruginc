@@ -66,27 +66,31 @@ export const listClient = createAsyncThunk('listClient', async (payload, thunkAP
   }
 });
 
-export const listClientBySalesRep = createAsyncThunk('listClientBySalesRepAndDateAndDepot', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  let { company, salesRep, fnCallback } = payload;
-  if (typeof fnCallback === 'undefined') {
-    fnCallback = () => {};
-  }
-  
-  try {
-    const response = await axiosInstance.get(`rest/clients/report/company/${company}/sales-rep/${salesRep}?token=${accessToken}`);
-
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-    if (valid) {
-      return validatedResponse;
+export const listClientBySalesRep = createAsyncThunk(
+  'listClientBySalesRepAndDateAndDepot',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    let { company, salesRep, fnCallback } = payload;
+    if (typeof fnCallback === 'undefined') {
+      fnCallback = () => {};
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
 
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    try {
+      const response = await axiosInstance.get(
+        `rest/clients/report/company/${company}/sales-rep/${salesRep}?token=${accessToken}`
+      );
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
-});
+);
 
 export const addClient = createAsyncThunk('addClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;

@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
@@ -12,44 +12,64 @@ const initialState = {
   action: '',
 };
 
-export const listApprovedReceipts = createAsyncThunk('listApprovedReceipts', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(
-      `/rest/approved-receipts/company/${payload}?token=${accessToken}`
-    );
+export const listApprovedReceipts = createAsyncThunk(
+  'listApprovedReceipts',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/approved-receipts/company/${payload}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
-export const addApprovedReceipt = createAsyncThunk('addApprovedReceipt', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const addApprovedReceipt = createAsyncThunk(
+  'addApprovedReceipt',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/approved-receipts/?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/approved-receipts/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-export const deleteApprovedReceipt = createAsyncThunk('deleteApprovedReceipt', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const deleteApprovedReceipt = createAsyncThunk(
+  'deleteApprovedReceipt',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/approved-receipts/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/approved-receipts/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-export const getApprovedReceipt = createAsyncThunk('getApprovedReceipt', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const getApprovedReceipt = createAsyncThunk(
+  'getApprovedReceipt',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/approved-receipts/${payload.id}?token=${accessToken}`);
-  return response;
-});
+    const response = await axiosInstance.get(
+      `rest/approved-receipts/${payload.id}?token=${accessToken}`
+    );
+    return response;
+  }
+);
 
 const approvedReceiptSlice = createSlice({
   name: 'approvedReceipts',
