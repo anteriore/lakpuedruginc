@@ -22,7 +22,7 @@ export const formatPayload = (approvalId, company, data) => {
         retest: data.receivedItems[0].retest,
 
         item: { id: data.receivedItems[0].itemID },
-        unit: { id: data.receivedItems[0].unit.code },
+        unit: data.receivedItems[0].unit.code,
         controlNumber: data.controlNumber,
         remarks: data.remarks,
     };
