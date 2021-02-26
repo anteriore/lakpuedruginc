@@ -1,17 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Row,
-  Col,
-  Table,
-  Typography,
-  Button,
-  Modal,
-  Skeleton,
-  Empty,
-  Descriptions,
-  Space,
-  message,
-} from 'antd';
+import { Row, Col, Typography, Button, Modal, Skeleton, Descriptions, Space, message, } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -20,12 +8,13 @@ import TableDisplay from '../../../components/TableDisplay';
 import { DisplayDetails, FormDetails } from './data';
 import { formatPayload } from './helpers';
 import InputForm from './InputForm';
+//import FormScreen from '../../../components/forms/FormScreen';
 import { listApprovedReceipts, addApprovedReceipt, clearData,} from './redux';
 import { clearData as clearRR, listRR } from '../../Dashboard/ReceivingReceipts/redux';
 import { clearData as clearItem, listItemSummary} from '../../Maintenance/Items/redux';
 
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const ApprovedReceipts = (props) => {
   const dispatch = useDispatch();
@@ -39,8 +28,9 @@ const ApprovedReceipts = (props) => {
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
+  //const [formData, setFormData] = useState(null);
 
-  const { columns, itemColumns } = DisplayDetails();
+  const { columns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
   const [selectedData, setSelectedData] = useState(null);
   const arList = useSelector((state) => state.dashboard.approvedReceipts.list);
@@ -67,6 +57,7 @@ const ApprovedReceipts = (props) => {
   const handleAdd = () => {
     setFormTitle('Create Approved Receipt');
     setFormMode('add');
+    //setFormData(null);
     setSelectedData(null);
     dispatch(listRR({ company, message })).then(() => {
       dispatch(listItemSummary({ company, message })).then(() => {
@@ -83,6 +74,8 @@ const ApprovedReceipts = (props) => {
   const onSubmit = (data) => {
     const payload = formatPayload(id, company, data);
     
+    console.log(payload)
+
     if (formMode === 'edit') {
       payload.id = selectedData.id;
     }
@@ -229,7 +222,7 @@ const ApprovedReceipts = (props) => {
                 })}
               </Descriptions>
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
-                Approved Item:
+                Item Details:
               </Title>
               <Descriptions title={`[${selectedData.item.code}] ${selectedData.item.name}`} size="default">
                 <Descriptions.Item label="Received">{selectedData.receivedQuantity}</Descriptions.Item>
@@ -237,30 +230,19 @@ const ApprovedReceipts = (props) => {
                 <Descriptions.Item label="Rejected">{selectedData.rejectedQuantity}</Descriptions.Item>
                 <Descriptions.Item label="QC Sample">{selectedData.qcSamples}</Descriptions.Item>
                 <Descriptions.Item label="Total">{selectedData.totalQuantity}</Descriptions.Item>
-                <Descriptions.Item label="Expiration">{selectedData.expiration}</Descriptions.Item>
-                <Descriptions.Item label="Best Before">{selectedData.bestBefore}</Descriptions.Item>
-                <Descriptions.Item label="Reevaluation">{selectedData.reevaluation}</Descriptions.Item>
-                <Descriptions.Item label="Retest">{selectedData.retest}</Descriptions.Item>
+                <Descriptions.Item label="Expiration">
+                  {moment(new Date(selectedData.expiration)).format('DD/MM/YYYY')}
+                </Descriptions.Item>
+                <Descriptions.Item label="Best Before">
+                  {moment(new Date(selectedData.bestBefore)).format('DD/MM/YYYY')}
+                </Descriptions.Item>
+                <Descriptions.Item label="Reevaluation">
+                {moment(new Date(selectedData.reevaluation)).format('DD/MM/YYYY')}
+                </Descriptions.Item>
+                <Descriptions.Item label="Retest">
+                {moment(new Date(selectedData.retest)).format('DD/MM/YYYY')}
+                </Descriptions.Item>
               </Descriptions>
-              
-              <Text>{'Approved Item:'}</Text>
-              <Table
-                dataSource={[
-                  `[${selectedData.item.code}] ${selectedData.item.name}`,
-                  selectedData.receivedQuantity,
-                  selectedData.approvedQuantit,
-                  selectedData.rejectedQuantity,
-                  selectedData.qcSamples,
-                  selectedData.totalQuantity,
-                  selectedData.expiration,
-                  selectedData.bestBefore,
-                  selectedData.reevaluation,
-                  selectedData.retest
-                ]}
-                columns={itemColumns}
-                pagination={false}
-                locale={{ emptyText: <Empty description="No Item Selected." /> }}
-              />
             </Space>
           )}
         </Modal>

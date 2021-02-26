@@ -1,33 +1,29 @@
-export const formatPayload = (approvalId, company, data) => {
-  let formattedValue = {};
+export const formatPayload = (approvalId, company, data) => {  
+    return {
+        ...data,
+        number: data.number,
+        date: data.date,
+        receivedBy: { id: approvalId },
+        company: { id: company },
+        maxContainers: data.maxContainers,
+        specifiedGravity: data.specifiedGravity,
+        dateCreated: data.dateCreated,
+        modified: data.modified,
+        receivingReceipt: { id: data.receivingReceipt },
 
-  formattedValue = {
-    ...formattedValue,
-    number: data.number,
-    receivedBy: { id: approvalId },
-    company: { id: company },
-    date: data.date,
-    controlNumber: data.controlNumber,
-    maxContainers: data.maxContainers,
-    specifiedGravity: data.specifiedGravity,
-    dateCreated: data.dateCreated,
-    modified: data.modified,
-    remarks: data.remarks,
+        receivedQuantity: data.receivedItems[0].receivedQuantity,
+        approvedQuantity: data.receivedItems[0].approvedQuantity,
+        rejectedQuantity: data.receivedItems[0].rejectedQuantity,
+        qcSamples: data.receivedItems[0].qcSamples,
+        totalQuantity: data.receivedItems[0].totalQuantity,
+        expiration: data.receivedItems[0].expiration,
+        bestBefore: data.receivedItems[0].bestBefore,
+        reevaluation: data.receivedItems[0].reevaluation,
+        retest: data.receivedItems[0].retest,
 
-    receivingReceipt: { id: data.receivingReceipt },
-    item: { id: data.item },
-    unit: { id: data.item.unit.id },
-
-    receivedQuantity: data.reveivedQuantity,
-    approvedQuantity: data.approvedQuantity,
-    rejectedQuantity: data.rejectedQuantity,
-    qcSamples: data.qcSamples,
-    totalQuantity: data.totalQuantity,
-    expiration: data.expiration,
-    bestBefore: data.bestBefore,
-    reevaluation: data.reevaluation,
-    retest: data.retest,
-  };
-
-  return formattedValue;
+        item: { id: data.receivedItems[0].itemID },
+        unit: data.receivedItems[0].unit.code,
+        controlNumber: data.controlNumber,
+        remarks: data.remarks,
+    };
 };
