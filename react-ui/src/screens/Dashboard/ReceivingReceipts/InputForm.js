@@ -92,6 +92,7 @@ const InputForm = (props) => {
               );
             },
           });
+        
         } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
