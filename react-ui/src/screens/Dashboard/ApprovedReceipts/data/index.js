@@ -283,6 +283,50 @@ export const FormDetails = () => {
                 rules: [{ required: true, message: 'Please select a retest date' }],
             },
         ],
+        
+        foreignKey: 'itemID',
+        selectedKey: 'id',
+        selectData: itemList,
+        selectFields: [
+            {
+            title: 'Item',
+            dataIndex: 'item',
+            key: 'item',
+            render: (object) => `[${object.code}] ${object.name}`,
+            },
+            {
+            title: 'Type',
+            dataIndex: 'item',
+            key: 'item',
+            render: (object) => object.type.name,
+            },
+            {
+            title: 'Unit',
+            dataIndex: 'item',
+            key: 'item',
+            render: (object) => object.unit.code,
+            },
+        ],
+    
+        processData: (data) => {
+            const processedData = {
+            ...data,
+            ...data.item,
+            itemID: data.item.id,
+            };
+            delete processedData.item;
+            delete processedData.id;
+            return processedData;
+        },
+        checkSelected: (selectedData, rowData) => {
+            if (
+            typeof selectedData !== 'undefined' &&
+            selectedData !== null &&
+            selectedData.some((item) => item.itemID === rowData.item.id)
+            ) {
+            return true;
+            }
+        },
     };
   return { formDetails, tableDetails };
 };
