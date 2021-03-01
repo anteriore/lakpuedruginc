@@ -120,8 +120,8 @@ const FormDetails = () => {
         onChange: (e) => {
           dispatch(clearOS());
           dispatch(clearSI());
-          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ["Pending"] }));
-          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ["Pending"] }));
+          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] }));
+          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] }));
         },
       },
       {
@@ -302,9 +302,10 @@ const FormDetails = () => {
         title: 'Expiration',
         dataIndex: 'product',
         key: 'product',
-        render: (object) => {
+        render: (object) => object.expiration
+        /*render: (object) => {
           return moment(new Date(object.expiration)).format('DD/MM/YYYY');
-        },
+        },*/
       },
       {
         title: 'Stock',

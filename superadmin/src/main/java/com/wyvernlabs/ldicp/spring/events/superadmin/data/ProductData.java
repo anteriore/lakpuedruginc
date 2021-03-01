@@ -54,7 +54,7 @@ public class ProductData {
 		product.setDivision(divisionRepository.getOne(1L));
 		product.setCategory(categoryRepository.getOne(1L));
 		product.setCompany(company);
-		product.setExpiration(new Date());
+		product.setExpiration(1);
 		product.setLotNumber("LOT#12345");
 		product.setQuantityPerBox(25);
 		product.setReorderLevel(1000);
@@ -65,13 +65,15 @@ public class ProductData {
 		productRepository.save(product);
 
 
+
+		product = new Product();
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
 		product.setCategory(categoryRepository.getOne(1L));
 		product.setCompany(company);
-		product.setExpiration(new Date());
+		product.setExpiration(2);
 		product.setLotNumber("LOT#8888");
-		product.setQuantityPerBox(25);
+		product.setQuantityPerBox(15);
 		product.setReorderLevel(1000);
 		product.setBigUnit(unitRepository.findByCode("g"));
 		product.setSmallUnit(unitRepository.findByCode("kg"));
@@ -80,13 +82,13 @@ public class ProductData {
 		productRepository.save(product);
 
 
-
+		product = new Product();
 		fg = finishedGoodRepository.getOne(2L);
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
 		product.setCategory(categoryRepository.getOne(1L));
 		product.setCompany(company);
-		product.setExpiration(new Date());
+		product.setExpiration(3);
 		product.setLotNumber("LOT#9999");
 		product.setQuantityPerBox(25);
 		product.setReorderLevel(1000);
@@ -114,7 +116,7 @@ public class ProductData {
 		//SUOM
 		//FITUNITP-unitprice
 		//FITCODE-finished good
-		//readCSV("groupData.csv");
+		readCSV("product-fgData.csv");
 	}
 
 
@@ -130,20 +132,62 @@ public class ProductData {
         String line = "";
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		Company company = companyRepository.getOne(1L);
+		//FinishedGood fg = new FinishedGood();
+
         try {				
             br = new BufferedReader(new FileReader(csvFile));
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-				
+					//load finished good
+					FinishedGood tempfg = new FinishedGood();
+					tempfg.setCode(data[1].replace("\"", ""));
+					tempfg.setName(data[4].replace("\"", ""));
+					finishedGoodRepository.save(tempfg);
 
+					//create product
 					Product tempproduct = new Product();
-					//tempproduct.setName(data[0].replace("\"", ""));
-					//tempproduct.setName(data[1].replace("\"", ""));
-					tempproduct.setCompany(company);
+					tempproduct.setCompany(companyRepository.getOne( Long.parseLong(  data[0].replace("\"", "") )  ));
+
+
+					tempproduct.setClassification(classificationRepository.findByCode(data[3].replace("\"", "")));
+					tempproduct.setDivision(divisionRepository.getOne(1L));//no data
+					tempproduct.setCategory(categoryRepository.findByCode(data[2].replace("\"", "")));
+					
+					//tempproduct.setExpiration(Integer.parseInt(  data[12].replace("\"", "") ));
+					//System.out.println(data[4].replace("\"", "")+Integer.parseInt(  data[12].replace("\"", "") ));
+					tempproduct.setExpiration(1);
+
+					tempproduct.setStatus(data[11].replace("\"", ""));
+					tempproduct.setExpiration(Integer.parseInt(  data[12].replace("\"", "") ));
+					tempproduct.setLotNumber(data[10].replace("\"", ""));
+					tempproduct.setQuantityPerBox(Integer.parseInt(  data[8].replace("\"", "") ));
+					tempproduct.setReorderLevel(1000);
+					tempproduct.setBigUnit(unitRepository.findByCode(data[7].replace("\"", "")));
+					tempproduct.setSmallUnit(unitRepository.findByCode(data[6].replace("\"", "")));
+					tempproduct.setUnitPrice(Double.parseDouble(data[9].replace("\"", "")));
+					tempproduct.setFinishedGood(tempfg);
 					productRepository.save(tempproduct);
 
 
+
+
+
+					//tempproduct.setName(data[1].replace("\"", ""));
+					//tempproduct.setCompany(company);
+					//productRepository.save(tempproduct);
+
+
+					/*
+					ProductInventory inventory = new ProductInventory();
+					inventory.setCompany(product.getCompany());
+					inventory.setDateCreated(new Date());
+					inventory.setDepot(product.getDepot());
+					inventory.setProduct(product);
+					inventory.setQuantity(0);
+					productInventoryRepository.save(inventory);
+					*/
+					
               
             }
 

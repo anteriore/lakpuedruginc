@@ -18,8 +18,8 @@ export const columns = {
       key: 'salesOrder',
       datatype: 'object',
       dataToString: (object) => {
-        return `[${object.client.code}] ${object.client.name}`
-      }
+        return `[${object.client.code}] ${object.client.name}`;
+      },
     },
     {
       title: 'Total Amount',
@@ -46,26 +46,25 @@ export const columns = {
       key: 'salesOrder',
       datatype: 'object',
       dataToString: (object) => {
-        return `[${object.client.code}] ${object.client.name}`
-      }
+        return `[${object.client.code}] ${object.client.name}`;
+      },
     },
     {
       title: 'Amount',
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      render: (data, rowData) => data * (1 - (rowData.taxPercentage / 100))
+      render: (data, rowData) => data * (1 - rowData.taxPercentage / 100),
     },
     {
       title: 'Tax',
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      render: (data, rowData) => data * (rowData.taxPercentage / 100)
+      render: (data, rowData) => data * (rowData.taxPercentage / 100),
     },
     {
       title: 'Accounts Receivable',
       dataIndex: 'totalAmount',
       key: 'totalAmount',
     },
-
-  ]
+  ],
 };

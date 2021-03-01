@@ -38,7 +38,7 @@ const FormScreen = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    if(hasTable){
+    if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
@@ -72,7 +72,7 @@ const FormScreen = (props) => {
     const columns = [];
     item.fields.forEach((field) => {
       if (!field.readOnly) {
-        if (field.type === 'input'){
+        if (field.type === 'input') {
           columns.push({
             title: field.label,
             width: field.width,
@@ -86,7 +86,7 @@ const FormScreen = (props) => {
                   rules={field.rules}
                   initialValue={field.initialValue}
                 >
-                  <Input placeholder={field.placeholder ?? ""} />
+                  <Input placeholder={field.placeholder ?? ''} />
                 </Form.Item>
               );
             },
@@ -110,7 +110,6 @@ const FormScreen = (props) => {
               );
             },
           });
-        
         } else if (field.type === 'timepicker') {
           columns.push({
             title: field.label,
@@ -126,12 +125,12 @@ const FormScreen = (props) => {
                   rules={field.rules}
                   initialValue={field.initialValue}
                 >
-                  <TimePicker use12Hours format="h:mm a"/>
+                  <TimePicker use12Hours format="h:mm a" />
                 </Form.Item>
-              )
-            }
-          })
-        }else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+              );
+            },
+          });
+        } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
             width: field.width,
@@ -163,7 +162,10 @@ const FormScreen = (props) => {
                   rules={field.rules}
                   initialValue={field.initialValue}
                 >
-                  <Select showSearch={field.type === 'selectSearch'} placeholder={field.placeholder}>
+                  <Select
+                    showSearch={field.type === 'selectSearch'}
+                    placeholder={field.placeholder}
+                  >
                     {field.choices.map((choice) => (
                       <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
                     ))}

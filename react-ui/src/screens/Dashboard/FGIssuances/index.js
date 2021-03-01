@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
-  Skeleton,
-  Typography, 
-  Button,
-  Modal,
-  Space,
-  Table,
-  Empty,
-  message,  
-} from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -41,7 +30,6 @@ const FGIssuances = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  
 
   useEffect(() => {
     let isCancelled = false;
@@ -60,7 +48,7 @@ const FGIssuances = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
-  
+
   const handleAdd = () => {
     setFormTitle('Create FG Issuance');
     setFormMode('add');
@@ -72,11 +60,9 @@ const FGIssuances = (props) => {
     });
   };
 
-  const handleUpdate = (data) => {
-  };
+  const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -84,14 +70,14 @@ const FGIssuances = (props) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data)
+    console.log(data);
     const inventoryList = [];
     data.inventoryList.forEach((inventory) => {
       inventoryList.push({
         product: {
           id: inventory.product.id,
         },
-        quantity: inventory.quantity
+        quantity: inventory.quantity,
       });
     });
     const payload = {
@@ -108,7 +94,7 @@ const FGIssuances = (props) => {
       requestedBy: {
         id: user.id,
       },
-      inventoryList: inventoryList
+      inventoryList,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -136,7 +122,9 @@ const FGIssuances = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create FG Issuance. Please double check the provided information.`);
+          message.error(
+            `Unable to create FG Issuance. Please double check the provided information.`
+          );
         }
       });
     }
@@ -221,7 +209,7 @@ const FGIssuances = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.pisNo} Details`} 
+                  title={`${selectedData.pisNo} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />

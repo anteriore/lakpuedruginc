@@ -18,7 +18,7 @@ public class SalesRep {
 	private Long id;
 	private String code;
 	private String name;
-	private String status;
+	private boolean status;
 	@OneToOne
 	private Category productCategory;
 	@OneToOne
@@ -48,11 +48,11 @@ public class SalesRep {
 		this.name = name;
 	}
 
-	public String getStatus() {
+	public boolean getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(boolean status) {
 		this.status = status;
 	}
 

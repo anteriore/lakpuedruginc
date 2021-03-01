@@ -30,25 +30,28 @@ export const listI = createAsyncThunk('listI', async (payload, thunkAPI) => {
   return response;
 });
 
-export const listItemReportSummaryByProduct = createAsyncThunk('listItemReportSummaryByProduct', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { depot, dateRange, product } = payload; 
+export const listItemReportSummaryByProduct = createAsyncThunk(
+  'listItemReportSummaryByProduct',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { depot, dateRange, product } = payload;
 
-  try {
-    const response = await axiosInstance.get(`rest/sales-reports/item-sales-report/depot/${depot}/start/${dateRange[0]}/end/${dateRange[1]}/item/${product}?token=${accessToken}`);
+    try {
+      const response = await axiosInstance.get(
+        `rest/sales-reports/item-sales-report/depot/${depot}/start/${dateRange[0]}/end/${dateRange[1]}/item/${product}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
       if (valid) {
         return validatedResponse;
       }
       return thunkAPI.rejectWithValue(validatedResponse);
-
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
-
-});
+);
 
 export const listItemByType = createAsyncThunk('listItemByType', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -71,9 +74,11 @@ export const listItemByType = createAsyncThunk('listItemByType', async (payload,
 
 export const listItemSummary = createAsyncThunk('listItemSummary', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+  const { company } = payload;
 
-  const response = await axiosInstance.get(`rest/items/company/${company}/summary/?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `rest/items/company/${company}/summary/?token=${accessToken}`
+  );
 
   if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
@@ -190,7 +195,7 @@ const itemSlice = createSlice({
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
     },
-    /*[listItemReportSummaryByProduct.pending]: (state, action) => {
+    /* [listItemReportSummaryByProduct.pending]: (state, action) => {
       state.status = 'loading';
     },
     [listItemReportSummaryByProduct.fulfilled]: (state, action) => {
@@ -216,7 +221,7 @@ const itemSlice = createSlice({
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
-    },*/
+    }, */
   },
 });
 

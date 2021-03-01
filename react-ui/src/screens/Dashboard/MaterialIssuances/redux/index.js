@@ -11,55 +11,75 @@ const initialState = {
   action: '',
 };
 
-export const listMaterialIssuance = createAsyncThunk('listMaterialIssuance', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+export const listMaterialIssuance = createAsyncThunk(
+  'listMaterialIssuance',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
 
-  try {
-    const response = await axiosInstance.get(`rest/material-issuances/company/${company}?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/material-issuances/company/${company}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
+);
 
-});
+export const listMaterialIssuanceByStatus = createAsyncThunk(
+  'listMaterialIssuanceByStatus',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { status } = payload;
 
-export const listMaterialIssuanceByStatus = createAsyncThunk('listMaterialIssuanceByStatus', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { status } = payload
+    try {
+      const response = await axiosInstance.get(
+        `rest/material-issuances/status/${status}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  try {
-    const response = await axiosInstance.get(`rest/material-issuances/status/${status}?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
+);
 
-});
+export const addMaterialIssuance = createAsyncThunk(
+  'addMaterialIssuance',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const addMaterialIssuance  = createAsyncThunk('addMaterialIssuance', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+    const response = await axiosInstance.post(
+      `rest/material-issuances/?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
-  const response = await axiosInstance.post(`rest/material-issuances/?token=${accessToken}`, payload);
-  return response;
-});
+export const deleteMaterialIssuance = createAsyncThunk(
+  'deleteMaterialIssuance',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-export const deleteMaterialIssuance  = createAsyncThunk('deleteMaterialIssuance', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-
-  const response = await axiosInstance.post(`rest/material-issuances/delete?token=${accessToken}`, payload);
-  return response;
-});
+    const response = await axiosInstance.post(
+      `rest/material-issuances/delete?token=${accessToken}`,
+      payload
+    );
+    return response;
+  }
+);
 
 const materialIssuanceSlice = createSlice({
   name: 'materialIssuances',

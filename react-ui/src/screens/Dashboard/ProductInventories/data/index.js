@@ -17,8 +17,8 @@ export const columns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.code
-    }
+      return product?.finishedGood?.code;
+    },
   },
   {
     title: 'Finished Good',
@@ -26,13 +26,13 @@ export const columns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.name
-    }
+      return product?.finishedGood?.name;
+    },
   },
   {
     title: 'Quantity',
     dataIndex: 'quantity',
-    key: 'quantity'
+    key: 'quantity',
   },
   {
     title: 'Unit (Small/Big)',
@@ -40,7 +40,7 @@ export const columns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return `${product.bigUnit.name} (${product.bigUnit.code}) / ${product.smallUnit.name} (${product.smallUnit.code})`
+      return `${product.bigUnit?.name} (${product.bigUnit?.code}) / ${product?.smallUnit?.name} (${product?.smallUnit?.code})`;
     },
   },
 ];
@@ -58,8 +58,8 @@ export const reportColumns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.code
-    }
+      return product?.finishedGood?.code;
+    },
   },
   {
     title: 'Finished Good',
@@ -67,13 +67,13 @@ export const reportColumns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return product.finishedGood.name
-    }
+      return product?.finishedGood?.name;
+    },
   },
   {
     title: 'Quantity',
     dataIndex: 'quantity',
-    key: 'quantity'
+    key: 'quantity',
   },
   {
     title: 'Unit (Small/Big)',
@@ -81,7 +81,7 @@ export const reportColumns = [
     key: 'product',
     datatype: 'object',
     dataToString: (product) => {
-      return `${product.bigUnit.name} (${product.bigUnit.code}) / ${product.smallUnit.name} (${product.smallUnit.code})`
+      return `${product?.bigUnit?.name} (${product?.bigUnit?.code}) / ${product?.smallUnit?.name} (${product?.smallUnit?.code})`;
     },
   },
 ];

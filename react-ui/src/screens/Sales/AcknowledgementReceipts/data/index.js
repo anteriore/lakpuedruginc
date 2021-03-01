@@ -103,8 +103,8 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearOS())
-          dispatch(clearSI())
+          dispatch(clearOS());
+          dispatch(clearSI());
           dispatch(listOrderSlipsByDepotAndBalance({ message, depot: e, hasBalance: true }));
           dispatch(listSalesInvoiceByDepotAndBalance({ depot: e, hasBalance: true }));
         },

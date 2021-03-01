@@ -1,48 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Form,
-  Button,
-  InputNumber,
-  Input,
-  Select,
-  Checkbox,
-  Modal,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Empty,
-  message,
-} from 'antd';
+import { useSelector } from 'react-redux';
+import { DatePicker, Form, Button, InputNumber, Input, Select, Checkbox, Modal, Row, Col, Typography, Table, Empty, message,} from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
 const { Title } = Typography;
 
-const FormScreen = (props) => {
+const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
-  const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
-
+  const [contentLoading, setContentLoading] = useState(true);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
-  const toggleName = formDetails.toggle_name;
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
-    }
     // eslint-disable-next-line
   }, [values, form]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      receivedBy: `${user.firstName} ${user.lastName}`,
+    });
+
+    setContentLoading(false);
+  }, [user, form]);
+
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
@@ -56,6 +48,9 @@ const FormScreen = (props) => {
         )}`;
       }
     });
+
+    console.log(data)
+    console.log(tableData)
 
     onSubmit(data);
   };
@@ -87,6 +82,24 @@ const FormScreen = (props) => {
               );
             },
           });
+        } else if (field.type === 'date') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >              
+                  <DatePicker/>
+                </Form.Item>
+              );
+            },
+          });
         } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
@@ -103,6 +116,8 @@ const FormScreen = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
+                  labelCol={0}
+                  wrapperCol={24}
                 >
                   <Input bordered={false} />
                 </Form.Item>
@@ -244,12 +259,6 @@ const FormScreen = (props) => {
     if (values.hasOwnProperty(formTable.name)) {
       setTableData(form.getFieldValue(formTable.name));
     }
-
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
-      }
-    }
   };
 
   return (
@@ -269,32 +278,13 @@ const FormScreen = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
-                }
-                return null;
-              }
-
               return <FormItem item={item} onFail={onFail} />;
             })}
-
-            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) &&
-              formDetails.payment_items.map((item) => {
-                if (item.toggle) {
-                  if (item.toggleCondition(toggleValue)) {
-                    return <FormItem item={item} onFail={onFail} />;
-                  }
-                  return null;
-                }
-
-                return <FormItem item={item} onFail={onFail} />;
-              })}
 
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
+                  <Col span={24} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
                       <Button
                         onClick={() => {
@@ -367,7 +357,7 @@ const FormScreen = (props) => {
   );
 };
 
-export default FormScreen;
+export default InputForm;
 
 const styles = {
   layout: {
@@ -394,7 +384,8 @@ const styles = {
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    width: '87.5%',
+    marginTop: '2%',
+    width: '100%',
   },
   listTailLayout: {
     labelCol: {

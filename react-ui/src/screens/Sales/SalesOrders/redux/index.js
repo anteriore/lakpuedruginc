@@ -25,10 +25,7 @@ export const createSalesOrder = createAsyncThunk('createSalesOrder', async (payl
   const accessToken = thunkAPI.getState().auth.token;
 
   try {
-    const response = await axiosInstance.post(
-      `/rest/sales-orders?token=${accessToken}`,
-      payload
-    );
+    const response = await axiosInstance.post(`/rest/sales-orders?token=${accessToken}`, payload);
 
     const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {

@@ -42,28 +42,27 @@ export const processDataForSubmission = (data, company) => {
 };
 
 export const loadDataForUpdate = (data, itemSummaryList) => {
-    const requestedItems = []
-    console.log(itemSummaryList)
-    data.requestedItems.forEach((item) => {
-        var itemSummary = {
-            ...itemSummaryList.find((itemData) => itemData.item.id === item.item.id)
-        }
-        console.log(itemSummary)
-        delete itemSummary.item
-        requestedItems.push({
-            ...item,
-            ...itemSummary,
-            ...item.item,
-            id: item.id,
-            itemID: item.item.id,
-        })
-    })
-    return {
-        ...data,
-        date: moment(new Date(data.date)) || moment(),
-        dateNeeded: moment(new Date(data.dateNeeded)) || moment(),
-        department: data.department !== null ? data.department.id : null,
-        requestedItems: requestedItems
+  const requestedItems = [];
+  console.log(itemSummaryList);
+  data.requestedItems.forEach((item) => {
+    const itemSummary = {
+      ...itemSummaryList.find((itemData) => itemData.item.id === item.item.id),
     };
-}
-
+    console.log(itemSummary);
+    delete itemSummary.item;
+    requestedItems.push({
+      ...item,
+      ...itemSummary,
+      ...item.item,
+      id: item.id,
+      itemID: item.item.id,
+    });
+  });
+  return {
+    ...data,
+    date: moment(new Date(data.date)) || moment(),
+    dateNeeded: moment(new Date(data.dateNeeded)) || moment(),
+    department: data.department !== null ? data.department.id : null,
+    requestedItems,
+  };
+};

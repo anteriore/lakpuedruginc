@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
   company,
   purchaseOrders,
   sales,
-  rnd
+  rnd,
 });
 
 export default rootReducer;

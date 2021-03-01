@@ -1,21 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import GeneralStyles from '../../../data/styles/styles.general';
 import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
+import _ from 'lodash';
+import moment from 'moment';
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { formDetails, tableHeader } from './data';
-import {useDispatch, useSelector } from 'react-redux';
 import { listProductMovements, clearData, createProductMovement } from './redux';
-import { unwrapResult } from '@reduxjs/toolkit';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearPI, tempListProductInventory } from '../../Maintenance/redux/productInventory'; 
+import {
+  clearData as clearPI,
+  tempListProductInventory,
+} from '../../Maintenance/redux/productInventory';
 import { formatPMPayload } from './helpers';
-import _ from 'lodash';
-import moment from 'moment';
-
 
 const { Title } = Typography;
 
@@ -24,11 +26,13 @@ const ProductMovements = (props) => {
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
-  const [contentLoading, setContentLoading] = useState(true)
+  const [contentLoading, setContentLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [productMovement, setProductMovement] = useState(null);
 
-  const { productMovementList, action, statusMessage, status, statusLevel } = useSelector((state) => state.dashboard.productMovements);
+  const { productMovementList, action, statusMessage, status, statusLevel } = useSelector(
+    (state) => state.dashboard.productMovements
+  );
   const { id } = useSelector((state) => state.auth.user);
 
   const {
@@ -60,14 +64,14 @@ const ProductMovements = (props) => {
   useEffect(() => {
     if (status !== 'loading') {
       if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({statusMessage, statusLevel}, 'message');
+        statusDialogue({ statusMessage, statusLevel }, 'message');
       }
 
       if (action !== 'fetch') {
-        statusDialogue({statusMessage, statusLevel}, 'message');
+        statusDialogue({ statusMessage, statusLevel }, 'message');
       }
     }
-  },[status, action, statusMessage, statusLevel]);
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     if (statusPI !== 'loading') {
@@ -106,22 +110,25 @@ const ProductMovements = (props) => {
   useEffect(() => {
     let isCancelled = false;
     setContentLoading(true);
-    dispatch(listProductMovements(company)).then(unwrapResult).then(() => {
-      if(isCancelled) {
-        dispatch(clearData());
-      }
-    }).catch((rejectedValueOrSerializedError) => {
-      console.log(rejectedValueOrSerializedError);
-    });
+    dispatch(listProductMovements(company))
+      .then(unwrapResult)
+      .then(() => {
+        if (isCancelled) {
+          dispatch(clearData());
+        }
+      })
+      .catch((rejectedValueOrSerializedError) => {
+        console.log(rejectedValueOrSerializedError);
+      });
 
     setContentLoading(false);
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearPI());
-      
+
       isCancelled = true;
-    }
+    };
   }, [dispatch, company]);
 
   const handleAddButton = () => {
@@ -133,7 +140,7 @@ const ProductMovements = (props) => {
           return o.type.split(/[/?]/g)[1] === 'rejected';
         });
 
-        if(!promiseResult) {
+        if (!promiseResult) {
           const promiseValues = _.some(promiseList, (o) => {
             return o.payload.status !== 200 && o.payload.data.length === 0;
           });
@@ -146,47 +153,45 @@ const ProductMovements = (props) => {
           const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
           pushErrorPage(payload.status);
         }
-      })
-    })
-  }
+      });
+    });
+  };
 
   const handleRetrieve = (data) => {
     setDisplayModal(true);
     setProductMovement(data);
-  }
+  };
 
   const onCreate = (values) => {
-    setContentLoading(true)
-    dispatch(createProductMovement(formatPMPayload(id, company,values))).then(() => {
+    setContentLoading(true);
+    dispatch(createProductMovement(formatPMPayload(id, company, values))).then(() => {
       dispatch(listProductMovements(company)).then(() => {
         setContentLoading(false);
-      })
-    })
-  }
+      });
+    });
+  };
 
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <InputForm title="New Product Movement" onSubmit={onCreate} company={company}/>
+        <InputForm title="New Product Movement" onSubmit={onCreate} company={company} />
       </Route>
       <Route path={`${path}`}>
         <Row>
           <Col style={GeneralStyles.headerPage} span={20}>
-            <Title>
-              {title}
-            </Title>
+            <Title>{title}</Title>
             <Button
               loading={contentLoading}
               onClick={() => handleAddButton()}
-              icon={<PlusOutlined/>}
+              icon={<PlusOutlined />}
               primary
-            > 
+            >
               Add
             </Button>
           </Col>
           <Col span={20}>
             {contentLoading ? (
-              <Skeleton/>
+              <Skeleton />
             ) : (
               <TableDisplay
                 columns={tableHeader}
@@ -212,8 +217,8 @@ const ProductMovements = (props) => {
           width={1000}
           cancelButtonProps={{ style: { display: 'none' } }}
         >
-          { productMovement === null ? (
-            <Skeleton/>
+          {productMovement === null ? (
+            <Skeleton />
           ) : (
             <>
               <Descriptions
@@ -223,7 +228,7 @@ const ProductMovements = (props) => {
                 layout="vertical"
               >
                 {formDetails.form_items.map((item) => {
-                   if (item.type === 'select') {
+                  if (item.type === 'select') {
                     const itemData = productMovement[item.name];
                     return (
                       <Descriptions.Item key={item.name} label={item.label}>
@@ -242,7 +247,8 @@ const ProductMovements = (props) => {
 
                   return (
                     <Descriptions.Item key={item.name} label={item.label}>
-                      {typeof productMovement[item.name] === 'object' && productMovement[item.name] !== null
+                      {typeof productMovement[item.name] === 'object' &&
+                      productMovement[item.name] !== null
                         ? productMovement[item.name].code
                         : productMovement[item.name]}
                     </Descriptions.Item>
@@ -266,7 +272,7 @@ const ProductMovements = (props) => {
         </Modal>
       </Route>
     </Switch>
-  )
-}
+  );
+};
 
 export default ProductMovements;
