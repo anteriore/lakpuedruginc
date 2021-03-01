@@ -19,11 +19,13 @@ const ItemDescription = (props) => {
           if(selectedData[item.name] === null && item.toggle){
             return null
           }
-          else if (item.type === 'select' || item.type === 'selectSearch') {
-            const itemData = selectedData[item.name];
+          if (item.type === 'select' || item.type === 'selectSearch') {
+            if(typeof item.render === 'undefined'){
+              item.render = (object) => object[item?.selectName] ?? null
+            }
             return (
               <Descriptions.Item label={item.label}>
-                {itemData !== null ? itemData[item.selectName] : null}
+                {item.render(selectedData[item.name])}
               </Descriptions.Item>
             );
           }

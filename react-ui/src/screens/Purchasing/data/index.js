@@ -234,7 +234,7 @@ const FormDetails = () => {
         dataIndex: 'requestedBy',
         key: 'requestedBy',
         render: (item) => {
-          return `${item.firstName} ${item.lastName}`;
+          return `${item?.firstName} ${item?.lastName}`;
         },
       },
       {

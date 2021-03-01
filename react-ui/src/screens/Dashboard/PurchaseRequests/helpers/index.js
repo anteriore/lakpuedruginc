@@ -1,36 +1,45 @@
 import moment from 'moment';
 
 export const processDataForSubmission = (data, company) => {
-    const requestedItems = []
-    data.requestedItems.forEach((item) => {
-        requestedItems.push({
-            id: item.id || null,
-            item: {
-                id: item.itemID
-            },
-            unit: {
-                id: item.unit.id
-            },
-            quantityRequested: item.quantityRequested,
-            quantityRequired: item.quantityRequested,
-            quantityLacking: item.stockQuantity - item.quantityRequested < 0 ? -(item.stockQuantity - item.quantityRequested) : 0,
-            quantityRemaining: item.stockQuantity - item.quantityRequested > 0 ? item.stockQuantity - item.quantityRequested : 0,
-            company: {
-                id: company
-            },
-        })
-    })
-    return {
-        ...data,
-        department: {
-            id: data.department
-        },
-        company: {
-            id: company
-        },
-        requestedItems
-    }
-}
+  const requestedItems = [];
+  data.requestedItems.forEach((item) => {
+    requestedItems.push({
+      id: item.id || null,
+      item: {
+        id: item.itemID,
+      },
+      unit: {
+        id: item.unit.id,
+      },
+      quantityRequested: item.quantityRequested,
+      quantityRequired: item.quantityRequested,
+      quantityLacking:
+        item.stockQuantity - item.quantityRequested < 0
+          ? -(item.stockQuantity - item.quantityRequested)
+          : 0,
+      quantityRemaining:
+        item.stockQuantity - item.quantityRequested > 0
+          ? item.stockQuantity - item.quantityRequested
+          : 0,
+      company: {
+        id: company,
+      },
+    });
+  });
+  return {
+    ...data,
+    department: {
+      id: data.department,
+    },
+    company: {
+      id: company,
+    },
+    requestedBy: {
+      id: data.requestedBy,
+    },
+    requestedItems,
+  };
+};
 
 export const loadDataForUpdate = (data, itemSummaryList) => {
     const requestedItems = []

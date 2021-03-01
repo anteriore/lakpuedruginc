@@ -24,6 +24,7 @@ import { DisplayDetails, FormDetails } from './data';
 import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
+import ItemDescription from '../../../components/ItemDescription';
 
 const { Title, Text } = Typography;
 
@@ -231,48 +232,11 @@ const PurchaseRequests = (props) => {
             <Skeleton />
           ) : (
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
-              <Descriptions
-                bordered
-                title={`Purchase Request ${selectedData.number} Details`}
-                size="default"
-                layout="vertical"
-              >
-                {formDetails.form_items.map((item) => {
-                  if (!item.writeOnly) {
-                    if (selectedData[item.name] === null && item.toggle) {
-                      return null;
-                    }
-                    if (item.type === 'select' || item.type === 'selectSearch') {
-                      const itemData = selectedData[item.name];
-                      if(itemData !== null && typeof itemData !== 'undefined'){
-                        return (
-                          <Descriptions.Item label={item.label}>
-                            {itemData[item.selectName]}
-                          </Descriptions.Item>
-                        );
-                      }
-                    }
-                    if (item.type === 'date') {
-                      return (
-                        <Descriptions.Item label={item.label}>
-                          {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
-                        </Descriptions.Item>
-                      );
-                    }
-                    if (item.type === 'list') {
-                      return null;
-                    }
-
-                    return (
-                      <Descriptions.Item label={item.label}>
-                        {selectedData[item.name]}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  return null;
-                })}
-              </Descriptions>
+              <ItemDescription
+                  title={`Purchase Request ${selectedData.number} Details`}
+                  selectedData={selectedData}
+                  formItems={formDetails.form_items}
+                />
               <Text>{'Requested Items: '}</Text>
               <Table
                 dataSource={selectedData !== null ? selectedData.requestedItems : []}
