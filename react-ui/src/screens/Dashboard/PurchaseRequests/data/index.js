@@ -78,6 +78,9 @@ export const DisplayDetails = () => {
     },
   ];
 
+  
+  return { columns, itemColumns };
+
 }
 export const FormDetails = () => {
   const items = useSelector((state) => state.maintenance.items.list);
