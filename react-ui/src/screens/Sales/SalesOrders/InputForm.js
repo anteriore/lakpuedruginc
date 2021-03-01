@@ -61,7 +61,7 @@ const InputForm = (props) => {
       setRequestedProductList([]);
       setProductInv(
         _.filter(productInventoryList, (o) => {
-          return o.depot.id === value;
+          return o.depot?.id === value;
         })
       );
     };

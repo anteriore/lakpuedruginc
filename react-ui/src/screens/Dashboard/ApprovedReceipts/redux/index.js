@@ -4,7 +4,7 @@ import * as message from '../../../../data/constants/response-message.constant';
 import {checkResponseValidity, generateStatusMessage} from '../../../../helpers/general-helper';
 
 const initialState = {
-  approvedReceiptsList: null,
+  list: null,
   status: 'loading',
   statusLevel: '',
   responseCode: null,
@@ -12,7 +12,7 @@ const initialState = {
   action: '',
 };
 
-export const listApprovedReceipts = createAsyncThunk('listRR', async (payload, thunkAPI) => {
+export const listApprovedReceipts = createAsyncThunk('listApprovedReceipts', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(

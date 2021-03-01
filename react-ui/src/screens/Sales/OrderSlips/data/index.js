@@ -150,7 +150,7 @@ export const formDetails = {
       type: 'selectSearch',
       render: (sales) => {
         console.log(sales);
-        return `[${sales.number} ] ${sales.client.name}, Sales Rep: ${sales.client.salesRep.name}`;
+        return `[${sales?.number ?? ""}] ${sales?.client?.name ?? ""}, Sales Rep: ${sales?.client?.salesRep?.name ?? ""}`;
       },
       choices: [],
     },
