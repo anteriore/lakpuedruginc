@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty, Space, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import {
+  Row,
+  Col,
+  Typography,
+  Button,
+  Skeleton,
+  Descriptions,
+  Modal,
+  Table,
+  Empty,
+  Space,
+  message,
+} from 'antd';
+import { PlusOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import FormDetails, { columns } from './data';
+import FormDetails, { columns, reportColumns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
+import Report from '../../../components/Report';
 
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearPI, listProductInventory } from '../../Maintenance/redux/productInventory';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
+import { clearData as clearSI } from '../SalesInvoice/redux';
 
 const { Title, Text } = Typography;
 
@@ -32,7 +45,7 @@ const ReturnSlips = (props) => {
   const { formDetails, tableDetails } = FormDetails();
 
   const listData = useSelector((state) => state.sales.returnSlips.list);
-  const user = useSelector((state) => state.auth.user);
+  const companies = useSelector((state) => state.company.companyList);
 
   useEffect(() => {
     dispatch(listReturnSlip({ company, message })).then(() => {
@@ -42,6 +55,9 @@ const ReturnSlips = (props) => {
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearClient());
+      dispatch(clearDepot());
+      dispatch(clearOS());
+      dispatch(clearSI());
     };
   }, [dispatch, company]);
 
@@ -50,39 +66,37 @@ const ReturnSlips = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(clearOS())
+    dispatch(clearOS());
     dispatch(listClient({ company, message })).then(() => {
       dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listProductInventory({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
-        })
-      })
+        history.push(`${path}/new`);
+        setLoading(false);
+      });
     });
   };
 
   const handleUpdate = (data) => {
-  setFormTitle('Update Return Slip');
-  setFormMode('edit');
-  const itemData = listData.find((item) => item.id === data.id);
-  const formData = {
-    ...itemData,
-    date: moment(new Date(data.date)) || moment(),
-    client: itemData.client !== null ? itemData.client.id : null,
-    depot: itemData.depot !== null ? itemData.depot.id : null,
-  };
-  setFormData(formData);
-  setLoading(true);
-  dispatch(listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })).then(() => {
-    dispatch(listClient({ company, message })).then(() => {
-      dispatch(listDepot({ company, message })).then(() => {
-        dispatch(listProductInventory({ company, message })).then(() => {
+    setFormTitle('Update Return Slip');
+    setFormMode('edit');
+    const itemData = listData.find((item) => item.id === data.id);
+    const formData = {
+      ...itemData,
+      date: moment(new Date(data.date)) || moment(),
+      client: itemData.client !== null ? itemData.client.id : null,
+      depot: itemData.depot !== null ? itemData.depot.id : null,
+    };
+    setFormData(formData);
+    setLoading(true);
+    dispatch(
+      listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })
+    ).then(() => {
+      dispatch(listClient({ company, message })).then(() => {
+        dispatch(listDepot({ company, message })).then(() => {
           history.push(`${path}/${data.id}`);
           setLoading(false);
-        })
-      })
-    })
-  });
+        });
+      });
+    });
   };
 
   const handleDelete = (data) => {
@@ -93,8 +107,7 @@ const ReturnSlips = (props) => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
-      }
-      else {
+      } else {
         setLoading(false);
         message.error(`Unable to delete ${data.number}`);
       }
@@ -106,17 +119,50 @@ const ReturnSlips = (props) => {
     setDisplayModal(true);
   };
 
+  const handleReport = () => {
+    setFormTitle('Return Slip Summary Report');
+    setFormMode('report');
+    setFormData(listData);
+    console.log(formData);
+    setLoading(true);
+    history.push(`${path}/report`);
+    setLoading(false);
+  };
+
+  const renderReportDetails = () => {
+    return (
+      <>
+        <Row>
+          <Col span={12} style={{ display: 'flex' }}>
+            <Title level={5}>{`Report: ${formTitle}`}</Title>
+          </Col>
+          <Col span={12} style={{ display: 'flex' }}>
+            <Title level={5}>{`Dates: ${'all'}`}</Title>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12} style={{ display: 'flex' }}>
+            <Title level={5}>{`Company: ${
+              companies.find((companyData) => companyData.id === company).name
+            }`}</Title>
+          </Col>
+        </Row>
+      </>
+    );
+  };
+
   const onSubmit = (data) => {
-    //TODO: Data Validation
+    // TODO: Data Validation
     const products = [];
     data.returnSlipProducts.forEach((returnSlipProduct) => {
       products.push({
         product: {
-          id: returnSlipProduct.product.id
+          id: returnSlipProduct.product.id,
         },
-        goodQuantity: returnSlipProduct.goodQuantity || 0,
+        goodQuantity:
+          returnSlipProduct.quantity - returnSlipProduct.badQuantity || returnSlipProduct.quantity,
         badQuantity: returnSlipProduct.badQuantity || 0,
-        unitPrice: returnSlipProduct.unitPrice
+        unitPrice: returnSlipProduct.unitPrice,
       });
     });
     const payload = {
@@ -130,7 +176,7 @@ const ReturnSlips = (props) => {
       client: {
         id: data.client,
       },
-      returnSlipProducts: products
+      returnSlipProducts: products,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -158,9 +204,7 @@ const ReturnSlips = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(
-            `Unable to add Return Slip. Please double check the provided information.`
-          );
+          message.error(`Unable to add Return Slip. Please double check the provided information.`);
         }
       });
     }
@@ -170,14 +214,14 @@ const ReturnSlips = (props) => {
   const renderTableColumns = (fields) => {
     const columns = [];
     fields.forEach((field) => {
-        if (typeof field.render === 'undefined' || field.render === null) {
-          field.render = (object) => object[field.name];
-        }
-        columns.push({
-          title: field.label,
-          key: field.name,
-          render: (object) => field.render(object),
-        });
+      if (typeof field.render === 'undefined' || field.render === null) {
+        field.render = (object) => object[field.name];
+      }
+      columns.push({
+        title: field.label,
+        key: field.name,
+        render: (object) => field.render(object),
+      });
     });
 
     return columns;
@@ -185,7 +229,7 @@ const ReturnSlips = (props) => {
 
   return (
     <Switch>
-      <Route path={`${path}/new`}>
+      <Route exact path={`${path}/new`}>
         <InputForm
           title={formTitle}
           onSubmit={onSubmit}
@@ -196,6 +240,9 @@ const ReturnSlips = (props) => {
           formDetails={formDetails}
           formTable={tableDetails}
         />
+      </Route>
+      <Route exact path={`${path}/report`}>
+        <Report data={formData} columns={reportColumns} renderReportDetails={renderReportDetails} />
       </Route>
       <Route path={`${path}/:id`}>
         <InputForm
@@ -229,6 +276,16 @@ const ReturnSlips = (props) => {
             >
               Add
             </Button>
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<FileTextOutlined />}
+              onClick={() => {
+                handleReport();
+              }}
+              loading={loading}
+            >
+              View Report
+            </Button>
             {loading ? (
               <Skeleton />
             ) : (
@@ -238,6 +295,8 @@ const ReturnSlips = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={false}
+                deleteEnabled={false}
               />
             )}
           </Col>
@@ -302,7 +361,7 @@ const ReturnSlips = (props) => {
                       if (selectedData[item.name] === null && item.toggle) {
                         return null;
                       }
-                      else if (item.type === 'select' || item.type === 'selectSearch') {
+                      if (item.type === 'select' || item.type === 'selectSearch') {
                         const itemData = selectedData[item.name];
                         return (
                           <Descriptions.Item label={item.label}>
@@ -310,24 +369,22 @@ const ReturnSlips = (props) => {
                           </Descriptions.Item>
                         );
                       }
-                      else if (item.type === 'date') {
+                      if (item.type === 'date') {
                         return (
                           <Descriptions.Item label={item.label}>
                             {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
                           </Descriptions.Item>
                         );
                       }
-                      else if (item.type === 'list') {
+                      if (item.type === 'list') {
                         return null;
                       }
-                      else {
-                        return (
-                          <Descriptions.Item label={item.label}>
-                            {selectedData[item.name]}
-                          </Descriptions.Item>
-                        );
-                      }
 
+                      return (
+                        <Descriptions.Item label={item.label}>
+                          {selectedData[item.name]}
+                        </Descriptions.Item>
+                      );
                     }
 
                     return null;
@@ -335,8 +392,11 @@ const ReturnSlips = (props) => {
                 </Descriptions>
                 <Text>{'Return Slip Items: '}</Text>
                 <Table
-                  dataSource={selectedData[tableDetails.name] !== null && typeof selectedData[tableDetails.name] !== 'undefined' ? 
-                    selectedData[tableDetails.name] : []
+                  dataSource={
+                    selectedData[tableDetails.name] !== null &&
+                    typeof selectedData[tableDetails.name] !== 'undefined'
+                      ? selectedData[tableDetails.name]
+                      : []
                   }
                   columns={renderTableColumns(tableDetails.fields)}
                   pagination={false}

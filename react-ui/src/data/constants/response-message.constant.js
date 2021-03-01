@@ -28,7 +28,7 @@ export const ITEM_DELETE_REJECTED = 'Failed to delete specified item';
 // response messages
 export const API_401 = 'Sorry, you are not authorized to access this page.';
 export const API_500 = 'Sorry, something went wrong to the server.';
-export const API_200_EMPTY = 'There are no datas saved';
+export const API_200_EMPTY = 'There are no data saved';
 export const API_200_SUCCESS = 'Success fetching list';
 export const API_UNDEFINED = 'Undefined response.';
 

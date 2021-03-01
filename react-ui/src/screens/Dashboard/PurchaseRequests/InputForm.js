@@ -1,363 +1,352 @@
-/* eslint-disable no-redeclare */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Form,
+  Button,
+  InputNumber,
+  Input,
+  Select,
+  Checkbox,
+  Modal,
   Row,
   Col,
   Typography,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  DatePicker,
-  message,
-  Modal,
   Table,
   Empty,
-  Skeleton,
-  Checkbox,
-  Select,
+  message,
 } from 'antd';
-import { useParams, useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
-
-import { getPR, listPR, addPR, resetItemData } from './redux';
-import { listD } from '../../Maintenance/DepartmentArea/redux';
-import { listI } from '../../Maintenance/Items/redux';
+import { SelectOutlined } from '@ant-design/icons';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import FormItem from '../../../components/forms/FormItem';
 
 const { Title } = Typography;
-const dateFormat = 'YYYY/MM/DD';
 
 const InputForm = (props) => {
-  const [displayModal, setDisplayModal] = useState(false);
-  const [isLoading, setLoading] = useState(true);
-  const [isLoadingItems, setLoadingItems] = useState(false);
-  const [formData, setFormData] = useState({
-    id: null,
-    number: null,
-    date: null,
-    dateNeeded: null,
-    department: null,
-    remarks: null,
-    requestedBy: null,
-    status: null,
-    requestedItems: [],
-  });
-
-  const columns = [
-    {
-      title: 'Item Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Code',
-      dataIndex: 'code',
-      key: 'code',
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      render: (object) => object.name,
-    },
-    {
-      title: 'Unit of Measurement',
-      dataIndex: 'unit',
-      key: 'unit',
-      render: (object) => object.name,
-    },
-    /*
-        {
-            title: 'Current Stocks',
-            dataIndex: 'stocks',
-            key: 'stocks',   
-        },
-        {
-            title: 'Pending PR',
-            dataIndex: 'purchase_request',
-            key: 'purchase_request',   
-        },
-        {
-            title: 'Pending PO',
-            dataIndex: 'purchase_order',
-            key: 'purchase_order',   
-        },
-        {
-            title: 'Quarantined',
-            dataIndex: 'quarantined',
-            key: 'quarantined',   
-        }
-        */
-  ];
-
-  const data = useSelector((state) => state.dashboard.purchaseRequests.itemData);
-  const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
-  const itemsList = useSelector((state) => state.maintenance.items.list);
-  const user = useSelector((state) => state.auth.user);
-
-  const { id } = useParams();
-  const dispatch = useDispatch();
+  const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
+  const [form] = Form.useForm();
   const history = useHistory();
+  const { path } = useRouteMatch();
+  const hasTable = formTable !== null && typeof formTable !== 'undefined';
+
+  const [tableData, setTableData] = useState();
+
+  const [loadingModal, setLoadingModal] = useState(true);
+  const [displayModal, setDisplayModal] = useState(false);
 
   useEffect(() => {
-    dispatch(listD({ company: props.company, message })).then((response) => {
-      if (typeof id !== 'undefined' && id != null) {
-        dispatch(getPR({ id })).then((response) => {
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
+    form.setFieldsValue(values);
+    setTableData(form.getFieldValue(formTable.name));
+    // eslint-disable-next-line
+  }, [values, form]);
+
+  const onFinish = (data) => {
+    formDetails.form_items.forEach((item) => {
+      if (
+        item.type === 'date' &&
+        typeof data[item.name] !== 'undefined' &&
+        data[item.name] !== null
+      ) {
+        data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format(
+          'HH:mm:ss'
+        )}`;
       }
     });
 
-    return function cleanup() {
-      dispatch(resetItemData());
-    };
-  }, [dispatch, id, props.company]);
-
-  useEffect(() => {
-    setFormData(data);
-  }, [data]);
-
-  const onItemSelect = (data, isSelected) => {
-    if (isSelected) {
-      var selectedItems = formData.requestedItems.slice();
-      selectedItems.push(data);
-      setFormData({
-        ...formData,
-        requestedItems: selectedItems,
-      });
-    } else {
-      var selectedItems = formData.requestedItems.slice();
-      selectedItems.pop(data);
-      setFormData({
-        ...formData,
-        requestedItems: selectedItems,
-      });
-    }
-    //
+    onSubmit(data);
   };
 
-  const onFinish = (values) => {
-    // save data to database
-    const requestedItems = formData.requestedItems.slice();
+  const onFinishFailed = () => {
+    message.error("An error has occurred. Please double check the information you've provided.");
+  };
 
-    for (const [index, value] of requestedItems.entries()) {
-      requestedItems[index] = {
-        item: requestedItems[index],
-        quantityRequested: values.requestedItems.undefined[value.id],
-        unit: value.unit,
-      };
-    }
+  // for rendering tables
+  const renderTableColumns = (item) => {
+    const columns = [];
+    item.fields.forEach((field) => {
+      if (!field.readOnly) {
+        if (field.type === 'number') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <InputNumber min={field.min} max={field.max} />
+                </Form.Item>
+              );
+            },
+          });
+        } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
+          columns.push({
+            key: field.name,
+            visible: false,
+          });
+        } else if (field.type === 'readOnly') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  labelCol={0}
+                  wrapperCol={24}
+                >
+                  <Input bordered={false} />
+                </Form.Item>
+              );
+            },
+          });
+        } else if (field.type === 'select') {
+          columns.push({
+            title: field.label,
+            key: field.name,
+            visible: false,
+            render: (row) => {
+              const index = tableData.indexOf(row);
+              if (typeof field.render === 'undefined') {
+                if (typeof field.selectName === 'undefined') {
+                  field.selectName = 'name';
+                }
+                field.render = (choice) => choice[field.selectName];
+              }
 
-    const data = {
-      ...values,
-      id: formData.id,
-      number: null,
-      department: {
-        id: values.department,
-      },
-      date: `${values.date.format('YYYY-MM-DD')}T${values.date.format('HH:mm:ss')}`,
-      dateNeeded: `${values.dateNeeded.format('YYYY-MM-DD')}T${values.dateNeeded.format(
-        'HH:mm:ss'
-      )}`,
-      requestedBy: {
-        id: user.id,
-      },
-      company: {
-        id: props.company,
-      },
-      requestedItems,
-    };
-
-    dispatch(addPR(data)).then((response) => {
-      if (response.payload.status === 200) {
-        message.success('Successfully saved');
-        dispatch(listPR({ company: props.company, message })).then(() => {
-          history.goBack();
-        });
-      } else {
-        message.error('Something went wrong. Unable to add item.');
+              if (field.choices === null || field.choices.length === 0) {
+                onFail();
+                return null;
+              }
+              return (
+                <Form.Item
+                  name={[index, field.name]}
+                  fieldKey={[index, field.name]}
+                  rules={field.rules}
+                  initialValue={field.initialValue}
+                >
+                  <Select placeholder={field.placeholder}>
+                    {field.choices.map((choice) => (
+                      <Select.Option value={choice.id}>{field.render(choice)}</Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              );
+            },
+          });
+        } else {
+          if (typeof field.render === 'undefined' || field.render === null) {
+            field.render = (object) => object[field.name];
+          }
+          columns.push({
+            title: field.label,
+            key: field.name,
+            render: (object) => field.render(object),
+          });
+        }
       }
     });
+
+    return columns;
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-    // message.error(errorInfo)
+  // for selecting selecting a new row in a table
+  const onModalSelect = (data, isSelected) => {
+    let selectedItems = [];
+    if (hasTable) {
+      if (isSelected) {
+        // add existing data
+        if (tableData !== null && typeof tableData !== 'undefined') {
+          selectedItems = selectedItems.concat(tableData);
+        }
+
+        // process the new data before adding if necessary
+        let processedData = data;
+        if (typeof formTable.processData === 'function') {
+          processedData = formTable.processData(data);
+        }
+        selectedItems = selectedItems.concat(processedData);
+      } else if (tableData !== null && typeof tableData !== 'undefined') {
+        selectedItems = tableData;
+
+        // key for the selected item
+        if (typeof formTable.selectedKey === 'undefined') {
+          formTable.selectedKey = 'id';
+        }
+        // foreign key that corresponds to the selected item
+        if (typeof formTable.foreignKey === 'undefined') {
+          formTable.foreignKey = 'id';
+        }
+        selectedItems = selectedItems.filter(
+          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
+        );
+      }
+      const fieldsValue = {};
+      fieldsValue[formTable.name] = selectedItems;
+      setTableData(selectedItems);
+      form.setFieldsValue(fieldsValue);
+      onValuesChange(fieldsValue);
+    }
   };
 
-  const renderColumns = (field) => {
-    let filteredColumn = columns.slice();
-    const inputColumn = [
-      {
-        title: 'Quantity Requested',
-        key: 'quantityRequested',
-        render: (row) => {
-          return (
-            <Form.Item
-              {...field}
-              name={[field.name, row.id]}
-              fieldKey={[field.fieldKey, row.id]}
-              rules={[{ required: true }]}
-              initialValue={row.quantityRequested}
-            >
-              <InputNumber min={1} />
-            </Form.Item>
-          );
-        },
-      },
-    ];
-
-    filteredColumn = filteredColumn.concat(inputColumn);
-
-    return filteredColumn;
-  };
-
-  const renderItemColumns = () => {
-    let filteredColumn = [
+  // for rendering the columns inside the row selection modal
+  const renderModalColumns = (columns) => {
+    let modalColumns = [
       {
         key: 'select',
         render: (row) => {
           return (
             <Checkbox
               onChange={(e) => {
-                onItemSelect(row, e.target.checked);
+                onModalSelect(row, e.target.checked);
               }}
-              checked={!!formData.requestedItems.some((item) => item.id === row.id)}
+              defaultChecked={formTable.checkSelected(tableData, row)}
             />
           );
         },
       },
     ];
 
-    const inputColumn = columns.slice();
+    modalColumns = modalColumns.concat(columns);
 
-    filteredColumn = filteredColumn.concat(inputColumn);
-
-    return filteredColumn;
+    return modalColumns;
   };
 
-  const selectItems = () => {
-    setDisplayModal(true);
-    setLoadingItems(true);
-    dispatch(listI({ message })).then((response) => {
-      setLoadingItems(false);
-    });
+  const expandedRowRender = (row) => {
+    if (formTable.hasOwnProperty('nestedData')) {
+      return (
+        <>
+          <Title level={5}>{formTable.nestedData.label}</Title>
+          <Table
+            columns={formTable.nestedData.fields}
+            dataSource={row[formTable.nestedData.data]}
+            pagination={false}
+          />
+        </>
+      );
+    }
   };
 
-  const closeModal = () => {
-    setDisplayModal(false);
+  const onFail = () => {
+    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
+  };
+
+  const onValuesChange = (values) => {
+    if (values.hasOwnProperty(formTable.name)) {
+      setTableData(form.getFieldValue(formTable.name));
+    }
+
+    if (values.hasOwnProperty('payments')) {
+      let paymentSum = 0;
+      const paymentValues = form.getFieldValue('payments');
+      paymentValues.forEach((payment) => {
+        if (payment.appliedAmount > 0) {
+          paymentSum += payment.appliedAmount;
+        }
+      });
+      const formValues = {};
+      formValues.amountPaid = paymentSum;
+      form.setFieldsValue(formValues);
+    }
   };
 
   return (
     <>
       <Row>
-        <Title level={3}>{props.title}</Title>
+        <Title level={3}>{title}</Title>
       </Row>
       <Row>
         <Col span={20}>
-          {isLoading ? (
-            <Skeleton />
-          ) : (
-            <Form
-              {...styles.layout}
-              name="form"
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
-              initialValues={{
-                number: formData.number || 'AUTOGENERATED UPON CREATION.',
-                date: formData.date !== null ? moment(new Date(formData.date)) : moment(),
-                dateNeeded:
-                  formData.dateNeeded !== null ? moment(new Date(formData.dateNeeded)) : moment(),
-                department: formData.department !== null && formData.department.id,
-                remarks: formData.remarks,
-              }}
-            >
-              <Form.Item label="PRF Number" name="number">
-                <Input disabled />
-              </Form.Item>
+          <Form
+            {...styles.layout}
+            form={form}
+            initialValues={values}
+            name={formDetails.form_name}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            onValuesChange={onValuesChange}
+          >
+            {formDetails.form_items.map((item) => {
+              return <FormItem item={item} onFail={onFail} />;
+            })}
 
-              <Form.Item label="PRF Date" name="date" rules={[{ required: true }]}>
-                <DatePicker format={dateFormat} style={styles.datePicker} />
-              </Form.Item>
-
-              <Form.Item label="Date Needed" name="dateNeeded" rules={[{ required: true }]}>
-                <DatePicker format={dateFormat} style={styles.datePicker} />
-              </Form.Item>
-
-              <Form.Item label="Department" name="department" rules={[{ required: true }]}>
-                <Select showSearch placeholder="Department" optionFilterProp="children">
-                  {departments.map((department) => (
-                    <Select.Option value={department.id}>{department.name}</Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.List label="Requested Items" name="requestedItems" rules={[{ required: true }]}>
+            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
+                  <Col span={24} offset={1}>
+                    <div style={{ float: 'right', marginBottom: '1%' }}>
+                      <Button
+                        onClick={() => {
+                          setDisplayModal(true);
+                          setLoadingModal(false);
+                        }}
+                        icon={<SelectOutlined />}
+                      >
+                        {`Select ${formTable.label}`}
+                      </Button>
+                    </div>
                     <Table
-                      dataSource={formData.requestedItems}
-                      columns={renderColumns(fields)}
+                      dataSource={tableData}
+                      columns={renderTableColumns(formTable)}
                       pagination={false}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      summary={formTable.summary}
                     />
-                    <Form.ErrorList errors={errors} />
                   </Col>
                 )}
               </Form.List>
-              <Form.Item style={styles.tailLayout}>
-                <Button
-                  onClick={() => {
-                    selectItems();
-                  }}
-                  style={{ width: '40%', float: 'right' }}
-                >
-                  Select/Remove item(s)
-                </Button>
-              </Form.Item>
+            )}
+          </Form>
 
-              <Form.Item label="Remarks" name="remarks">
-                <Input.TextArea />
-              </Form.Item>
-              <div style={styles.tailLayout}>
-                <Button type="primary" htmlType="submit">
-                  Submit
-                </Button>
-                <Button
-                  style={{ marginRight: '3%' }}
-                  onClick={() => {
-                    history.goBack();
-                  }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </Form>
+          <div style={styles.tailLayout}>
+            <Button type="primary" onClick={() => form.submit()}>
+              Submit
+            </Button>
+            <Button
+              style={{ marginRight: '2%' }}
+              onClick={() => {
+                onCancel();
+                history.goBack();
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+          {!loadingModal && hasTable && (
+            <Modal
+              visible={displayModal}
+              title="Modal"
+              onOk={() => setDisplayModal(false)}
+              onCancel={() => setDisplayModal(false)}
+              cancelButtonProps={{ style: { display: 'none' } }}
+              width={1000}
+            >
+              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
+                // for nested tables
+                <Table
+                  dataSource={formTable.selectData}
+                  columns={renderModalColumns(formTable.selectFields)}
+                  pagination={false}
+                  expandable={{ expandedRowRender }}
+                  rowKey={formTable.foreignKey}
+                />
+              ) : (
+                <Table
+                  dataSource={formTable.selectData}
+                  columns={renderModalColumns(formTable.selectFields)}
+                  pagination={false}
+                  rowKey={formTable.foreignKey}
+                />
+              )}
+            </Modal>
           )}
         </Col>
       </Row>
-
-      <Modal
-        title="Select Items"
-        visible={displayModal}
-        cancelButtonProps={{ style: { display: 'none' } }}
-        onOk={closeModal}
-        onCancel={closeModal}
-        width={1000}
-      >
-        {isLoadingItems ? (
-          <Skeleton />
-        ) : (
-          <Table
-            dataSource={itemsList !== null ? itemsList : []}
-            columns={renderItemColumns()}
-            pagination={false}
-          />
-        )}
-      </Modal>
     </>
   );
 };
@@ -373,12 +362,48 @@ const styles = {
       span: 15,
     },
   },
+  listItems: {
+    labelCol: {
+      span: 24,
+    },
+    wrapperCol: {
+      span: 24,
+    },
+  },
+  listLayout: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginBottom: '2%',
+  },
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
+    marginTop: '2%',
+    width: '100%',
+  },
+  listTailLayout: {
+    labelCol: {
+      span: 24,
+    },
+    wrapperCol: {
+      span: 24,
+    },
+  },
+  formList: {
+    borderStyle: 'solid',
+    borderWidth: 1,
+    padding: '2%',
+    // backgroundColor: "#FAFAFA",
     width: '87.5%',
+    marginBottom: '2%',
   },
   datePicker: {
+    float: 'left',
+  },
+  inputNumber: {
+    float: 'left',
+  },
+  inputCheckList: {
     float: 'left',
   },
 };

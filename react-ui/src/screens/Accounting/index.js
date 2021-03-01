@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Empty } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { routes } from '../../navigation/accounting';
@@ -20,13 +20,26 @@ const Accounting = () => {
 
   const companies = useSelector((state) => state.company.companyList);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
+  const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
-      setModuleRoutes(routes);
+      // setModuleRoutes(routes)
+      setModuleRoutes(getPermittedRoutes());
       setContentLoading(false);
     });
+    // eslint-disable-next-line
   }, [dispatch]);
+
+  const getPermittedRoutes = () => {
+    const routeList = [];
+    routes.forEach((route) => {
+      if (typeof permissions[route.path.split('/')[1]] !== 'undefined') {
+        routeList.push(route);
+      }
+    });
+    return routeList;
+  };
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
@@ -54,6 +67,12 @@ const Accounting = () => {
                       );
                     })}
                   </Tabs>
+                  {moduleRoutes.length === 0 && (
+                    <Empty
+                      style={{ width: '87.5%' }}
+                      description="You do not have the permission to access this module."
+                    />
+                  )}
                 </Col>
               </Row>
             )}
@@ -61,10 +80,24 @@ const Accounting = () => {
         </Route>
         {!contentLoading &&
           moduleRoutes.map((module) => {
+            const actions = [];
+            if (permissions[module.path.split('/')[1]].actions.search('u') !== -1) {
+              actions.push('update');
+            }
+            if (permissions[module.path.split('/')[1]].actions.search('c') !== -1) {
+              actions.push('create');
+            }
+            if (permissions[module.path.split('/')[1]].actions.search('d') !== -1) {
+              actions.push('delete');
+            }
             return (
               <Route path={path + module.path}>
                 <Container location={{ pathname: path + module.path }}>
-                  <module.component title={module.title} company={selectedCompany} />
+                  <module.component
+                    title={module.title}
+                    company={selectedCompany}
+                    actions={actions}
+                  />
                 </Container>
               </Route>
             );

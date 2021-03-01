@@ -140,4 +140,16 @@ public class PurchaseRequestRestController {
 		return purchaseRequestRepository.findByCompanyAndStatus(company, status);
 	}
 
+	@GetMapping("/company/{companyId}/department/{department}/status/{status}")
+	public Set<PurchaseRequest> getPurchaseRequestsByCompanyAndDepartmentAndStatus(
+		@PathVariable Long companyId, 
+		@PathVariable String department,
+		@PathVariable String status
+	) {
+		Company company = companyRepository.getOne(companyId);
+		Department d = departmentRepository.findByName(department);
+		return purchaseRequestRepository.findByCompanyAndDepartmentAndStatus(company, d, status);
+	}
+	
+
 }

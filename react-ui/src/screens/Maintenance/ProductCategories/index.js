@@ -17,7 +17,7 @@ const Depots = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
 
-  const { company } = props;
+  const { company, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.productCategories.list);
   const divisions = useSelector((state) => state.maintenance.productDivisions.list);
@@ -190,15 +190,17 @@ const Depots = (props) => {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={20}>
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            onClick={(e) => {
-              handleAdd();
-            }}
-          >
-            Add
-          </Button>
+          {actions.includes('create') && (
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<PlusOutlined />}
+              onClick={(e) => {
+                handleAdd();
+              }}
+            >
+              Add
+            </Button>
+          )}
           {loading ? (
             <Skeleton />
           ) : (
@@ -208,6 +210,8 @@ const Depots = (props) => {
               handleRetrieve={handleRetrieve}
               handleUpdate={handleUpdate}
               handleDelete={handleDelete}
+              updateEnabled={actions.includes('update')}
+              deleteEnabled={actions.includes('delete')}
             />
           )}
         </Col>

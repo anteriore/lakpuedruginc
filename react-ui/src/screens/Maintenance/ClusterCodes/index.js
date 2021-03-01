@@ -11,7 +11,7 @@ import { listCluster, createCluster, updateCluster, deleteCluster, clearData } f
 const { Title } = Typography;
 
 const ClusterCodes = (props) => {
-  const { title } = props;
+  const { title, actions } = props;
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
@@ -98,9 +98,11 @@ const ClusterCodes = (props) => {
     <Row gutter={[8, 24]}>
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
-        <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
-          Add
-        </Button>
+        {actions.includes('create') && (
+          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+            Add
+          </Button>
+        )}
       </Col>
       <Col span={20}>
         <TableDisplay
@@ -108,6 +110,8 @@ const ClusterCodes = (props) => {
           data={clusterList}
           handleUpdate={handleEditButton}
           handleDelete={handleDeleteButton}
+          updateEnabled={actions.includes('update')}
+          deleteEnabled={actions.includes('delete')}
         />
       </Col>
       <SimpleForm

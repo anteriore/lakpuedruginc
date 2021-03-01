@@ -48,7 +48,7 @@ const Classification = (props) => {
     ],
   };
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
   const data = useSelector((state) => state.maintenance.classification.list);
 
@@ -135,21 +135,25 @@ const Classification = (props) => {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={20}>
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            onClick={() => {
-              handleAdd();
-            }}
-          >
-            Add
-          </Button>
+          {actions.includes('create') && (
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<PlusOutlined />}
+              onClick={() => {
+                handleAdd();
+              }}
+            >
+              Add
+            </Button>
+          )}
           <TableDisplay
             columns={columns}
             data={data}
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdate}
             handleDelete={handleDelete}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
           />
         </Col>
         <SimpleForm

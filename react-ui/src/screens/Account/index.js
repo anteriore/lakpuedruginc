@@ -69,7 +69,7 @@ const Account = (props) => {
         message.success(auth.message);
       }
     }
-  }, [auth.message]);
+  }, [auth.message, auth.status]);
 
   useEffect(() => {
     if (!loading) {

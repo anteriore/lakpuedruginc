@@ -13,12 +13,11 @@ import {
   Radio,
   Modal,
   Table,
-  Empty,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
 
 const { Item } = Form;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 
@@ -86,7 +85,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
         label={item.label}
         name={item.name}
         rules={item.rules}
-        initialValue={item.initialValue} 
+        initialValue={item.initialValue}
         hasFeedback={item.hasFeedback}
       >
         <InputNumber
@@ -152,7 +151,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
         rules={item.rules}
         initialValue={item.initialValue}
       >
-        <Radio.Group style={{ float: 'left' }}>
+        <Radio.Group style={{ float: 'left' }} onChange={item.onChange}>
           {item.choices.map((choice) => (
             <Radio.Button value={choice.id}>{item.render(choice)}</Radio.Button>
           ))}
@@ -161,6 +160,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
     );
   }
   if (item.type === 'checkList') {
+    if (item.choices === null || item.choices.length === 0) {
+      onFail();
+      return null;
+    }
+
     return (
       <Form.Item
         label={item.label}
@@ -308,7 +312,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
                 Select
               </Button>
             }
-            disabled
+            readOnly
             placeholder={item.placeholder}
           />
         </Form.Item>
@@ -323,9 +327,12 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
           <Table
             rowSelection={{
               type: 'radio',
+              selectedRowKeys: item.selectedData,
               onChange: (e) => {
+                item.setSelectedData(e);
                 onTableSelect(item.name, e[0]);
               },
+              preserveSelectedRowKeys: false,
             }}
             columns={item.columns}
             dataSource={item.dataSource}
@@ -342,16 +349,16 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   }
 
   return (
-    <Item 
-      label={item.label} 
-      name={item.name} 
-      rules={item.rules} 
-      initialValue={item.initialValue} 
+    <Item
+      label={item.label}
+      name={item.name}
+      rules={item.rules}
+      initialValue={item.initialValue}
       hasFeedback={item.hasFeedback}
     >
-      <Input 
-        disabled={item.type === 'readOnly' || item.readOnly} 
-        placeholder={item.placeholder} 
+      <Input
+        disabled={item.type === 'readOnly' || item.readOnly}
+        placeholder={item.placeholder}
         suffix={item.suffix}
       />
     </Item>

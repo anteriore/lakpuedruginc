@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton, Button, Descriptions, Modal, message } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Button, Modal, Empty, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import Container from '../../components/container';
 import TableDisplay from '../../components/TableDisplay';
 import FormScreen from '../../components/forms/FormScreen';
 import FormDetails, { columns } from './data';
+import ItemDescription from '../../components/ItemDescription';
 
 import { listPO, addPO, deletePO, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
@@ -27,6 +28,7 @@ const { Title } = Typography;
 const Purchasing = () => {
   const [loading, setLoading] = useState(true);
   const [loadingCompany, setLoadingCompany] = useState(true);
+  const [actions, setActions] = useState([]);
 
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedPO, setSelectedPO] = useState(null);
@@ -43,18 +45,43 @@ const Purchasing = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { formDetails, tableDetails } = FormDetails();
+  const { permissions } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    const actionsList = [];
+    if (typeof permissions['purchase-orders'] !== 'undefined') {
+      if (permissions['purchase-orders'].actions.search('u') !== -1) {
+        actionsList.push('update');
+      }
+      if (permissions['purchase-orders'].actions.search('c') !== -1) {
+        actionsList.push('create');
+      }
+      if (permissions['purchase-orders'].actions.search('d') !== -1) {
+        actionsList.push('delete');
+      }
+      if (permissions['purchase-orders'].actions.search('r') !== -1) {
+        actionsList.push('read');
+      }
+    }
+    setActions(actionsList);
+  }, [permissions]);
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
-      dispatch(listPO({ company: selectedCompany, message })).then(() => {
+      if (actions.includes('read')) {
+        dispatch(listPO({ company: selectedCompany, message })).then(() => {
+          setLoading(false);
+          setSelectedPO(null);
+          if (isCancelled) {
+            dispatch(clearData());
+          }
+        });
+      } else {
         setLoading(false);
         setSelectedPO(null);
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      });
+      }
     });
     return function cleanup() {
       dispatch(clearData());
@@ -64,14 +91,18 @@ const Purchasing = () => {
       dispatch(clearUnit());
       isCancelled = true;
     };
-  }, [dispatch, selectedCompany]);
+  }, [actions, dispatch, selectedCompany]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
     setLoading(true);
-    dispatch(listPO({ company: id, message })).then(() => {
+    if (actions.includes('read')) {
+      dispatch(listPO({ company: id, message })).then(() => {
+        setLoading(false);
+      });
+    } else {
       setLoading(false);
-    });
+    }
   };
 
   const handleAdd = () => {
@@ -83,12 +114,10 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
-              // dispatch(listPR({ company: selectedCompany, message }))
-              .then(() => {
-                history.push(`${path}/new`);
-                setLoadingCompany(false);
-              });
+            // dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+            // dispatch(listPR({ company: selectedCompany, message }))
+            history.push(`${path}/new`);
+            setLoadingCompany(false);
           });
         });
       });
@@ -122,12 +151,10 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
-              // dispatch(listPR({ company: selectedCompany, message }))
-              .then(() => {
-                history.push(`${path}/${data.id}`);
-                setLoadingCompany(false);
-              });
+            // dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
+            // dispatch(listPR({ company: selectedCompany, message }))
+            history.push(`${path}/${data.id}`);
+            setLoadingCompany(false);
           });
         });
       });
@@ -235,26 +262,34 @@ const Purchasing = () => {
                     <TabPane tab={val.name} key={val.id} />
                   ))}
                 </Tabs>
-
-                <Button
-                  style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-                  icon={<PlusOutlined />}
-                  onClick={(e) => {
-                    handleAdd();
-                  }}
-                >
-                  Add
-                </Button>
+                {actions.includes('create') && (
+                  <Button
+                    style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                    icon={<PlusOutlined />}
+                    onClick={(e) => {
+                      handleAdd();
+                    }}
+                  >
+                    Add
+                  </Button>
+                )}
 
                 {loading ? (
                   <Skeleton />
-                ) : (
+                ) : actions.includes('read') ? (
                   <TableDisplay
                     columns={columns}
                     data={purchaseOrders}
                     handleRetrieve={handleRetrieve}
                     handleUpdate={handleUpdate}
                     handleDelete={handleDelete}
+                    updateEnabled={actions.includes('update')}
+                    deleteEnabled={actions.includes('delete')}
+                  />
+                ) : (
+                  <Empty
+                    style={{ width: '87.5%' }}
+                    description="You do not have the permission to access this module."
                   />
                 )}
               </Col>
@@ -276,84 +311,23 @@ const Purchasing = () => {
                   <Skeleton />
                 ) : (
                   <>
-                    <Descriptions
-                      bordered
-                      title={`Purchase Order ${selectedPO.number}`}
-                      size="default"
-                      layout="vertical"
-                    >
-                      {formDetails.form_items.map((item) => {
-                        if (!item.writeOnly) {
-                          if (item.type === 'select') {
-                            const itemData = selectedPO[item.name];
-                            return (
-                              <Descriptions.Item label={item.label}>
-                                {itemData[item.selectName]}
-                              </Descriptions.Item>
-                            );
-                          }
-                          if (item.type === 'date') {
-                            return (
-                              <Descriptions.Item label={item.label}>
-                                {moment(new Date(selectedPO[item.name])).format('DD/MM/YYYY')}
-                              </Descriptions.Item>
-                            );
-                          }
-
-                          return (
-                            <Descriptions.Item label={item.label}>
-                              {selectedPO[item.name]}
-                            </Descriptions.Item>
-                          );
-                        }
-
-                        return null;
-                      })}
-                    </Descriptions>
+                    <ItemDescription
+                      title={`Purchase Order ${selectedPO.number} Details`}
+                      selectedData={selectedPO}
+                      formItems={formDetails.form_items}
+                    />
                     <Title
                       level={5}
                       style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}
                     >
                       Ordered Items:
                     </Title>
-                    {selectedPO[tableDetails.name].map((item) => {
-                      return (
-                        <Descriptions
-                          title={`[${item.item.code}] ${item.item.name}`}
-                          size="default"
-                        >
-                          {tableDetails.fields.map((field) => {
-                            if (field.type === 'hidden' || field.type === 'hiddenNumber') {
-                              return null;
-                            }
-                            if (typeof field.render === 'function') {
-                              return (
-                                <Descriptions.Item label={field.label}>
-                                  {field.render(item)}
-                                </Descriptions.Item>
-                              );
-                            }
-                            if (field.type === 'select') {
-                              if (typeof field.selectName === 'undefined') {
-                                field.selectName = 'name';
-                              }
-                              const fieldData = item[field.name];
-                              return (
-                                <Descriptions.Item label={field.label}>
-                                  {fieldData[field.selectName]}
-                                </Descriptions.Item>
-                              );
-                            }
-
-                            return (
-                              <Descriptions.Item label={field.label}>
-                                {item[field.name]}
-                              </Descriptions.Item>
-                            );
-                          })}
-                        </Descriptions>
-                      );
-                    })}
+                    <Table
+                      dataSource={selectedPO[tableDetails.name] ?? []}
+                      columns={tableDetails.renderTableColumns(tableDetails.fields)}
+                      pagination={false}
+                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                    />
                   </>
                 )}
               </Modal>

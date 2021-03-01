@@ -3,21 +3,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
-  listData: [],
-  itemData: {
-    id: null,
-    number: null,
-    date: null,
-    dateNeeded: null,
-    department: null,
-    remarks: null,
-    requestedBy: null,
-    status: null,
-    requestedItems: [],
-  },
-  list: null,
+  list: [],
 };
 
 export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
@@ -40,37 +29,70 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
   return response;
 });
 
-export const listPRByStatus = createAsyncThunk(
+export const listPRByStatus = createAsyncThunk('listPRByStatus', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, status } = payload;
+
+  try {
+    const response = await axiosInstance.get(
+      `rest/purchase-requests/company/${company}/status/${status}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const listPRByStatusAndDepartment = createAsyncThunk(
   'listPRByStatus',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    const { company, department, status } = payload;
+
+    try {
+      const response = await axiosInstance.get(
+        `rest/purchase-requests/company/${company}/department/${department}/status/${status}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getRequestedQuantityByItem = createAsyncThunk(
+  'getRequestedItemByItem',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company, item } = payload;
 
     const response = await axiosInstance.get(
-      `rest/purchase-requests/company/${payload.company}/status/${payload.status}?token=${accessToken}`
+      `rest/purchase-requests/company/${company}/stock/${item}?token=${accessToken}`
     );
 
     if (typeof response !== 'undefined' && response.status === 200) {
       const { data } = response;
       if (data.length === 0) {
-        payload.message.warning('No data retrieved for purchase requests');
+        payload.message.warning('No data retrieved for requested items');
       }
     } else {
       payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(response);
     }
 
     return response;
   }
 );
-
-export const getPR = createAsyncThunk('getPR', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-
-  const response = await axiosInstance.get(
-    `rest/purchase-requests/${payload.id}?token=${accessToken}`
-  );
-  return response;
-});
 
 export const addPR = createAsyncThunk('addPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -110,80 +132,10 @@ export const deletePR = createAsyncThunk('deletePR', async (payload, thunkAPI) =
   return response;
 });
 
-const processData = (data, action) => {
-  if (action === 'listPR/fulfilled') {
-    var processedData = [];
-    for (const [index, value] of data.entries()) {
-      var item = {
-        id: value.id,
-        number: value.number,
-        date: value.date,
-        dateNeeded: value.dateNeeded,
-        department: value.department !== null ? value.department.name : '',
-        remarks: value.remarks,
-        requestedBy: value.requestedBy,
-        status: value.status,
-      };
-      processedData.push(item);
-    }
-  } else if (action === 'getPR/fulfilled') {
-    const requestedItems = [];
-    for (const [index, value] of data.requestedItems.entries()) {
-      var item = {
-        id: value.item.id,
-        code: value.item.code,
-        name: value.item.name,
-        unit: {
-          id: value.item.unit.id,
-          name: value.item.unit.name,
-        },
-        type: {
-          id: value.item.type.id,
-          code: value.item.type.code,
-          name: value.item.type.name,
-        },
-        stocks: value.quantityRemaining,
-        quantityRequested: value.quantityRequested,
-        purchase_request: null,
-        purchase_order: null,
-        quarantined: null,
-      };
-      requestedItems.push(item);
-    }
-
-    processedData = {
-      id: data.id,
-      number: data.number,
-      date: data.date,
-      dateNeeded: data.dateNeeded,
-      department: data.department,
-      remarks: data.remarks,
-      requestedBy: data.requestedBy,
-      status: data.status,
-      requestedItems,
-    };
-  }
-
-  return processedData;
-};
-
 const purchaseRequestSlice = createSlice({
   name: 'purchaseRequest',
   initialState,
   reducers: {
-    resetItemData(state, action) {
-      state.itemData = {
-        id: null,
-        number: null,
-        date: null,
-        dateNeeded: null,
-        department: null,
-        remarks: null,
-        requestedBy: null,
-        status: null,
-        requestedItems: [],
-      };
-    },
     clearData: () => initialState,
   },
   extraReducers: {
@@ -200,7 +152,6 @@ const purchaseRequestSlice = createSlice({
 
       return {
         ...state,
-        listData: processData(data, action.type),
         list: data,
         status: 'succeeded',
         action: 'get',
@@ -216,49 +167,72 @@ const purchaseRequestSlice = createSlice({
       };
     },
 
-    [listPRByStatus.pending]: (state, action) => {
-      state.status = 'loading';
+    [listPRByStatus.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
+      };
     },
     [listPRByStatus.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for sales orders';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
 
       return {
         ...state,
-        listData: processData(data, action.type),
         list: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
     [listPRByStatus.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
       };
     },
 
-    [getPR.pending]: (state, action) => {
-      state.status = 'loading';
+    [listPRByStatusAndDepartment.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
+      };
     },
-    [getPR.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        state.status = 'succeeded';
-        state.itemData = processData(action.payload.data, action.type);
-      } else {
-        state.status = 'failed';
-      }
+    [listPRByStatusAndDepartment.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
     },
-    [getPR.rejected]: (state, action) => {
-      state.status = 'failed';
-      state.error = action.error.message;
+    [listPRByStatusAndDepartment.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
+      };
     },
   },
 });

@@ -2,12 +2,18 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { listOrderSlipsByDepot } from '../../OrderSlips/redux';
-import { listSalesInvoiceByDepot } from '../../SalesInvoice/redux';
+import { listOrderSlipsByDepotAndBalance, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepotAndBalance, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
 export const columns = [
+  {
+    title: 'Depot',
+    dataIndex: 'depot',
+    key: 'depot',
+    datatype: 'object',
+  },
   {
     title: 'AR Number',
     dataIndex: 'number',
@@ -53,6 +59,12 @@ export const columns = [
     key: 'amountPaid',
     datatype: 'number',
   },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status',
+    datatype: 'string',
+  },
 ];
 
 const FormDetails = () => {
@@ -61,9 +73,8 @@ const FormDetails = () => {
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
-  var salesSlips = []
-  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices)
-
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -92,8 +103,10 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(listOrderSlipsByDepot({ message, depot: e }));
-          dispatch(listSalesInvoiceByDepot({ depot: e }));
+          dispatch(clearOS());
+          dispatch(clearSI());
+          dispatch(listOrderSlipsByDepotAndBalance({ message, depot: e, hasBalance: true }));
+          dispatch(listSalesInvoiceByDepotAndBalance({ depot: e, hasBalance: true }));
         },
       },
       {
@@ -162,7 +175,7 @@ const FormDetails = () => {
         readOnly: true,
         rules: [
           { required: true },
-          /*({ getFieldValue }) => ({
+          /* ({ getFieldValue }) => ({
             validator(rule, value) {
               const payments = getFieldValue('payments')
               var sumPayments = 0
@@ -176,7 +189,7 @@ const FormDetails = () => {
               }
               return Promise.reject('The sum for the payments must be equal to the amount paid');
             },
-          }),*/
+          }), */
         ],
         suffix: (
           <Tooltip title="Automatically Calculated">
@@ -198,7 +211,7 @@ const FormDetails = () => {
         rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
       },
-    ]
+    ],
   };
 
   const tableDetails = {
@@ -229,14 +242,13 @@ const FormDetails = () => {
         label: 'Payment',
         name: 'appliedAmount',
         type: 'number',
-        rules: [{ required: true },
+        rules: [
+          { required: true },
           ({ getFieldValue }) => ({
             validator(rule, value) {
-              console.log(rule)
-              const index = parseInt(rule.field.split('.')[1])
-              const payments = getFieldValue('payments')
-              console.log(payments[index])
-              
+              const index = parseInt(rule.field.split('.')[1]);
+              const payments = getFieldValue('payments');
+
               if (payments[index].remainingBalance >= value) {
                 return Promise.resolve();
               }
@@ -256,6 +268,7 @@ const FormDetails = () => {
 
           return object.remainingBalance || 0;
         },
+        writeOnly: true,
       },
     ],
     summary: (data) => {
@@ -265,11 +278,10 @@ const FormDetails = () => {
       data.forEach(({ appliedAmount, type }) => {
         if (type === 'DR_SI') {
           totalSIAmount += appliedAmount;
-        } 
-        else if (type === 'OS'){
+        } else if (type === 'OS') {
           totalOSAmount += appliedAmount;
         }
-        
+
         totalAppliedAmount += appliedAmount;
       });
 
@@ -316,6 +328,7 @@ const FormDetails = () => {
       },
     ],
     getValues: (values) => {
+      console.log(values);
       const payments = [];
       values.payments.forEach((payment) => {
         payments.push({
@@ -326,9 +339,9 @@ const FormDetails = () => {
       return payments;
     },
     processData: (data) => {
-      return { 
-        ...data, 
-        appliedAmount: data.remainingBalance
+      return {
+        ...data,
+        appliedAmount: data.remainingBalance,
       };
     },
     checkSelected: (selectedData, rowData) => {

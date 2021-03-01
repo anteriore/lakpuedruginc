@@ -51,8 +51,8 @@ public class ProductCategoryData {
 
 					ProductCategory tempPC = new ProductCategory();
 					tempPC.setCode(data[0].replace("\"", ""));
-					tempPC.setDescription(data[1].replace("\"", ""));
-					tempPC.setTitle("Category 1");
+					tempPC.setTitle(data[1].replace("\"", ""));
+					//tempPC.setTitle(data[2].replace("\"", ""));
 					tempPC.setProductDivision(divisionRepository.getOne(1L));
 					categoryRepository.save(tempPC);
 

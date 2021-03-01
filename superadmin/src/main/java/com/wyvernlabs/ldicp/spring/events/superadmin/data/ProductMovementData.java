@@ -46,7 +46,7 @@ public class ProductMovementData {
 		pm.setDepot(depot);
 		ProductMovementItem productMovementItem = new ProductMovementItem();
 		productMovementItem.setProduct(product);
-		productMovementItem.setQuantity(50);
+		productMovementItem.setQuantity(506);
 		products.add(productMovementItem);
 		pm.setProducts(products);
 		pm.setRemarks("remarks 1");

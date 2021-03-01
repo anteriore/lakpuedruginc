@@ -2,11 +2,50 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, message } from 'antd';
 import moment from 'moment';
-import { listOrderSlipsByDepot, clearData as clearOS } from '../../OrderSlips/redux';
+import { listOrderSlipsByDepotAndStatus, clearData as clearOS } from '../../OrderSlips/redux';
+import { listSalesInvoiceByDepotAndStatus, clearData as clearSI } from '../../SalesInvoice/redux';
 
 const { Text } = Typography;
 
 export const columns = [
+  {
+    title: 'Depot',
+    dataIndex: 'depot',
+    key: 'depot',
+    datatype: 'object',
+  },
+  {
+    title: 'Return Slip Number',
+    dataIndex: 'number',
+    key: 'number',
+    datatype: 'string',
+  },
+  {
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
+    datatype: 'date',
+  },
+  {
+    title: 'Sales Number',
+    dataIndex: 'salesNumber',
+    key: 'salesNumber',
+    datatype: 'string',
+  },
+  {
+    title: 'Client',
+    dataIndex: 'client',
+    key: 'client',
+    datatype: 'object',
+  },
+  {
+    title: 'Amount',
+    dataIndex: 'totalAmount',
+    key: 'totalAmount',
+  },
+];
+
+export const reportColumns = [
   {
     title: 'Depot',
     dataIndex: 'depot',
@@ -49,8 +88,10 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const clients = useSelector((state) => state.maintenance.clients.list);
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
-  const productInventories = useSelector((state) => state.maintenance.productInventory.list);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
   const [displayModal, setDisplayModal] = useState(false);
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const formDetails = {
     form_name: 'return_slip',
@@ -77,8 +118,10 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(clearOS())
-          dispatch(listOrderSlipsByDepot({ message, depot: e }));
+          dispatch(clearOS());
+          dispatch(clearSI());
+          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] }));
+          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] }));
         },
       },
       {
@@ -86,16 +129,7 @@ const FormDetails = () => {
         name: 'client',
         type: 'selectSearch',
         selectName: 'name',
-        toggle: true,
-        readOnly: false,
-        toggleCondition: (value) => {
-          if (value === null || typeof value === 'undefined' ) {
-            return true;
-          }
-          else {
-            return false;
-          }
-        },
+        readOnly: true,
         choices: clients,
         render: (client) => `[${client.code}] ${client.name}`,
         rules: [{ required: true }],
@@ -106,12 +140,12 @@ const FormDetails = () => {
         label: 'DR/OS',
         name: 'salesNumber',
         type: 'selectTable',
-        rules: [],
+        rules: [{ required: true }],
         allowEmpty: true,
-        placeholder: "Select DR/OS",
-        displayModal: displayModal,
-        setDisplayModal: setDisplayModal,
-        dataSource: orderSlips,
+        placeholder: 'Select DR/OS',
+        displayModal,
+        setDisplayModal,
+        dataSource: salesSlips,
         columns: [
           {
             title: 'DR/OS Number',
@@ -122,7 +156,7 @@ const FormDetails = () => {
             title: 'Date',
             dataIndex: 'date',
             key: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY')
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
           },
           {
             title: 'Amount',
@@ -135,15 +169,23 @@ const FormDetails = () => {
             key: 'remainingBalance',
           },
         ],
-        rowKey: "id",
+        rowKey: 'id',
         getValueProps: (value) => {
-          if(typeof value !== 'undefined'){
-            return { value: value }
+          if (typeof value !== 'undefined') {
+            return { value };
           }
         },
-        emptyText: 'No data retrieved for sales slips in the selected depot. Please select another depot.'
+        emptyText:
+          'No data retrieved for sales slips in the selected depot. Please select another depot.',
       },
-    ]
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        type: 'textArea',
+        rules: [{ message: 'Please provide a valid remark' }],
+        placeholder: 'Remarks',
+      },
+    ],
   };
 
   const tableDetails = {
@@ -153,27 +195,51 @@ const FormDetails = () => {
     rules: [{ required: true }],
     fields: [
       {
-        label: 'Product', 
+        label: 'Product',
         name: 'product',
         render: (object) => {
           return object.product.finishedGood.name;
         },
       },
       {
+        label: 'Quantity',
+        name: 'quantity',
+        type: 'readOnly',
+        render: (object) => {
+          return object.goodQuantity + object.badQuantity;
+        },
+      },
+      {
         label: 'Good Quantity',
         name: 'goodQuantity',
-        type: 'number',
-        rules: [{ required: true }],
-        min: 0,
-        initialValue: 0
+        render: (object) => {
+          if (typeof object.quantity !== 'undefined' && object.quantity !== null) {
+            return object.quantity - object.badQuantity || object.quantity;
+          }
+
+          return object.goodQuantity;
+        },
       },
       {
         label: 'Bad Quantity',
         name: 'badQuantity',
         type: 'number',
-        rules: [{ required: true }],
+        rules: [
+          { required: true },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              const index = parseInt(rule.field.split('.')[1]);
+              const products = getFieldValue('returnSlipProducts');
+
+              if (products[index].quantity >= value) {
+                return Promise.resolve();
+              }
+              return Promise.reject();
+            },
+          }),
+        ],
         min: 0,
-        initialValue: 0
+        initialValue: 0,
       },
       {
         label: 'Unit Price',
@@ -186,14 +252,21 @@ const FormDetails = () => {
         label: 'Amount',
         name: 'amount',
         render: (object) => {
-          return object.goodQuantity * object.unitPrice || 0;
+          if (typeof object.quantity !== 'undefined' && object.quantity !== null) {
+            return (
+              (object.quantity - object.badQuantity) * object.unitPrice ||
+              object.quantity * object.unitPrice
+            );
+          }
+
+          return object.goodQuantity * object.unitPrice;
         },
       },
     ],
     summary: (data) => {
       let totalAmount = 0;
       data.forEach(({ goodQuantity, unitPrice }) => {
-        totalAmount += (goodQuantity * unitPrice) || 0;
+        totalAmount += goodQuantity * unitPrice || 0;
       });
 
       return (
@@ -207,31 +280,32 @@ const FormDetails = () => {
     },
     foreignKey: 'product',
     selectedKey: 'product',
-    selectData: productInventories,
+    selectData: null, // to be provided in the InputForm
     selectFields: [
       {
         title: 'Lot Number',
         dataIndex: 'product',
         key: 'product',
         render: (product) => {
-          return product.lotNumber
-        }
+          return product.lotNumber;
+        },
       },
       {
         title: 'FG Code',
         dataIndex: 'product',
         key: 'product',
         render: (object) => {
-          return `[${object.finishedGood.code}] ${object.finishedGood.name}`
-        }
+          return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
+        },
       },
       {
         title: 'Expiration',
         dataIndex: 'product',
         key: 'product',
-        render: (object) => {
-          return moment(new Date(object.expiration)).format('DD/MM/YYYY')
-        }
+        render: (object) => object.expiration
+        /*render: (object) => {
+          return moment(new Date(object.expiration)).format('DD/MM/YYYY');
+        },*/
       },
       {
         title: 'Stock',
@@ -243,19 +317,19 @@ const FormDetails = () => {
       const products = [];
       values.returnSlipProducts.forEach((product) => {
         products.push({
-          ...product
+          ...product,
         });
       });
       return products;
     },
     processData: (data) => {
-      var processedData = { 
+      const processedData = {
         ...data,
         product: data.product,
-        unitPrice: data.product.unitPrice,
-        key: data.product.id
-      }
-      delete processedData.id
+        unitPrice: data.unitPrice,
+        key: data.product.id,
+      };
+      delete processedData.id;
       return processedData;
     },
     checkSelected: (selectedData, rowData) => {
@@ -267,6 +341,7 @@ const FormDetails = () => {
         return true;
       }
     },
+    emptyText: 'Please select a delivery receipt (DR) or an order slip (OS).',
   };
 
   return { formDetails, tableDetails };

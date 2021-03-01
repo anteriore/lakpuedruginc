@@ -13,6 +13,8 @@ export const columns = [
   },
 ];
 
+export const tableName = 'account-codes';
+
 export const formDetail = {
   form_name: 'accountcodes',
   form_items: [

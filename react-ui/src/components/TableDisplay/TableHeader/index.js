@@ -3,12 +3,13 @@ import { Input, Button, Space, DatePicker } from 'antd';
 import { SearchOutlined, CheckOutlined, CloseOutlined, FilterOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-const TableSearch = (columnHeaders) => {
+const TableHeader = (props) => {
+  const { columns, hasSorter, hasFilter } = props;
   const newColumnHeaders = [];
   const { hasOwnProperty } = Object.prototype;
   const dateFormat = 'YYYY/MM/DD';
 
-  const filterSearch = (dataIndex, dataValue) => ({
+  const filterSearch = (dataIndex, dataValue, dataToString) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
         <Input
@@ -40,6 +41,11 @@ const TableSearch = (columnHeaders) => {
     onFilter: (value, record) => {
       if (record[dataIndex] === null) {
         return '';
+      }
+      if (typeof dataToString === 'function') {
+        return record[dataIndex]
+          ? dataToString(record[dataIndex]).toLowerCase().includes(value.toLowerCase())
+          : '';
       }
       if (hasOwnProperty.call(record[dataIndex], 'code') && dataValue === 'code') {
         return record[dataIndex].code
@@ -94,6 +100,7 @@ const TableSearch = (columnHeaders) => {
       <FilterOutlined style={{ color: filtered ? '#1890ff' : '#545454' }} />
     ),
     onFilter: (value, record) => {
+      console.log(new Date(record[dataIndex]));
       return (
         moment(new Date(record[dataIndex])).isBetween(value[0], value[1], 'day') ||
         moment(new Date(record[dataIndex])).isSame(value[0], 'day') ||
@@ -103,9 +110,9 @@ const TableSearch = (columnHeaders) => {
   });
 
   const setColumnHeaders = () => {
-    columnHeaders.forEach((header) => {
+    columns.forEach((header) => {
       // add sorter
-      if (typeof header.sorter === 'undefined') {
+      if (typeof header.sorter === 'undefined' && hasSorter) {
         if (header.datatype === 'string') {
           header = {
             ...header,
@@ -119,19 +126,23 @@ const TableSearch = (columnHeaders) => {
           if (typeof header.name === 'undefined' || header.name === null) {
             header.name = 'name';
           }
+
+          if (typeof header.dataToString !== 'function') {
+            header.dataToString = (object) => object[header.name];
+          }
           header = {
             ...header,
             sorter: (a, b) => {
               if (typeof a[header.key] !== 'undefined' && a[header.key] !== null) {
                 a = a[header.key];
-                a = a[header.name];
+                a = header.dataToString(a);
               } else {
                 a = '';
               }
 
               if (typeof b[header.key] !== 'undefined' && b[header.key] !== null) {
                 b = b[header.key];
-                b = b[header.name];
+                b = header.dataToString(b);
               } else {
                 b = '';
               }
@@ -151,7 +162,7 @@ const TableSearch = (columnHeaders) => {
         }
       }
 
-      // add filter/search bar
+      // change render based on data type
       if (typeof header.render === 'undefined') {
         if (header.datatype === 'date') {
           header = {
@@ -174,7 +185,11 @@ const TableSearch = (columnHeaders) => {
             ...header,
             render: (object) => {
               if (typeof object !== 'undefined' && object !== null) {
-                return object[header.name];
+                if (typeof header.dataToString !== 'function') {
+                  return object[header.name ?? 'name'];
+                }
+
+                return header.dataToString(object);
               }
 
               return null;
@@ -183,41 +198,45 @@ const TableSearch = (columnHeaders) => {
         }
       }
 
-      if (typeof header.filters !== 'undefined' && header.filters !== null) {
-        const filters = [];
-        header.filters.forEach((filter) => {
-          filters.push({
-            text: filter[header.filterKey],
-            value: filter[header.filterKey],
+      // add filter
+      if (hasFilter) {
+        if (typeof header.filters !== 'undefined' && header.filters !== null) {
+          const filters = [];
+          header.filters.forEach((filter) => {
+            filters.push({
+              text: filter[header.filterKey],
+              value: filter[header.filterKey],
+            });
           });
-        });
-        header = {
-          ...header,
-          filters,
-          onFilter: (value, record) => record[header.key].includes(value),
-        };
-      } else if (header.datatype === 'boolean') {
-        header = {
-          ...header,
-          filters: [
-            { text: <CheckOutlined />, value: true },
-            { text: <CloseOutlined />, value: false },
-          ],
-          onFilter: (value, record) => record[header.key] === value,
-        };
-      } else if (header.datatype === 'date') {
-        header = {
-          ...header,
-          defaultSortOrder: header.defaultSortOrder || 'ascend',
-          ...filterDate(header.key, header.name),
-        };
-      } else if (header.datatype !== 'boolean' && header.datatype !== 'date') {
-        header = {
-          ...header,
-          defaultSortOrder: header.defaultSortOrder || 'ascend',
-          ...filterSearch(header.key, header.name),
-        };
+          header = {
+            ...header,
+            filters,
+            onFilter: (value, record) => record[header.key].includes(value),
+          };
+        } else if (header.datatype === 'boolean') {
+          header = {
+            ...header,
+            filters: [
+              { text: <CheckOutlined />, value: true },
+              { text: <CloseOutlined />, value: false },
+            ],
+            onFilter: (value, record) => record[header.key] === value,
+          };
+        } else if (header.datatype === 'date') {
+          header = {
+            ...header,
+            defaultSortOrder: header.defaultSortOrder || 'ascend',
+            ...filterDate(header.key, header.name),
+          };
+        } else if (header.datatype !== 'boolean' && header.datatype !== 'date') {
+          header = {
+            ...header,
+            defaultSortOrder: header.defaultSortOrder || 'ascend',
+            ...filterSearch(header.key, header.name, header.dataToString),
+          };
+        }
       }
+
       newColumnHeaders.push(header);
     });
 
@@ -227,4 +246,4 @@ const TableSearch = (columnHeaders) => {
   return setColumnHeaders();
 };
 
-export default TableSearch;
+export default TableHeader;

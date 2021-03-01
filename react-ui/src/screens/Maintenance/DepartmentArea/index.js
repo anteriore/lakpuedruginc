@@ -32,6 +32,8 @@ const DepartmentArea = (props) => {
     },
   ];
 
+  const tableName = 'department-areas';
+
   const areaColumns = [
     {
       title: 'Area Code',
@@ -83,7 +85,7 @@ const DepartmentArea = (props) => {
     ],
   };
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
   const deptData = useSelector((state) => state.maintenance.departmentArea.deptList);
   const areaData = useSelector((state) => state.maintenance.departmentArea.areaList);
@@ -234,22 +236,27 @@ const DepartmentArea = (props) => {
           <Title level={5} style={{ float: 'left' }}>
             Departments
           </Title>
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            onClick={() => {
-              handleAddD();
-            }}
-          >
-            Add
-          </Button>
+          {actions.includes('create') && (
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<PlusOutlined />}
+              onClick={() => {
+                handleAddD();
+              }}
+            >
+              Add
+            </Button>
+          )}
           <TableDisplay
+            name={tableName}
             columns={deptColumns}
             data={deptData}
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdateD}
             handleDelete={handleDeleteD}
             pagination={{ size: 'small' }}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
           />
         </Col>
         <Col span={12}>
@@ -266,12 +273,15 @@ const DepartmentArea = (props) => {
             Add
           </Button>
           <TableDisplay
+            name={tableName}
             columns={areaColumns}
             data={areaData}
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdateA}
             handleDelete={handleDeleteA}
             pagination={{ size: 'small' }}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
           />
         </Col>
         <SimpleForm

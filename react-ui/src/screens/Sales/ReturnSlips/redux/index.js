@@ -31,10 +31,7 @@ export const listReturnSlip = createAsyncThunk('listReturnSlip', async (payload,
 export const addReturnSlip = createAsyncThunk('addReturnSlip', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/return-slips/?token=${accessToken}`,
-    payload
-  );
+  const response = await axiosInstance.post(`rest/return-slips/?token=${accessToken}`, payload);
   return response;
 });
 

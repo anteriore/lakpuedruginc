@@ -29,6 +29,8 @@ export const tableHeader = [
   },
 ];
 
+export const tableName = 'bank-accounts';
+
 export const formDetails = {
   form_name: 'accountNumber',
   form_items: [

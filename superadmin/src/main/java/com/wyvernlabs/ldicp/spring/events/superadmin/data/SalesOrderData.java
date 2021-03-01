@@ -54,7 +54,7 @@ public class SalesOrderData {
 		List<SalesOrderProduct> products = new ArrayList<SalesOrderProduct>();
 		SalesOrderProduct salesProduct = new SalesOrderProduct();
 		salesProduct.setFinishedGood(fg);
-		salesProduct.setQuantity(50);
+		salesProduct.setQuantity(507);
 		salesProduct.setCompany(company);
 		salesProduct.setSoNumber(salesOrder.getNumber());
 		salesProduct.setDepot(depot);

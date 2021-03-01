@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 
 import TableHeader from './TableHeader';
 
@@ -15,12 +16,15 @@ const TableDisplay = (props) => {
     deleteEnabled,
     updateEnabled,
     pagination,
+    name,
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataCount, setDataCount] = useState(0);
-  const [columns, setColumns] = useState(TableHeader(col));
+  const [columns, setColumns] = useState(
+    TableHeader({ columns: col, hasSorter: true, hasFilter: true })
+  );
 
   /*
     columns must have an id
@@ -114,6 +118,7 @@ const TableDisplay = (props) => {
   return (
     <Table
       dataSource={data}
+      rowKey={(record) => record.uid}
       columns={columnfilter()}
       pagination={{
         onChange: (page, size) => {

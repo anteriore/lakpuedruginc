@@ -13,16 +13,102 @@ const InputForm = (props) => {
   const permissions = useSelector((state) => state.users.listPermission);
 
   useEffect(() => {
-    form.setFieldsValue(values);
+    if (values !== null && typeof values !== 'undefined') {
+      form.setFieldsValue(values);
+    }
   }, [values, form]);
 
   const onFinishFailed = (errorInfo) => {
-    message.error(errorInfo);
+    console.log('Failed:', errorInfo);
+    message.error(
+      'An error has occured. Please double check the information that you have provided.'
+    );
   };
 
   const onFail = () => {
     history.push(`/users`);
   };
+
+  const renderPermissions = () => {
+    if (permissions !== null && typeof permissions !== 'undefined') {
+      return (
+        <Form.List
+          {...{ wrapperCol: { span: 24 }, labelCol: { span: 24 } }}
+          label="Permissions"
+          name="permissions"
+          rules={[{ required: true }]}
+        >
+          {({ errors }) => (
+            <>
+              <Row>
+                <Title level={5} style={{ float: 'left' }}>
+                  Permissions
+                </Title>
+              </Row>
+              <Row>
+                {permissions.map((permission) => {
+                  return (
+                    <Row style={styles.formList}>
+                      <Row style={{ width: '100%' }}>
+                        <Title level={5} style={{ float: 'left' }}>
+                          {permission.category}
+                        </Title>
+                      </Row>
+                      <Row style={{ width: '100%' }}>
+                        {permission.permissionSubs.map((permissionSub) => {
+                          return (
+                            <Row style={{ width: '100%' }}>
+                              <Form.Item
+                                name={[permissionSub.code, 'id']}
+                                fieldKey={[permissionSub.code, 'id']}
+                                hidden
+                              >
+                                <Input />
+                              </Form.Item>
+                              <Form.Item
+                                name={[permissionSub.code, 'code']}
+                                fieldKey={[permissionSub.code, 'code']}
+                                hidden
+                              >
+                                <Input />
+                              </Form.Item>
+                              <Form.Item
+                                {...styles.listItems}
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'flex-end',
+                                  width: '95%',
+                                }}
+                                label={permissionSub.name}
+                                name={[permissionSub.code, 'actions']}
+                                fieldKey={[permissionSub.code, 'actions']}
+                                initialValue={formMode === 'edit' ? [] : ['c', 'r', 'u', 'd']}
+                              >
+                                <Checkbox.Group>
+                                  <Checkbox value="c">Create</Checkbox>
+                                  <Checkbox value="r">Read</Checkbox>
+                                  <Checkbox value="u">Update</Checkbox>
+                                  <Checkbox value="d">Delete</Checkbox>
+                                </Checkbox.Group>
+                              </Form.Item>
+                            </Row>
+                          );
+                        })}
+                      </Row>
+                    </Row>
+                  );
+                })}
+                <Form.ErrorList errors={errors} />
+              </Row>
+            </>
+          )}
+        </Form.List>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <>
       <Row>
@@ -42,76 +128,7 @@ const InputForm = (props) => {
               <FormItem item={item} onFail={onFail} formMode={formMode} />
             ))}
 
-            <Form.List
-              {...{ wrapperCol: { span: 24 }, labelCol: { span: 24 } }}
-              label="Permissions"
-              name="permissions"
-              rules={[{ required: true }]}
-            >
-              {({ errors }) => (
-                <>
-                  <Row>
-                    <Title level={5} style={{ float: 'left' }}>
-                      Permissions
-                    </Title>
-                  </Row>
-                  <Row>
-                    {permissions.map((permission) => {
-                      return (
-                        <Row style={styles.formList}>
-                          <Row style={{ width: '100%' }}>
-                            <Title level={5} style={{ float: 'left' }}>
-                              {permission.category}
-                            </Title>
-                          </Row>
-                          <Row style={{ width: '100%' }}>
-                            {permission.permissionSubs.map((permissionSub) => {
-                              return (
-                                <Row style={{ width: '100%' }}>
-                                  <Form.Item
-                                    name={[permissionSub.code, 'id']}
-                                    fieldKey={[permissionSub.code, 'id']}
-                                    hidden
-                                  >
-                                    <Input />
-                                  </Form.Item>
-                                  <Form.Item
-                                    name={[permissionSub.code, 'code']}
-                                    fieldKey={[permissionSub.code, 'code']}
-                                    hidden
-                                  >
-                                    <Input />
-                                  </Form.Item>
-                                  <Form.Item
-                                    {...styles.listItems}
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'flex-end',
-                                      width: '95%',
-                                    }}
-                                    label={permissionSub.name}
-                                    name={[permissionSub.code, 'actions']}
-                                    fieldKey={[permissionSub.code, 'actions']}
-                                  >
-                                    <Checkbox.Group>
-                                      <Checkbox value="c">Create</Checkbox>
-                                      <Checkbox value="r">Read</Checkbox>
-                                      <Checkbox value="u">Update</Checkbox>
-                                      <Checkbox value="d">Delete</Checkbox>
-                                    </Checkbox.Group>
-                                  </Form.Item>
-                                </Row>
-                              );
-                            })}
-                          </Row>
-                        </Row>
-                      );
-                    })}
-                    <Form.ErrorList errors={errors} />
-                  </Row>
-                </>
-              )}
-            </Form.List>
+            {renderPermissions()}
 
             <div style={styles.tailLayout}>
               <Button type="primary" htmlType="submit">

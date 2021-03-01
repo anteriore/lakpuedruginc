@@ -17,7 +17,7 @@ import { tableHeader } from './data';
 const { Title } = Typography;
 
 const Product = (props) => {
-  const { title, company } = props;
+  const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const [contentLoading, setContenctLoading] = useState(true);
   const history = useHistory();
@@ -100,9 +100,11 @@ const Product = (props) => {
           <Row gutter={[8, 24]}>
             <Col style={styles.headerPage} span={20}>
               <Title level={3}>{title}</Title>
-              <Button icon={<PlusOutlined />} onClick={() => history.push(`${path}/new`)}>
-                Add
-              </Button>
+              {actions.includes('create') && (
+                <Button icon={<PlusOutlined />} onClick={() => history.push(`${path}/new`)}>
+                  Add
+                </Button>
+              )}
             </Col>
             <Col span={20}>
               <TableDisplay
@@ -110,7 +112,8 @@ const Product = (props) => {
                 data={productList}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                deleteEnabled
+                updateEnabled={actions.includes('update')}
+                deleteEnabled={actions.includes('delete')}
               />
             </Col>
           </Row>

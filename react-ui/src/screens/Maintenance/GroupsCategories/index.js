@@ -50,7 +50,7 @@ const GroupsCategories = (props) => {
     ],
   };
 
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -69,6 +69,13 @@ const GroupsCategories = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    if (selectedGroup !== null) {
+      const group = groupData.find((group) => group.id === selectedGroup.id);
+      setselectedGroup(group);
+    }
+  }, [groupData, selectedGroup]);
 
   const handleAddG = () => {
     setFormTitle('Add Group');
@@ -92,8 +99,10 @@ const GroupsCategories = (props) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Group ${data.name}`);
         dispatch(listG({ company, message })).then(() => {
-          setLoading(false);
-          setselectedGroup(null);
+          dispatch(listC({ company, message })).then(() => {
+            setLoading(false);
+            setselectedGroup(null);
+          });
         });
       } else {
         message.error(`Unable to delete Group ${data.name}`);
@@ -126,8 +135,10 @@ const GroupsCategories = (props) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Category ${data.name}`);
         dispatch(listG({ company, message })).then(() => {
-          setLoading(false);
-          setselectedCategory(null);
+          dispatch(listC({ company, message })).then(() => {
+            setLoading(false);
+            setselectedCategory(null);
+          });
         });
       } else {
         message.error(`Unable to delete Category ${data.name}`);
@@ -284,15 +295,17 @@ const GroupsCategories = (props) => {
       ) : (
         <Row gutter={[16, 16]}>
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
-            <Button
-              style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAddG();
-              }}
-            >
-              Add Group
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAddG();
+                }}
+              >
+                Add Group
+              </Button>
+            )}
             <Select
               placeholder="Select a group"
               onChange={onSelectGroup}
@@ -305,45 +318,51 @@ const GroupsCategories = (props) => {
 
             {selectedGroup !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                <Popconfirm
-                  title="Would you like to delete this item?"
-                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                  onConfirm={() => {
-                    handleDeleteG(selectedGroup);
-                  }}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button style={{ width: '30%', marginLeft: '2%' }} icon={<DeleteOutlined />}>
-                    Delete
-                  </Button>
-                </Popconfirm>
+                {actions.includes('delete') && (
+                  <Popconfirm
+                    title="Would you like to delete this item?"
+                    icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                    onConfirm={() => {
+                      handleDeleteG(selectedGroup);
+                    }}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button style={{ width: '30%', marginLeft: '2%' }} icon={<DeleteOutlined />}>
+                      Delete
+                    </Button>
+                  </Popconfirm>
+                )}
 
-                <Button
-                  style={{ width: '30%' }}
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    handleUpdateG(selectedGroup);
-                  }}
-                >
-                  Rename
-                </Button>
+                {actions.includes('update') && (
+                  <Button
+                    style={{ width: '30%' }}
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      handleUpdateG(selectedGroup);
+                    }}
+                  >
+                    Rename
+                  </Button>
+                )}
               </div>
             )}
           </Col>
           <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
             {selectedGroup !== null && (
               <>
-                <Button
-                  style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    // message.error(`Add category is not yet implemented`);
-                    handleAddC();
-                  }}
-                >
-                  Add Category
-                </Button>
+                {actions.includes('create') !== -1 && (
+                  <Button
+                    style={{ marginLeft: 'auto', width: '30%', marginBottom: '2%' }}
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      // message.error(`Add category is not yet implemented`);
+                      handleAddC();
+                    }}
+                  >
+                    Add Category
+                  </Button>
+                )}
                 <Select
                   placeholder="Select a category"
                   onChange={onSelectCategory}
@@ -359,24 +378,32 @@ const GroupsCategories = (props) => {
 
             {selectedCategory !== null && (
               <div style={{ display: 'flex', flexFlow: 'row-reverse', marginTop: '2%' }}>
-                <Button
-                  style={{ width: '30%', marginLeft: '2%' }}
-                  icon={<DeleteOutlined />}
-                  onClick={() => {
-                    handleDeleteC(selectedCategory);
-                  }}
-                >
-                  Delete
-                </Button>
-                <Button
-                  style={{ width: '30%' }}
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    handleUpdateC(selectedCategory);
-                  }}
-                >
-                  Rename
-                </Button>
+                {actions.includes('delete') && (
+                  <Popconfirm
+                    title="Would you like to delete this item?"
+                    icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                    onConfirm={() => {
+                      handleDeleteC(selectedCategory);
+                    }}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button style={{ width: '30%', marginLeft: '2%' }} icon={<DeleteOutlined />}>
+                      Delete
+                    </Button>
+                  </Popconfirm>
+                )}
+                {actions.includes('update') && (
+                  <Button
+                    style={{ width: '30%' }}
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      handleUpdateC(selectedCategory);
+                    }}
+                  >
+                    Rename
+                  </Button>
+                )}
               </div>
             )}
           </Col>

@@ -49,7 +49,7 @@ public class ProductIssuanceData {
 		Set<IssuedProductInventory> inventoryList = new HashSet<IssuedProductInventory>();
 		IssuedProductInventory inventory1 = new IssuedProductInventory();
 		inventory1.setProduct(productRepository.getOne(1L));
-		inventory1.setQuantity(50);
+		inventory1.setQuantity(505);
 		inventoryList.add(inventory1);
 
 		pis.setInventoryList(inventoryList);

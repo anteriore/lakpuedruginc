@@ -22,7 +22,7 @@ const Vendors = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
   const [displayData, setDisplayData] = useState(null);
 
-  const { company } = props;
+  const { company, title, actions } = props;
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -292,21 +292,23 @@ const Vendors = (props) => {
         <Row>
           <Col span={20}>
             <Title level={3} style={{ float: 'left' }}>
-              {props.title}
+              {title}
             </Title>
           </Col>
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={(e) => {
-                handleAdd();
-              }}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={(e) => {
+                  handleAdd();
+                }}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (
@@ -316,6 +318,8 @@ const Vendors = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={actions.includes('update')}
+                deleteEnabled={actions.includes('delete')}
               />
             )}
           </Col>
