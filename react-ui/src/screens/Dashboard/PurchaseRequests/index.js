@@ -8,7 +8,7 @@ import {
   Modal,
   Skeleton,
   Empty,
-  Descriptions,
+  Input,
   Space,
   message,
 } from 'antd';
@@ -17,7 +17,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { listPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
+import { listPR, cancelPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
 import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 import { DisplayDetails, FormDetails } from './data';
@@ -27,12 +27,15 @@ import TableDisplay from '../../../components/TableDisplay';
 import ItemDescription from '../../../components/ItemDescription';
 
 const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 const PurchaseRequests = (props) => {
   const [loading, setLoading] = useState(true);
 
+  const [displayCancelModal, setDisplayCancelModal] = useState(false);
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+  const [remarks, setRemarks] = useState(null);
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -120,6 +123,24 @@ const PurchaseRequests = (props) => {
     });
   };
 
+  
+  const handleCancel = () => {
+    setDisplayCancelModal(true)
+  };
+
+  const onCancelPR = () => {
+    dispatch(cancelPR({ id: selectedData.id, remarks: remarks })).then(() => {
+      closeModal();
+      dispatch(listPR({ company, message })).then(() => {});
+    });
+
+  }
+
+  const handleCancelRemarks = (data) => {
+    console.log(data)
+    setRemarks(data)
+  }
+
   const onSubmit = (data) => {
     const payload = processDataForSubmission(data, company);
 
@@ -153,6 +174,7 @@ const PurchaseRequests = (props) => {
   };
 
   const closeModal = () => {
+    setDisplayCancelModal(false);
     setDisplayModal(false);
     setSelectedData(null);
   };
@@ -216,6 +238,28 @@ const PurchaseRequests = (props) => {
           )}
         </Row>
         <Modal
+          visible={displayCancelModal}
+          title={`Cancel ${selectedData?.number ?? ''}`}
+          onOk={() => {
+            onCancelPR()
+          }}
+          onCancel={() => {
+            closeModal()
+          }}
+          cancelButtonProps={{ style: { display: 'none' } }}
+        >
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            <Text>{'Remarks (Reason for cancellation): '}</Text>
+            <TextArea 
+              rows={3} 
+              maxLength={200} 
+              placeholder={`Please indicate the reason for cancellation`} 
+              onChange={(e) => handleCancelRemarks(e.target.value)}
+              defaultValue={selectedData?.remarks ?? ''}
+            />
+          </Space>
+        </Modal>
+        <Modal
           visible={displayModal}
           onOk={() => {
             setDisplayModal(false);
@@ -244,32 +288,48 @@ const PurchaseRequests = (props) => {
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Seleted." /> }}
               />
-              {selectedData.status === 'Pending' && ( // add approval permissions here
+              {(selectedData.status === 'Pending' || selectedData.status === 'Approved') && ( // add approval permissions here
                 <>
                   <Text>{'Actions: '}</Text>
-                  <Space>
-                    <Button
-                      style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
-                      icon={<CheckOutlined />}
-                      onClick={(e) => {
-                        handleApprove(selectedData);
-                      }}
-                      type="primary"
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      style={{ marginRight: '1%' }}
-                      icon={<CloseOutlined />}
-                      onClick={(e) => {
-                        handleReject(selectedData);
-                      }}
-                      type="primary"
-                      danger
-                    >
-                      Reject
-                    </Button>
-                  </Space>
+                  {selectedData.status === 'Pending' ? (
+                    <Space>
+                      <Button
+                        style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
+                        icon={<CheckOutlined />}
+                        onClick={(e) => {
+                          handleApprove(selectedData);
+                        }}
+                        type="primary"
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        style={{ marginRight: '1%' }}
+                        icon={<CloseOutlined />}
+                        onClick={(e) => {
+                          handleReject(selectedData);
+                        }}
+                        type="primary"
+                        danger
+                      >
+                        Reject
+                      </Button>
+                    </Space>
+                  ):(
+                    <Space>
+                      <Button
+                        style={{ marginRight: '1%' }}
+                        icon={<CloseOutlined />}
+                        onClick={(e) => {
+                          handleCancel();
+                        }}
+                        type="primary"
+                        danger
+                      >
+                        Cancel
+                      </Button>
+                    </Space>
+                  )}
                 </>
               )}
             </Space>
