@@ -69,6 +69,9 @@ export const formDetails = {
       name: 'depot',
       rules: [{ required: true, message: 'Please provide a sales invoice depot' }],
       placeholder: 'Sales invoice depot',
+      render: (depot) => {
+        return `[${depot.code}] ${depot.name}`;
+      },
       type: 'select',
       choices: [],
     },
@@ -79,6 +82,10 @@ export const formDetails = {
       placeholder: 'Sales order',
       type: 'selectSearch',
       choices: [],
+      render: (sales) => {
+        console.log(sales);
+        return `[${sales?.number ?? ""}] ${sales?.client?.name ?? ""}, Sales Rep: ${sales?.client?.salesRep?.name ?? ""}`;
+      },
     },
     {
       label: 'Prepared By',

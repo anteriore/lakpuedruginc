@@ -19,7 +19,7 @@ const InputForm = (props) => {
   const [contentLoading, setContentLoading] = useState(true);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [appReceipts, setAppReceipts] = useState(null);
-  const { approvedReceiptsList } = useSelector((state) => state.dashboard.approvedReceipts);
+  const { list: approvedReceiptsList } = useSelector((state) => state.dashboard.approvedReceipts);
 
   const handleControlNumberChange = useCallback(
     (value) => {
@@ -33,6 +33,7 @@ const InputForm = (props) => {
     const masterList = {
       controlNumber: approvedReceiptsList,
     };
+    console.log(approvedReceiptsList)
     const formItem = _.find(newForm.form_items, { name: 'controlNumber' });
     formItem.onChange = (e) => handleControlNumberChange(e);
     setTempFormDetails(updateList(newForm, masterList));
@@ -41,6 +42,7 @@ const InputForm = (props) => {
   }, [tempFormDetails, approvedReceiptsList, handleControlNumberChange]);
 
   const onFail = () => {
+    console.log("Fialing")
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 
