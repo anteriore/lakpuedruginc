@@ -26,8 +26,8 @@ export const formatLotProducts = (salesProducts, inventoryProducts) => {
     salesProducts.products.forEach((soProduct) => {
       const { product } = soProduct;
       const results = _.filter(inventoryProducts, (o) => {
-        return o.product.finishedGood.id === product.product.finishedGood.id && o.quantity !== 0;
-      }).filter((o) => o.depot.id === product.depot.id);
+        return o.product?.finishedGood?.id === product?.product?.finishedGood?.id && o?.quantity !== 0;
+      }).filter((o) => o?.depot?.id === product?.depot?.id);
 
       results.forEach((result) => {
         listLotProducts.push(result);

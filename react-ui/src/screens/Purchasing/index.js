@@ -231,7 +231,7 @@ const Purchasing = () => {
           if (formMode === 'edit') {
             message.success(`Successfully updated ${formData.number}`);
           } else {
-            message.success(`Successfully added purchase order "${response.payload.number}"`);
+            message.success(`Successfully added purchase order "${response.payload.data.number}"`);
           }
         });
       } else {

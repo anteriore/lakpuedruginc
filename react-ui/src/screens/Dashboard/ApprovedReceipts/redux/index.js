@@ -4,7 +4,7 @@ import * as message from '../../../../data/constants/response-message.constant';
 import {checkResponseValidity, generateStatusMessage} from '../../../../helpers/general-helper';
 
 const initialState = {
-  approvedReceiptsList: null,
+  list: null,
   status: 'loading',
   statusLevel: '',
   responseCode: null,

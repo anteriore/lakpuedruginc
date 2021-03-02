@@ -46,8 +46,8 @@ const InputForm = (props) => {
       form.setFieldsValue({ salesOrder: '' });
       setSelectedSales(null);
       const selectedSalesList = _.filter(salesOrderList, (o) => {
-        return o.depot.id === value && _.toLower(o.status) !== 'pending';
-      }).filter((o) => _.toLower(o.type) === 'dr_si');
+        return o?.depot?.id === value && _.toLower(o?.status) !== 'pending';
+      }).filter((o) => _.toLower(o?.type) === 'dr_si');
 
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;

@@ -35,7 +35,7 @@ export const columns = [
     datatype: 'date',
   },
   {
-    title: 'Reevaluation Date',
+    title: 'Re-evaluation Date',
     dataIndex: 'reevaluation',
     key: 'date',
     datatype: 'date',

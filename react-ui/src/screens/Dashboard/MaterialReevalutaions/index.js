@@ -31,7 +31,7 @@ const MaterialReevaluations = (props) => {
     statusMessage,
     statusLevel,
   } = useSelector((state) => state.dashboard.materialReevaluations);
-  const { approvedReceiptsList: ARList } = useSelector((state) => state.dashboard.approvedReceipts);
+  const { list: ARList } = useSelector((state) => state.dashboard.approvedReceipts);
 
   const onSuccess = useCallback(() => {
     history.push(`${path}/new`);
@@ -73,6 +73,7 @@ const MaterialReevaluations = (props) => {
 
   const handleAddButton = () => {
     dispatch(listApprovedReceipts({company})).then((dataAR) => {
+      console.log(dataAR)
       handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
     });
   };

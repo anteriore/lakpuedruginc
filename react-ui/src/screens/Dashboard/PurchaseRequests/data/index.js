@@ -78,12 +78,14 @@ export const DisplayDetails = () => {
     },
   ];
 
+  
   return { columns, itemColumns };
-};
 
+}
 export const FormDetails = () => {
   const items = useSelector((state) => state.maintenance.items.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
+  const user = useSelector((state) => state.auth.user);
 
   const formDetails = {
     form_name: 'purchase_request',
@@ -107,12 +109,22 @@ export const FormDetails = () => {
         rules: [{ required: true }],
       },
       {
+        label: 'Requested By',
+        name: 'requestedBy',
+        type: 'selectSearch',
+        choices: [user],
+        render: (user) => `${user?.firstName} ${user?.lastName}`,
+        initialValue: user.id,
+        rules: [{ required: true }],
+        readOnly: true,
+      },
+      {
         label: 'Department',
         name: 'department',
         type: 'selectSearch',
         selectName: 'name',
         choices: departments,
-        render: (department) => `[${department.code}] ${department.name}`,
+        render: (department) => `[${department?.code}] ${department?.name}`,
         rules: [{ required: true }],
       },
       {
@@ -124,6 +136,7 @@ export const FormDetails = () => {
       },
     ],
   };
+
 
   const tableDetails = {
     label: 'Requested Items',
