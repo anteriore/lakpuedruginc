@@ -70,9 +70,7 @@ const PurchaseRequests = (props) => {
     setFormTitle('Create Purchase Request');
     setFormMode('add');
     setFormData(null);
-    dispatch(listItemSummary({ company, message })).then(() => {
-      history.push(`${path}/new`);
-    });
+    history.push(`${path}/new`);
   };
 
   const handleUpdate = (data) => {

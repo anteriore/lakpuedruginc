@@ -96,10 +96,123 @@ public class ItemRestController {
         return items;
     }
 
+    @GetMapping("/non-eng")
+    public List<Item> listNonEng() {
+        List<ItemType> itemTypesEng = itemTypeRepository.findByCode("ENG");
+        List<Item> items = itemRepository.findByTypeNot(itemTypesEng.get(0));
+        return items;
+    }
+
     @GetMapping("company/{companyId}/summary")
     public List listItemSummary(@PathVariable Long companyId) {
 		Company company = companyRepository.getOne(companyId);
         List<Item> items = itemRepository.findAll();
+        List itemSummaryList = new ArrayList();
+
+        HashMap itemSummary;
+		int prfQuantity, poQuantity,stockQuantity, quarantineQuantity;
+        List<RequestedItem> requestedItems;
+        List<Inventory> inventoryList;
+        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findByCompanyAndStatus(company, "PO Created");
+        List<ReceivingReceipt> receivingReceipts = receivingReceiptRepository.findByCompanyAndStatus(company, "Pending");
+
+        for (Item item : items) {
+            itemSummary = new HashMap();
+            itemSummary.put("item", item);
+
+            prfQuantity = poQuantity = stockQuantity = quarantineQuantity = 0;
+
+            requestedItems = purchaseRequestService.getNotCompletedRequestedItemsByCompanyAndItem(company, item);
+            for (RequestedItem requestedItem : requestedItems) {
+                if (requestedItem.getStatus().equals("Pending")) {
+                    prfQuantity += requestedItem.getQuantityRequested();
+                } else if (requestedItem.getStatus().equals("Incomplete")) {
+                    prfQuantity += requestedItem.getQuantityRemaining();
+                }
+            }
+            
+            for (PurchaseOrder purchaseOrder : purchaseOrders) {
+                for (OrderedItem orderedItem : purchaseOrder.getOrderedItems()) {
+                    poQuantity += orderedItem.getQuantity();
+                }
+            }
+
+            inventoryList = inventoryRepository.findByItemAndCompany(item, company);
+            for (Inventory inventory : inventoryList) {
+                stockQuantity += inventory.getQuantity();
+            }
+
+            for (ReceivingReceipt rr : receivingReceipts) {
+                quarantineQuantity += rr.getQuantityOfItem(item.getId());
+            }
+
+            itemSummary.put("prfQuantity", prfQuantity);
+            itemSummary.put("poQuantity", poQuantity);
+            itemSummary.put("stockQuantity", stockQuantity);
+            itemSummary.put("quarantineQuantity", quarantineQuantity);
+            itemSummaryList.add(itemSummary);
+		}
+        return itemSummaryList;
+    }
+
+    @GetMapping("company/{companyId}/summary/non-eng")
+    public List listItemSummaryNonEng(@PathVariable Long companyId) {
+		Company company = companyRepository.getOne(companyId);
+        List<ItemType> itemTypesEng = itemTypeRepository.findByCode("ENG");
+        List<Item> items = itemRepository.findByTypeNot(itemTypesEng.get(0));
+        List itemSummaryList = new ArrayList();
+
+        HashMap itemSummary;
+		int prfQuantity, poQuantity,stockQuantity, quarantineQuantity;
+        List<RequestedItem> requestedItems;
+        List<Inventory> inventoryList;
+        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findByCompanyAndStatus(company, "PO Created");
+        List<ReceivingReceipt> receivingReceipts = receivingReceiptRepository.findByCompanyAndStatus(company, "Pending");
+
+        for (Item item : items) {
+            itemSummary = new HashMap();
+            itemSummary.put("item", item);
+
+            prfQuantity = poQuantity = stockQuantity = quarantineQuantity = 0;
+
+            requestedItems = purchaseRequestService.getNotCompletedRequestedItemsByCompanyAndItem(company, item);
+            for (RequestedItem requestedItem : requestedItems) {
+                if (requestedItem.getStatus().equals("Pending")) {
+                    prfQuantity += requestedItem.getQuantityRequested();
+                } else if (requestedItem.getStatus().equals("Incomplete")) {
+                    prfQuantity += requestedItem.getQuantityRemaining();
+                }
+            }
+            
+            for (PurchaseOrder purchaseOrder : purchaseOrders) {
+                for (OrderedItem orderedItem : purchaseOrder.getOrderedItems()) {
+                    poQuantity += orderedItem.getQuantity();
+                }
+            }
+
+            inventoryList = inventoryRepository.findByItemAndCompany(item, company);
+            for (Inventory inventory : inventoryList) {
+                stockQuantity += inventory.getQuantity();
+            }
+
+            for (ReceivingReceipt rr : receivingReceipts) {
+                quarantineQuantity += rr.getQuantityOfItem(item.getId());
+            }
+
+            itemSummary.put("prfQuantity", prfQuantity);
+            itemSummary.put("poQuantity", poQuantity);
+            itemSummary.put("stockQuantity", stockQuantity);
+            itemSummary.put("quarantineQuantity", quarantineQuantity);
+            itemSummaryList.add(itemSummary);
+		}
+        return itemSummaryList;
+    }
+
+    @GetMapping("company/{companyId}/summary/eng")
+    public List listItemSummaryEng(@PathVariable Long companyId) {
+		Company company = companyRepository.getOne(companyId);
+        List<ItemType> itemTypesEng = itemTypeRepository.findByCode("ENG");
+        List<Item> items = itemRepository.findByType(itemTypesEng.get(0));
         List itemSummaryList = new ArrayList();
 
         HashMap itemSummary;
