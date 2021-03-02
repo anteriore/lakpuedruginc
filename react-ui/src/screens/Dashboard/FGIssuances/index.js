@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, Empty, message } from 'antd';
+import { PlusOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listFGIssuance, addFGIssuance, clearData } from './redux';
+import { listFGIssuance, addFGIssuance, cancelFGIssuance, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
@@ -67,6 +67,14 @@ const FGIssuances = (props) => {
   const handleRetrieve = (data) => {
     setSelectedData(data);
     setDisplayModal(true);
+  };
+
+  const handleCancel = (data) => {
+    dispatch(cancelFGIssuance(data)).then(() => {
+      setDisplayModal(false);
+      setSelectedData(null);
+      dispatch(listFGIssuance({ company, message }))
+    })
   };
 
   const onSubmit = (data) => {
@@ -225,6 +233,35 @@ const FGIssuances = (props) => {
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
+                {selectedData.status === 'Pending' && ( // add approval permissions here
+                <>
+                  <Text>{'Actions: '}</Text>
+                  <Space>
+                    <Popconfirm
+                      title="Would you like to perform this action?"
+                      icon={<QuestionCircleOutlined />}
+                      onConfirm={(e) => {
+                        handleCancel(selectedData)
+                      }}
+                      onCancel={(e) => {
+                      }}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button
+                        style={{ marginRight: '1%' }}
+                        icon={<CloseOutlined />}
+                        onClick={(e) => {
+                        }}
+                        type="primary"
+                        danger
+                      >
+                        Cancel
+                      </Button>
+                    </Popconfirm>
+                  </Space>
+                </>
+              )}
               </Space>
             )}
           </Modal>
