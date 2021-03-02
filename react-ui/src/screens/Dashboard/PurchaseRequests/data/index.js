@@ -127,7 +127,7 @@ export const FormDetails = () => {
         type: 'selectSearch',
         selectName: 'name',
         choices: departments,
-        render: (department) => `[${department.code}] ${department.name}`,
+        render: (department) => `[${department?.code}] ${department?.name}`,
         onChange: (e) => {
           const departmentData = departments.find((department) => department.id === e)
           if(departmentData?.code === 'PL-ENGG'){

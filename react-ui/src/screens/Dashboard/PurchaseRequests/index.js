@@ -10,9 +10,10 @@ import {
   Empty,
   Input,
   Space,
+  Popconfirm,
   message,
 } from 'antd';
-import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { PlusOutlined, CheckOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -243,7 +244,6 @@ const PurchaseRequests = (props) => {
           onCancel={() => {
             closeModal()
           }}
-          cancelButtonProps={{ style: { display: 'none' } }}
         >
           <Space direction="vertical" style={{ width: '100%' }} size="middle">
             <Text>{'Remarks (Reason for cancellation): '}</Text>
@@ -290,27 +290,48 @@ const PurchaseRequests = (props) => {
                   <Text>{'Actions: '}</Text>
                   {selectedData.status === 'Pending' ? (
                     <Space>
-                      <Button
-                        style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
-                        icon={<CheckOutlined />}
-                        onClick={(e) => {
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={(e) => {
                           handleApprove(selectedData);
                         }}
-                        type="primary"
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
                       >
-                        Approve
-                      </Button>
-                      <Button
-                        style={{ marginRight: '1%' }}
-                        icon={<CloseOutlined />}
-                        onClick={(e) => {
+                        <Button
+                          style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
+                          icon={<CheckOutlined />}
+                          type="primary"
+                        >
+                          Approve
+                        </Button>
+                      </Popconfirm>
+                      
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={(e) => {
                           handleReject(selectedData);
                         }}
-                        type="primary"
-                        danger
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
                       >
-                        Reject
-                      </Button>
+                        <Button
+                          style={{ marginRight: '1%' }}
+                          icon={<CloseOutlined />}
+                          type="primary"
+                          danger
+                        >
+                          Reject
+                        </Button>
+                      </Popconfirm>
+                      
+                      
                     </Space>
                   ):(
                     <Space>
