@@ -6,13 +6,13 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import TableDisplay from '../../../components/TableDisplay';
 import { DisplayDetails, FormDetails } from './data';
-import { formatPayload } from './helpers';
+import { formatPayload, inventoryPayload } from './helpers';
 import InputForm from './InputForm';
 //import FormScreen from '../../../components/forms/FormScreen';
 import { listApprovedReceipts, addApprovedReceipt, clearData,} from './redux';
-import { clearData as clearRR, listRR } from '../../Dashboard/ReceivingReceipts/redux';
-import { clearData as clearItem, listItemSummary} from '../../Maintenance/Items/redux';
-
+import { listRR, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
+import { listItemSummary, clearData as clearItem} from '../../Maintenance/Items/redux';
+import { addInventory } from '../../Dashboard/Inventory/redux';
 
 const { Title } = Typography;
 
@@ -73,6 +73,7 @@ const ApprovedReceipts = (props) => {
 
   const onSubmit = (data) => {
     const payload = formatPayload(id, company, data);
+    const invPayload = inventoryPayload(company, data);
     
     console.log(payload)
 
@@ -82,10 +83,17 @@ const ApprovedReceipts = (props) => {
 
     dispatch(addApprovedReceipt(payload)).then((response) => {
       if (response.payload.status === 200) {
-        message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listApprovedReceipts({ company, message })).then(() => {
-          history.goBack();
-          setLoading(false);
+        dispatch(addInventory(invPayload)).then((response) => {
+          if (response.payload.status === 200) {
+            message.success(`Successfully saved ${response.payload.data.number}`);
+            dispatch(listApprovedReceipts({ company, message })).then(() => {
+              history.goBack();
+              setLoading(false);
+            });
+          } else {
+            setLoading(false);
+            message.error(`Something went wrong. Unable to add Inventory.`);
+          }
         });
       } else {
         setLoading(false);

@@ -31,13 +31,13 @@ export const columns = [
   {
     title: 'Expiration Date',
     dataIndex: 'expiration',
-    key: 'expiration',
+    key: 'date',
     datatype: 'date',
   },
   {
     title: 'Re-evaluation Date',
     dataIndex: 'reevaluation',
-    key: 'reevaluation',
+    key: 'date',
     datatype: 'date',
   },
 ];

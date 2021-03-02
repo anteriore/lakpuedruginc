@@ -116,6 +116,7 @@ export const FormDetails = () => {
 
     const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
     const itemList = useSelector((state) => state.maintenance.items.list);
+    //const itemList = []; 
 
     const formDetails = {
         form_name: 'approvedReceipts',
@@ -132,20 +133,14 @@ export const FormDetails = () => {
                 type: 'selectSearch',
                 selectName: 'name',
                 choices: rrList,
-                render: (object) => object.number,
-                rules: [{ required: true }],
-            },
-            /*{
-                label: 'Received Item',
-                name: 'item',
-                type: 'selectSearch',
-                selectName: 'name',
-                choices: itemList,
                 dataToString: (object) => {
-                    return `[${object.code}] ${object.name}`
+                    return object.number
                 },
                 rules: [{ required: true }],
-            },*/
+                /*onChange: (object) => {
+                    itemList = object.receivingReceipts
+                },*/
+            },
             {
                 label: 'Date',
                 name: 'date',
@@ -292,19 +287,22 @@ export const FormDetails = () => {
             title: 'Item',
             dataIndex: 'item',
             key: 'item',
-            render: (object) => `[${object.code}] ${object.name}`,
+            render: (object) => 
+                `[${object.code}] ${object.name}`,
             },
             {
             title: 'Type',
             dataIndex: 'item',
             key: 'item',
-            render: (object) => object.type.name,
+            render: (object) => 
+                object.type.name,
             },
             {
             title: 'Unit',
             dataIndex: 'item',
             key: 'item',
-            render: (object) => object.unit.code,
+            render: (object) => 
+                object.unit.code,
             },
         ],
     
