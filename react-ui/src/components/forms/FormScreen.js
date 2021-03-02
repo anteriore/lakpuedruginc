@@ -328,7 +328,7 @@ const FormScreen = (props) => {
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
-                      pagination={false}
+                      pagination={{simple: true}}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       summary={formTable.summary}
                     />
@@ -366,7 +366,7 @@ const FormScreen = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   expandable={{ expandedRowRender }}
                   rowKey={formTable.foreignKey}
                 />
@@ -374,7 +374,7 @@ const FormScreen = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   rowKey={formTable.foreignKey}
                 />
               )}
