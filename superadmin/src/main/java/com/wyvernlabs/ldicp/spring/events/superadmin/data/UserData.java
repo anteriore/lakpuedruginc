@@ -116,7 +116,17 @@ public class UserData {
             //users
             "users",
             //accounting
+            "purchase-vouchers",
+            "journal-vouchers",
+            "vouchers-payables",
+            "account-titles",
+            "cheque-printings",
+            "cheque-disbursement-vouchers",
+            "credit-memos",
+            "debit-memos",
+            "cash-receipt-vouchers",
             "pdc-disbursements",
+            "pdc-vouchers",
             //sales
             "sales-orders",
             "order-slips",
