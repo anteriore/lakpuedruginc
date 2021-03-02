@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Skeleton, Button, Modal, Space, Select, message} from 'antd';
+import { Row, Col, Typography, Skeleton, Button, Modal, Space, Select, message } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -15,8 +15,8 @@ const { Title, Text } = Typography;
 
 const ProductInventories = (props) => {
   const [loading, setLoading] = useState(true);
-  const [selectedDepot, setSelectedDepot] = useState(null)
-  const [displayModal, setDisplayModal] = useState(false)
+  const [selectedDepot, setSelectedDepot] = useState(null);
+  const [displayModal, setDisplayModal] = useState(false);
 
   const { company } = props;
   const dispatch = useDispatch();
@@ -44,20 +44,16 @@ const ProductInventories = (props) => {
     };
   }, [dispatch, company]);
 
+  const handleUpdate = (data) => {};
 
-  const handleUpdate = (data) => {
-  };
+  const handleDelete = (data) => {};
 
-  const handleDelete = (data) => {
-  };
-
-  const handleRetrieve = (data) => {
-  };
+  const handleRetrieve = (data) => {};
 
   const handleReport = () => {
     dispatch(listDepot({ company, message })).then(() => {
-      setDisplayModal(true)
-    })
+      setDisplayModal(true);
+    });
   };
 
   const renderReportDetails = () => {
@@ -65,10 +61,12 @@ const ProductInventories = (props) => {
       <>
         <Row>
           <Col span={12} style={{ display: 'flex' }}>
-            <Title level={5}>{`Report: Depot Inventory Report`}</Title>
+            <Title level={5}>Report: Depot Inventory Report</Title>
           </Col>
           <Col span={12} style={{ display: 'flex' }}>
-            <Title level={5}>{`Depot: ${selectedDepot !== null ? selectedDepot.name : 'all'}`}</Title>
+            <Title level={5}>{`Depot: ${
+              selectedDepot !== null ? selectedDepot.name : 'all'
+            }`}</Title>
           </Col>
         </Row>
         <Row>
@@ -79,8 +77,8 @@ const ProductInventories = (props) => {
           </Col>
         </Row>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <Switch>
@@ -123,47 +121,49 @@ const ProductInventories = (props) => {
               </>
             )}
           </Col>
-          {displayModal && <Modal
-            visible={displayModal}
-            cancelText="Cancel"
-            okText="Generate Report"
-            title={"Report Details"}
-            onCancel={() => setDisplayModal(false)}
-            onOk={() => {
-              if(selectedDepot !== null){
-                dispatch(listProductInventoryByDepot({ depot: selectedDepot.id, message })).then(() => {
+          {displayModal && (
+            <Modal
+              visible={displayModal}
+              cancelText="Cancel"
+              okText="Generate Report"
+              title="Report Details"
+              onCancel={() => setDisplayModal(false)}
+              onOk={() => {
+                if (selectedDepot !== null) {
+                  dispatch(listProductInventoryByDepot({ depot: selectedDepot.id, message })).then(
+                    () => {
+                      history.push(`${path}/report`);
+                    }
+                  );
+                } else {
                   history.push(`${path}/report`);
-                })
-              }
-              else {
-                history.push(`${path}/report`);
-              }
-              
-            }}
-            afterClose={() => {
-              setSelectedDepot(null)
-            }}
-          >
-            <Space size={12} direction={"vertical"} style={{width: '100%'}}>
-              <Text>Select Depot: </Text>
-              <Select
-                showSearch
-                placeholder={"Select Depot"}
-                optionFilterProp="children"
-                style={{width: '100%'}}
-                onChange={(e) => {
-                  const depotData = depots.find((item) => item.id === e)
-                  setSelectedDepot(depotData)
-                }}
-              >
-                {depots.map((choice) => (
-                  <Select.Option key={choice.id} value={choice.id}>
-                    {`[${choice.code}] ${choice.name}`}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Space>
-          </Modal>}
+                }
+              }}
+              afterClose={() => {
+                setSelectedDepot(null);
+              }}
+            >
+              <Space size={12} direction="vertical" style={{ width: '100%' }}>
+                <Text>Select Depot: </Text>
+                <Select
+                  showSearch
+                  placeholder="Select Depot"
+                  optionFilterProp="children"
+                  style={{ width: '100%' }}
+                  onChange={(e) => {
+                    const depotData = depots.find((item) => item.id === e);
+                    setSelectedDepot(depotData);
+                  }}
+                >
+                  {depots.map((choice) => (
+                    <Select.Option key={choice.id} value={choice.id}>
+                      {`[${choice.code}] ${choice.name}`}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Space>
+            </Modal>
+          )}
         </Row>
       </Route>
     </Switch>

@@ -53,8 +53,8 @@ export const listOrderSlipsByDepotAndBalance = createAsyncThunk(
 
     const processedResponse = {
       ...response,
-      data: filterOSByBalance(response.data, payload.hasBalance)
-    }
+      data: filterOSByBalance(response.data, payload.hasBalance),
+    };
 
     if (typeof response !== 'undefined' && response.status === 200) {
       const { data } = processedResponse;
@@ -80,8 +80,8 @@ export const listOrderSlipsByDepotAndStatus = createAsyncThunk(
 
     const processedResponse = {
       ...response,
-      data: filterOSByStatus(response.data, payload.statuses)
-    }
+      data: filterOSByStatus(response.data, payload.statuses),
+    };
 
     if (typeof response !== 'undefined' && response.status === 200) {
       const { data } = processedResponse;
@@ -101,10 +101,7 @@ export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payl
   const accessToken = thunkAPI.getState().auth.token;
 
   try {
-    const response = await axiosInstance.post(
-      `/rest/order-slips?token=${accessToken}`,
-      payload
-    );
+    const response = await axiosInstance.post(`/rest/order-slips?token=${accessToken}`, payload);
 
     const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
@@ -117,17 +114,14 @@ export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payl
 });
 
 const filterOSByBalance = (data, hasBalance) => {
-  const processedData = []
+  const processedData = [];
   data.forEach((orderSlip) => {
-    if(hasBalance){
-      if(orderSlip.remainingBalance > 0){
-        processedData.push(orderSlip)
+    if (hasBalance) {
+      if (orderSlip.remainingBalance > 0) {
+        processedData.push(orderSlip);
       }
-    }
-    else {
-      if(orderSlip.remainingBalance === 0){
-        processedData.push(orderSlip)
-      }
+    } else if (orderSlip.remainingBalance === 0) {
+      processedData.push(orderSlip);
     }
   });
 
@@ -135,15 +129,14 @@ const filterOSByBalance = (data, hasBalance) => {
 };
 
 const filterOSByStatus = (data, statuses) => {
-  const processedData = []
+  const processedData = [];
   data.forEach((orderSlip) => {
-    if(statuses.includes(orderSlip.status)){
-      processedData.push(orderSlip)
+    if (statuses.includes(orderSlip.status)) {
+      processedData.push(orderSlip);
     }
-  })
-  return processedData
-
-}
+  });
+  return processedData;
+};
 
 const initialState = {
   orderSlipsList: [],

@@ -123,7 +123,7 @@ const authSlice = createSlice({
           status: 'succeeded',
           message: null,
           user: processUserData(action.payload.data, action.type),
-          permissions: action.payload.data.permissions
+          permissions: action.payload.data.permissions,
         };
       }
 

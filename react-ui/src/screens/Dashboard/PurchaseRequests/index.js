@@ -8,7 +8,7 @@ import {
   Modal,
   Skeleton,
   Empty,
-  Descriptions,
+  Input,
   Space,
   message,
 } from 'antd';
@@ -17,21 +17,25 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { listPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
+import { listPR, cancelPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
 import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 import { DisplayDetails, FormDetails } from './data';
 import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
+import ItemDescription from '../../../components/ItemDescription';
 
 const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 const PurchaseRequests = (props) => {
   const [loading, setLoading] = useState(true);
 
+  const [displayCancelModal, setDisplayCancelModal] = useState(false);
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+  const [remarks, setRemarks] = useState(null);
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -70,25 +74,22 @@ const PurchaseRequests = (props) => {
     setFormTitle('Create Purchase Request');
     setFormMode('add');
     setFormData(null);
-    dispatch(listItemSummary({ company, message })).then(() => {
-      history.push(`${path}/new`);
-    })
-  }
+    history.push(`${path}/new`);
+  };
 
   const handleUpdate = (data) => {
-    if(data.status === 'Pending'){
+    if (data.status === 'Pending') {
       setFormTitle('Edit Purchase Request');
       setFormMode('edit');
       setLoading(true);
       const itemData = listData.find((item) => item.id === data.id);
       dispatch(listItemSummary({ company, message })).then((response) => {
-        const inputData = loadDataForUpdate(itemData, response.payload.data)
+        const inputData = loadDataForUpdate(itemData, response.payload.data);
         setFormData(inputData);
         history.push(`${path}/${data.id}`);
-      })
-    }
-    else {
-      message.error("This action may only be performed on pending purchase requests.")
+      });
+    } else {
+      message.error('This action may only be performed on pending purchase requests.');
     }
   };
 
@@ -103,7 +104,7 @@ const PurchaseRequests = (props) => {
   };
   const handleRetrieve = (data) => {
     setDisplayModal(true);
-    setSelectedData(data)
+    setSelectedData(data);
   };
 
   const handleApprove = (data) => {
@@ -120,8 +121,26 @@ const PurchaseRequests = (props) => {
     });
   };
 
+  
+  const handleCancel = () => {
+    setDisplayCancelModal(true)
+  };
+
+  const onCancelPR = () => {
+    dispatch(cancelPR({ id: selectedData.id, remarks: remarks })).then(() => {
+      closeModal();
+      dispatch(listPR({ company, message })).then(() => {});
+    });
+
+  }
+
+  const handleCancelRemarks = (data) => {
+    console.log(data)
+    setRemarks(data)
+  }
+
   const onSubmit = (data) => {
-    const payload = processDataForSubmission(data, company)
+    const payload = processDataForSubmission(data, company);
 
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -130,28 +149,30 @@ const PurchaseRequests = (props) => {
     dispatch(addPR(payload)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listPR({ company: company, message })).then(() => {
+        dispatch(listPR({ company, message })).then(() => {
           history.goBack();
-          setLoading(false)
+          setLoading(false);
         });
       } else {
         setLoading(false);
-        if(formMode === 'add'){
-          message.error(`Unable to add Purchase Request. Please double check the provided information.`);
-        }
-        else {
+        if (formMode === 'add') {
+          message.error(
+            `Unable to add Purchase Request. Please double check the provided information.`
+          );
+        } else {
           message.error(`Something went wrong. Unable to update ${data.number}.`);
         }
       }
-    })
+    });
   };
-  
+
   const handleCancelButton = () => {
     setFormData(null);
-    setLoading(false)
+    setLoading(false);
   };
 
   const closeModal = () => {
+    setDisplayCancelModal(false);
     setDisplayModal(false);
     setSelectedData(null);
   };
@@ -184,17 +205,17 @@ const PurchaseRequests = (props) => {
             <Title level={3} style={{ float: 'left' }}>
               {title}
             </Title>
-            {actions.includes("create") && 
-            <Button
-              style={{ float: 'right', marginRight: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={(e) => {
-                handleAdd()
-              }}
-            >
-              Add
-            </Button>
-            }
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={(e) => {
+                  handleAdd();
+                }}
+              >
+                Add
+              </Button>
+            )}
           </Col>
         </Row>
         <Row>
@@ -208,12 +229,34 @@ const PurchaseRequests = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={actions.includes("update")}
-                deleteEnabled={actions.includes("delete")}
+                updateEnabled={actions.includes('update')}
+                deleteEnabled={actions.includes('delete')}
               />
             </Col>
           )}
         </Row>
+        <Modal
+          visible={displayCancelModal}
+          title={`Cancel ${selectedData?.number ?? ''}`}
+          onOk={() => {
+            onCancelPR()
+          }}
+          onCancel={() => {
+            closeModal()
+          }}
+          cancelButtonProps={{ style: { display: 'none' } }}
+        >
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            <Text>{'Remarks (Reason for cancellation): '}</Text>
+            <TextArea 
+              rows={3} 
+              maxLength={200} 
+              placeholder={`Please indicate the reason for cancellation`} 
+              onChange={(e) => handleCancelRemarks(e.target.value)}
+              defaultValue={selectedData?.remarks ?? ''}
+            />
+          </Space>
+        </Modal>
         <Modal
           visible={displayModal}
           onOk={() => {
@@ -231,48 +274,11 @@ const PurchaseRequests = (props) => {
             <Skeleton />
           ) : (
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
-              <Descriptions
-                bordered
+              <ItemDescription
                 title={`Purchase Request ${selectedData.number} Details`}
-                size="default"
-                layout="vertical"
-              >
-                {formDetails.form_items.map((item) => {
-                  if (!item.writeOnly) {
-                    if (selectedData[item.name] === null && item.toggle) {
-                      return null;
-                    }
-                    if (item.type === 'select' || item.type === 'selectSearch') {
-                      const itemData = selectedData[item.name];
-                      if(itemData !== null && typeof itemData !== 'undefined'){
-                        return (
-                          <Descriptions.Item label={item.label}>
-                            {itemData[item.selectName]}
-                          </Descriptions.Item>
-                        );
-                      }
-                    }
-                    if (item.type === 'date') {
-                      return (
-                        <Descriptions.Item label={item.label}>
-                          {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
-                        </Descriptions.Item>
-                      );
-                    }
-                    if (item.type === 'list') {
-                      return null;
-                    }
-
-                    return (
-                      <Descriptions.Item label={item.label}>
-                        {selectedData[item.name]}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  return null;
-                })}
-              </Descriptions>
+                selectedData={selectedData}
+                formItems={formDetails.form_items}
+              />
               <Text>{'Requested Items: '}</Text>
               <Table
                 dataSource={selectedData !== null ? selectedData.requestedItems : []}
@@ -280,32 +286,48 @@ const PurchaseRequests = (props) => {
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Seleted." /> }}
               />
-              {selectedData.status === 'Pending' && ( // add approval permissions here
+              {(selectedData.status === 'Pending' || selectedData.status === 'Approved') && ( // add approval permissions here
                 <>
                   <Text>{'Actions: '}</Text>
-                  <Space>
-                    <Button
-                      style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
-                      icon={<CheckOutlined />}
-                      onClick={(e) => {
-                        handleApprove(selectedData);
-                      }}
-                      type="primary"
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      style={{ marginRight: '1%' }}
-                      icon={<CloseOutlined />}
-                      onClick={(e) => {
-                        handleReject(selectedData);
-                      }}
-                      type="primary"
-                      danger
-                    >
-                      Reject
-                    </Button>
-                  </Space>
+                  {selectedData.status === 'Pending' ? (
+                    <Space>
+                      <Button
+                        style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
+                        icon={<CheckOutlined />}
+                        onClick={(e) => {
+                          handleApprove(selectedData);
+                        }}
+                        type="primary"
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        style={{ marginRight: '1%' }}
+                        icon={<CloseOutlined />}
+                        onClick={(e) => {
+                          handleReject(selectedData);
+                        }}
+                        type="primary"
+                        danger
+                      >
+                        Reject
+                      </Button>
+                    </Space>
+                  ):(
+                    <Space>
+                      <Button
+                        style={{ marginRight: '1%' }}
+                        icon={<CloseOutlined />}
+                        onClick={(e) => {
+                          handleCancel();
+                        }}
+                        type="primary"
+                        danger
+                      >
+                        Cancel
+                      </Button>
+                    </Space>
+                  )}
                 </>
               )}
             </Space>

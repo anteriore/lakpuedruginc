@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listI, addI, deleteI, clearData } from './redux';
+import { listItemWithoutEng, addI, deleteI, clearData } from './redux';
 import { listIT, clearData as clearIT } from '../ItemTypes/redux';
 import { listUnit } from '../Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
@@ -82,7 +82,7 @@ const Items = (props) => {
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listI({ company, message })).then(() => {
+    dispatch(listItemWithoutEng({ company, message })).then(() => {
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -124,7 +124,7 @@ const Items = (props) => {
 
   const handleDelete = (data) => {
     dispatch(deleteI(data.id)).then((response) => {
-      dispatch(listI({ company, message }));
+      dispatch(listItemWithoutEng({ company, message }));
       message.success(`Successfully deleted Item ${data.name}`);
     });
   };
@@ -153,11 +153,11 @@ const Items = (props) => {
       payload.id = formData.id;
 
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company, message }));
+        dispatch(listItemWithoutEng({ company, message }));
       });
     } else if (formMode === 'add') {
       dispatch(addI(payload)).then(() => {
-        dispatch(listI({ company, message }));
+        dispatch(listItemWithoutEng({ company, message }));
       });
     }
 
@@ -176,24 +176,25 @@ const Items = (props) => {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={20}>
-          {actions.includes("create") &&
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            onClick={(e) => {
-              handleAdd();
-            }}
-          >
-            Add
-          </Button>}
+          {actions.includes('create') && (
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<PlusOutlined />}
+              onClick={(e) => {
+                handleAdd();
+              }}
+            >
+              Add
+            </Button>
+          )}
           <TableDisplay
             columns={columns}
             data={data}
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdate}
             handleDelete={handleDelete}
-            updateEnabled={actions.includes("update")}
-            deleteEnabled={actions.includes("delete")}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
           />
         </Col>
         {displayForm && (

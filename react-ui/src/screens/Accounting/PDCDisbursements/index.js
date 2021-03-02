@@ -174,16 +174,17 @@ const PDCDisbursements = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            {actions.includes("create") && 
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-            >
-              Add
-            </Button>}
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAdd();
+                }}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (
@@ -193,8 +194,8 @@ const PDCDisbursements = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={actions.includes("update")}
-                deleteEnabled={actions.includes("delete")}
+                updateEnabled={actions.includes('update')}
+                deleteEnabled={actions.includes('delete')}
               />
             )}
           </Col>

@@ -15,11 +15,19 @@ const Modules = (props) => {
       for (let j = i; j < i + cardsPerRow; j += 1) {
         if (j < props.modules.length) {
           moduleRow.push(
-            <ModuleCard key={j} path={path + props.modules[j].path} title={props.modules[j].title} />
+            <ModuleCard
+              key={j}
+              path={path + props.modules[j].path}
+              title={props.modules[j].title}
+            />
           );
         }
       }
-      moduleCards.push(<Row key={i} gutter={styles.gutter}>{moduleRow}</Row>);
+      moduleCards.push(
+        <Row key={i} gutter={styles.gutter}>
+          {moduleRow}
+        </Row>
+      );
     }
 
     return moduleCards;

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { listProductInventoryByDepot, clearData as clearPI } from '../../ProductInventories/redux';
+import { listProductInventoryWithStockByDepot, clearData as clearPI } from '../../ProductInventories/redux';
 
 export const columns = [
   {
@@ -22,8 +22,8 @@ export const columns = [
     key: 'fromDepot',
     datatype: 'object',
     dataToString: (object) => {
-      return `[${object.code}] ${object.name}`
-    }
+      return `[${object.code}] ${object.name}`;
+    },
   },
   {
     title: 'Ship To',
@@ -31,8 +31,8 @@ export const columns = [
     key: 'toDepot',
     datatype: 'object',
     dataToString: (object) => {
-      return `[${object.code}] ${object.name}`
-    }
+      return `[${object.code}] ${object.name}`;
+    },
   },
   {
     title: 'Requested By',
@@ -40,8 +40,8 @@ export const columns = [
     key: 'requestedBy',
     datatype: 'object',
     dataToString: (object) => {
-      return `${object.firstName} ${object.lastName}`
-    }
+      return `${object.firstName} ${object.lastName}`;
+    },
   },
   {
     title: 'Status',
@@ -82,7 +82,7 @@ const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearPI());
-          dispatch(listProductInventoryByDepot({ company, depot: e }));
+          dispatch(listProductInventoryWithStockByDepot({ company, depot: e }));
         },
       },
       {
@@ -103,7 +103,6 @@ const FormDetails = () => {
       },
     ],
   };
-
 
   const tableDetails = {
     label: 'Inventory List',
@@ -180,9 +179,6 @@ const FormDetails = () => {
         title: 'Expiration',
         dataIndex: 'product',
         key: 'product',
-        render: (object) => {
-          return moment(new Date(object.expiration)).format('DD/MM/YYYY');
-        },
       },
       {
         title: 'Stock',
@@ -224,16 +220,15 @@ const FormDetails = () => {
         if (typeof field.render === 'undefined' || field.render === null) {
           field.render = (object) => object[field.name];
         }
-        if(field.name !== 'stockOnHand' && field.name !== 'quantityRemaining' ){
+        if (field.name !== 'stockOnHand' && field.name !== 'quantityRemaining') {
           columns.push({
             title: field.label,
             key: field.name,
             render: (object) => field.render(object),
           });
         }
-        
       });
-  
+
       return columns;
     },
   };

@@ -63,32 +63,31 @@ const Users = () => {
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    var actionList = []
-    if(typeof permissions["users"] !== 'undefined'){
-      if( permissions["users"].actions.search('u') !== -1){
-        actionList.push("update")
+    const actionList = [];
+    if (typeof permissions.users !== 'undefined') {
+      if (permissions.users.actions.search('u') !== -1) {
+        actionList.push('update');
       }
-      if(permissions["users"].actions.search('c') !== -1){
-        actionList.push("create")
+      if (permissions.users.actions.search('c') !== -1) {
+        actionList.push('create');
       }
-      if(permissions["users"].actions.search('d') !== -1){
-        actionList.push("delete")
+      if (permissions.users.actions.search('d') !== -1) {
+        actionList.push('delete');
       }
-      if(permissions["users"].actions.search('r') !== -1){
-        actionList.push("read")
+      if (permissions.users.actions.search('r') !== -1) {
+        actionList.push('read');
       }
     }
-    setActions(actionList)
+    setActions(actionList);
 
     dispatch(listCompany()).then(() => {
       setFormData(null);
       setCompanyLoading(false);
       setSelectedUser(null);
-      if(actionList.includes("read")){
+      if (actionList.includes('read')) {
         updateUserDepartments(selectedCompany);
-      }
-      else{
-        setContentLoading(false)
+      } else {
+        setContentLoading(false);
       }
     });
 
@@ -304,7 +303,7 @@ const Users = () => {
       depots: depotData,
       permissions: permissionData,
     };
-    
+
     if (formMode === 'edit') {
       payload.id = formData.id;
       dispatch(updateUser(payload)).then((response) => {
@@ -363,11 +362,10 @@ const Users = () => {
   const handleChangeTab = (companyID) => {
     setContentLoading(true);
     dispatch(setCompany(companyID));
-    if(actions.includes("read")){
+    if (actions.includes('read')) {
       updateUserDepartments(companyID);
-    }
-    else{
-      setContentLoading(false)
+    } else {
+      setContentLoading(false);
     }
   };
 
@@ -461,33 +459,39 @@ const Users = () => {
                 {contentLoading ? (
                   <Skeleton />
                 ) : (
-                  
                   <>
-                    {actions.includes("create") && (<Button
-                      style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-                      icon={<UserAddOutlined />}
-                      onClick={(e) => {
-                        handleAdd();
-                      }}
-                    >
-                      Add
-                    </Button>)}
-                    {actions.includes("read") ? 
-                      (departments !== null ? departments.map((department) => {
-                        const departmentUsers = userDepartments.find(
-                          (userDepartment) => userDepartment.id === department.id
-                        );
-                        return (
-                          <>
-                            <Divider orientation="left">{department.name}</Divider>
-                            {renderUsers(departmentUsers)}
-                          </>
-                        );
-                      }) : (
-                        <Empty style={{width: "87.5%"}} description="No data." /> 
+                    {actions.includes('create') && (
+                      <Button
+                        style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                        icon={<UserAddOutlined />}
+                        onClick={(e) => {
+                          handleAdd();
+                        }}
+                      >
+                        Add
+                      </Button>
+                    )}
+                    {actions.includes('read') ? (
+                      departments !== null ? (
+                        departments.map((department) => {
+                          const departmentUsers = userDepartments.find(
+                            (userDepartment) => userDepartment.id === department.id
+                          );
+                          return (
+                            <>
+                              <Divider orientation="left">{department.name}</Divider>
+                              {renderUsers(departmentUsers)}
+                            </>
+                          );
+                        })
+                      ) : (
+                        <Empty style={{ width: '87.5%' }} description="No data." />
                       )
                     ) : (
-                      <Empty style={{width: "87.5%"}} description="You do not have the permission to access this module." />  
+                      <Empty
+                        style={{ width: '87.5%' }}
+                        description="You do not have the permission to access this module."
+                      />
                     )}
                     <Drawer
                       width="50%"
@@ -507,17 +511,18 @@ const Users = () => {
                             layout="vertical"
                             extra={
                               <Row gutter={[8, 8]}>
-                                {actions.includes("update") && 
-                                <Col>
-                                  <Button
-                                    icon={<EditOutlined />}
-                                    onClick={(e) => {
-                                      handleUpdate(selectedUser);
-                                    }}
-                                  >
-                                    Edit User
-                                  </Button>
-                                </Col>}
+                                {actions.includes('update') && (
+                                  <Col>
+                                    <Button
+                                      icon={<EditOutlined />}
+                                      onClick={(e) => {
+                                        handleUpdate(selectedUser);
+                                      }}
+                                    >
+                                      Edit User
+                                    </Button>
+                                  </Col>
+                                )}
                               </Row>
                             }
                           >
@@ -565,17 +570,21 @@ const Users = () => {
                           </Descriptions>
                           <Descriptions
                             bordered
-                            //title={"Permissions"}
+                            // title={"Permissions"}
                             size="default"
                             layout="vertical"
                           >
-                            <Descriptions.Item label={"Permissions"}>
+                            <Descriptions.Item label="Permissions">
                               <List
                                 size="small"
                                 bordered
-                                dataSource={Object.entries(selectedUser["permissions"])}
+                                dataSource={Object.entries(selectedUser.permissions)}
                                 renderItem={(listItem) => {
-                                  return <List.Item>{listItem[1].code + " - " + listItem[1].actions}</List.Item>
+                                  return (
+                                    <List.Item>
+                                      {`${listItem[1].code} - ${listItem[1].actions}`}
+                                    </List.Item>
+                                  );
                                 }}
                               />
                             </Descriptions.Item>

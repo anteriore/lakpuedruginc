@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
-  Skeleton,
-  Typography, 
-  Button,
-  Modal,
-  Space,
-  Table,
-  Empty,
-  message,  
-} from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, Empty, message } from 'antd';
+import { PlusOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listFGIssuance, addFGIssuance, clearData } from './redux';
+import { listFGIssuance, addFGIssuance, cancelFGIssuance, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
@@ -41,7 +30,6 @@ const FGIssuances = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  
 
   useEffect(() => {
     let isCancelled = false;
@@ -60,7 +48,7 @@ const FGIssuances = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
-  
+
   const handleAdd = () => {
     setFormTitle('Create FG Issuance');
     setFormMode('add');
@@ -72,26 +60,32 @@ const FGIssuances = (props) => {
     });
   };
 
-  const handleUpdate = (data) => {
-  };
+  const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
     setDisplayModal(true);
   };
 
+  const handleCancel = (data) => {
+    dispatch(cancelFGIssuance(data)).then(() => {
+      setDisplayModal(false);
+      setSelectedData(null);
+      dispatch(listFGIssuance({ company, message }))
+    })
+  };
+
   const onSubmit = (data) => {
-    console.log(data)
+    console.log(data);
     const inventoryList = [];
     data.inventoryList.forEach((inventory) => {
       inventoryList.push({
         product: {
           id: inventory.product.id,
         },
-        quantity: inventory.quantity
+        quantity: inventory.quantity,
       });
     });
     const payload = {
@@ -108,7 +102,7 @@ const FGIssuances = (props) => {
       requestedBy: {
         id: user.id,
       },
-      inventoryList: inventoryList
+      inventoryList,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -136,7 +130,9 @@ const FGIssuances = (props) => {
           });
         } else {
           setLoading(false);
-          message.error(`Unable to create FG Issuance. Please double check the provided information.`);
+          message.error(
+            `Unable to create FG Issuance. Please double check the provided information.`
+          );
         }
       });
     }
@@ -221,7 +217,7 @@ const FGIssuances = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.pisNo} Details`} 
+                  title={`${selectedData.pisNo} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
@@ -237,6 +233,35 @@ const FGIssuances = (props) => {
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
+                {selectedData.status === 'Pending' && ( // add approval permissions here
+                <>
+                  <Text>{'Actions: '}</Text>
+                  <Space>
+                    <Popconfirm
+                      title="Would you like to perform this action?"
+                      icon={<QuestionCircleOutlined />}
+                      onConfirm={(e) => {
+                        handleCancel(selectedData)
+                      }}
+                      onCancel={(e) => {
+                      }}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button
+                        style={{ marginRight: '1%' }}
+                        icon={<CloseOutlined />}
+                        onClick={(e) => {
+                        }}
+                        type="primary"
+                        danger
+                      >
+                        Cancel
+                      </Button>
+                    </Popconfirm>
+                  </Space>
+                </>
+              )}
               </Space>
             )}
           </Modal>

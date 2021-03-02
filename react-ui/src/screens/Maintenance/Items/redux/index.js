@@ -30,25 +30,46 @@ export const listI = createAsyncThunk('listI', async (payload, thunkAPI) => {
   return response;
 });
 
-export const listItemReportSummaryByProduct = createAsyncThunk('listItemReportSummaryByProduct', async (payload, thunkAPI) => {
+export const listItemWithoutEng = createAsyncThunk('listItemWithoutEng', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { depot, dateRange, product } = payload; 
 
-  try {
-    const response = await axiosInstance.get(`rest/sales-reports/item-sales-report/depot/${depot}/start/${dateRange[0]}/end/${dateRange[1]}/item/${product}?token=${accessToken}`);
+  const response = await axiosInstance.get(`rest/items/rm-pm?token=${accessToken}`);
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for items');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
+  }
+
+  return response;
+});
+
+export const listItemReportSummaryByProduct = createAsyncThunk(
+  'listItemReportSummaryByProduct',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { depot, dateRange, product } = payload;
+
+    try {
+      const response = await axiosInstance.get(
+        `rest/sales-reports/item-sales-report/depot/${depot}/start/${dateRange[0]}/end/${dateRange[1]}/item/${product}?token=${accessToken}`
+      );
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
       if (valid) {
         return validatedResponse;
       }
       return thunkAPI.rejectWithValue(validatedResponse);
-
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
-
-});
+);
 
 export const listItemByType = createAsyncThunk('listItemByType', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -71,9 +92,53 @@ export const listItemByType = createAsyncThunk('listItemByType', async (payload,
 
 export const listItemSummary = createAsyncThunk('listItemSummary', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+  const { company } = payload;
 
-  const response = await axiosInstance.get(`rest/items/company/${company}/summary/?token=${accessToken}`);
+  const response = await axiosInstance.get(
+    `rest/items/company/${company}/summary/?token=${accessToken}`
+  );
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for items');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
+  }
+
+  return response;
+});
+
+export const listItemSummaryNonEngineering = createAsyncThunk('listItemSummaryNonEngineering', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company } = payload;
+
+  const response = await axiosInstance.get(
+    `rest/items/company/${company}/summary/non-eng?token=${accessToken}`
+  );
+
+  if (typeof response !== 'undefined' && response.status === 200) {
+    const { data } = response;
+    if (data.length === 0) {
+      payload.message.warning('No data retrieved for items');
+    }
+  } else {
+    payload.message.error(message.ITEMS_GET_REJECTED);
+    return thunkAPI.rejectWithValue(response);
+  }
+
+  return response;
+});
+
+export const listItemSummaryEngineering = createAsyncThunk('listItemSummaryEngineering', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company } = payload;
+
+  const response = await axiosInstance.get(
+    `rest/items/company/${company}/summary/eng?token=${accessToken}`
+  );
 
   if (typeof response !== 'undefined' && response.status === 200) {
     const { data } = response;
@@ -136,6 +201,33 @@ const itemSlice = createSlice({
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
     },
+    [listItemWithoutEng.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listItemWithoutEng.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for items';
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listItemWithoutEng.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'error',
+        statusMessage: message.ITEM_DELETE_REJECTED,
+      };
+    },
     [listItemByType.pending]: (state, action) => {
       state.status = 'loading';
     },
@@ -190,7 +282,61 @@ const itemSlice = createSlice({
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
     },
-    /*[listItemReportSummaryByProduct.pending]: (state, action) => {
+    [listItemSummaryEngineering.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listItemSummaryEngineering.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for items';
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listItemSummaryEngineering.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'error',
+        statusMessage: message.ITEM_DELETE_REJECTED,
+      };
+    },
+    [listItemSummaryNonEngineering.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listItemSummaryNonEngineering.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for items';
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listItemSummaryNonEngineering.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'error',
+        statusMessage: message.ITEM_DELETE_REJECTED,
+      };
+    },
+    /* [listItemReportSummaryByProduct.pending]: (state, action) => {
       state.status = 'loading';
     },
     [listItemReportSummaryByProduct.fulfilled]: (state, action) => {
@@ -216,7 +362,7 @@ const itemSlice = createSlice({
         action: 'error',
         statusMessage: message.ITEM_DELETE_REJECTED,
       };
-    },*/
+    }, */
   },
 });
 

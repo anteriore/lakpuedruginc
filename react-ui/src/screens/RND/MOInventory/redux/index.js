@@ -1,25 +1,28 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listMoInventories = createAsyncThunk('listMoInventories', async(payload, thunkAPI ) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(
-      `/rest/moInventory/company/${payload}?token=${accessToken}`
-    );
+export const listMoInventories = createAsyncThunk(
+  'listMoInventories',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/moInventory/company/${payload}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
 const initialState = {
   moInventoryList: [],
@@ -28,10 +31,10 @@ const initialState = {
   responseCode: null,
   statusMessage: '',
   action: '',
-}
+};
 
 const moInventorySlice = createSlice({
-  name: "moInventories",
+  name: 'moInventories',
   initialState,
   reducers: {
     clearData: () => initialState,
@@ -76,8 +79,8 @@ const moInventorySlice = createSlice({
         statusMessage,
       };
     },
-  }
-})
+  },
+});
 
 export const { clearData } = moInventorySlice.actions;
 export default moInventorySlice.reducer;

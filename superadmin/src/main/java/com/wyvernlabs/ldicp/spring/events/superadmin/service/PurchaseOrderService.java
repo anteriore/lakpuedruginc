@@ -9,14 +9,18 @@ import org.springframework.stereotype.Component;
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.OrderedItem;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.PurchaseOrder;
+import com.wyvernlabs.ldicp.spring.events.superadmin.domain.PurchaseRequest;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.RequestedItem;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PurchaseOrderRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.PurchaseRequestRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.RequestedItemRepository;
 
 @Component
 public class PurchaseOrderService {
 	@Autowired
 	private PurchaseOrderRepository purchaseOrderRepository;
+	@Autowired
+	private PurchaseRequestRepository purchaseRequestRepository;
 	@Autowired
 	private RequestedItemRepository requestedItemRepository;
 
@@ -32,7 +36,11 @@ public class PurchaseOrderService {
 		for (OrderedItem orderedItem : orderedItems) {
 			orderedItem.setPoNumber(purchaseOrder.getNumber());
 			RequestedItem requestedItem = requestedItemRepository.getOne(orderedItem.getRequestedItemId());
+			PurchaseRequest purchaseRequest = purchaseRequestRepository.findByNumber(requestedItem.getPrfNumber());
 			requestedItem.deductQuantityRequestedFromQuantity(orderedItem);
+			if(!purchaseRequest.getStatus().equals("PO Created")){
+				purchaseRequest.setStatus("PO Created");
+			}
 		}
 		PurchaseOrder po = purchaseOrderRepository.save(purchaseOrder);
 		return po;

@@ -20,8 +20,8 @@ export const columns = [
     key: 'requestedBy',
     datatype: 'object',
     dataToString: (object) => {
-      return `${object.firstName} ${object.lastName}`
-    }
+      return `${object.firstName} ${object.lastName}`;
+    },
   },
   {
     title: 'Status',
@@ -58,7 +58,6 @@ const FormDetails = () => {
       },
     ],
   };
-
 
   const tableDetails = {
     label: 'Inventory List',
@@ -109,7 +108,7 @@ const FormDetails = () => {
     ],
     foreignKey: 'key',
     selectedKey: 'id',
-    selectData: inventories, 
+    selectData: inventories,
     selectFields: [
       {
         title: 'Control Number',
@@ -188,16 +187,15 @@ const FormDetails = () => {
         if (typeof field.render === 'undefined' || field.render === null) {
           field.render = (object) => object[field.name];
         }
-        if(field.name !== 'stockOnHand' && field.name !== 'quantityRemaining' ){
+        if (field.name !== 'stockOnHand' && field.name !== 'quantityRemaining') {
           columns.push({
             title: field.label,
             key: field.name,
             render: (object) => field.render(object),
           });
         }
-        
       });
-  
+
       return columns;
     },
   };
