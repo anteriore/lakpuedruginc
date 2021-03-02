@@ -28,6 +28,18 @@ export const columns = [
     key: 'date',
     datatype: 'date',
   },
+  {
+    title: 'Expiration Date',
+    dataIndex: 'expiration',
+    key: 'expiration',
+    datatype: 'date',
+  },
+  {
+    title: 'Re-evaluation Date',
+    dataIndex: 'reevaluation',
+    key: 'reevaluation',
+    datatype: 'date',
+  },
 ];
 
 const FormDetails = () => {

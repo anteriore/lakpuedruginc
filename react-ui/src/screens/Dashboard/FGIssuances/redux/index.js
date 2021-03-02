@@ -62,6 +62,16 @@ export const addFGIssuance = createAsyncThunk('addFGIssuance', async (payload, t
   return response;
 });
 
+export const cancelFGIssuance = createAsyncThunk('cancelFGIssuance', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { id } = payload
+
+  const response = await axiosInstance.post(
+    `rest/product-issuances/cancel/${id}?token=${accessToken}`
+  );
+  return response;
+});
+
 export const deleteFGIssuance = createAsyncThunk('deleteFGIssuance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 

@@ -34,6 +34,9 @@ export const processDataForSubmission = (data, company) => {
     company: {
       id: company,
     },
+    requestedBy: {
+      id: data.requestedBy,
+    },
     requestedItems,
   };
 };

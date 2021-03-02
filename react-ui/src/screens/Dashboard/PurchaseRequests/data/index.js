@@ -79,14 +79,16 @@ export const DisplayDetails = () => {
     },
   ];
 
+  
   return { columns, itemColumns };
-};
 
+}
 export const FormDetails = () => {
   const dispatch = useDispatch();
   const items = useSelector((state) => state.maintenance.items.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const company = useSelector((state) => state.company.selectedCompany);
+  const user = useSelector((state) => state.auth.user);
 
   const formDetails = {
     form_name: 'purchase_request',
@@ -108,6 +110,16 @@ export const FormDetails = () => {
         name: 'dateNeeded',
         type: 'date',
         rules: [{ required: true }],
+      },
+      {
+        label: 'Requested By',
+        name: 'requestedBy',
+        type: 'selectSearch',
+        choices: [user],
+        render: (user) => `${user?.firstName} ${user?.lastName}`,
+        initialValue: user.id,
+        rules: [{ required: true }],
+        readOnly: true,
       },
       {
         label: 'Department',
@@ -140,6 +152,7 @@ export const FormDetails = () => {
       },
     ],
   };
+
 
   const tableDetails = {
     label: 'Requested Items',
