@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { listProductInventoryByDepot, clearData as clearPI } from '../../ProductInventories/redux';
+import { listProductInventoryWithStockByDepot, clearData as clearPI } from '../../ProductInventories/redux';
 
 export const columns = [
   {
@@ -82,7 +82,7 @@ const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearPI());
-          dispatch(listProductInventoryByDepot({ company, depot: e }));
+          dispatch(listProductInventoryWithStockByDepot({ company, depot: e }));
         },
       },
       {
