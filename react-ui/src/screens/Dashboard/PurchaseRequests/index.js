@@ -135,7 +135,6 @@ const PurchaseRequests = (props) => {
   }
 
   const handleCancelRemarks = (data) => {
-    console.log(data)
     setRemarks(data)
   }
 
