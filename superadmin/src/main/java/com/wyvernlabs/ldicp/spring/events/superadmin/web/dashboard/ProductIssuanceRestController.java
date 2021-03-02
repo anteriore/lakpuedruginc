@@ -65,4 +65,11 @@ public class ProductIssuanceRestController {
 		Depot depot = depotRepository.getOne(depotId);
 		return productIssuanceRepository.findByStatusAndToDepot(status, depot);
 	}
+
+	@PostMapping("/cancel/{id}")
+	public ProductIssuance cancelProductIssuance(@PathVariable Long id) {
+		ProductIssuance productIssuance = productIssuanceRepository.getOne(id);
+		productIssuance.setStatus("Cancelled");
+		return productIssuanceRepository.save(productIssuance);
+	}
 }
