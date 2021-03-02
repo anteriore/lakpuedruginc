@@ -1,4 +1,5 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { listItemSummary, clearData as clearItem } from '../../../Maintenance/Items/redux';
 
 export const DisplayDetails = () => {
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
@@ -83,8 +84,10 @@ export const DisplayDetails = () => {
 
 }
 export const FormDetails = () => {
+  const dispatch = useDispatch();
   const items = useSelector((state) => state.maintenance.items.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
+  const company = useSelector((state) => state.company.selectedCompany);
   const user = useSelector((state) => state.auth.user);
 
   const formDetails = {
@@ -124,7 +127,20 @@ export const FormDetails = () => {
         type: 'selectSearch',
         selectName: 'name',
         choices: departments,
-        render: (department) => `[${department?.code}] ${department?.name}`,
+        render: (department) => `[${department.code}] ${department.name}`,
+        onChange: (e) => {
+          const departmentData = departments.find((department) => department.id === e)
+          if(departmentData?.code === 'PL-ENGG'){
+            console.log("ENG ITEMS ONLY")
+            dispatch(clearItem())
+            dispatch(listItemSummary({ company }))
+          }
+          else {
+            console.log("NO ENG ITEMS")
+            dispatch(clearItem())
+            dispatch(listItemSummary({ company }))
+          }
+        },
         rules: [{ required: true }],
       },
       {
@@ -143,6 +159,7 @@ export const FormDetails = () => {
     name: 'requestedItems',
     key: 'id',
     rules: [{ required: true }],
+    isVisible: items.length > 0,
     fields: [
       {
         label: 'Item ID',

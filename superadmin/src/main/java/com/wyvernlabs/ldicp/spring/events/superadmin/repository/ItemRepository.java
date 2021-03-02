@@ -13,6 +13,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Unit;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 	public List<Item> findByType(ItemType type);
+	public List<Item> findByTypeNot(ItemType type);
 	public Item findByCode(String code);
 	public List<Item> findAllByUnit(Unit unit);
 	public List<Item> findByUnitId(Long id);
