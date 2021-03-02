@@ -1,10 +1,11 @@
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
+import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
 
 export const routes = [
   {
     title: 'Purchase Vouchers',
     path: '/purchase-vouchers',
-    component: null,
+    component: PurchaseVouchers,
   },
   {
     title: 'Journal Vouchers',

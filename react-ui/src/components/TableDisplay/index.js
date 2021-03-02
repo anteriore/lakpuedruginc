@@ -17,6 +17,7 @@ const TableDisplay = (props) => {
     updateEnabled,
     pagination,
     name,
+    size
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);
@@ -118,6 +119,7 @@ const TableDisplay = (props) => {
   return (
     <Table
       dataSource={data}
+      size={size}
       rowKey={(record) => record.uid}
       columns={columnfilter()}
       pagination={{
