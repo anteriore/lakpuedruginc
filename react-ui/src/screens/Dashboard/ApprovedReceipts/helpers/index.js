@@ -27,3 +27,23 @@ export const formatPayload = (approvalId, company, data) => {
         remarks: data.remarks,
     };
 };
+
+export const inventoryPayload = (company, data) => {  
+    return {
+        ...data,
+        item: { id: data.receivedItems[0].itemID },
+        controlNumber: data.controlNumber,
+        quantity: data.receivedItems[0].totalQuantity,
+        company: { id: company },
+        dateCreated: data.dateCreated,
+        
+        expiration: data.receivedItems[0].expiration,
+        bestBefore: data.receivedItems[0].bestBefore,
+        reevaluation: data.receivedItems[0].reevaluation,
+        retest: data.receivedItems[0].retest,
+
+        moqReserved: 0,
+        moQuantity: 0,
+        ppQuantity: 0,
+    };
+};

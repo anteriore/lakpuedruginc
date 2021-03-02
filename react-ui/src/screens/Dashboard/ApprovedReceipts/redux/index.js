@@ -12,7 +12,7 @@ const initialState = {
   action: '',
 };
 
-export const listApprovedReceipts = createAsyncThunk('listRR', async (payload, thunkAPI) => {
+export const listApprovedReceipts = createAsyncThunk('listApprovedReceipts', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   const response = await axiosInstance.get(
