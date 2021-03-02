@@ -133,7 +133,9 @@ public class ItemRestController {
             
             for (PurchaseOrder purchaseOrder : purchaseOrders) {
                 for (OrderedItem orderedItem : purchaseOrder.getOrderedItems()) {
-                    poQuantity += orderedItem.getQuantity();
+                    if(orderedItem.getItem().getId() == item.getId()){
+                        poQuantity += orderedItem.getQuantity();
+                    }
                 }
             }
 
@@ -186,7 +188,9 @@ public class ItemRestController {
             
             for (PurchaseOrder purchaseOrder : purchaseOrders) {
                 for (OrderedItem orderedItem : purchaseOrder.getOrderedItems()) {
-                    poQuantity += orderedItem.getQuantity();
+                    if(orderedItem.getItem().getId() == item.getId()){
+                        poQuantity += orderedItem.getQuantity();
+                    }
                 }
             }
 
@@ -239,7 +243,9 @@ public class ItemRestController {
             
             for (PurchaseOrder purchaseOrder : purchaseOrders) {
                 for (OrderedItem orderedItem : purchaseOrder.getOrderedItems()) {
-                    poQuantity += orderedItem.getQuantity();
+                    if(orderedItem.getItem().getId() == item.getId()){
+                        poQuantity += orderedItem.getQuantity();
+                    }
                 }
             }
 
