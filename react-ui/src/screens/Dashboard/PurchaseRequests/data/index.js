@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { listItemSummary, clearData as clearItem } from '../../../Maintenance/Items/redux';
+import { listItemSummaryNonEngineering, listItemSummaryEngineering, clearData as clearItem } from '../../../Maintenance/Items/redux';
 
 export const DisplayDetails = () => {
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
@@ -127,18 +127,16 @@ export const FormDetails = () => {
         type: 'selectSearch',
         selectName: 'name',
         choices: departments,
-        render: (department) => `[${department.code}] ${department.name}`,
+        render: (department) => `[${department?.code}] ${department?.name}`,
         onChange: (e) => {
           const departmentData = departments.find((department) => department.id === e)
           if(departmentData?.code === 'PL-ENGG'){
-            console.log("ENG ITEMS ONLY")
             dispatch(clearItem())
-            dispatch(listItemSummary({ company }))
+            dispatch(listItemSummaryEngineering({ company }))
           }
           else {
-            console.log("NO ENG ITEMS")
             dispatch(clearItem())
-            dispatch(listItemSummary({ company }))
+            dispatch(listItemSummaryNonEngineering({ company }))
           }
         },
         rules: [{ required: true }],

@@ -69,7 +69,6 @@ public class ProductIssuanceRestController {
 	@PostMapping("/cancel/{id}")
 	public ProductIssuance cancelProductIssuance(@PathVariable Long id) {
 		ProductIssuance productIssuance = productIssuanceRepository.getOne(id);
-		productIssuance.setStatus("Cancelled");
-		return productIssuanceRepository.save(productIssuance);
+		return productIssuanceService.cancelProductIssuance(productIssuance);
 	}
 }
