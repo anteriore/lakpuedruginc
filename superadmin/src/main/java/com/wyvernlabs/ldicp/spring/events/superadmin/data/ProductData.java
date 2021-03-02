@@ -20,7 +20,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductDivisionR
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UnitRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductInventoryRepository;
-
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -45,7 +45,8 @@ public class ProductData {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private ProductInventoryRepository productInventoryRepository;
-
+	@Autowired
+	private DepotRepository depotRepository;
 
 	public void init() {
 		FinishedGood fg = finishedGoodRepository.getOne(1L);
@@ -166,6 +167,7 @@ public class ProductData {
 					tempproduct.setExpiration(Integer.parseInt(  data[12].replace("\"", "") ));
 					tempproduct.setLotNumber(data[10].replace("\"", ""));
 					tempproduct.setQuantityPerBox(Integer.parseInt(  data[8].replace("\"", "") ));
+					tempproduct.setDepot(depotRepository.findByCode("BIN-001"));
 					tempproduct.setReorderLevel(1000);
 					tempproduct.setBigUnit(unitRepository.findByCode(data[7].replace("\"", "")));
 					tempproduct.setSmallUnit(unitRepository.findByCode(data[6].replace("\"", "")));
@@ -179,7 +181,7 @@ public class ProductData {
 					ProductInventory inventory = new ProductInventory();
 					inventory.setCompany(tempproduct.getCompany());
 					inventory.setDateCreated(new Date());
-					//inventory.setDepot(tempproduct.getDepot());
+					inventory.setDepot(depotRepository.findByCode("BIN-001"));
 					inventory.setProduct(tempproduct);
 					inventory.setQuantity(0);
 					productInventoryRepository.save(inventory);
