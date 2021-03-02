@@ -96,6 +96,14 @@ public class PurchaseRequestRestController {
 		return purchaseRequestRepository.save(purchaseRequest);
 	}
 
+	@PostMapping("/cancel/{prfId}")
+	public PurchaseRequest cancelPurchaseRequest(@PathVariable Long prfId, @RequestBody String remarks) {
+		PurchaseRequest purchaseRequest = purchaseRequestRepository.getOne(prfId);
+		purchaseRequest.setStatus("Canceled");
+		purchaseRequest.setRemarks(remarks);
+		return purchaseRequestRepository.save(purchaseRequest);
+	}
+
 	@GetMapping("/company/{companyId}/stock/{itemId}")
 	public int getPrfQuantityOfItem(@PathVariable Long companyId, @PathVariable Long itemId) {
 		Company company = companyRepository.getOne(companyId);

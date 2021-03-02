@@ -122,6 +122,16 @@ export const rejectPR = createAsyncThunk('rejectPR', async (payload, thunkAPI) =
   return response;
 });
 
+
+export const cancelPR = createAsyncThunk('cancelPR', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  const response = await axiosInstance.post(
+    `rest/purchase-requests/cancel/${payload.id}?token=${accessToken}`, payload
+  );
+  return response;
+});
+
 export const deletePR = createAsyncThunk('deletePR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
