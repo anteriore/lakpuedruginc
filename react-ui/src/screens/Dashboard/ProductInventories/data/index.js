@@ -30,9 +30,27 @@ export const columns = [
     },
   },
   {
+    title: 'Lot Number',
+    dataIndex: 'product',
+    key: 'product',
+    datatype: 'object',
+    dataToString: (product) => {
+      return `${product?.lotNumber}`;
+    },
+  },
+  {
     title: 'Quantity',
     dataIndex: 'quantity',
     key: 'quantity',
+  },
+  {
+    title: 'Quantity Per Box',
+    dataIndex: 'product',
+    key: 'product',
+    datatype: 'object',
+    dataToString: (product) => {
+      return `${product?.quantityPerBox}`;
+    },
   },
   {
     title: 'Unit (Small/Big)',
@@ -41,6 +59,15 @@ export const columns = [
     datatype: 'object',
     dataToString: (product) => {
       return `${product.bigUnit?.name} (${product.bigUnit?.code}) / ${product?.smallUnit?.name} (${product?.smallUnit?.code})`;
+    },
+  },
+  {
+    title: 'Unit Price',
+    dataIndex: 'product',
+    key: 'product',
+    datatype: 'object',
+    dataToString: (product) => {
+      return `${product?.unitPrice}`;
     },
   },
 ];
