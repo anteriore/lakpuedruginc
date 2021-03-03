@@ -41,6 +41,11 @@ public class AccountTitleRestController {
 		return accountTitleRepository.save(accountTitle);
 	}
 
+	@GetMapping("/type/{type}")
+	public List<AccountTitle> listByType(@PathVariable String type) {
+		return accountTitleRepository.findByType(type);
+	}
+
 	@GetMapping("/level/{level}/parent/{parentId}")
 	public List<AccountTitle> listByLevelAndParent(@PathVariable int level, @PathVariable Long parentId) {
 		if (parentId < 0 && level == 1) {
