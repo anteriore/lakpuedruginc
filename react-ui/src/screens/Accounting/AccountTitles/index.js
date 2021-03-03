@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, message } from 'antd';
+import { Row, Col, Skeleton, Typography, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -8,17 +8,14 @@ import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listAccountTitles, listAccountTitlesByType, addAccountTitle, clearData } from './redux';
 import FormScreen from '../../../components/forms/FormScreen';
-//import ItemDescription from '../../../components/ItemDescription';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const AccountTitles = (props) => {
   const [loading, setLoading] = useState(true);
-  const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-  const [selectedData, setSelectedData] = useState(null);
   const { formDetails } = FormDetails();
 
   const listData = useSelector((state) => state.accounting.accountTitles.list);
@@ -72,10 +69,7 @@ const AccountTitles = (props) => {
 
   const handleDelete = (data) => {};
 
-  const handleRetrieve = (data) => {
-    setSelectedData(data);
-    setDisplayModal(true);
-  };
+  const handleRetrieve = (data) => {};
 
   const onSubmit = (data) => {
     const parent = listData.find((item) => item.id === data.parent)
@@ -185,72 +179,6 @@ const AccountTitles = (props) => {
               />
             )}
           </Col>
-          <Modal
-            visible={displayModal}
-            onOk={() => {
-              setDisplayModal(false);
-              setSelectedData(null);
-            }}
-            onCancel={() => {
-              setDisplayModal(false);
-              setSelectedData(null);
-            }}
-            width={1000}
-            cancelButtonProps={{ style: { display: 'none' } }}
-          >
-            {/*selectedData === null ? (
-              <Skeleton />
-            ) : (
-              <Space direction="vertical" size={20} style={{ width: '100%' }}>
-                <ItemDescription
-                  title={`${selectedData.pisNo} Details`}
-                  selectedData={selectedData}
-                  formItems={formDetails.form_items}
-                />
-                <Text>{'Issued Items: '}</Text>
-                <Table
-                  dataSource={
-                    selectedData[tableDetails.name] !== null &&
-                    typeof selectedData[tableDetails.name] !== 'undefined'
-                      ? selectedData[tableDetails.name]
-                      : []
-                  }
-                  columns={tableDetails.renderTableColumns(tableDetails.fields)}
-                  pagination={false}
-                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                />
-                {selectedData.status === 'Pending' && ( // add approval permissions here
-                <>
-                  <Text>{'Actions: '}</Text>
-                  <Space>
-                    <Popconfirm
-                      title="Would you like to perform this action?"
-                      icon={<QuestionCircleOutlined />}
-                      onConfirm={(e) => {
-                        handleCancel(selectedData)
-                      }}
-                      onCancel={(e) => {
-                      }}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <Button
-                        style={{ marginRight: '1%' }}
-                        icon={<CloseOutlined />}
-                        onClick={(e) => {
-                        }}
-                        type="primary"
-                        danger
-                      >
-                        Cancel
-                      </Button>
-                    </Popconfirm>
-                  </Space>
-                </>
-              )}
-              </Space>
-                      )*/}
-          </Modal>
         </Row>
       </Route>
     </Switch>
