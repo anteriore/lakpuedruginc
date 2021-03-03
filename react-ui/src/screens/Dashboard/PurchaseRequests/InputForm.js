@@ -262,7 +262,7 @@ const InputForm = (props) => {
         <Title level={3}>{title}</Title>
       </Row>
       <Row>
-        <Col span={20}>
+        <Col span={24}>
           <Form
             {...styles.layout}
             form={form}
@@ -279,7 +279,7 @@ const InputForm = (props) => {
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={24} offset={1}>
+                  <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
                       <Button
                         onClick={() => {
@@ -357,10 +357,10 @@ export default InputForm;
 const styles = {
   layout: {
     labelCol: {
-      span: 6,
+      span: 4,
     },
     wrapperCol: {
-      span: 15,
+      span: 17,
     },
   },
   listItems: {
@@ -380,7 +380,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'row-reverse',
     marginTop: '2%',
-    width: '100%',
+    width: '87.5%',
   },
   listTailLayout: {
     labelCol: {
