@@ -339,7 +339,16 @@ const FormScreen = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button 
+              type="primary" 
+              onClick={() => form.submit()}
+              disabled={
+                (formTable?.required ?? true) && 
+                (formTable?.name ?? null) !== null && 
+                (typeof form.getFieldValue(formTable?.name ?? '') === 'undefined' || 
+                form.getFieldValue(formTable?.name ?? '') === null)
+              }
+            >
               Submit
             </Button>
             <Button
