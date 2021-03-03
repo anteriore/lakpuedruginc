@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, Empty, message } from 'antd';
-import { PlusOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Skeleton, Typography, Button, Modal, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { columns } from './data';
+import FormDetails, { columns } from './data';
 import { listAccountTitles, clearData } from './redux';
 import FormScreen from '../../../components/forms/FormScreen';
-import ItemDescription from '../../../components/ItemDescription';
+//import ItemDescription from '../../../components/ItemDescription';
 
 const { Title, Text } = Typography;
 
@@ -19,6 +19,7 @@ const AccountTitles = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
+  const { formDetails } = FormDetails();
 
   const listData = useSelector((state) => state.accounting.accountTitles.list);
 
@@ -45,14 +46,12 @@ const AccountTitles = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    /*setFormTitle('Create FG Issuance');
+    setFormTitle('Create Account Title');
     setFormMode('add');
     setFormData(null);
-    setLoading(true);
-    dispatch(listDepot({ company, message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
-    });*/
+    //setLoading(true);
+    history.push(`${path}/new`);
+    //setLoading(false);
   };
 
   const handleUpdate = (data) => {};
@@ -128,7 +127,7 @@ const AccountTitles = (props) => {
 
   return (
     <Switch>
-      {/*<Route exact path={`${path}/new`}>
+      <Route exact path={`${path}/new`}>
         <FormScreen
           title={formTitle}
           onSubmit={onSubmit}
@@ -137,7 +136,6 @@ const AccountTitles = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -149,9 +147,8 @@ const AccountTitles = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          formTable={tableDetails}
         />
-      </Route>*/}
+      </Route>
       <Route>
         <Row>
           <Col span={20}>
