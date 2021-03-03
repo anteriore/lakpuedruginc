@@ -1,5 +1,6 @@
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
+import AccountTitles from '../../screens/Accounting/AccountTitles';
 
 export const routes = [
   {
@@ -20,7 +21,7 @@ export const routes = [
   {
     title: 'Account Titles',
     path: '/account-titles',
-    component: null,
+    component: AccountTitles,
   },
   {
     title: 'Cheque Printings',

@@ -11,6 +11,8 @@ public interface AccountTitleRepository extends JpaRepository<AccountTitle, Long
 
 	AccountTitle findByTitle(String string);
 
+	List<AccountTitle> findByType(String type);
+
 	List<AccountTitle> findByLevel(int i);
 
 	List<AccountTitle> findByLevelAndParent(int level, AccountTitle parent);

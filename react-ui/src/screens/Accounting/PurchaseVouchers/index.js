@@ -6,18 +6,25 @@ import { PlusOutlined, CheckOutlined, CloseOutlined, PrinterOutlined } from '@an
 import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
 import { clearData, listPurchaseVouchers } from './redux';
+import { listRR, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
+import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
+import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
+import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
+import { listG, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import { useDispatch, useSelector } from 'react-redux';
+import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
 import GeneralHelper from '../../../helpers/general-helper';
 import moment from 'moment'
 import _ from 'lodash';
+
 
 const { Title } = Typography;
 
 const { RangePicker } = DatePicker
 
 const PurchaseVouchers = (props) => {
-	const { title, company, actions} = props;
+	const { title, company } = props;
 	const { path } = useRouteMatch();
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -49,6 +56,11 @@ const PurchaseVouchers = (props) => {
 			setContentLoading(false);
 			if(isCancelled) {
 				dispatch(clearData());
+				dispatch(clearAC());
+				dispatch(clearDeptArea());
+				dispatch(clearRR());
+				dispatch(clearGroupCat());
+				dispatch(clearVendor());
 			}
 		})
 
@@ -57,6 +69,36 @@ const PurchaseVouchers = (props) => {
 			isCancelled = true
 		}
 	}, [company, dispatch]);
+
+	const onSuccess = useCallback((method) => {
+		if ( method === "add" ){
+			history.push(`${path}/new`);
+		} 
+
+		if ( method === 'edit' ) {
+
+		}
+
+		setContentLoading(false);
+	},[history, path])
+
+	const handleAddButton = () => {
+		setContentLoading(true);
+		dispatch(listRR({company})).then((dataRR) => {
+			dispatch(listVendor({company})).then((dataVendor) => {
+				dispatch(listAccountTitles()).then((dataAC) => { 
+					dispatch(listA({company})).then((dataA) => {
+						dispatch(listD({company})).then((dataD) => {
+							dispatch(listG({company})).then((dataG) => {
+								const dataList = [dataRR,dataVendor, dataAC, dataA, dataD, dataG];
+								handleRequestResponse(dataList, () => onSuccess('add'), null, '/accounting')
+							})
+						})
+					})
+				})
+			})
+		})
+	}
 
 	const handleRangedChanged = (value) => {
 		console.log(value)
@@ -72,10 +114,14 @@ const PurchaseVouchers = (props) => {
 		setPurchaseVoucher(null);
 	}
 
+	const onCreate = () => {
+
+	}
+
 	return (
 		<Switch>
 			<Route path={`${path}/new`}>
-
+				<InputForm title="New Purchase Voucher" onSubmit={onCreate} />
 			</Route>
 			<Route path={`${path}`}>
 				<Row gutter={[8, 24]}>
@@ -86,6 +132,7 @@ const PurchaseVouchers = (props) => {
 						<Button
 							icon={<PlusOutlined/>}
 							loading={contentLoading}
+							onClick={handleAddButton}
 						>
 							Add
 						</Button>
@@ -182,13 +229,21 @@ const PurchaseVouchers = (props) => {
 									</Button>
 								</Space>
 							</Col>
-							<Col>
+							<Col span={11}>
 								<Table
 									size="small"
-									columns={ tableHeaderAccounts }
+									columns={tableHeaderAccounts}
 									dataSource={purchaseVoucher?.accountTitles ?? null}
 									pagination={false}
 								/>
+								<Descriptions>
+										<Descriptions.Item label="Total Debit Amount">
+											{purchaseVoucher?.totalDebitAmount ?? ""}
+										</Descriptions.Item>
+										<Descriptions.Item label="Total Credit Amount">
+											{purchaseVoucher?.totalCreditAmount ?? ""}
+										</Descriptions.Item>
+								</Descriptions>
 							</Col>
 						</Row>
 					)}
