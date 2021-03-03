@@ -6,7 +6,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listAccountTitles, clearData } from './redux';
+import { listAccountTitles, listAccountTitlesByType, addAccountTitle, clearData } from './redux';
 import FormScreen from '../../../components/forms/FormScreen';
 //import ItemDescription from '../../../components/ItemDescription';
 
@@ -50,11 +50,25 @@ const AccountTitles = (props) => {
     setFormMode('add');
     setFormData(null);
     //setLoading(true);
+    dispatch(clearData())
     history.push(`${path}/new`);
     //setLoading(false);
   };
 
-  const handleUpdate = (data) => {};
+  const handleUpdate = (data) => {
+    setFormTitle('Update Account Title');
+    setFormMode('edit');
+    setFormData({
+      ...data,
+      parent: data?.parent?.id ?? null
+    });
+    setLoading(true);
+    dispatch(clearData())
+    dispatch(listAccountTitlesByType({ type: data.type})).then(() => {
+      history.push(`${path}/${data.id}`);
+      setLoading(false);
+    })
+  };
 
   const handleDelete = (data) => {};
 
@@ -64,41 +78,22 @@ const AccountTitles = (props) => {
   };
 
   const onSubmit = (data) => {
-    /*console.log(data);
-    const inventoryList = [];
-    data.inventoryList.forEach((inventory) => {
-      inventoryList.push({
-        product: {
-          id: inventory.product.id,
-        },
-        quantity: inventory.quantity,
-      });
-    });
+    const parent = listData.find((item) => item.id === data.parent)
+    console.log(parent)
     const payload = {
       ...data,
-      company: {
-        id: company,
-      },
-      fromDepot: {
-        id: data.fromDepot,
-      },
-      toDepot: {
-        id: data.toDepot,
-      },
-      requestedBy: {
-        id: user.id,
-      },
-      inventoryList,
+      parent: parent ?? null,
+      level: (parent?.level ?? 0) + 1
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addFGIssuance(payload)).then((response) => {
+      dispatch(addAccountTitle(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listFGIssuance({ company, message })).then(() => {
+          dispatch(listAccountTitles({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully updated ${data.number}`);
+            message.success(`Successfully updated ${data.title}`);
           });
         } else {
           setLoading(false);
@@ -106,22 +101,22 @@ const AccountTitles = (props) => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addFGIssuance(payload)).then((response) => {
+      dispatch(addAccountTitle(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listFGIssuance({ company, message })).then(() => {
+          dispatch(listAccountTitles({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
+            message.success(`Successfully added ${response.payload.data.title}`);
           });
         } else {
           setLoading(false);
           message.error(
-            `Unable to create FG Issuance. Please double check the provided information.`
+            `Unable to create Account Title. Please double check the provided information.`
           );
         }
       });
-    }*/
+    }
     setFormData(null);
   };
 
@@ -134,6 +129,10 @@ const AccountTitles = (props) => {
           values={formData}
           onCancel={() => {
             setFormData(null);
+            setLoading(true);
+            dispatch(listAccountTitles({ company, message })).then(() => {
+              setLoading(false);
+            });
           }}
           formDetails={formDetails}
         />
@@ -145,6 +144,10 @@ const AccountTitles = (props) => {
           values={formData}
           onCancel={() => {
             setFormData(null);
+            setLoading(true);
+            dispatch(listAccountTitles({ company, message })).then(() => {
+              setLoading(false);
+            });
           }}
           formDetails={formDetails}
         />
@@ -178,7 +181,6 @@ const AccountTitles = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={false}
                 deleteEnabled={false}
               />
             )}
