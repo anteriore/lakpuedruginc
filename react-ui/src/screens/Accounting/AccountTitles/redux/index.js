@@ -30,7 +30,7 @@ export const listAccountTitles = createAsyncThunk('listAccountTitles', async (pa
 });
 
 const accountTitleSlice = createSlice({
-  name: 'accountTitle',
+  name: 'accountTitles',
   initialState,
   reducers: {
     clearData: () => initialState,
