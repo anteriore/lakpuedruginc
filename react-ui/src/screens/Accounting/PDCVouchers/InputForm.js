@@ -18,6 +18,7 @@ import { SelectOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
+import moment from 'moment';
 
 const { Title } = Typography;
 
@@ -116,10 +117,8 @@ const InputForm = (props) => {
       }
     }
 
-    console.log(values)
     if (values.hasOwnProperty(formTable.name)) {
       setTableData(form.getFieldValue(formTable.name));
-      console.log(form.getFieldValue(formTable.name))
     }
 
     /*if (values.hasOwnProperty('depot')) {
@@ -135,8 +134,13 @@ const InputForm = (props) => {
 
     if (key === selectTableName) {
       const selectedPDC = pdcDisbursements.find((slip) => slip.id === value);
-      formValues[key] = selectedPDC.id;
+      formValues[key] = {
+        id: selectedPDC.id,
+        number: selectedPDC.number
+      };
       formValues.cheques = selectedPDC?.cheques ?? [];
+      formValues.disbursementDate = moment(new Date(selectedPDC.date)).format('DD/MM/YYYY')
+      formValues.payee = `[${selectedPDC.payee.code}] ${selectedPDC.payee.name}`
       setCheques(selectedPDC.cheques);
     } else {
       formValues[key] = value;

@@ -72,9 +72,6 @@ const PDCVouchers = (props) => {
       company: {
         id: company,
       },
-      disbursement: {
-        id: data.disbursement,
-      },
     };
     if (formMode === 'edit') {
       payload.id = formData.id;

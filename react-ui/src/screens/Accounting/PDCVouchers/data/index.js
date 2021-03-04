@@ -49,7 +49,7 @@ const FormDetails = () => {
         type: 'selectTable',
         rules: [{ required: true }],
         allowEmpty: true,
-        placeholder: 'Select DR/OS',
+        placeholder: 'Select Disbursement',
         displayModal,
         setDisplayModal,
         dataSource: pdcDisbursements,
@@ -69,15 +69,25 @@ const FormDetails = () => {
             title: 'Payee',
             dataIndex: 'payee',
             key: 'payee',
-            render: (data) => `[${data?.payee?.code}] ${data?.payee?.name}`
+            render: (data) => `[${data?.code}] ${data?.name}`
           },
         ],
         rowKey: 'id',
         getValueProps: (value) => {
           if (typeof value !== 'undefined') {
-            return { value };
+            return { value: value?.number ?? "" };
           }
         },
+      },
+      {
+        label: 'Disbursement Date',
+        name: 'disbursementDate',
+        readOnly: true,
+      },
+      {
+        label: 'Payee',
+        name: 'payee',
+        readOnly: true,
       },
     ],
   };
