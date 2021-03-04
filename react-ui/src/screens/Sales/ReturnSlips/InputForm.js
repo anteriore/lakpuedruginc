@@ -37,6 +37,9 @@ const InputForm = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
   const toggleName = formDetails.toggle_name;
 
@@ -286,7 +289,7 @@ const InputForm = (props) => {
     const formValues = {};
 
     if (key === 'salesNumber') {
-      const selectedSaleSlip = orderSlips.find((slip) => slip.id === value);
+      const selectedSaleSlip = salesSlips.find((slip) => slip.id === value);
       formValues[key] = selectedSaleSlip.number;
       formValues.client = selectedSaleSlip.salesOrder.client.id;
       setOrderedProducts(selectedSaleSlip.orderedProducts);
