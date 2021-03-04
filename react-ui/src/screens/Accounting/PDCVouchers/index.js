@@ -7,7 +7,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listPDCVoucher, addPDCVoucher, clearData } from './redux';
-import FormScreen from '../../../components/forms/FormScreen';
+import InputForm from './InputForm';
 import { listPDCDisbursementByStatus } from '../PDCDisbursements/redux';
 //import ItemDescription from '../../../components/ItemDescription';
 
@@ -20,7 +20,7 @@ const PDCVouchers = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
-  const { formDetails } = FormDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
   const listData = useSelector((state) => state.accounting.PDCVouchers.list);
 
@@ -114,7 +114,7 @@ const PDCVouchers = (props) => {
   return (
     <Switch>
       <Route exact path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -122,10 +122,11 @@ const PDCVouchers = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -133,6 +134,7 @@ const PDCVouchers = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>

@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import moment from 'moment';
 
 export const columns = [
   {
@@ -24,6 +26,7 @@ export const columns = [
 
 const FormDetails = () => {
   const pdcDisbursements = useSelector((state) => state.accounting.PDCDisbursements.list);
+  const [displayModal, setDisplayModal] = useState(false);
 
   const formDetails = {
     form_name: 'pdc_vouchers',
@@ -43,16 +46,64 @@ const FormDetails = () => {
       {
         label: 'PDC Disbursement',
         name: 'disbursement',
-        type: 'selectSearch',
-        selectName: 'name',
-        choices: pdcDisbursements,
-        render: (data) => `${data.number}`,
+        type: 'selectTable',
         rules: [{ required: true }],
+        allowEmpty: true,
+        placeholder: 'Select DR/OS',
+        displayModal,
+        setDisplayModal,
+        dataSource: pdcDisbursements,
+        columns: [
+          {
+            title: 'PDC Number',
+            dataIndex: 'number',
+            key: 'number',
+          },
+          {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+          },
+          {
+            title: 'Payee',
+            dataIndex: 'payee',
+            key: 'payee',
+            render: (data) => `[${data?.payee?.code}] ${data?.payee?.name}`
+          },
+        ],
+        rowKey: 'id',
+        getValueProps: (value) => {
+          if (typeof value !== 'undefined') {
+            return { value };
+          }
+        },
       },
     ],
   };
 
-  return { formDetails };
+  const tableDetails = {
+    label: 'Cheques',
+    name: 'cheques',
+    key: 'cheques',
+    rules: [{ required: true }],
+    fields: [
+      {
+        label: 'Cheque Number',
+        name: 'number',
+      },
+      {
+        label: 'Amount',
+        name: 'amount',
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+      },
+    ],
+  };
+
+  return { formDetails, tableDetails };
 };
 
 export default FormDetails;

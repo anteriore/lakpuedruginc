@@ -33,27 +33,41 @@ export const addPDCVoucher = createAsyncThunk(
   'addPDCVoucher',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `rest/pdc-vouchers/?token=${accessToken}`,
+        payload
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const response = await axiosInstance.post(
-      `rest/pdc-vouchers/?token=${accessToken}`,
-      payload
-    );
-    return response;
-  }
-);
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+});
 
 export const deletePDCVoucher = createAsyncThunk(
   'deletePDCVoucher',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `rest/pdc-vouchers/delete?token=${accessToken}`,
+        payload
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const response = await axiosInstance.post(
-      `rest/pdc-vouchers/delete?token=${accessToken}`,
-      payload
-    );
-    return response;
-  }
-);
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+});
 
 const PDCVoucherSlice = createSlice({
   name: 'PDCVouchers',
