@@ -6,7 +6,7 @@ import { PlusOutlined, CheckOutlined, CloseOutlined, PrinterOutlined } from '@an
 import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
 import { clearData, listPurchaseVouchers } from './redux';
-import { listRR, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
+import { listRRByNoPV, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
 import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
@@ -34,7 +34,30 @@ const PurchaseVouchers = (props) => {
 	const [displayModal, setDisplayModal] = useState(false);
 	const [purchaseVoucher, setPurchaseVoucher] = useState(null);
 
-	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers)
+	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers);
+	const { 
+		status: statusRR, 
+		statusMessage: statusMessageRR, 
+		statusLevel: statusLevelRR, 
+		action: actionRR
+	} = useSelector((state) => state.dashboard.receivingReceipts)
+
+	useEffect(() => {
+    if (statusRR !== 'loading') {
+      if (actionRR === 'fetch' && statusLevelRR === 'warning') {
+        statusDialogue(
+          {
+            statusLevel: statusLevelRR,
+            modalContent: {
+              title: `${_.capitalize(statusLevelRR)} - (Receiving Receipts)`,
+              content: statusMessageRR,
+            },
+          },
+          'modal'
+        );
+      }
+    }
+  }, [actionRR, statusMessageRR, statusRR, statusLevelRR]);
 
 	useEffect(() => {
 		if (status !== 'loading') {
@@ -82,16 +105,21 @@ const PurchaseVouchers = (props) => {
 		setContentLoading(false);
 	},[history, path])
 
+	const onFail = useCallback(() => {
+		history.goBack();
+		setContentLoading(false);
+	},[history])
+
 	const handleAddButton = () => {
 		setContentLoading(true);
-		dispatch(listRR({company})).then((dataRR) => {
+		dispatch(listRRByNoPV({company})).then((dataRR) => {
 			dispatch(listVendor({company})).then((dataVendor) => {
 				dispatch(listAccountTitles()).then((dataAC) => { 
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
 							dispatch(listG({company})).then((dataG) => {
 								const dataList = [dataRR,dataVendor, dataAC, dataA, dataD, dataG];
-								handleRequestResponse(dataList, () => onSuccess('add'), null, '/accounting')
+								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
 							})
 						})
 					})
