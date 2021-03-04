@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Form,
   Button,
-  InputNumber,
-  Input,
-  Select,
-  Checkbox,
-  Modal,
   Row,
   Col,
   Typography,
@@ -14,7 +9,6 @@ import {
   Empty,
   message,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
@@ -33,9 +27,6 @@ const InputForm = (props) => {
   const [cheques, setCheques] = useState([]);
   const [selectedPDC, setSelectedPDC] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
-
-  const [loadingModal, setLoadingModal] = useState(true);
-  const [displayModal, setDisplayModal] = useState(false);
 
   const pdcDisbursements = useSelector((state) => state.accounting.PDCDisbursements.list);
 
@@ -120,13 +111,6 @@ const InputForm = (props) => {
     if (values.hasOwnProperty(formTable.name)) {
       setTableData(form.getFieldValue(formTable.name));
     }
-
-    /*if (values.hasOwnProperty('depot')) {
-      setCheques([]);
-      setSelectedPDC([]);
-      setTableData(null);
-      form.setFieldsValue({ salesNumber: null, client: null });
-    }*/
   };
 
   const onTableSelect = (key, value) => {
