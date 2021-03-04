@@ -78,18 +78,29 @@ const FormDetails = () => {
             return { value: value?.number ?? "" };
           }
         },
+        toString: (data) => data.number
       },
       {
         label: 'Disbursement Date',
         name: 'disbursementDate',
         readOnly: true,
+        render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
       },
       {
         label: 'Payee',
         name: 'payee',
         readOnly: true,
+        render: (data) => `[${data.code}] ${data.name}`
       },
     ],
+    processDisplayData: (data) => {
+      const processedData = {
+        ...data,
+        disbursementDate: data.disbursement.date,
+        payee: data.disbursement.payee,
+      }
+      return processedData
+    }
   };
 
   const tableDetails = {
@@ -111,6 +122,21 @@ const FormDetails = () => {
         name: 'remarks',
       },
     ],
+    renderTableColumns: (fields) => {
+      const columns = [];
+      fields.forEach((field) => {
+        if (typeof field.render === 'undefined' || field.render === null) {
+          field.render = (object) => object[field.name];
+        }
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => field.render(object),
+        });
+      });
+
+      return columns;
+    },
   };
 
   return { formDetails, tableDetails };

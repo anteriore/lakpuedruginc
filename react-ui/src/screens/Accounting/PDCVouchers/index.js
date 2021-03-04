@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, message } from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -9,7 +9,7 @@ import FormDetails, { columns } from './data';
 import { listPDCVoucher, addPDCVoucher, clearData } from './redux';
 import InputForm from './InputForm';
 import { listPDCDisbursementByStatus } from '../PDCDisbursements/redux';
-//import ItemDescription from '../../../components/ItemDescription';
+import ItemDescription from '../../../components/ItemDescription';
 
 const { Title, Text } = Typography;
 
@@ -181,58 +181,26 @@ const PDCVouchers = (props) => {
             width={1000}
             cancelButtonProps={{ style: { display: 'none' } }}
           >
-            {/*selectedData === null ? (
+            {selectedData === null ? (
               <Skeleton />
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.pisNo} Details`}
-                  selectedData={selectedData}
+                  title={`${selectedData.number} Details`}
+                  selectedData={formDetails.processDisplayData(selectedData)}
                   formItems={formDetails.form_items}
                 />
-                <Text>{'Issued Items: '}</Text>
+                <Text>{'Cheques: '}</Text>
                 <Table
                   dataSource={
-                    selectedData[tableDetails.name] !== null &&
-                    typeof selectedData[tableDetails.name] !== 'undefined'
-                      ? selectedData[tableDetails.name]
-                      : []
+                    selectedData?.disbursement?.cheques ?? []
                   }
                   columns={tableDetails.renderTableColumns(tableDetails.fields)}
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
-                {selectedData.status === 'Pending' && ( // add approval permissions here
-                <>
-                  <Text>{'Actions: '}</Text>
-                  <Space>
-                    <Popconfirm
-                      title="Would you like to perform this action?"
-                      icon={<QuestionCircleOutlined />}
-                      onConfirm={(e) => {
-                        handleCancel(selectedData)
-                      }}
-                      onCancel={(e) => {
-                      }}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <Button
-                        style={{ marginRight: '1%' }}
-                        icon={<CloseOutlined />}
-                        onClick={(e) => {
-                        }}
-                        type="primary"
-                        danger
-                      >
-                        Cancel
-                      </Button>
-                    </Popconfirm>
-                  </Space>
-                </>
-              )}
               </Space>
-                      )*/}
+            )}
           </Modal>
         </Row>
       </Route>
