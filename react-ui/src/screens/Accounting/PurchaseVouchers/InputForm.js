@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Col, Typography, Form, Skeleton, Button, Descriptions } from 'antd';
+import { Row, Col, Typography, Form, Skeleton, Button, Descriptions, Space, Table } from 'antd';
 import FormDetails from './data';
 import { useForm } from 'antd/lib/form/Form';
 import _ from 'lodash';
@@ -15,7 +15,14 @@ const InputForm = (props) => {
   const { title, onSubmit} = props;
   const { path } = useRouteMatch();
   const history = useHistory();
-  const { formDetails, manualFormDetails, autoFormDetails, defaultValAuto, defaultValManual } = FormDetails();
+  const { 
+    formDetails, 
+    manualFormDetails, 
+    autoFormDetails, 
+    defaultValAuto, 
+    defaultValManual, 
+    accountTableHeader
+  } = FormDetails();
   const { list: listRR } = useSelector(state => state.dashboard.receivingReceipts);
   const { list: listVendor } = useSelector(state => state.maintenance.vendors);
   const { list: listAccounts } = useSelector(state => state.accounting.accountTitles)
@@ -195,8 +202,22 @@ const InputForm = (props) => {
                   formType ? renderManualForm() : renderAutoForm()
                 ) }
                 { renderAccountsTable() }
-                <Form.Item>
-                  Table Area
+                <br/>
+                <Table
+                  columns={accountTableHeader}
+                  dataSource={null}
+                />
+                <br/>
+                <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
+                <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
+                  <Space size={16}>
+                    <Button htmlType="button" onClick={() => history.goBack()}>
+                      Cancel
+                    </Button>
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
+                  </Space>
                 </Form.Item>
               </Form>
             )   

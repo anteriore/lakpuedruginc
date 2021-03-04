@@ -229,8 +229,6 @@ const FormDetails = () => {
     ]
   }
 
-
-
   // Manual Form Details
   const manualFormDetails = {
     form_items:   [
@@ -308,7 +306,40 @@ const FormDetails = () => {
     ]
   }
 
-  return { formDetails, manualFormDetails, autoFormDetails, defaultValManual, defaultValAuto}
+  const accountTableHeader = [
+    {
+      title: 'Account Title',
+      dataIndex: 'accountTitle',
+      render: (object) => object.title,
+    },
+    {
+      title: 'Department',
+      dataIndex: 'department',
+    },
+    {
+      title: 'Group',
+      dataIndex: 'group',
+    },
+    {
+      title: 'Area',
+      dataIndex: 'area',
+    },
+    {
+      title: 'Debit',
+      dataIndex: 'debit',
+      render: (value) => value ?? "---"
+    },
+    {
+      title: 'Credit',
+      dataIndex: 'credit',
+      render: (value) => value ?? "---"
+    },
+    {
+      title: 'Action',
+    },
+  ];
+
+  return { formDetails, manualFormDetails, autoFormDetails, accountTableHeader, defaultValManual, defaultValAuto}
 }
 
 
