@@ -101,7 +101,7 @@ const FormDetails = () => {
         name: 'quantityRemaining',
         render: (object) => {
           if (object.stockOnHand !== null && typeof object.stockOnHand !== 'undefined') {
-            return object.stockOnHand - object.quantity || object.stockOnHand;
+            return object.stockOnHand - object?.quantity ?? object.stockOnHand;
           }
         },
       },
