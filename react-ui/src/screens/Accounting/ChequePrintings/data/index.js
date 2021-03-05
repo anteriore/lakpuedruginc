@@ -10,8 +10,8 @@ export const columns = [
   },
   {
     title: 'Payee',
-    dataIndex: 'payee',
-    key: 'payee',
+    dataIndex: 'vendor',
+    key: 'vendor',
     datatype: 'object',
     dataToString: (object) => {
       return `[${object.code}] ${object.name}`;
@@ -28,6 +28,7 @@ export const columns = [
     dataIndex: 'chequeDate',
     key: 'chequeDate',
     datatype: 'string',
+    render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
   },
   {
     title: 'Status',
