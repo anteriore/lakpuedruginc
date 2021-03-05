@@ -175,7 +175,7 @@ const ChequePrintings = (props) => {
               />
             )}
           </Col>
-          {/*<Modal
+          {<Modal
             visible={displayModal}
             onOk={() => {
               setDisplayModal(false);
@@ -193,25 +193,13 @@ const ChequePrintings = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.misNo} Details`}
+                  title={`${selectedData.number} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
                 />
-                <Text>{'Issued Items: '}</Text>
-                <Table
-                  dataSource={
-                    selectedData[tableDetails.name] !== null &&
-                    typeof selectedData[tableDetails.name] !== 'undefined'
-                      ? selectedData[tableDetails.name]
-                      : []
-                  }
-                  columns={tableDetails.renderTableColumns(tableDetails.fields)}
-                  pagination={false}
-                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                />
               </Space>
             )}
-          </Modal>*/}
+          </Modal>}
         </Row>
       </Route>
     </Switch>

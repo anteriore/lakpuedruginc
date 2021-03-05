@@ -14,7 +14,7 @@ export const columns = [
     key: 'vendor',
     datatype: 'object',
     dataToString: (object) => {
-      return `[${object.code}] ${object.name}`;
+      return `[${object?.code}] ${object?.name}`;
     },
   },
   {
@@ -58,7 +58,7 @@ const FormDetails = () => {
         type: 'selectSearch',
         selectName: 'name',
         choices: payees,
-        render: (payee) => `[${payee.code}] ${payee.name}`,
+        render: (payee) => `[${payee?.code}] ${payee?.name}`,
         rules: [{ required: true }],
       },
       {
