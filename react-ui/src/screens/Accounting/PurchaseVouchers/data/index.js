@@ -315,14 +315,17 @@ const FormDetails = () => {
     {
       title: 'Department',
       dataIndex: 'department',
+      render: (object) => object?.name ?? ""
     },
     {
       title: 'Group',
       dataIndex: 'group',
+      render: (object) => object?.name ?? ""
     },
     {
       title: 'Area',
       dataIndex: 'area',
+      render: (object) => object?.name ?? ""
     },
     {
       title: 'Debit',

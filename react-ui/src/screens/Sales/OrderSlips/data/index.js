@@ -40,6 +40,8 @@ export const tableHeader = [
   },
 ];
 
+export const accountValidations = ['accountTitles', 'area', 'department', 'credit', 'debit', 'group'];
+
 export const salesOrderHeader = [
   {
     title: 'Lot #',

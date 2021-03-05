@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Col, Typography, Form, Skeleton, Button, Descriptions, Space, Table } from 'antd';
+import { Row, Col, Typography, Form, Skeleton, Button, Descriptions, Space, Table, message } from 'antd';
 import FormDetails from './data';
 import { useForm } from 'antd/lib/form/Form';
 import _ from 'lodash';
@@ -7,7 +7,8 @@ import FormItem from '../../../components/forms/FormItem';
 import { useSelector } from 'react-redux';
 import { updateList } from '../../../helpers/general-helper';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import PVHelper from './helper';
 
 const { Title } = Typography;
 
@@ -23,6 +24,7 @@ const InputForm = (props) => {
     defaultValManual, 
     accountTableHeader
   } = FormDetails();
+  const { formatAccountData } = PVHelper();
   const { list: listRR } = useSelector(state => state.dashboard.receivingReceipts);
   const { list: listVendor } = useSelector(state => state.maintenance.vendors);
   const { list: listAccounts } = useSelector(state => state.accounting.accountTitles)
@@ -32,6 +34,7 @@ const InputForm = (props) => {
   const [tempManualForm, setTempManualForm] = useState(_.clone(manualFormDetails));
   const [tempAutoForm, setTempAutoForm] = useState(_.clone(autoFormDetails));
   const [accountType, setAccountType] = useState(null)
+  const [addedAccounts, setAddedAccounts] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [subContentLoading, setSubContentLoading] = useState(true);
   const [formType, setFormType] = useState(_.find(formDetails.form_items, {name: 'manual'}).initialValue);
@@ -68,7 +71,32 @@ const InputForm = (props) => {
       }
     }
     setAccountType(selectedAccount?.type)
-  },[form, listAccounts])
+  },[form, listAccounts]);
+
+  const handleAddAccount = async () => {
+    const accountValidation = [
+      'accountTitles', 
+      'department', 
+      'group', 
+      'area', 
+      'debit', 
+      'credit'
+    ];
+    try {
+      const values = await form.validateFields(accountValidation);
+      let newAddedAccounts = _.clone(addedAccounts);
+      newAddedAccounts.push(formatAccountData(values, _.last(addedAccounts)))
+      setAddedAccounts(newAddedAccounts)
+      console.log(addedAccounts)
+    } catch (errorInfo) {
+      message.warning("Please fill all the required account details before adding.");
+    }
+  }
+
+  const handleRemoveAccount = (data) => {
+    const newData = [...addedAccounts];
+    setAddedAccounts(_.filter(newData, (o) => o.key !== data.key));
+  }
 
   useEffect(() => {
     const newForm = tempMainForm;
@@ -117,6 +145,15 @@ const InputForm = (props) => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`)
   }
 
+  const onFinish = async () => {
+    try {
+      const values = await form.validateFields(['rrNumber', 'date', 'rrDate', 'vendor', 'siNumber', 'drNumber', 'poNumber']);
+      console.log('Success:', values);
+    } catch (errorInfo) {
+      console.log(errorInfo)
+    }
+  }
+
   const renderAutoForm = () => tempAutoForm.form_items.map((item) => 
     <FormItem
       onFail={onFail}
@@ -131,7 +168,29 @@ const InputForm = (props) => {
       key={item.name}
       item={item}
     />
-  ))
+  ));
+
+  const modAccountColumn = accountTableHeader.map((col) => {
+    if (col.title === 'Action') {
+      const filteredColumn = {
+        ...col,
+        render: (row) => {
+          return (
+            <Button
+              type="dashed"
+              onClick={() => handleRemoveAccount(row)}
+              icon={<DeleteOutlined />}
+              danger
+            />
+          );
+        },
+      };
+
+      return filteredColumn;
+    }
+
+    return col;
+  });
 
   const renderAccountsTable = () => (
     <Descriptions column={7} title="Accounts" layout="vertical" size="small" bordered>
@@ -172,6 +231,7 @@ const InputForm = (props) => {
           icon={<PlusOutlined/>}
           style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
           type="primary"
+          onClick={() => handleAddAccount()}
         >
           Add
         </Button>
@@ -190,7 +250,10 @@ const InputForm = (props) => {
         <Col span={20} offset={1}>
           {
             contentLoading ? <Skeleton/> : (
-              <Form form={form} {...styles.formLayout}>
+              <Form
+              scrollToFirstError={true}
+              form={form} 
+              {...styles.formLayout}>
                 {_.dropRight(tempMainForm.form_items, 7).map((item) => (
                   <FormItem
                     onFail={onFail}
@@ -204,9 +267,21 @@ const InputForm = (props) => {
                 { renderAccountsTable() }
                 <br/>
                 <Table
-                  columns={accountTableHeader}
-                  dataSource={null}
+                  columns={modAccountColumn}
+                  dataSource={addedAccounts}
+                  pagination={false}
                 />
+                <br/>
+                <Form.Item wrapperCol={{ offset: 12, span: 10 }}>
+                  <Descriptions vertical bordered>
+                    <Descriptions.Item label="Total Debit">
+                      {_.sumBy(addedAccounts, (o) => o.debit )}                      
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Total Credit">
+                      {_.sumBy(addedAccounts, (o) => o.credit )}                   
+                    </Descriptions.Item>
+                  </Descriptions>
+                </Form.Item>
                 <br/>
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
@@ -214,7 +289,7 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" onClick={onFinish}>
                       Submit
                     </Button>
                   </Space>
