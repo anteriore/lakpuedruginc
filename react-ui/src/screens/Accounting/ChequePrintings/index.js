@@ -31,7 +31,7 @@ const ChequePrintings = (props) => {
   const listData = useSelector((state) => state.accounting.chequePrintings.list);
 
   const { company } = props;
-  const { formDetails } = FormDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -128,6 +128,7 @@ const ChequePrintings = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -139,6 +140,7 @@ const ChequePrintings = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>
@@ -196,6 +198,13 @@ const ChequePrintings = (props) => {
                   title={`${selectedData.number} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
+                />
+                <Text>{'Voucher Payables: '}</Text>
+                <Table
+                  dataSource={selectedData[tableDetails.name]}
+                  columns={tableDetails.renderTableColumns(tableDetails.fields)}
+                  pagination={false}
+                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
               </Space>
             )}

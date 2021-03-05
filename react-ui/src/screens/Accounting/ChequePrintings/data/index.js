@@ -42,6 +42,7 @@ export const columns = [
 const FormDetails = () => {
   const payees = useSelector((state) => state.maintenance.vendors.list);
   const bankAccounts = useSelector((state) => state.maintenance.bankAccount.bankAccountList);
+  const vouchers = []
 
   const formDetails = {
     form_name: 'cheque_printing',
@@ -98,7 +99,109 @@ const FormDetails = () => {
     ],
   };
 
-  return { formDetails };
+  const tableDetails = {
+    label: 'Voucher',
+    name: 'payables',
+    key: 'payables',
+    rules: [{ required: true }],
+    //isVisible: vouchers.length > 0,
+    fields: [
+      {
+        label: 'Number',
+        name: 'number',
+      },
+      {
+        label: 'Date',
+        name: 'date',
+        render: (data) => `${moment(new Date(data)).format('DD/MM/YYYY')}`
+      },
+      {
+        label: 'Payee',
+        name: 'vendor',
+        render: (data) => `[${data.code}] ${data.name}`
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+      },
+      {
+        label: 'Amount',
+        name: 'totalAmount',
+      },
+    ],
+    foreignKey: 'id',
+    selectedKey: 'id',
+    selectData: vouchers,
+    selectFields: [
+      {
+        label: 'Number',
+        name: 'number',
+      },
+      {
+        label: 'Date',
+        name: 'date',
+        render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
+      },
+      {
+        label: 'Payee',
+        name: 'vendor',
+        render: (data) => `[${data.code}] ${data.name}`
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+      },
+      {
+        label: 'Amount',
+        name: 'totalAmount',
+      },
+    ],
+    getValues: (values) => {
+      const products = [];
+      values.returnSlipProducts.forEach((product) => {
+        products.push({
+          ...product,
+        });
+      });
+      return products;
+    },
+    processData: (data) => {
+      const processedData = {
+        ...data,
+        product: data.product,
+        key: data.product.id,
+        stockOnHand: data.quantity,
+      };
+      delete processedData.quantity;
+      return processedData;
+    },
+    checkSelected: (selectedData, rowData) => {
+      if (
+        typeof selectedData !== 'undefined' &&
+        selectedData !== null &&
+        selectedData.some((item) => item.id === rowData.id)
+      ) {
+        return true;
+      }
+    },
+    renderTableColumns: (fields) => {
+      const columns = [];
+      fields.forEach((field) => {
+        if (typeof field.render === 'undefined' || field.render === null) {
+          field.render = (object) => object[field.name];
+        }
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => field.render(object),
+        });
+      });
+
+      return columns;
+    },
+  };
+
+  return { formDetails, tableDetails };
 };
 
 export default FormDetails;
