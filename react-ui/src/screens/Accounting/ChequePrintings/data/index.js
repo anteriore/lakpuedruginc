@@ -134,46 +134,30 @@ const FormDetails = () => {
     selectData: vouchers,
     selectFields: [
       {
-        label: 'Number',
-        name: 'number',
+        title: 'Number',
+        dataIndex: 'number',
       },
       {
-        label: 'Date',
-        name: 'date',
+        title: 'Date',
+        dataIndex: 'date',
         render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
       },
       {
-        label: 'Payee',
-        name: 'vendor',
+        title: 'Payee',
+        dataIndex: 'vendor',
         render: (data) => `[${data.code}] ${data.name}`
       },
       {
-        label: 'Remarks',
-        name: 'remarks',
+        title: 'Remarks',
+        dataIndex: 'remarks',
       },
       {
-        label: 'Amount',
-        name: 'totalAmount',
+        title: 'Amount',
+        dataIndex: 'totalAmount',
       },
     ],
-    getValues: (values) => {
-      const products = [];
-      values.returnSlipProducts.forEach((product) => {
-        products.push({
-          ...product,
-        });
-      });
-      return products;
-    },
     processData: (data) => {
-      const processedData = {
-        ...data,
-        product: data.product,
-        key: data.product.id,
-        stockOnHand: data.quantity,
-      };
-      delete processedData.quantity;
-      return processedData;
+      return data
     },
     checkSelected: (selectedData, rowData) => {
       if (
