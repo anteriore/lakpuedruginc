@@ -1,6 +1,7 @@
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
 import ChequePrintings from '../../screens/Accounting/ChequePrintings';
+import ChequeDisbursements from '../../screens/Accounting/ChequeDisbursements';
 
 export const routes = [
   {
@@ -31,7 +32,7 @@ export const routes = [
   {
     title: 'Cheque Disbursement Vouchers',
     path: '/cheque-disbursement-vouchers',
-    component: null,
+    component: ChequeDisbursements,
   },
   {
     title: 'Credit Memos',
