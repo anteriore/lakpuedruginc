@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { useState } from 'react';
 import moment from 'moment';
 
 export const columns = [
@@ -56,6 +57,7 @@ export const columns = [
 
 const FormDetails = () => {
   const chequePrintings = useSelector((state) => state.accounting.chequePrintings.list);
+  const [displayModal, setDisplayModal] = useState(false);
 
   const formDetails = {
     form_name: 'cheque_disbursement',
@@ -63,41 +65,75 @@ const FormDetails = () => {
       {
         label: 'Cheque Printing',
         name: 'chequePrinting',
-        type: 'selectSearch',
-        selectName: 'name',
-        choices: chequePrintings,
+        type: 'selectTable',
         render: (object) => `${object.number}`,
         rules: [{ required: true }],
-      },
-      {
-        label: 'CP Number',
-        name: 'number',
-        rules: [{ required: true }],
-        placeholder: 'CP Number',
+        //allowEmpty: true,
+        placeholder: 'Select Cheque Printing',
+        displayModal,
+        setDisplayModal,
+        dataSource: chequePrintings,
+        columns: [
+          {
+            title: 'CP Number',
+            dataIndex: 'number',
+            key: 'number',
+          },
+          /*{
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+          },*/
+          {
+            title: 'Payee',
+            dataIndex: 'vendor',
+            key: 'vendor',
+            render: (data) => {return `[${data?.code}] ${data?.name}`},
+          },
+        ],
+        rowKey: 'id',
+        getValueProps: (value) => {
+          if (typeof value !== 'undefined') {
+            return { value: value?.number ?? "" };
+          }
+        },
+        toString: (data) => data.number
       },
       {
         label: 'Payee',
-        name: 'payee',
-        render: (payee) => `[${payee?.code}] ${payee?.name}`,
-        rules: [{ required: true }],
+        name: 'vendor',
+        render: (data) => `[${data?.code}] ${data?.name}`,
+        rules: [],
+        readOnly: true,
       },
       {
         label: 'Cheque Date',
         name: 'chequeDate',
-        type: 'date',
-        rules: [{ required: true }],
+        render: (data) => moment(new Date(data)).format('DD/MM/YYYY'),
+        rules: [],
+        readOnly: true,
       },
       {
         label: 'Cheque Number',
         name: 'chequeNumber',
-        rules: [{ required: true, message: 'Please provide a valid Cheque Number' }],
+        rules: [],
         placeholder: 'Cheque Number',
+        readOnly: true,
       },
       {
         label: 'Payee Name',
         name: 'payeeName',
-        rules: [{ required: true, message: 'Please provide a valid Payee Name' }],
+        rules: [],
         placeholder: 'Payee Name',
+        readOnly: true,
+      },
+      {
+        label: 'Bank Account',
+        name: 'bankAccount',
+        render: (data) => `[${data?.code}] ${data?.name}`,
+        rules: [],
+        readOnly: true,
       },
       /*{
         label: 'Bank Account',
@@ -124,92 +160,6 @@ const FormDetails = () => {
       return processedData
     }
   };
-
-  /*const tableDetails = {
-    label: 'Voucher',
-    name: 'payables',
-    key: 'payables',
-    rules: [{ required: true }],
-    //isVisible: vouchers.length > 0,
-    fields: [
-      {
-        label: 'Number',
-        name: 'number',
-      },
-      {
-        label: 'Date',
-        name: 'date',
-        render: (data) => `${moment(new Date(data)).format('DD/MM/YYYY')}`
-      },
-      {
-        label: 'Payee',
-        name: 'vendor',
-        render: (data) => `[${data.code}] ${data.name}`
-      },
-      {
-        label: 'Remarks',
-        name: 'remarks',
-      },
-      {
-        label: 'Amount',
-        name: 'totalAmount',
-      },
-    ],
-    foreignKey: 'id',
-    selectedKey: 'id',
-    selectData: vouchers,
-    selectFields: [
-      {
-        title: 'Number',
-        dataIndex: 'number',
-      },
-      {
-        title: 'Date',
-        dataIndex: 'date',
-        render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
-      },
-      {
-        title: 'Payee',
-        dataIndex: 'vendor',
-        render: (data) => `[${data.code}] ${data.name}`
-      },
-      {
-        title: 'Remarks',
-        dataIndex: 'remarks',
-      },
-      {
-        title: 'Amount',
-        dataIndex: 'totalAmount',
-      },
-    ],
-    processData: (data) => {
-      return data
-    },
-    checkSelected: (selectedData, rowData) => {
-      if (
-        typeof selectedData !== 'undefined' &&
-        selectedData !== null &&
-        selectedData.some((item) => item.id === rowData.id)
-      ) {
-        return true;
-      }
-    },
-    renderTableColumns: (fields) => {
-      const columns = [];
-      fields.forEach((field) => {
-        if (typeof field.render === 'undefined' || field.render === null) {
-          field.render = (object) => object[field.name];
-        }
-        columns.push({
-          title: field.label,
-          key: field.name,
-          render: (object) => field.render(object),
-        });
-      });
-
-      return columns;
-    },
-  };*/
 
   return { formDetails };
 };

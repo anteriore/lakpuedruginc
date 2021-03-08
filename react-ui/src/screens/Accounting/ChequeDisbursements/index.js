@@ -12,7 +12,7 @@ import {
   clearData,
 } from './redux';
 import { listChequePrinting } from '../ChequePrintings/redux';
-import FormScreen from '../../../components/forms/FormScreen';
+import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper from '../../../helpers/general-helper';
 
@@ -80,7 +80,7 @@ const ChequeDisbursements = (props) => {
   return (
     <Switch>
       <Route exact path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -92,7 +92,7 @@ const ChequeDisbursements = (props) => {
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}

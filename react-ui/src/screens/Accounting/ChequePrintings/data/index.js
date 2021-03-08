@@ -55,7 +55,7 @@ const FormDetails = () => {
       },
       {
         label: 'Payee',
-        name: 'payee',
+        name: 'vendor',
         type: 'selectSearch',
         selectName: 'name',
         choices: payees,
@@ -103,7 +103,7 @@ const FormDetails = () => {
     label: 'Voucher',
     name: 'payables',
     key: 'payables',
-    rules: [{ required: true }],
+    //rules: [{ required: true }],
     //isVisible: vouchers.length > 0,
     fields: [
       {

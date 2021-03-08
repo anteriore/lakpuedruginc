@@ -83,8 +83,8 @@ const ChequePrintings = (props) => {
   const onSubmit = (data) => {
     const payload = {
       ...data,
-      payee: {
-        id: data.payee.id
+      vendor: {
+        id: data.vendor
       },
       bankAccount: {
         id: data.bankAccount
