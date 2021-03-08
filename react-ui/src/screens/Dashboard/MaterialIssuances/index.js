@@ -16,6 +16,7 @@ import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/red
 import { listInventory, clearData as clearInventory } from '../Inventory/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
+import GeneralHelper from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -36,6 +37,7 @@ const MaterialIssuances = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     let isCancelled = false;
@@ -62,10 +64,13 @@ const MaterialIssuances = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then(() => {
-      dispatch(listInventory({ company, message })).then(() => {
-        history.push(`${path}/new`);
-        setLoading(false);
+    dispatch(listDepot({ company, message })).then((response1) => {
+      dispatch(listInventory({ company, message })).then((response2) => {
+        const onSuccess = () => {
+          history.push(`${path}/new`);
+          setLoading(false);
+        }
+        handleRequestResponse([response1, response2], onSuccess, null, '');
       });
     });
   };
@@ -73,7 +78,7 @@ const MaterialIssuances = (props) => {
   const handleUpdate = (data) => {};
 
   const handleDelete = (data) => {
-    if (data.status === 'Pending') {
+    /*if (data.status === 'Pending') {
       dispatch(deleteMaterialIssuance(data.id)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
@@ -88,7 +93,7 @@ const MaterialIssuances = (props) => {
       });
     } else {
       message.error('This action can only be performed on pending material issuances.');
-    }
+    }*/
   };
 
   const handleRetrieve = (data) => {
@@ -117,38 +122,26 @@ const MaterialIssuances = (props) => {
       },
       inventoryList,
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addMaterialIssuance(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listMaterialIssuance({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.misNo}`);
-          });
-        } else {
+    dispatch(addMaterialIssuance(payload)).then((response) => {
+      setLoading(true);
+      
+      const onSuccess = () => {
+        dispatch(listMaterialIssuance({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.misNo}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addMaterialIssuance(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listMaterialIssuance({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.misNo}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to create Material Issuance. Please double check the provided information.`
-          );
-        }
-      });
-    }
+          history.goBack();
+          message.success(`Successfully added ${response.payload.data.misNo}`);
+        });
+      };
+
+      const onFail = () => {
+        setLoading(false);
+        message.error(
+          `Unable to create Material Issuance. Please double check the provided information.`
+        );
+
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
     setFormData(null);
   };
 
