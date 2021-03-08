@@ -31,6 +31,28 @@ export const listPDCDisbursement = createAsyncThunk(
   }
 );
 
+export const listPDCDisbursementByStatus = createAsyncThunk(
+  'listPDCDisbursementByStatus',
+  async (payload, thunkAPI, rejectWithValue) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { status } = payload;
+
+    const response = await axiosInstance.get(`rest/pdc-disbursements/status/${status}?token=${accessToken}`);
+
+    if (typeof response !== 'undefined' && response.status === 200) {
+      const { data } = response;
+      if (data.length === 0) {
+        payload.message.warning('No data retrieved for PDC disbursements');
+      }
+    } else {
+      payload.message.error(message.ITEMS_GET_REJECTED);
+      return rejectWithValue(response);
+    }
+
+    return response;
+  }
+);
+
 export const addPDCDisbursement = createAsyncThunk(
   'addPDCDisbursement',
   async (payload, thunkAPI) => {
@@ -84,6 +106,33 @@ const PDCDisbursementSlice = createSlice({
       };
     },
     [listPDCDisbursement.rejected]: (state) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listPDCDisbursementByStatus.pending]: (state) => {
+      state.status = 'loading';
+    },
+    [listPDCDisbursementByStatus.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      let statusMessage = message.ITEMS_GET_FULFILLED;
+
+      if (data.length === 0) {
+        statusMessage = 'No data retrieved for PDC Disbursements';
+      }
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        action: 'get',
+        statusMessage,
+      };
+    },
+    [listPDCDisbursementByStatus.rejected]: (state) => {
       return {
         ...state,
         status: 'failed',

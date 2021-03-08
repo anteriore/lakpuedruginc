@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, message } from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listAccountTitles, listAccountTitlesByType, addAccountTitle, clearData } from './redux';
-import FormScreen from '../../../components/forms/FormScreen';
+import { listPDCVoucher, addPDCVoucher, clearData } from './redux';
+import InputForm from './InputForm';
+import { listPDCDisbursementByStatus } from '../PDCDisbursements/redux';
+import ItemDescription from '../../../components/ItemDescription';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-const AccountTitles = (props) => {
+const PDCVouchers = (props) => {
   const [loading, setLoading] = useState(true);
+  const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-  const { formDetails } = FormDetails();
+  const [selectedData, setSelectedData] = useState(null);
+  const { formDetails, tableDetails } = FormDetails();
 
-  const listData = useSelector((state) => state.accounting.accountTitles.list);
+  const listData = useSelector((state) => state.accounting.PDCVouchers.list);
 
   const { company } = props;
 
@@ -28,7 +32,7 @@ const AccountTitles = (props) => {
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listAccountTitles({ company, message })).then(() => {
+    dispatch(listPDCVoucher({ company, message })).then(() => {
       setLoading(false);
 
       if (isCancelled) {
@@ -43,51 +47,41 @@ const AccountTitles = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Create Account Title');
+    setFormTitle('Create PDC Voucher');
     setFormMode('add');
     setFormData(null);
-    //setLoading(true);
-    dispatch(clearData())
-    history.push(`${path}/new`);
-    //setLoading(false);
-  };
-
-  const handleUpdate = (data) => {
-    setFormTitle('Update Account Title');
-    setFormMode('edit');
-    setFormData({
-      ...data,
-      parent: data?.parent?.id ?? null
-    });
     setLoading(true);
-    dispatch(clearData())
-    dispatch(listAccountTitlesByType({ type: data.type})).then(() => {
-      history.push(`${path}/${data.id}`);
+    dispatch(listPDCDisbursementByStatus({ status: "Pending", message })).then(() => {
+      history.push(`${path}/new`);
       setLoading(false);
     })
   };
 
+  const handleUpdate = (data) => {};
+
   const handleDelete = (data) => {};
 
-  const handleRetrieve = (data) => {};
+  const handleRetrieve = (data) => {
+    setSelectedData(data);
+    setDisplayModal(true);
+  };
 
   const onSubmit = (data) => {
-    const parent = listData.find((item) => item.id === data.parent)
-    console.log(parent)
     const payload = {
       ...data,
-      parent: parent ?? null,
-      level: (parent?.level ?? 0) + 1
+      company: {
+        id: company,
+      },
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addAccountTitle(payload)).then((response) => {
+      dispatch(addPDCVoucher(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listAccountTitles({ company, message })).then(() => {
+          dispatch(listPDCVoucher({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully updated ${data.title}`);
+            message.success(`Successfully updated ${data.number}`);
           });
         } else {
           setLoading(false);
@@ -95,18 +89,18 @@ const AccountTitles = (props) => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addAccountTitle(payload)).then((response) => {
+      dispatch(addPDCVoucher(payload)).then((response) => {
         setLoading(true);
         if (response.payload.status === 200) {
-          dispatch(listAccountTitles({ company, message })).then(() => {
+          dispatch(listPDCVoucher({ company, message })).then(() => {
             setLoading(false);
             history.goBack();
-            message.success(`Successfully added ${response.payload.data.title}`);
+            message.success(`Successfully added ${response.payload.data.number}`);
           });
         } else {
           setLoading(false);
           message.error(
-            `Unable to create Account Title. Please double check the provided information.`
+            `Unable to create PDC Voucher. Please double check the provided information.`
           );
         }
       });
@@ -117,33 +111,27 @@ const AccountTitles = (props) => {
   return (
     <Switch>
       <Route exact path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
           onCancel={() => {
             setFormData(null);
-            setLoading(true);
-            dispatch(listAccountTitles({ company, message })).then(() => {
-              setLoading(false);
-            });
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
           onCancel={() => {
             setFormData(null);
-            setLoading(true);
-            dispatch(listAccountTitles({ company, message })).then(() => {
-              setLoading(false);
-            });
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>
@@ -175,14 +163,49 @@ const AccountTitles = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={false}
                 deleteEnabled={false}
               />
             )}
           </Col>
+          <Modal
+            visible={displayModal}
+            onOk={() => {
+              setDisplayModal(false);
+              setSelectedData(null);
+            }}
+            onCancel={() => {
+              setDisplayModal(false);
+              setSelectedData(null);
+            }}
+            width={1000}
+            cancelButtonProps={{ style: { display: 'none' } }}
+          >
+            {selectedData === null ? (
+              <Skeleton />
+            ) : (
+              <Space direction="vertical" size={20} style={{ width: '100%' }}>
+                <ItemDescription
+                  title={`${selectedData.number} Details`}
+                  selectedData={formDetails.processDisplayData(selectedData)}
+                  formItems={formDetails.form_items}
+                />
+                <Text>{'Cheques: '}</Text>
+                <Table
+                  dataSource={
+                    selectedData?.disbursement?.cheques ?? []
+                  }
+                  columns={tableDetails.renderTableColumns(tableDetails.fields)}
+                  pagination={false}
+                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                />
+              </Space>
+            )}
+          </Modal>
         </Row>
       </Route>
     </Switch>
   );
 };
 
-export default AccountTitles;
+export default PDCVouchers;

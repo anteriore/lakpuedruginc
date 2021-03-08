@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import moment from 'moment';
 
 export const updateList = (form, choices) => {
   Object.entries(choices).forEach(([key, value]) => {

@@ -91,7 +91,7 @@ const Accounting = () => {
               actions.push('delete');
             }
             return (
-              <Route path={path + module.path}>
+              <Route key={module.path} path={path + module.path}>
                 <Container location={{ pathname: path + module.path }}>
                   <module.component
                     title={module.title}

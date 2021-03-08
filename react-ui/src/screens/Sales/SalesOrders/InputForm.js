@@ -61,7 +61,7 @@ const InputForm = (props) => {
       setRequestedProductList([]);
       setProductInv(
         _.filter(productInventoryList, (o) => {
-          return o.depot?.id === value;
+          return o.depot?.id === value && o.quantity !== 0 ;
         })
       );
     };
@@ -255,7 +255,7 @@ const InputForm = (props) => {
           <Table
             columns={renderProductItemColumns(tableProductInventory)}
             dataSource={productInv}
-            pagination={false}
+            pagination={{simple: true}}
           />
         </Modal>
       </Row>
