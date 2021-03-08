@@ -12,7 +12,7 @@ const ItemDescription = (props) => {
           if (selectedData[item.name] === null && item.toggle) {
             return null;
           }
-          if (item.type === 'select' || item.type === 'selectSearch') {
+          else if (item.type === 'select' || item.type === 'selectSearch') {
             if(typeof item.render === 'undefined'){
               item.render = (object) => object[item?.selectName] ?? null
             }
@@ -22,27 +22,33 @@ const ItemDescription = (props) => {
               </Descriptions.Item>
             );
           }
-          if (item.type === 'selectTable') {
+          else if (item.type === 'selectTable') {
             return (
               <Descriptions.Item label={item.label}>
                 {item.toString(selectedData[item.name])}
               </Descriptions.Item>
             );
           }
-          if (item.type === 'date') {
+          else if (item.type === 'date') {
             return (
               <Descriptions.Item label={item.label}>
                 {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
               </Descriptions.Item>
             );
           }
-          if (item.type === 'list') {
+          else if (item.type === 'list') {
             return null;
           }
-
-          return (
-            <Descriptions.Item label={item.label}>{selectedData[item.name]}</Descriptions.Item>
-          );
+          else if (typeof item.render === 'function'){
+            return (
+              <Descriptions.Item label={item.label}>{item.render(selectedData[item.name])}</Descriptions.Item>
+            );
+          }
+          else {
+            return (
+              <Descriptions.Item label={item.label}>{selectedData[item.name]}</Descriptions.Item>
+            );
+          }
         }
 
         return null;
