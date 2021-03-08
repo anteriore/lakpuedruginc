@@ -1,4 +1,5 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { listAccountTitlesByType, clearData } from '../redux';
 
 export const columns = [
   {
@@ -25,10 +26,11 @@ export const columns = [
 ];
 
 const FormDetails = () => {
+  const dispatch = useDispatch()
   const accountTitles = useSelector((state) => state.accounting.accountTitles.list);
 
   const formDetails = {
-    form_name: 'fg_issuance',
+    form_name: 'account_title',
     form_items: [
       {
         label: 'Type',
@@ -36,15 +38,19 @@ const FormDetails = () => {
         type: 'select',
         choices: [
           {
-            id: 1,
+            id: "Credit",
             name: "Credit"
           },
           {
-            id: 2,
+            id: "Debit",
             name: "Debit"
           }
         ],
         render: (item) => item.name,
+        onChange: (e) => {
+          dispatch(clearData())
+          dispatch(listAccountTitlesByType({ type: e}))
+        },
         rules: [{ required: true }],
       },
       {
@@ -54,19 +60,14 @@ const FormDetails = () => {
         rules: [{ required: true }],
       },
       {
-        label: 'Date',
-        name: 'date',
-        type: 'date',
-        rules: [{ required: true }],
-      },
-      {
         label: 'Parent',
         name: 'parent',
         type: 'select',
         choices: accountTitles,
         allowEmpty: true,
         render: (item) => `${item.title}`,
-        rules: [{ required: true }],
+        //rules: [{ required: true }],
+        notFoundContent: "Please select a type first before selecting the parent."
       },
     ],
   };
