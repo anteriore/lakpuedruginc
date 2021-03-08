@@ -1,6 +1,8 @@
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
+import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
+import PDCVouchers from '../../screens/Accounting/PDCVouchers';
 
 export const routes = [
   {
@@ -56,6 +58,6 @@ export const routes = [
   {
     title: 'PDC Vouchers',
     path: '/pdc-vouchers',
-    component: null,
+    component: PDCVouchers,
   },
 ];

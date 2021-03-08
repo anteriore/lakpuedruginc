@@ -58,6 +58,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
           placeholder={item.placeholder}
           optionFilterProp="children"
           disabled={item.type === 'readOnly' || item.readOnly}
+          notFoundContent={item?.notFoundContent ?? "Not Found"}
         >
           {item.choices.map((choice) => (
             <Select.Option key={choice.id} value={choice.id}>
