@@ -21,7 +21,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 
-const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
+const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle }) => {
   if (item.type === 'select' || item.type === 'selectSearch') {
     if (typeof item.render === 'undefined') {
       if (typeof item.selectName === 'undefined') {
@@ -46,10 +46,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
 
     return (
       <Form.Item
-        label={item.label}
+        label={disableLabel ? null : item.label}
         name={item.name}
         rules={item.rules}
         initialValue={item.initialValue}
+        noStyle={noStyle}
       >
         <Select
           showSearch={item.type === 'selectSearch'}
@@ -71,10 +72,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   if (item.type === 'textArea') {
     return (
       <Form.Item
-        label={item.label}
+        label={disableLabel ? null : item.label}
         name={item.name}
         rules={item.rules}
         initialValue={item.initialValue}
+        noStyle={noStyle}
       >
         <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
       </Form.Item>
@@ -83,11 +85,12 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   if (item.type === 'number') {
     return (
       <Form.Item
-        label={item.label}
+        label={disableLabel ? null : item.label}
         name={item.name}
         rules={item.rules}
         initialValue={item.initialValue}
         hasFeedback={item.hasFeedback}
+        noStyle={noStyle}
       >
         <InputNumber
           style={styles.inputNumber}
@@ -101,10 +104,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   if (item.type === 'date') {
     return (
       <Form.Item
-        label={item.label}
+        label={disableLabel ? null : item.label}
         name={item.name}
         rules={item.rules}
         initialValue={item.initialValue}
+        noStyle={noStyle}
       >
         <DatePicker format={dateFormat} style={styles.datePicker} />
       </Form.Item>
@@ -114,10 +118,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
     if (formMode === 'add') {
       return (
         <Form.Item
-          label={item.label}
+          label={disableLabel ? null : item.label}
           name={item.name}
           rules={item.rules}
           dependencies={item.dependencies}
+          noStyle={noStyle}
           hasFeedback
         >
           <Input.Password />
@@ -147,10 +152,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
 
     return (
       <Form.Item
-        label={item.label}
+        label={disableLabel ? null : item.label}
         name={item.name}
         rules={item.rules}
         initialValue={item.initialValue}
+        noStyle={noStyle}
       >
         <Radio.Group style={{ float: 'left' }} onChange={item.onChange}>
           {item.choices.map((choice) => (
@@ -168,10 +174,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
 
     return (
       <Form.Item
-        label={item.label}
+        label={disableLabel ? null : item.label}
         name={item.name}
         rules={item.rules}
         initialValue={item.initialValue}
+        noStyle={noStyle}
       >
         <Checkbox.Group style={styles.inputCheckList}>
           {item.choices.map((choice) => (
@@ -186,7 +193,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect }) => {
   if (item.type === 'list' || item.type === 'listForm') {
     return (
       <div style={styles.formList}>
-        <Form.List label={item.label} name={item.name} rules={item.rules}>
+        <Form.List label={disableLabel ? null : item.label} name={item.name} rules={item.rules}>
           {(fields, { add, remove, errors }) => (
             <>
               <div

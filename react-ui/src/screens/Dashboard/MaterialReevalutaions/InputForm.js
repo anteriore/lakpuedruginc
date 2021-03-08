@@ -128,8 +128,8 @@ const InputForm = (props) => {
                       {appReceipts?.receivingReceipt?.drNumber ?? ''}
                     </Descriptions.Item>
                     {_.dropRight(_.drop(tempFormDetails.form_items, 1), 1).map((item) => (
-                      <Descriptions.Item key={item.name} label={item.label}>
-                        <FormItem onFail={onFail} key={item.name} item={item} />
+                      <Descriptions.Item key={item.name} label={item.label} span={1} style={{padding: '1%'}}>
+                        <FormItem disableLable={true} noStyle={true} onFail={onFail} key={item.name} item={item} />
                       </Descriptions.Item>
                     ))}
                   </Descriptions>

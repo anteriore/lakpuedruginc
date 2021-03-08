@@ -8,7 +8,7 @@ import { listMaterialReevaluations, clearData, createMaterialReevaluations } fro
 import TableDisplay from '../../../components/TableDisplay';
 import { formDetails, tableHeader } from './data';
 import InputForm from './InputForm';
-import { listApprovedReceipts } from '../ApprovedReceipts/redux';
+import { listApprovedReceipts, clearData as clearAR } from '../ApprovedReceipts/redux';
 import GeneralHelper from '../../../helpers/general-helper';
 import { formatPayload } from './helpers';
 import statusDialogue from '../../../components/StatusDialogue';
@@ -67,13 +67,13 @@ const MaterialReevaluations = (props) => {
       });
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearAR());
       isCancelled = true;
     };
   }, [dispatch, company]);
 
   const handleAddButton = () => {
     dispatch(listApprovedReceipts({company})).then((dataAR) => {
-      console.log(dataAR)
       handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
     });
   };
