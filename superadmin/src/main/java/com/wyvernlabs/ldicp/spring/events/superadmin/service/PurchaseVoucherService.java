@@ -52,15 +52,33 @@ public class PurchaseVoucherService {
 		PurchaseVoucher pv = purchaseVoucherRepository.getOne(id);
 		User approvedBy = userRepository.getOne(userId);
 
-		Long maxId = purchaseVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+		//Long maxId = purchaseVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+
+		/*if (maxId == null) {
+			maxId = 0L;
+		}*/
+
+		//pv.setNumber("PJV-" + ++maxId);
+
+		pv.setStatus("Approved");
+		pv.setApprovedBy(approvedBy);
+		return purchaseVoucherRepository.save(pv);
+	}
+
+	@Transactional
+	public PurchaseVoucher rejectPurchaseVoucher(Long id, Long userId) {
+		PurchaseVoucher pv = purchaseVoucherRepository.getOne(id);
+		User approvedBy = userRepository.getOne(userId);
+
+		/*Long maxId = purchaseVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
 
 		if (maxId == null) {
 			maxId = 0L;
-		}
+		}*/
 
-		pv.setNumber("PJV-" + ++maxId);
+		//pv.setNumber("PJV-" + ++maxId);
 
-		pv.setStatus("Approved");
+		pv.setStatus("Rejected");
 		pv.setApprovedBy(approvedBy);
 		return purchaseVoucherRepository.save(pv);
 	}
