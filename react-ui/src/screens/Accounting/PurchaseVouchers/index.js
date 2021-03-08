@@ -5,7 +5,7 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined, CheckOutlined, CloseOutlined, PrinterOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
-import { clearData, listPurchaseVouchers } from './redux';
+import { clearData, listPurchaseVouchers, createPurchaseVouchers } from './redux';
 import { listRRByNoPV, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
@@ -17,7 +17,7 @@ import statusDialogue from '../../../components/StatusDialogue';
 import GeneralHelper from '../../../helpers/general-helper';
 import moment from 'moment'
 import _ from 'lodash';
-
+import PVHelper from './helper';
 
 const { Title } = Typography;
 
@@ -29,11 +29,13 @@ const PurchaseVouchers = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const { handleRequestResponse } = GeneralHelper();
+	const { formatPVPayload } = PVHelper();
 
 	const [contentLoading, setContentLoading] = useState(false);
 	const [displayModal, setDisplayModal] = useState(false);
 	const [purchaseVoucher, setPurchaseVoucher] = useState(null);
 
+	const { id: userId } = useSelector(state => state.auth.user)
 	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers);
 	const { 
 		status: statusRR, 
@@ -142,8 +144,10 @@ const PurchaseVouchers = (props) => {
 		setPurchaseVoucher(null);
 	}
 
-	const onCreate = () => {
-
+	const onCreate = (payload) => {
+		dispatch(createPurchaseVouchers(formatPVPayload(payload.values, payload.addedAccounts, userId, company))).then(() => {
+			dispatch(listPurchaseVouchers(company));
+		})
 	}
 
 	return (

@@ -87,7 +87,7 @@ const InputForm = (props) => {
       let newAddedAccounts = _.clone(addedAccounts);
       newAddedAccounts.push(formatAccountData(values, _.last(addedAccounts)))
       setAddedAccounts(newAddedAccounts)
-      console.log(addedAccounts)
+      form.resetFields(accountValidation)
     } catch (errorInfo) {
       message.warning("Please fill all the required account details before adding.");
     }
@@ -147,8 +147,13 @@ const InputForm = (props) => {
 
   const onFinish = async () => {
     try {
-      const values = await form.validateFields(['rrNumber', 'date', 'rrDate', 'vendor', 'siNumber', 'drNumber', 'poNumber']);
-      console.log('Success:', values);
+      const values = await form.validateFields([
+        'rrNumber', 'date', 'rrDate', 
+        'vendor', 'siNumber', 'drNumber', 
+        'poNumber', 'manual', 'remarks'
+      ]);
+      onSubmit({values, addedAccounts})
+      history.goBack();
     } catch (errorInfo) {
       console.log(errorInfo)
     }
