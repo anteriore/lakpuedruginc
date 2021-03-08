@@ -11,6 +11,7 @@ import {
   addChequeDisbursement,
   clearData,
 } from './redux';
+import { listChequePrinting } from '../ChequePrintings/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper from '../../../helpers/general-helper';
@@ -28,7 +29,7 @@ const ChequeDisbursements = (props) => {
   const listData = useSelector((state) => state.accounting.chequeDisbursements.list);
 
   const { company } = props;
-  const { formDetails, tableDetails } = FormDetails();
+  const { formDetails } = FormDetails();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -56,6 +57,10 @@ const ChequeDisbursements = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
+    dispatch(listChequePrinting({ company, message })).then(() => {
+      history.push(`${path}/new`);
+      setLoading(false);
+    })
   };
 
   const handleUpdate = (data) => {};
