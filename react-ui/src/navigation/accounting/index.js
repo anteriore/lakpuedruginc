@@ -1,4 +1,3 @@
-import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
