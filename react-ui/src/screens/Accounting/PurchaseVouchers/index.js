@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
-import { PlusOutlined, CheckOutlined, CloseOutlined, PrinterOutlined } from '@ant-design/icons';
+import { PlusOutlined, CheckOutlined, PrinterOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
-import { clearData, listPurchaseVouchers, createPurchaseVouchers } from './redux';
+import { clearData, listPurchaseVouchers, createPurchaseVouchers, approvePurchaseVoucher } from './redux';
 import { listRRByNoPV, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
@@ -139,6 +139,13 @@ const PurchaseVouchers = (props) => {
 		setDisplayModal(true);
 	}
 
+	const handleApprovePV = () => {
+		dispatch(approvePurchaseVoucher({ pvId: purchaseVoucher.id, user: userId })).then(() => {
+			dispatch(listPurchaseVouchers(company));
+			setDisplayModal(false);
+		})
+	}
+
 	const handleClearDetails = () => {
 		setDisplayModal(false);
 		setPurchaseVoucher(null);
@@ -150,10 +157,17 @@ const PurchaseVouchers = (props) => {
 		})
 	}
 
+	const onUpdate = (payload) => {
+		console.log(payload);
+	}
+
 	return (
 		<Switch>
 			<Route path={`${path}/new`}>
 				<InputForm title="New Purchase Voucher" onSubmit={onCreate} />
+			</Route>
+			<Route path={`${path}/:id/edit`}>
+				<InputForm title="Update Purchase Voucher" onSubmit={onUpdate}/>
 			</Route>
 			<Route path={`${path}`}>
 				<Row gutter={[8, 24]}>
@@ -239,26 +253,13 @@ const PurchaseVouchers = (props) => {
 											<Button
 												style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
 												icon={<CheckOutlined />}
+												onClick={handleApprovePV}
 												type="primary"
 											>
 												Approve
 											</Button>
-											<Button
-												style={{ marginRight: '1%' }}
-												icon={<CloseOutlined />}
-												type="primary"
-												danger
-											>
-												Reject
-											</Button>
 										</>
 									)}
-									<Button
-										icon={<PrinterOutlined/>}
-										type="primary"
-									>
-										Print PJV
-									</Button>
 								</Space>
 							</Col>
 							<Col span={11}>

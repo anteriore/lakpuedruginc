@@ -59,6 +59,26 @@ export const updatePurchaseVouchers = createAsyncThunk('updatePurchaseVouchers',
   }
 })
 
+export const approvePurchaseVoucher = createAsyncThunk('approvePurchaseVoucher', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  console.log(payload)
+  try {
+    const response = await axiosInstance.post(
+        `/rest/purchase-vouchers/approve/${payload.pvId}/user/${payload.user}?token=${accessToken}`,
+        payload
+      );
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+})
+
 const initialState = {
   list: [],
   status: 'loading',
@@ -154,12 +174,12 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [createPurchaseVouchers.pending]: (state) => {
+    [updatePurchaseVouchers.pending]: (state) => {
       return {
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for purchase vouchers`,
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for purchase vouchers`,
         statusLevel: '',
         responseCode: null,
       };
@@ -180,6 +200,46 @@ const purchaseVouchersSlice = createSlice({
       };
     },
     [updatePurchaseVouchers.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Vouchers'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [approvePurchaseVoucher.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `Approving selected purchase voucher`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [approvePurchaseVoucher.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Vouchers'
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [approvePurchaseVoucher.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
