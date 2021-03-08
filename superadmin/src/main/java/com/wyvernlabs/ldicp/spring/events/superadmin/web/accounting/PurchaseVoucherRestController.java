@@ -82,6 +82,11 @@ public class PurchaseVoucherRestController {
 		return purchaseVoucherService.approvePurchaseVoucher(pvId, userId);
 	}
 
+	@PostMapping("/reject/{pvId}/user/{userId}")
+	public PurchaseVoucher reject(@PathVariable Long pvId, @PathVariable Long userId) {
+		return purchaseVoucherService.rejectPurchaseVoucher(pvId, userId);
+	}
+
 	@GetMapping("/company/{companyId}/number/{number}")
 	public Long getIdByCompanyAndNumber(@PathVariable Long companyId, @PathVariable String number) {
 		Company company = companyRepository.getOne(companyId);
