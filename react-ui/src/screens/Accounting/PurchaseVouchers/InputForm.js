@@ -42,14 +42,20 @@ const InputForm = (props) => {
 
   const handleChangeFormType = useCallback((value) => {
     setSubContentLoading(true);
-    setFormType(value)
     if (value) {
       form.setFieldsValue(defaultValManual)
+      setFormType(value);
     }else {
-      form.setFieldsValue(defaultValAuto)
+      if(listRR.length !== 0){
+        form.setFieldsValue(defaultValAuto)
+        setFormType(value);
+      }else{
+        form.setFieldsValue({manual: true})
+        message.warning("There are no available receiving receipts to select")
+      }
     }
     setSubContentLoading(false)
-  },[form, defaultValAuto, defaultValManual])
+  },[form, defaultValAuto, defaultValManual, listRR])
 
   const handleChangeRR = useCallback((value) => {
     const selectedRR = _.find(listRR,(o) => o.id === value);
@@ -123,12 +129,17 @@ const InputForm = (props) => {
       rrNumber: listRR
     };
 
+    if (listRR.length === 0) {
+      form.setFieldsValue({manual: true});
+      setFormType(true)
+    }
+
     const formItem = _.find(newForm.form_items, {name: 'rrNumber'});
     formItem.onChange = (e) => handleChangeRR(e);
 
     setTempAutoForm(updateList(newForm, masterList))
     setSubContentLoading(false);
-  },[tempAutoForm, formType, listRR, handleChangeRR]);
+  },[tempAutoForm, formType, listRR, handleChangeRR, form]);
 
   useEffect(() => {
     setSubContentLoading(true)
@@ -142,6 +153,7 @@ const InputForm = (props) => {
   }, [tempManualForm, listVendor])
 
   const onFail = () => {
+    console.log("Failing")
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`)
   }
 
