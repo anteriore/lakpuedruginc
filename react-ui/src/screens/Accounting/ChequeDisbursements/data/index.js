@@ -57,6 +57,10 @@ export const columns = [
 
 const FormDetails = () => {
   const chequePrintings = useSelector((state) => state.accounting.chequePrintings.list);
+  const accountTitles = useSelector((state) => state.accounting.accountTitles.list);
+  const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
+  const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
+  const groups = useSelector((state) => state.maintenance.groupsCategories.groupList);
   const [displayModal, setDisplayModal] = useState(false);
 
   const formDetails = {
@@ -151,6 +155,71 @@ const FormDetails = () => {
         rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
       },
+      {
+        label: 'Account Titles',
+        name: 'accountTitles',
+        type: 'listTable',
+        rules: [{ required: true }],
+        fields: [
+          {
+            label: 'Account Titles',
+            name: 'accountTitles',
+            rules: [{ required: true, message: 'Please select account title' }],
+            placeholder: 'Select Account Title',
+            render: (object) => `[${object?.type}] ${object?.title}` ?? "",
+            type: 'selectSearch',
+            choices: accountTitles,
+            width: 200,
+          },{
+            label: 'Department',
+            name: 'department',
+            rules: [{ required: true, message: 'Please select department' }],
+            placeholder: 'Select Department',
+            render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+            type: 'selectSearch',
+            choices: departments,
+            width: 200,
+          },
+          {
+            label: 'Group',
+            name: 'group',
+            rules: [{ required: true, message: 'Please select group' }],
+            placeholder: 'Select Group',
+            render: (object) => object?.name ?? "",
+            type: 'selectSearch',
+            choices: groups,
+            width: 200,
+          },
+          {
+            label: 'Area',
+            name: 'area',
+            rules: [{ required: true, message: 'Please select area' }],
+            placeholder: 'Select Area',
+            render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+            type: 'selectSearch',
+            choices: areas,
+            width: 200,
+          },
+          {
+            label: 'Debit',
+            name: 'debit',
+            type: 'number',
+            rules: [{ required: true, message: 'Please provide debit' }],
+            min: 0,
+            placeholder: '0.00',
+            width: 200,
+          },
+          {
+            label: 'Credit',
+            name: 'credit',
+            type: 'number',
+            rules: [{ required: true, message: 'Please provide credit' }],
+            min: 0,
+            placeholder: '0.00',
+            width: 200,
+          },
+        ],
+      }
     ],
     processDisplayData: (data) => {
       const processedData = {
@@ -161,7 +230,64 @@ const FormDetails = () => {
     }
   };
 
-  return { formDetails };
+  const accountingDetails = {
+    form_name: 'cheque_disbursement',
+    form_items: [
+      {
+        label: 'Account Titles',
+        name: 'accountTitles',
+        rules: [{ required: true, message: 'Please select account title' }],
+        placeholder: 'Select Account Title',
+        render: (object) => `[${object?.type}] ${object?.title}` ?? "",
+        type: 'selectSearch',
+        choices: accountTitles,
+      },{
+        label: 'Department',
+        name: 'department',
+        rules: [{ required: true, message: 'Please select department' }],
+        placeholder: 'Select Department',
+        render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+        type: 'selectSearch',
+        choices: departments,
+      },
+      {
+        label: 'Group',
+        name: 'group',
+        rules: [{ required: true, message: 'Please select group' }],
+        placeholder: 'Select Group',
+        render: (object) => object?.name ?? "",
+        type: 'selectSearch',
+        choices: groups,
+      },
+      {
+        label: 'Area',
+        name: 'area',
+        rules: [{ required: true, message: 'Please select area' }],
+        placeholder: 'Select Area',
+        render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+        type: 'selectSearch',
+        choices: areas,
+      },
+      {
+        label: 'Debit',
+        name: 'debit',
+        type: 'number',
+        rules: [{ required: true, message: 'Please provide debit' }],
+        min: 0,
+        placeholder: '0.00',
+      },
+      {
+        label: 'Credit',
+        name: 'credit',
+        type: 'number',
+        rules: [{ required: true, message: 'Please provide credit' }],
+        min: 0,
+        placeholder: '0.00',
+      },
+    ],
+  }
+
+  return { formDetails, accountingDetails };
 };
 
 export default FormDetails;

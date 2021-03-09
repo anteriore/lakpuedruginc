@@ -7,12 +7,17 @@ import {
   Typography,
   Table,
   Empty,
+  Descriptions,
+  Space,
+  Input,
   message,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 import moment from 'moment';
+import _ from 'lodash';
+import { PlusOutlined, DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
@@ -21,7 +26,8 @@ const InputForm = (props) => {
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const hasTable = formTable !== null && typeof formTable !== 'undefined';
+  const hasTable = false;
+  const accountType = 'Debit';
 
   const [selectedData, setSelectedData] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
@@ -31,6 +37,7 @@ const InputForm = (props) => {
   const toggleName = formDetails.toggle_name;
 
   const selectTableName = 'chequePrinting'
+
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -146,7 +153,6 @@ const InputForm = (props) => {
 
               return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
-            {/* TODO: Account Title Form */}
             <div style={styles.tailLayout}>
               <Button type="primary" onClick={() => form.submit()}>
                 Submit

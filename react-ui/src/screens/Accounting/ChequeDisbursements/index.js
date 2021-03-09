@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Form, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -12,6 +12,9 @@ import {
   clearData,
 } from './redux';
 import { listChequePrinting } from '../ChequePrintings/redux';
+import { listAccountTitles } from '../AccountTitles/redux';
+import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
+import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper from '../../../helpers/general-helper';
@@ -29,7 +32,7 @@ const ChequeDisbursements = (props) => {
   const listData = useSelector((state) => state.accounting.chequeDisbursements.list);
 
   const { company } = props;
-  const { formDetails } = FormDetails();
+  const { formDetails, accountingDetails } = FormDetails();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -58,8 +61,16 @@ const ChequeDisbursements = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(listChequePrinting({ company, message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
+      dispatch(listAccountTitles({ company, message })).then(() => {
+        dispatch(listDepartment({ company, message })).then(() => {
+          dispatch(listArea({ company, message })).then(() => {
+            dispatch(listGroup({ company, message })).then(() => {
+              history.push(`${path}/new`);
+              setLoading(false);
+            })
+          })
+        })
+      })
     })
   };
 
@@ -88,7 +99,7 @@ const ChequeDisbursements = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          //formTable={tableDetails}
+          formTable={accountingDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
