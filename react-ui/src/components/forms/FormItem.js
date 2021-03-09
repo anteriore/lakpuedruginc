@@ -22,6 +22,47 @@ const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 
 const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle }) => {
+
+  const renderListTableColumns = (fields) => {
+    let renderedColumns = []
+
+    fields.forEach((column) => {
+      renderedColumns.push({
+        title: column.label,
+        dataIndex: column.name,
+        render: () => {
+          return (
+            <FormItem
+              disableLabel={true}
+              noStyle={true}
+              onFail={onFail}
+              key={column.name}
+              item={column}
+            />
+          )
+        }
+      })
+    })
+
+    renderedColumns.push({
+      title: "Action",
+      render: () => {
+        return (
+          <Button
+            icon={<PlusOutlined/>}
+            style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
+            type="primary"
+            onClick={() => {}}
+          >
+            Add
+          </Button>
+        )
+      }
+    })
+    return renderedColumns;
+    
+  }
+
   if (item.type === 'select' || item.type === 'selectSearch') {
     if (typeof item.render === 'undefined') {
       if (typeof item.selectName === 'undefined') {
@@ -59,6 +100,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
           optionFilterProp="children"
           disabled={item.type === 'readOnly' || item.readOnly}
           notFoundContent={item?.notFoundContent ?? "Not Found"}
+          style={{width: item.width ?? '100%', minWidth: 100}}
         >
           {item.choices.map((choice) => (
             <Select.Option key={choice.id} value={choice.id}>
@@ -354,6 +396,15 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
   }
   if (item.type === 'custom' || item.type === 'customList') {
     return null;
+  }
+  else if(item.type === 'listTable'){
+    return (
+      <Table
+        dataSource={[{}]}
+        columns={renderListTableColumns(item.fields)}
+        pagination={false}
+      />
+    )
   }
 
   return (
