@@ -466,6 +466,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
               columns={renderListTableColumns(item.fields)}
               dataSource={value}
               pagination={false}
+              summary={item.summary}
             />
           )}
         </Form.List>
