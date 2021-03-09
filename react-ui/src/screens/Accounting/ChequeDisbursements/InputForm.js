@@ -94,6 +94,7 @@ const InputForm = (props) => {
   };
 
   const onValuesChange = (values) => {
+    console.log(form.getFieldsValue())
     if (toggleName !== null && typeof toggleName !== 'undefined') {
       if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
         setToggleValue(values[toggleName]);
@@ -151,7 +152,7 @@ const InputForm = (props) => {
                 itemData.setSelectedData = setSelectedData;
               }
 
-              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
+              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} formInstance={form} />;
             })}
             <div style={styles.tailLayout}>
               <Button type="primary" onClick={() => form.submit()}>

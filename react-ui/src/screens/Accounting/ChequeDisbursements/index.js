@@ -85,6 +85,7 @@ const ChequeDisbursements = (props) => {
   };
 
   const onSubmit = (data) => {
+    console.log(data)
     setFormData(null);
   };
 
