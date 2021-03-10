@@ -161,6 +161,7 @@ const GeneralHelper = (props) => {
   const handleRequestResponse = (responseList, onSuccess, onFail, returnPath) => {
     let hasFailed = false;
     responseList.forEach((response) => {
+      console.log(response, "Checking Response", hasFailed)
       if (response.hasOwnProperty('error') && !hasFailed) {
         hasFailed = true;
         if (typeof onFail === 'function') {
@@ -170,6 +171,7 @@ const GeneralHelper = (props) => {
         }
       }
     });
+
     if (!hasFailed) {
       if (onSuccess !== null) {
         onSuccess();
