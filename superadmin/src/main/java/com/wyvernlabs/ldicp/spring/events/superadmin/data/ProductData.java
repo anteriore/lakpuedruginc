@@ -54,7 +54,7 @@ public class ProductData {
 		Company company = companyRepository.getOne(1L);
 		Classification classification = classificationRepository.getOne(1L);
 
-		
+		/*
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
 		product.setCategory(categoryRepository.getOne(1L));
@@ -102,7 +102,7 @@ public class ProductData {
 		product.setUnitPrice(50D);
 		product.setFinishedGood(fg);
 		productRepository.save(product);
-
+		*/
 
 
 
