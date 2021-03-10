@@ -307,7 +307,7 @@ const FormScreen = (props) => {
                 return null;
               }
 
-              return <FormItem item={item} onFail={onFail} />;
+              return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
