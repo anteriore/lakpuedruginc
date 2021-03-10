@@ -62,6 +62,7 @@ const FormDetails = () => {
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
   const groups = useSelector((state) => state.maintenance.groupsCategories.groupList);
   const [displayModal, setDisplayModal] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState(null);
 
   const formDetails = {
     form_name: 'cheque_disbursement',
@@ -163,13 +164,17 @@ const FormDetails = () => {
         fields: [
           {
             label: 'Account Titles',
-            name: 'accountTitles',
+            name: 'accountTitle',
             rules: [{ required: true, message: 'Please select account title' }],
             placeholder: 'Select Account Title',
             render: (object) => `[${object?.type}] ${object?.title}` ?? "",
             type: 'selectSearch',
             choices: accountTitles,
             width: 200,
+            onChange: (e) => {
+              const accountTitle = accountTitles.find((data) => data.id === e)
+              setSelectedAccount(accountTitle)
+            }
           },{
             label: 'Department',
             name: 'department',
@@ -204,9 +209,11 @@ const FormDetails = () => {
             label: 'Debit',
             name: 'debit',
             type: 'number',
+            dependencies: ['accountTitle'],
             rules: [{ required: true, message: 'Please provide debit' }],
+            isVisible: (selectedAccount?.type ?? "") === "Debit",
+            initialValue: 0,
             min: 0,
-            placeholder: '0.00',
             width: 200,
           },
           {
@@ -214,11 +221,25 @@ const FormDetails = () => {
             name: 'credit',
             type: 'number',
             rules: [{ required: true, message: 'Please provide credit' }],
+            isVisible: (selectedAccount?.type ?? "") === "Credit",
+            initialValue: 0,
             min: 0,
-            placeholder: '0.00',
             width: 200,
           },
         ],
+        handleAdd: (values) => {
+          const accountTitle = accountTitles.find((data) => data.id === values.accountTitle)
+          const department = departments.find((data) => data.id === values.department)
+          const group = groups.find((data) => data.id === values.group)
+          const area = areas.find((data) => data.id === values.area)
+          return {
+            ...values,
+            accountTitle,
+            department,
+            group,
+            area
+          }
+        }
       }
     ],
     processDisplayData: (data) => {
