@@ -10,6 +10,13 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.AreaRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
 
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+
 @Component
 public class DepotData {
 	@Autowired
@@ -25,6 +32,9 @@ public class DepotData {
 		Area visayas = areaRepository.getOne(2L);
 		Area mindanao = areaRepository.getOne(3L);
 		Company c1 = companyRepository.getOne(1L);
+
+
+		/*
 		depot.setCode("BAC-007");
 		depot.setName("BACOLOD");
 		depot.setArea(luzon);
@@ -134,10 +144,86 @@ public class DepotData {
 
 		
 		depot = new Depot();
-		depot.setCode("MMANILA");
+		depot.setCode("MANILA");
 		depot.setName("METRO MANILA");
 		depot.setArea(luzon);
 		depot.setCompany(c1);
 		depotRepository.save(depot);
+
+
+		*/
+
+
+		readCSV("depotData.csv");
 	}
+
+
+	public void readCSV(String csvname){
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/"+csvname;
+        BufferedReader br = null;
+        String line = "";
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		Company company = companyRepository.getOne(1L);
+		Area luzon = areaRepository.getOne(1L);
+        try {				
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
+
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+		
+
+					Depot tempdepot = new Depot();
+
+					tempdepot.setCompany(company);
+					tempdepot.setCode(data[0].replace("\"", ""));
+					tempdepot.setName(data[1].replace("\"", ""));
+					tempdepot.setCompany(company);
+					tempdepot.setArea(luzon);
+					depotRepository.save(tempdepot);
+
+
+					//tempvendor.setAddress(data[2].replace("\"", ""));//tempvendor.setDeliveryAddress(data[2].replace("\"", ""));
+					//tempvendor.setProprietor(data[3].replace("\"", ""));
+					//tempvendor.setPhoneNumber(data[4].replace("\"", ""));
+					//tempvendor.setTerms(Integer.parseInt( data[5].replace("\"", "")));
+					//tempvendor.setTin(data[6].replace("\"", ""));
+					//tempvendor.setVat(data[7].replace("\"", ""));
+					//vendorRepository.save(tempvendor);
+
+
+
+
+				 // }
+				 // System.out.println("");
+              
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+	
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 }

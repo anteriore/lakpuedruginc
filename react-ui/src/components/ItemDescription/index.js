@@ -44,6 +44,9 @@ const ItemDescription = (props) => {
               <Descriptions.Item label={item.label}>{item.render(selectedData[item.name])}</Descriptions.Item>
             );
           }
+          else if(item.type === 'listTable'){
+            return null;
+          }
           else {
             return (
               <Descriptions.Item label={item.label}>{selectedData[item.name]}</Descriptions.Item>

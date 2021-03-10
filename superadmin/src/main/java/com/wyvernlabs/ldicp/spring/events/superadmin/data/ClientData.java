@@ -116,7 +116,7 @@ public class ClientData {
 	
 
 
-		readCSV("x");
+		readCSV("clientData.csv");
 
 
 
@@ -139,13 +139,12 @@ public class ClientData {
 
 
 
-	public void readCSV(String pathToCsv){
-		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/clientData.csv";
-		BufferedReader br = null;
-		Company company = companyRepository.getOne(1L);
+	public void readCSV(String csvname){
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/"+csvname;
+        BufferedReader br = null;
         String line = "";
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		
+		Company company = companyRepository.getOne(1L);
         try {				
             br = new BufferedReader(new FileReader(csvFile));
             while ((line = br.readLine()) != null) {
@@ -156,7 +155,7 @@ public class ClientData {
 					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
 
 					Client tempclient = new Client();
-
+					
 					tempclient.setCompany(company);
 					tempclient.setCode(data[0].replace("\"", ""));
 					tempclient.setName(data[1].replace("\"", ""));
