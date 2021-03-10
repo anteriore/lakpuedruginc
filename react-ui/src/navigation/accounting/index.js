@@ -1,5 +1,6 @@
 import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
+import CashReceiptVouchers from '../../screens/Accounting/CashReceiptVouchers';
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PDCVouchers from '../../screens/Accounting/PDCVouchers';
 
@@ -47,7 +48,7 @@ export const routes = [
   {
     title: 'Cash Receipt Vouchers',
     path: '/cash-receipt-vouchers',
-    component: null,
+    component: CashReceiptVouchers,
   },
   {
     title: 'PDC Disbursements',
