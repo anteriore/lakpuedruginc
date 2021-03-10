@@ -1,13 +1,19 @@
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
+import { Table, Typography } from 'antd';
+
+const { Text } = Typography;
 
 export const columns = [
   {
     title: 'Number',
-    dataIndex: 'number',
-    key: 'number',
-    datatype: 'string',
+    dataIndex: 'chequePrinting',
+    key: 'chequePrinting',
+    datatype: 'object',
+    dataToString: (object) => {
+      return `${object?.number}`;
+    },
   },
   {
     title: 'Payee',
@@ -15,7 +21,7 @@ export const columns = [
     key: 'chequePrinting',
     datatype: 'object',
     dataToString: (object) => {
-      return `[${object?.payee?.code}] ${object?.payee?.name}`;
+      return `[${object?.vendor?.code}] ${object?.vendor?.name}`;
     },
   },
   {
@@ -24,7 +30,7 @@ export const columns = [
     key: 'chequePrinting',
     datatype: 'object',
     dataToString: (object) => {
-      return `[${object?.chequeNumber?.code}] ${object?.chequeNumber?.name}`;
+      return `${object?.chequeNumber}`;
     },
   },
   {
@@ -239,7 +245,28 @@ const FormDetails = () => {
             group,
             area
           }
-        }
+        },
+        summary: (data) => {
+          let totalCredit = 0;
+          let totalDebit = 0;
+          data.forEach((item) => {
+            totalCredit += (item?.credit ?? 0)
+            totalDebit += (item?.debit ?? 0)
+          });
+    
+          return (
+            <Table.Summary.Row>
+              <Table.Summary.Cell>Total Credit</Table.Summary.Cell>
+              <Table.Summary.Cell>
+                <Text>{totalCredit}</Text>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell>Total Debit</Table.Summary.Cell>
+              <Table.Summary.Cell>
+                <Text>{totalDebit}</Text>
+              </Table.Summary.Cell>
+            </Table.Summary.Row>
+          );
+        },
       }
     ],
     processDisplayData: (data) => {

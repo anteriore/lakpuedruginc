@@ -84,8 +84,48 @@ const ChequeDisbursements = (props) => {
     setDisplayModal(true);
   };
 
+  const processSubmitPayload = (data) => {
+    const accountTitles = []
+    data.accountTitles.forEach((item) => {
+      accountTitles.push({
+        accountTitle: {
+          id: item.accountTitle.id,
+          type: item.accountTitle.type
+        },
+        department: {id: item.department.id},
+        group: {id: item.group.id },
+        area: {id: item.area.id },
+        amount: item?.credit ?? item.debit
+      })
+    })
+
+    return {
+      ...data,
+      accountTitles,
+      company: {
+        id: company
+      }
+    }
+  }
+
   const onSubmit = (data) => {
-    console.log(data)
+    const payload = processSubmitPayload(data)
+    console.log(payload)
+    dispatch(addChequeDisbursement(payload)).then((response) => {
+      setLoading(true);
+      if (response.payload.status === 200) {
+        dispatch(listChequeDisbursement({ company, message })).then(() => {
+          setLoading(false);
+          history.goBack();
+          message.success(`Successfully added Cheque disbursement for ${response.payload.data.chequePrinting.number}`);
+        });
+      } else {
+        setLoading(false);
+        message.error(
+          `Unable to add Cheque disbursement. Please double check the provided information.`
+        );
+      }
+    });
     setFormData(null);
   };
 
