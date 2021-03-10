@@ -118,18 +118,23 @@ const ChequeDisbursements = (props) => {
     console.log(payload)
     dispatch(addChequeDisbursement(payload)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      
+      const onSuccess = () => {
         dispatch(listChequeDisbursement({ company, message })).then(() => {
           setLoading(false);
           history.goBack();
           message.success(`Successfully added Cheque disbursement for ${response.payload.data.chequePrinting.number}`);
         });
-      } else {
+      };
+
+      const onFail = () => {
         setLoading(false);
         message.error(
           `Unable to add Cheque disbursement. Please double check the provided information.`
         );
       }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
   };
