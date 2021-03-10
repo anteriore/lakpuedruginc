@@ -63,9 +63,7 @@ export const approvePurchaseVoucher = createAsyncThunk('approvePurchaseVoucher',
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.post(
-        `/rest/purchase-vouchers/approve/${payload.pvId}/user/${payload.user}?token=${accessToken}`,
-        payload
-      );
+        `/rest/purchase-vouchers/approve/${payload.pvId}/user/${payload.user}?token=${accessToken}`);
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
