@@ -8,8 +8,13 @@ import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormScreen from '../../../components/forms/FormScreen';
+import GeneralHelper from '../../../helpers/general-helper';
 
 import { listCashReceiptVoucher, clearData } from './redux';
+import { listBankAccount, clearData as clearBankAccount } from '../../Maintenance/BankAccounts/redux';
+import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
+import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
+import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux';
 
 const { Title, Text } = Typography;
 
@@ -27,6 +32,8 @@ const CashReceiptVouchers = (props) => {
   const [selectedData, setSelectedData] = useState(null);
   const { formDetails } = FormDetails();
 
+  const { handleRequestResponse } = GeneralHelper();
+
   const data = useSelector((state) => state.accounting.cashReceiptVouchers.list);
 
   useEffect(() => {
@@ -40,6 +47,23 @@ const CashReceiptVouchers = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
+    setFormTitle('Create Cash Receipt Voucher');
+    setFormMode('add');
+    setFormData(null);
+    dispatch(listBankAccount({message})).then((response1) => {
+      dispatch(listAccountTitles({ company, message })).then((response2) => {
+        dispatch(listDepartment({ company, message })).then((response3) => {
+          dispatch(listArea({ company, message })).then((response4) => {
+            dispatch(listGroup({ company, message })).then((response5) => {
+              const onSuccess = () => {
+                history.push(`${path}/new`);
+              };
+              handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, null, '');
+            })
+          })
+        })
+      })
+    })
   };
 
   const handleUpdate = (data) => {
