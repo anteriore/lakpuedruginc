@@ -278,64 +278,7 @@ const FormDetails = () => {
     }
   };
 
-  const accountingDetails = {
-    form_name: 'cheque_disbursement',
-    form_items: [
-      {
-        label: 'Account Titles',
-        name: 'accountTitles',
-        rules: [{ required: true, message: 'Please select account title' }],
-        placeholder: 'Select Account Title',
-        render: (object) => `[${object?.type}] ${object?.title}` ?? "",
-        type: 'selectSearch',
-        choices: accountTitles,
-      },{
-        label: 'Department',
-        name: 'department',
-        rules: [{ required: true, message: 'Please select department' }],
-        placeholder: 'Select Department',
-        render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
-        type: 'selectSearch',
-        choices: departments,
-      },
-      {
-        label: 'Group',
-        name: 'group',
-        rules: [{ required: true, message: 'Please select group' }],
-        placeholder: 'Select Group',
-        render: (object) => object?.name ?? "",
-        type: 'selectSearch',
-        choices: groups,
-      },
-      {
-        label: 'Area',
-        name: 'area',
-        rules: [{ required: true, message: 'Please select area' }],
-        placeholder: 'Select Area',
-        render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
-        type: 'selectSearch',
-        choices: areas,
-      },
-      {
-        label: 'Debit',
-        name: 'debit',
-        type: 'number',
-        rules: [{ required: true, message: 'Please provide debit' }],
-        min: 0,
-        placeholder: '0.00',
-      },
-      {
-        label: 'Credit',
-        name: 'credit',
-        type: 'number',
-        rules: [{ required: true, message: 'Please provide credit' }],
-        min: 0,
-        placeholder: '0.00',
-      },
-    ],
-  }
-
-  return { formDetails, accountingDetails };
+  return { formDetails };
 };
 
 export default FormDetails;

@@ -5,45 +5,29 @@ import {
   Row,
   Col,
   Typography,
-  Table,
-  Empty,
-  Descriptions,
-  Space,
-  Input,
   message,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
-import moment from 'moment';
-import _ from 'lodash';
-import { PlusOutlined, DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
 const InputForm = (props) => {
-  const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
+  const { title, onCancel, onSubmit, values, formDetails } = props;
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const hasTable = false;
-  const accountType = 'Debit';
 
   const [selectedData, setSelectedData] = useState([]);
-  const [toggleValue, setToggleValue] = useState(null);
 
   const chequePrintings = useSelector((state) => state.accounting.chequePrintings.list);
-
-  const toggleName = formDetails.toggle_name;
 
   const selectTableName = 'chequePrinting'
 
 
   useEffect(() => {
     form.setFieldsValue(values);
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
-    }
     // eslint-disable-next-line
   }, [values, form]);
 
@@ -72,34 +56,8 @@ const InputForm = (props) => {
     }
   };
 
-  // for rendering tables
-  const renderTableColumns = (item) => {
-    const columns = [];
-    item.fields.forEach((field) => {
-      if (typeof field.render === 'undefined' || field.render === null) {
-        field.render = (object) => object[field.name];
-      }
-      columns.push({
-        title: field.label,
-        key: field.name,
-        render: (object) => field.render(object),
-      });
-    });
-
-    return columns;
-  };
-
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
-  };
-
-  const onValuesChange = (values) => {
-    console.log(form.getFieldsValue())
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
-      }
-    }
   };
 
   const onTableSelect = (key, value) => {
@@ -123,7 +81,6 @@ const InputForm = (props) => {
       formValues[key] = value;
     }
     form.setFieldsValue(formValues);
-    onValuesChange(formValues);
   };
 
   return (
@@ -140,7 +97,6 @@ const InputForm = (props) => {
             name={formDetails.form_name}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
-            onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
               const itemData = {

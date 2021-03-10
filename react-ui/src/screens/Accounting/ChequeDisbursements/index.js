@@ -11,8 +11,8 @@ import {
   addChequeDisbursement,
   clearData,
 } from './redux';
-import { listChequePrinting } from '../ChequePrintings/redux';
-import { listAccountTitles } from '../AccountTitles/redux';
+import { listChequePrinting, clearData as clearChequePrinting } from '../ChequePrintings/redux';
+import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
 import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import InputForm from './InputForm';
@@ -25,14 +25,13 @@ const ChequeDisbursements = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
   const listData = useSelector((state) => state.accounting.chequeDisbursements.list);
 
   const { company } = props;
-  const { formDetails, accountingDetails } = FormDetails();
+  const { formDetails } = FormDetails();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -51,22 +50,28 @@ const ChequeDisbursements = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearDeptArea());
+      dispatch(clearGroupCat());
+      dispatch(clearChequePrinting());
+      dispatch(clearAccountTitles());
       isCancelled = true;
     };
   }, [dispatch, company]);
 
   const handleAdd = () => {
     setFormTitle('Create Cheque Disbursement Voucher');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listChequePrinting({ company, message })).then(() => {
-      dispatch(listAccountTitles({ company, message })).then(() => {
-        dispatch(listDepartment({ company, message })).then(() => {
-          dispatch(listArea({ company, message })).then(() => {
-            dispatch(listGroup({ company, message })).then(() => {
-              history.push(`${path}/new`);
-              setLoading(false);
+    dispatch(listChequePrinting({ company, message })).then((response1) => {
+      dispatch(listAccountTitles({ company, message })).then((response2) => {
+        dispatch(listDepartment({ company, message })).then((response3) => {
+          dispatch(listArea({ company, message })).then((response4) => {
+            dispatch(listGroup({ company, message })).then((response5) => {
+              const onSuccess = () => {
+                history.push(`${path}/new`);
+                setLoading(false);
+              };
+              handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, null, '');
             })
           })
         })
@@ -166,7 +171,6 @@ const ChequeDisbursements = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          formTable={accountingDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
