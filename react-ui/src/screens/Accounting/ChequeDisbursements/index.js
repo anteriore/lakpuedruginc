@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Form, Empty, message } from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -129,6 +129,32 @@ const ChequeDisbursements = (props) => {
     setFormData(null);
   };
 
+  //for data display
+  const renderTableColumns = (fields) => {
+    const columns = [];
+    fields.forEach((field) => {
+      if (typeof field.render === 'undefined' || field.render === null) {
+        field.render = (object) => {console.log(object); return object[field.name]};
+      }
+      if(field.name !== 'credit' && field.name !== 'debit'){
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => {console.log(object); return field.render(object[field.name])},
+        });
+      }
+      else {
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => {console.log('amount', object); console.log(field); return field.render({[object.accountTitle.type.toLowerCase()]: object['amount']})},
+        });
+      }
+    });
+
+    return columns;
+  }
+
   return (
     <Switch>
       <Route exact path={`${path}/new`}>
@@ -207,17 +233,19 @@ const ChequeDisbursements = (props) => {
             ) : (
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
-                  title={`${selectedData.number} Details`}
-                  selectedData={selectedData}
+                  title={`${selectedData.chequePrinting.number} Details`}
+                  selectedData={{
+                    ...selectedData,
+                    ...selectedData.chequePrinting,
+                  }}
                   formItems={formDetails.form_items}
                 />
-                {/*<Text>{'Voucher Payables: '}</Text>
+                <Text>{'Account Title Entries: '}</Text>
                 <Table
-                  dataSource={selectedData[tableDetails.name]}
-                  columns={tableDetails.renderTableColumns(tableDetails.fields)}
+                  dataSource={selectedData.accountTitles}
+                  columns={renderTableColumns(formDetails.form_items.find((item) => item.name === 'accountTitles').fields)}
                   pagination={false}
-                  locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                />*/}
+                />
               </Space>
             )}
           </Modal>}
