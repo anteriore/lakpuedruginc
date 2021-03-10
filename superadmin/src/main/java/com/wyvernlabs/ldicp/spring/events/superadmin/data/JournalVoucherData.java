@@ -10,7 +10,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.JournalVoucherRe
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Voucher;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.VoucherRepository;
-
+import com.wyvernlabs.ldicp.spring.events.superadmin.service.JournalVoucherService;
 
 
 
@@ -22,8 +22,7 @@ import java.io.IOException;
 @Component
 public class JournalVoucherData {
 
-    @Autowired
-    private ProvinceCodeRepository provinceCodeRepository;
+
 
     @Autowired
 	private VoucherRepository voucherRepository;
@@ -41,7 +40,10 @@ public class JournalVoucherData {
 	*/
 	public void init() {
         JournalVoucher tempjv = new JournalVoucher();
-
+       // Voucher tempV - new Voucher();
+       // tempV.setType("JV");
+        //tempV.setVendor();
+        //tempV.set
 
 
         journalVoucherService.saveJournalVoucher(tempjv);
