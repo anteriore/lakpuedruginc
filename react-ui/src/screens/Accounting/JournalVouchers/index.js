@@ -81,20 +81,19 @@ const JournalVouchers = (props) => {
 	},[history, path])
 
 	const onFail = useCallback(() => {
-		console.log("Failing")
 		history.goBack();
 		setContentLoading(false);
 	},[history])
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listVouchers(company)).then(() => {
+    dispatch(listVouchers(company)).then((dataVoucher) => {
       dispatch(listVendor({company})).then((dataVendor) => {
 				dispatch(listAccountTitles()).then((dataAC) => { 
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
 							dispatch(listG({company})).then((dataG) => {
-								const dataList = [dataVendor, dataAC, dataA, dataD, dataG];
+								const dataList = [dataVoucher,dataVendor, dataAC, dataA, dataD, dataG];
 								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
 							})
 						})
@@ -132,8 +131,8 @@ const JournalVouchers = (props) => {
 		setJournalVoucher(null);
 	}
 
-  const onCreate = () => {
-
+  const onCreate = (values) => {
+    console.log(values)
   }
 
   return (
