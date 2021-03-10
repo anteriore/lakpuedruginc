@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Form,
   Button,
@@ -14,16 +14,17 @@ import {
   Modal,
   Table,
 } from 'antd';
-import { PlusOutlined, MinusCircleOutlined, SelectOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusCircleOutlined, SelectOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Item } = Form;
 const { Title } = Typography;
 const { TextArea } = Input;
 const dateFormat = 'YYYY/MM/DD';
 
-const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle }) => {
+const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle, formInstance }) => {
+  const [value, setValue] = useState([]) //for listTable fields
 
-  const renderListTableColumns = (fields) => {
+  const renderInputColumns = (fields, form) => {
     let renderedColumns = []
 
     fields.forEach((column) => {
@@ -52,10 +53,47 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
             icon={<PlusOutlined/>}
             style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
             type="primary"
-            onClick={() => {}}
+            onClick={() => {
+              form.submit()
+            }}
           >
             Add
           </Button>
+        )
+      }
+    })
+    return renderedColumns;
+    
+  }
+
+  const renderListTableColumns = (fields) => {
+    let renderedColumns = []
+
+    fields.forEach((column) => {
+      renderedColumns.push({
+        title: column.label,
+        dataIndex: column.name,
+        key: column.name,
+      })
+    })
+
+    renderedColumns.push({
+      title: "Action",
+      render: (record, index) => {
+        return (
+          <Button
+            icon={<DeleteOutlined />}
+            style={{ marginRight: '1%' }}
+            type="dashed"
+            onClick={() => {
+              let returnValue = value.filter((item) => item !== record)
+              formInstance.setFieldsValue({
+                [item.name]: returnValue
+              })
+              setValue(returnValue)
+            }}
+            danger
+          />
         )
       }
     })
@@ -398,12 +436,41 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
     return null;
   }
   else if(item.type === 'listTable'){
+    const [inputForm] = Form.useForm();
+
     return (
-      <Table
-        dataSource={[{}]}
-        columns={renderListTableColumns(item.fields)}
-        pagination={false}
-      />
+      <Space direction="vertical" size={20} style={{ width: '100%' }}>
+        <Form
+            form={inputForm}
+            onFinish={(formValue) => {
+              let returnValue;
+              typeof item.handleAdd === 'function' ? 
+                returnValue = value.concat(item.handdleAdd(formValue)) : 
+                returnValue = value.concat(formValue)
+              formInstance.setFieldsValue({
+                [item.name]: returnValue
+              })
+              setValue(returnValue)
+            }}
+        >
+          <Table
+            dataSource={[{}]}
+            columns={renderInputColumns(item.fields, inputForm)}
+            pagination={false}
+          />
+        </Form>
+        
+        <Form.List label={item.label} name={item.name} rules={item?.rules ?? []}>
+          {() => (
+            <Table
+              columns={renderListTableColumns(item.fields)}
+              dataSource={value}
+              pagination={false}
+              summary={item.summary}
+            />
+          )}
+        </Form.List>
+      </Space>
     )
   }
 
