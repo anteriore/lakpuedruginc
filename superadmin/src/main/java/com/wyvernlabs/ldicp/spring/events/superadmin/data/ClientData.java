@@ -159,12 +159,19 @@ public class ClientData {
 					tempclient.setCompany(company);
 					tempclient.setCode(data[0].replace("\"", ""));
 					tempclient.setName(data[1].replace("\"", ""));
-					tempclient.setBusinessAddress(data[2].replace("\"", ""));tempclient.setDeliveryAddress(data[2].replace("\"", ""));
-					tempclient.setProprietor(data[3].replace("\"", ""));
-					tempclient.setTelephoneNumbers(data[4].replace("\"", ""));
-					tempclient.setTerms(Integer.parseInt( data[5].replace("\"", "")));
-					tempclient.setTin(data[6].replace("\"", ""));
-					tempclient.setVat(data[7].replace("\"", ""));
+					tempclient.setBusinessAddress(data[6].replace("\"", ""));tempclient.setDeliveryAddress(data[7].replace("\"", ""));
+					tempclient.setProprietor(data[8].replace("\"", ""));
+					tempclient.setTelephoneNumbers(data[9].replace("\"", ""));
+					tempclient.setTerms(Integer.parseInt( data[15].replace("\"", "")));
+					tempclient.setTin(data[31].replace("\"", ""));
+					tempclient.setStatus(data[23].replace("\"", ""));
+					tempclient.setMaxCreditLimit(Double.parseDouble(data[13].replace("\"", "")));
+					//System.out.println("-name--"+data[1].replace("\"", ""));
+
+					//sales rep-12
+					//cluster code 32
+					//instututional code 10
+					//tempclient.setVat(data[7].replace("\"", ""));
 					clientRepository.save(tempclient);
 
 

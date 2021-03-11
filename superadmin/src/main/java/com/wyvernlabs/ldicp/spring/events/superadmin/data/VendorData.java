@@ -47,7 +47,7 @@ public class VendorData {
 		vendor3.setTin("0912312313");
 		vendorRepository.save(vendor3);
 
-		readCSV("clientData.csv");
+		readCSV("vendorData.csv");
 	}
 
 
