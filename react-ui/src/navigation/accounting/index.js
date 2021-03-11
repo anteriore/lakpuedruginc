@@ -1,4 +1,5 @@
 import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
+import VoucherPayables from '../../screens/Accounting/VoucherPayables';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
 import CashReceiptVouchers from '../../screens/Accounting/CashReceiptVouchers';
 import ChequePrintings from '../../screens/Accounting/ChequePrintings';
@@ -20,7 +21,7 @@ export const routes = [
   {
     title: 'Vouchers Payables',
     path: '/vouchers-payables',
-    component: null,
+    component: VoucherPayables,
   },
   {
     title: 'Account Titles',
