@@ -166,10 +166,15 @@ const InputForm = (props) => {
       const values = await form.validateFields([
         'rrNumber', 'date', 'rrDate', 
         'vendor', 'siNumber', 'drNumber', 
-        'poNumber', 'adjustment', 'remarks'
+        'poNumber', 'adjustment', 'remarks',
+        'voucher'
       ]);
-      onSubmit({values, addedAccounts})
-      history.goBack();
+      onSubmit({
+        values, 
+        addedAccounts,
+        redirect: () => history.goBack()
+      })
+
     } catch (errorInfo) {
       console.log(errorInfo)
     }

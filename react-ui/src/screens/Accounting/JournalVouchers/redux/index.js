@@ -21,6 +21,25 @@ export const listJournalVouchers = createAsyncThunk('listJournalVouchers', async
   }
 });
 
+export const createJournalVouchers = createAsyncThunk('createJournalVouchers', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(
+      `/rest/journal-vouchers?token=${accessToken}`,
+      payload
+    );
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+})
+
 export const approveJournalVouchers = createAsyncThunk('approveJournalVouchers', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
@@ -109,6 +128,46 @@ const journalVouchersSlice = createSlice({
         statusLevel: level,
         responseCode: status,
         action: 'fetch',
+        statusMessage,
+      };
+    },
+    [createJournalVouchers.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for journal vouchers`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [createJournalVouchers.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Journal Vouchers'
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [createJournalVouchers.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Journal Vouchers'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

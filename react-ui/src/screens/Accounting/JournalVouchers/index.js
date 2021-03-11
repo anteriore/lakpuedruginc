@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
 import { useDispatch, useSelector } from 'react-redux';
-import { listJournalVouchers, approveJournalVouchers, rejectJournalVouchers, clearData } from './redux';
+import { listJournalVouchers, createJournalVouchers,approveJournalVouchers, rejectJournalVouchers, clearData } from './redux';
 import { listVouchers, clearData as clearVouchers } from '../Vouchers/redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
@@ -17,7 +17,7 @@ import GeneralHelper from '../../../helpers/general-helper';
 import moment from 'moment';
 import _ from "lodash";
 import InputForm from './InputForm';
-
+import JVHelper from './helper';
 
 const { Title } = Typography;
 
@@ -28,6 +28,7 @@ const JournalVouchers = (props) => {
   const {path} = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
+  const { formatJVPaload } = JVHelper()
   const { handleRequestResponse } = GeneralHelper();
 
   const [contentLoading, setContentLoading] = useState(false);
@@ -131,8 +132,17 @@ const JournalVouchers = (props) => {
 		setJournalVoucher(null);
 	}
 
-  const onCreate = (values) => {
-    console.log(values)
+  const onCreate = (payload) => {
+    dispatch(createJournalVouchers(formatJVPaload(payload.values, 
+      payload.addedAccounts, userId, company))).then((dataCreateJV) => {
+      if (dataCreateJV.type.split('/')[1] === 'rejected') {
+        message.warning("Debit and Credit should be same")
+      } else{
+        dispatch(listJournalVouchers(company))
+        payload.redirect();
+      }
+    })
+    
   }
 
   return (
