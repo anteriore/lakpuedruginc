@@ -321,23 +321,6 @@ const InputForm = (props) => {
                 }}
               >
                 <Row style={{ width: '87.5%'}}>
-                <Space style={{marginLeft: "5%"}} align="baseline">
-                  <Text>{`${formTable.label}:`}</Text>
-                  <Select
-                    placeholder={"Select Voucher selection mode"}
-                    optionFilterProp="children"
-                  >
-                    <Select.Option key={1} value={"Single Voucher"}>
-                      {"Single Voucher"}
-                    </Select.Option>
-                    <Select.Option key={2} value={"Multiple Purchase Voucher"}>
-                      {"Multiple Purchase Voucher"}
-                    </Select.Option>
-                    <Select.Option key={3} value={"Multiple Journal Voucher"}>
-                      {"Multiple Journal Voucher"}
-                    </Select.Option>
-                  </Select>
-                </Space>
                 <Button
                   onClick={() => {
                     setDisplayModal(true);

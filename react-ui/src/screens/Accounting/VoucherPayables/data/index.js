@@ -44,6 +44,7 @@ export const columns = [
 
 const FormDetails = () => {
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [mode, setMode] = useState(null)
   const accountTitles = useSelector((state) => state.accounting.accountTitles.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
@@ -71,6 +72,33 @@ const FormDetails = () => {
         type: 'textArea',
         rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
+      },
+      {
+        label: 'Voucher Selection',
+        name: 'variation',
+        rules: [{ required: true, message: 'Please select a Voucher selection mode '}],
+        placeholder: 'Select Voucher selection mode',
+        type: 'select',
+        choices: [
+          {
+            id: 1,
+            value: "Single Voucher",
+            name: "Single Voucher"
+          },
+          {
+            id: 2,
+            value: "Multiple Purchase Voucher",
+            name: "Multiple Purchase Voucher"
+          },
+          {
+            id: 3,
+            value: "Multiple Journal Voucher",
+            name: "Multiple Journal Voucher"
+          }
+        ],
+        onChange: (value) => {
+          setMode(value)
+        }
       },
     ],
     accountTitles: 
@@ -186,8 +214,8 @@ const FormDetails = () => {
     label: 'Voucher',
     name: 'payables',
     key: 'payables',
-    //rules: [{ required: true }],
-    //isVisible: vouchers.length > 0,
+    rules: [{ required: true }],
+    isVisible: mode !== null,
     fields: [
       {
         label: 'Number',
