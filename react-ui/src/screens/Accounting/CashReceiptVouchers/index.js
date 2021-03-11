@@ -14,6 +14,7 @@ import ItemDescription from '../../../components/ItemDescription';
 import { listCashReceiptVoucher, addCashReceiptVoucher, clearData } from './redux';
 import { listBankAccount, clearData as clearBankAccount } from '../../Maintenance/BankAccounts/redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
+import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../redux/vouchers';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
 import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux';
 
@@ -39,7 +40,7 @@ const CashReceiptVouchers = (props) => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(listCashReceiptVoucher({ company, message })).then(() => {
+    dispatch(listCashReceiptVoucher()).then(() => {
       setLoading(false);
     });
 
@@ -57,10 +58,12 @@ const CashReceiptVouchers = (props) => {
         dispatch(listDepartment({ company, message })).then((response3) => {
           dispatch(listArea({ company, message })).then((response4) => {
             dispatch(listGroup({ company, message })).then((response5) => {
-              const onSuccess = () => {
-                history.push(`${path}/new`);
-              };
-              handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, null, '');
+              dispatch(listVoucherByCompanyAndStatus({ company, status: 'Completed' })).then((response6) => {
+                const onSuccess = () => {
+                  history.push(`${path}/new`);
+                };
+                handleRequestResponse([response1, response2, response3, response4, response5, response6], onSuccess, null, '');
+              })
             })
           })
         })
@@ -117,7 +120,7 @@ const CashReceiptVouchers = (props) => {
       setLoading(true);
       
       const onSuccess = () => {
-        dispatch(listCashReceiptVoucher({ company, message })).then(() => {
+        dispatch(listCashReceiptVoucher()).then(() => {
           setLoading(false);
           history.goBack();
           message.success(`Successfully added Cash Receipt Voucher for ${response.payload.data.number}`);

@@ -7,6 +7,7 @@ import chequePrintings from '../ChequePrintings/redux';
 import chequeDisbursements from '../ChequeDisbursements/redux';
 import PDCDisbursements from '../PDCDisbursements/redux';
 import PDCVouchers from '../PDCVouchers/redux';
+import vouchers from './vouchers';
 
 const accounting = combineReducers({
   accountTitles,
@@ -16,6 +17,7 @@ const accounting = combineReducers({
   purchaseVouchers,
   PDCVouchers,
   cashReceiptVouchers,
+  vouchers,
 });
 
 export default accounting;
