@@ -6,11 +6,17 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
+
 import {
   listVoucherPayableByCompany,
+  addVoucherPayable,
   clearData,
 } from './redux';
-import FormScreen from '../../../components/forms/FormScreen';
+import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
+import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
+import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+
+import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper from '../../../helpers/general-helper';
 
@@ -26,7 +32,7 @@ const VoucherPayables = (props) => {
   const listData = useSelector((state) => state.accounting.voucherPayables.list);
 
   const { company } = props;
-  const { formDetails } = FormDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -50,6 +56,22 @@ const VoucherPayables = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
+    setFormTitle('Create Voucher Payable');
+    setFormData(null);
+    setLoading(true);
+    dispatch(listAccountTitles({ company, message })).then((response1) => {
+      dispatch(listDepartment({ company, message })).then((response2) => {
+        dispatch(listArea({ company, message })).then((response3) => {
+          dispatch(listGroup({ company, message })).then((response4) => {
+            const onSuccess = () => {
+              history.push(`${path}/new`);
+              setLoading(false);
+            };
+            handleRequestResponse([response1, response2, response3, response4], onSuccess, null, '');
+          })
+        })
+      })
+    })
   };
 
   const handleUpdate = (data) => {};
@@ -62,14 +84,60 @@ const VoucherPayables = (props) => {
     setDisplayModal(true);
   };
 
+  const processSubmitPayload = (data) => {
+    const accountTitles = []
+    data.accountTitles.forEach((item) => {
+      accountTitles.push({
+        accountTitle: {
+          id: item.accountTitle.id,
+          type: item.accountTitle.type
+        },
+        department: {id: item.department.id},
+        group: {id: item.group.id },
+        area: {id: item.area.id },
+        amount: item?.credit ?? item.debit
+      })
+    })
+
+    return {
+      ...data,
+      accountTitles,
+      company: {
+        id: company
+      },
+      variation: "TODO"
+    }
+  }
+
   const onSubmit = (data) => {
-    console.log(data)
+    const payload = processSubmitPayload(data)
+    dispatch(addVoucherPayable(payload)).then((response) => {
+      setLoading(true);
+      
+      const onSuccess = () => {
+        dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
+          setLoading(false);
+          history.goBack();
+          message.success(`Successfully added Voucher Payable ${response.payload.data.number}`);
+        });
+      };
+
+      const onFail = () => {
+        setLoading(false);
+        message.error(
+          `Unable to add Voucher Payable. Please double check the provided information.`
+        );
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
+    setFormData(null);
   };
 
   return (
     <Switch>
       <Route exact path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -77,17 +145,7 @@ const VoucherPayables = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-        />
-      </Route>
-      <Route path={`${path}/:id`}>
-        <FormScreen
-          title={formTitle}
-          onSubmit={onSubmit}
-          values={formData}
-          onCancel={() => {
-            setFormData(null);
-          }}
-          formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>
