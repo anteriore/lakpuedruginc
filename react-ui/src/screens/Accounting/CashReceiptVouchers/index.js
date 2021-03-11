@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, message } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Space, Modal, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -9,8 +9,9 @@ import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
 import FormScreen from '../../../components/forms/FormScreen';
 import GeneralHelper from '../../../helpers/general-helper';
+import ItemDescription from '../../../components/ItemDescription';
 
-import { listCashReceiptVoucher, clearData } from './redux';
+import { listCashReceiptVoucher, addCashReceiptVoucher, clearData } from './redux';
 import { listBankAccount, clearData as clearBankAccount } from '../../Maintenance/BankAccounts/redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
@@ -35,6 +36,7 @@ const CashReceiptVouchers = (props) => {
   const { handleRequestResponse } = GeneralHelper();
 
   const data = useSelector((state) => state.accounting.cashReceiptVouchers.list);
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     dispatch(listCashReceiptVoucher({ company, message })).then(() => {
@@ -73,13 +75,92 @@ const CashReceiptVouchers = (props) => {
   };
 
   const handleRetrieve = (data) => {
-    //setSelectedData(data);
-    //setDisplayModal(true);
+    setSelectedData(data);
+    setDisplayModal(true);
   };
 
+  const processSubmitPayload = (data) => {
+    const accountTitles = []
+    data.accountTitles.forEach((item) => {
+      accountTitles.push({
+        accountTitle: {
+          id: item.accountTitle.id,
+          type: item.accountTitle.type
+        },
+        department: {id: item.department.id},
+        group: {id: item.group.id },
+        area: {id: item.area.id },
+        amount: item?.credit ?? item.debit
+      })
+    })
+
+    return {
+      ...data,
+      accountTitles,
+      company: {
+        id: company
+      },
+      bankAccount: {
+        id: data.bankAccount
+      },
+      preparedBy: {
+        id: user
+      },
+      variation: "New",
+    }
+  }
+
   const onSubmit = (data) => {
+    const payload = processSubmitPayload(data)
+    console.log(payload)
+    dispatch(addCashReceiptVoucher(payload)).then((response) => {
+      setLoading(true);
+      
+      const onSuccess = () => {
+        dispatch(listCashReceiptVoucher({ company, message })).then(() => {
+          setLoading(false);
+          history.goBack();
+          message.success(`Successfully added Cash Receipt Voucher for ${response.payload.data.number}`);
+        });
+      };
+
+      const onFail = () => {
+        setLoading(false);
+        message.error(
+          `Unable to add Cash Receipt Voucher. Please double check the provided information.`
+        );
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
     setFormData(null);
   };
+
+  //for data display
+  const renderTableColumns = (fields) => {
+    const columns = [];
+    fields.forEach((field) => {
+      if (typeof field.render === 'undefined' || field.render === null) {
+        field.render = (object) => {console.log(object); return object[field.name]};
+      }
+      if(field.name !== 'credit' && field.name !== 'debit'){
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => {console.log(object); return field.render(object[field.name])},
+        });
+      }
+      else {
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => {console.log('amount', object); console.log(field); return field.render({[object.accountTitle.type.toLowerCase()]: object['amount']})},
+        });
+      }
+    });
+
+    return columns;
+  }
 
   return (
     <Switch>
@@ -156,45 +237,19 @@ const CashReceiptVouchers = (props) => {
             {selectedData === null ? (
               <Skeleton />
             ) : (
-              <>
-                <Descriptions
-                  bordered
+              <Space direction="vertical" size={20} style={{ width: '100%' }}>
+                <ItemDescription
                   title={`${selectedData.number} Details`}
-                  size="default"
-                  layout="vertical"
-                >
-                  {formDetails.form_items.map((item) => {
-                    if (!item.writeOnly) {
-                      if (item.type === 'select') {
-                        const itemData = selectedData[item.name];
-                        return (
-                          <Descriptions.Item label={item.label}>
-                            {itemData[item.selectName]}
-                          </Descriptions.Item>
-                        );
-                      }
-                      if (item.type === 'date') {
-                        return (
-                          <Descriptions.Item label={item.label}>
-                            {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
-                          </Descriptions.Item>
-                        );
-                      }
-                      if (item.type === 'list') {
-                        return null;
-                      }
-
-                      return (
-                        <Descriptions.Item label={item.label}>
-                          {selectedData[item.name]}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    return null;
-                  })}
-                </Descriptions>
-              </>
+                  selectedData={selectedData}
+                  formItems={formDetails.form_items}
+                />
+                <Text>{'Account Title Entries: '}</Text>
+                <Table
+                  dataSource={selectedData.accountTitles}
+                  columns={renderTableColumns(formDetails.form_items.find((item) => item.name === 'accountTitles').fields)}
+                  pagination={false}
+                />
+              </Space>
             )}
           </Modal>
         </Row>
