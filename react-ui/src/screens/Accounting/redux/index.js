@@ -19,8 +19,8 @@ const accounting = combineReducers({
   purchaseVouchers,
   voucherPayables,
   PDCVouchers,
-  cashReceiptVouchers,
   journalVouchers,
+  cashReceiptVouchers,
   vouchers,
 });
 
