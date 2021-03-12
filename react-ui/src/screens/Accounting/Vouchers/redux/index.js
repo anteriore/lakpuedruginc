@@ -12,11 +12,12 @@ const initialState = {
   action: '',
 };
 
-export const listVouchers = createAsyncThunk('listVouchers', async (payload, thunkAPI) => {
+export const listVoucherByCompany = createAsyncThunk('listVoucherByCompany', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  const { company } = payload
   try {
     const response = await axiosInstance.get(
-      `/rest/vouchers/company/${payload}/new-vouchers?token=${accessToken}`
+      `/rest/vouchers/company/${company}/new-vouchers?token=${accessToken}`
     );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
@@ -59,14 +60,14 @@ const vouchersSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listVouchers.pending]: (state) => {
+    [listVoucherByCompany.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
         statusMessage: `${message.ITEMS_GET_PENDING} for vouchers`,
       };
     },
-    [listVouchers.fulfilled]: (state, action) => {
+    [listVoucherByCompany.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
@@ -82,7 +83,7 @@ const vouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [listVouchers.rejected]: (state, action) => {
+    [listVoucherByCompany.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,

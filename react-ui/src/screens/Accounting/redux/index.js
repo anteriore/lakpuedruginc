@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import purchaseVouchers from '../PurchaseVouchers/redux';
+import voucherPayables from '../VoucherPayables/redux';
 import accountTitles from '../AccountTitles/redux';
 import cashReceiptVouchers from '../CashReceiptVouchers/redux';
 import chequePrintings from '../ChequePrintings/redux';
@@ -16,6 +17,7 @@ const accounting = combineReducers({
   chequePrintings,
   chequeDisbursements,
   purchaseVouchers,
+  voucherPayables,
   PDCVouchers,
   journalVouchers,
   cashReceiptVouchers,

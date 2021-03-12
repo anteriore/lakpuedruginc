@@ -7,7 +7,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
 import { useDispatch, useSelector } from 'react-redux';
 import { listJournalVouchers, createJournalVouchers,approveJournalVouchers, rejectJournalVouchers, clearData } from './redux';
-import { listVouchers, clearData as clearVouchers } from '../Vouchers/redux';
+import { listVoucherByCompany, clearData as clearVouchers } from '../Vouchers/redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
 import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
@@ -88,7 +88,7 @@ const JournalVouchers = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listVouchers(company)).then((dataVoucher) => {
+    dispatch(listVoucherByCompany({company})).then((dataVoucher) => {
       dispatch(listVendor({company})).then((dataVendor) => {
 				dispatch(listAccountTitles()).then((dataAC) => { 
 					dispatch(listA({company})).then((dataA) => {
