@@ -1,10 +1,12 @@
 import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
+import VoucherPayables from '../../screens/Accounting/VoucherPayables';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
 import CashReceiptVouchers from '../../screens/Accounting/CashReceiptVouchers';
 import ChequePrintings from '../../screens/Accounting/ChequePrintings';
 import ChequeDisbursements from '../../screens/Accounting/ChequeDisbursements';
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PDCVouchers from '../../screens/Accounting/PDCVouchers';
+import JournalVouchers from '../../screens/Accounting/JournalVouchers';
 
 export const routes = [
   {
@@ -15,12 +17,12 @@ export const routes = [
   {
     title: 'Journal Vouchers',
     path: '/journal-vouchers',
-    component: null,
+    component: JournalVouchers,
   },
   {
     title: 'Vouchers Payables',
     path: '/vouchers-payables',
-    component: null,
+    component: VoucherPayables,
   },
   {
     title: 'Account Titles',

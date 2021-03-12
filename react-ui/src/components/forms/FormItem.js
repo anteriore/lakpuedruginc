@@ -460,7 +460,6 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
                 typeof item.handleAdd === 'function' ? 
                   returnValue = value.concat(item.handleAdd(formValue)) : 
                   returnValue = value.concat(formValue)
-                console.log(returnValue)
                 formInstance.setFieldsValue({
                   [item.name]: returnValue
                 })
