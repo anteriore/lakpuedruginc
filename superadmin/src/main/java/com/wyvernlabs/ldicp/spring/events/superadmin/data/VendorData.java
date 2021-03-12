@@ -7,6 +7,12 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Vendor;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.VendorRepository;
 
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
 @Component
 public class VendorData {
 	private CompanyRepository companyRepository;
@@ -40,7 +46,71 @@ public class VendorData {
 		vendor3.setName("Mang Inasal");
 		vendor3.setTin("0912312313");
 		vendorRepository.save(vendor3);
+
+		readCSV("vendorData.csv");
 	}
+
+
+
+
+
+
+	public void readCSV(String csvname){
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/"+csvname;
+        BufferedReader br = null;
+        String line = "";
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		Company company = companyRepository.getOne(1L);
+        try {				
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
+
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+				//for (int i = 0; i < data.length; i++) {
+					//System.out.print(i+")["+ data[i].replace("\"", "")+"]" );
+					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
+
+					Vendor tempvendor = new Vendor();
+
+					tempvendor.setCompany(company);
+					tempvendor.setCode(data[0].replace("\"", ""));
+					tempvendor.setName(data[1].replace("\"", ""));
+					tempvendor.setAddress(data[2].replace("\"", ""));//tempvendor.setDeliveryAddress(data[2].replace("\"", ""));
+					//tempvendor.setProprietor(data[3].replace("\"", ""));
+					tempvendor.setPhoneNumber(data[4].replace("\"", ""));
+					tempvendor.setTerms(Integer.parseInt( data[5].replace("\"", "")));
+					tempvendor.setTin(data[6].replace("\"", ""));
+					tempvendor.setVat(data[7].replace("\"", ""));
+					vendorRepository.save(tempvendor);
+
+
+
+
+				 // }
+				 // System.out.println("");
+              
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+	
+
+	}
+
+
+
+
 	
 	
 }

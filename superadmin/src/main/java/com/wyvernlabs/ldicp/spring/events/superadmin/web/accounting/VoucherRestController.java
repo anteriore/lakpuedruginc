@@ -1,4 +1,4 @@
-package com.wyvernlabs.ldicp.spring.events.superadmin.web.dashboard;
+package com.wyvernlabs.ldicp.spring.events.superadmin.web.accounting;
 
 import java.util.ArrayList;
 import java.util.List;

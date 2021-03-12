@@ -90,6 +90,8 @@ public class ExecuteInitData {
     private ProductDivisionData productDivisionData;
     @Autowired
     private ProductCategoryData productCategoryData;
+    @Autowired
+    private ProvinceCodeData provinceCodeData;
 
     @PostConstruct
     public void init() {
@@ -175,5 +177,8 @@ public class ExecuteInitData {
         System.out.println("Bank Account initialized");
         purchaseVoucherData.init();
         System.out.println("Purchase Voucher initialized");
+
+        provinceCodeData.init();
+        System.out.println("Province Code initialized");
     }
 }

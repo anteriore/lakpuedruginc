@@ -30,6 +30,28 @@ export const listVouchers = createAsyncThunk('listVouchers', async (payload, thu
   }
 });
 
+export const listVoucherByCompanyAndStatus = createAsyncThunk(
+  'listVoucherByCompanyAndStatus',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+
+    const { company, status } = payload
+
+    try {
+      const response = await axiosInstance.get(`rest/vouchers/company/${company}/status/${status}/new-vouchers?token=${accessToken}`);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+
+  }
+);
+
 const vouchersSlice = createSlice({
   name: 'vouchers',
   initialState,
@@ -61,6 +83,45 @@ const vouchersSlice = createSlice({
       };
     },
     [listVouchers.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Vouchers'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [listVoucherByCompanyAndStatus.pending]: (state,) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for vouchers`,
+      };
+    },
+    [listVoucherByCompanyAndStatus.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Vouchers'
+      );
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listVoucherByCompanyAndStatus.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
