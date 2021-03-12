@@ -116,7 +116,7 @@ public class ClientData {
 	
 
 
-		readCSV("x");
+		readCSV("clientData.csv");
 
 
 
@@ -139,13 +139,12 @@ public class ClientData {
 
 
 
-	public void readCSV(String pathToCsv){
-		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/clientData.csv";
-		BufferedReader br = null;
-		Company company = companyRepository.getOne(1L);
+	public void readCSV(String csvname){
+		String csvFile = "../src/main/java/com/wyvernlabs/ldicp/spring/events/superadmin/csv/"+csvname;
+        BufferedReader br = null;
         String line = "";
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		
+		Company company = companyRepository.getOne(1L);
         try {				
             br = new BufferedReader(new FileReader(csvFile));
             while ((line = br.readLine()) != null) {
@@ -156,16 +155,23 @@ public class ClientData {
 					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
 
 					Client tempclient = new Client();
-
+					
 					tempclient.setCompany(company);
 					tempclient.setCode(data[0].replace("\"", ""));
 					tempclient.setName(data[1].replace("\"", ""));
-					tempclient.setBusinessAddress(data[2].replace("\"", ""));tempclient.setDeliveryAddress(data[2].replace("\"", ""));
-					tempclient.setProprietor(data[3].replace("\"", ""));
-					tempclient.setTelephoneNumbers(data[4].replace("\"", ""));
-					tempclient.setTerms(Integer.parseInt( data[5].replace("\"", "")));
-					tempclient.setTin(data[6].replace("\"", ""));
-					tempclient.setVat(data[7].replace("\"", ""));
+					tempclient.setBusinessAddress(data[6].replace("\"", ""));tempclient.setDeliveryAddress(data[7].replace("\"", ""));
+					tempclient.setProprietor(data[8].replace("\"", ""));
+					tempclient.setTelephoneNumbers(data[9].replace("\"", ""));
+					tempclient.setTerms(Integer.parseInt( data[15].replace("\"", "")));
+					tempclient.setTin(data[31].replace("\"", ""));
+					tempclient.setStatus(data[23].replace("\"", ""));
+					tempclient.setMaxCreditLimit(Double.parseDouble(data[13].replace("\"", "")));
+					//System.out.println("-name--"+data[1].replace("\"", ""));
+
+					//sales rep-12
+					//cluster code 32
+					//instututional code 10
+					//tempclient.setVat(data[7].replace("\"", ""));
 					clientRepository.save(tempclient);
 
 
