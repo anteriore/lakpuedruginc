@@ -14,6 +14,9 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ClientRepository
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesRepRepository;
 
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.InstitutionalCodeRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ClusterCodeRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.SalesRepRepository;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -29,6 +32,14 @@ public class ClientData {
 	@Autowired
 	private SalesRepRepository salesRepRepository;
 	
+	@Autowired
+    private InstitutionalCodeRepository institutionalCodeRepository;
+
+	@Autowired
+    private ClusterCodeRepository clusterCodeRepository;
+
+
+
 	public ClientData(CompanyRepository companyRepository, ClientRepository clientRepository) {
 		this.companyRepository = companyRepository;
 		this.clientRepository = clientRepository;
@@ -40,6 +51,8 @@ public class ClientData {
 		salesRep1.setCode("SR1");
 		salesRep1.setName("Sales Rep 1");
 		salesRep1 = salesRepRepository.save(salesRep1);
+
+		
 		Client client1 = new Client();
 		client1.setCode("C1");
 		client1.setCompany(company);
@@ -167,7 +180,9 @@ public class ClientData {
 					tempclient.setStatus(data[23].replace("\"", ""));
 					tempclient.setMaxCreditLimit(Double.parseDouble(data[13].replace("\"", "")));
 					//System.out.println("-name--"+data[1].replace("\"", ""));
-
+					tempclient.setInstitutionalCode(institutionalCodeRepository.findByCode(data[10].replace("\"", "")) );
+					tempclient.setClusterCode(clusterCodeRepository.findByCode(data[32].replace("\"", "")) );
+					tempclient.setSalesRep(salesRepRepository.findByCode(data[12].replace("\"", "")) );
 					//sales rep-12
 					//cluster code 32
 					//instututional code 10
