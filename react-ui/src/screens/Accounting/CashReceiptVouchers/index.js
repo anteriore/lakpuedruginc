@@ -14,7 +14,7 @@ import ItemDescription from '../../../components/ItemDescription';
 import { listCashReceiptVoucher, addCashReceiptVoucher, clearData } from './redux';
 import { listBankAccount, clearData as clearBankAccount } from '../../Maintenance/BankAccounts/redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
-import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../redux/vouchers';
+import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../Vouchers/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
 import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux';
 
