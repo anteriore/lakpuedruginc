@@ -98,6 +98,20 @@ const VoucherPayables = (props) => {
         amount: item?.credit ?? item.debit
       })
     })
+    let voucher = null
+    let vouchers = null
+    switch(data.variation){
+      case "1 Voucher": 
+        [voucher] = data.vouchers
+        break;
+      case "Multiple PJV": 
+        break;
+      case "Multiple JV": 
+        break;
+      default:
+        break;
+
+    }
 
     return {
       ...data,
@@ -105,12 +119,14 @@ const VoucherPayables = (props) => {
       company: {
         id: company
       },
-      variation: "TODO"
+      voucher: voucher,
+      vouchers: vouchers,
     }
   }
 
   const onSubmit = (data) => {
     const payload = processSubmitPayload(data)
+    console.log(payload);
     dispatch(addVoucherPayable(payload)).then((response) => {
       setLoading(true);
       

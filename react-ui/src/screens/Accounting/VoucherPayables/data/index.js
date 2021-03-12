@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
+import { listVoucherByCompany, clearData as clearVouchers } from '../../Vouchers/redux';
 import { Table, Typography } from 'antd';
 
 const { Text } = Typography;
@@ -43,13 +44,36 @@ export const columns = [
 ];
 
 const FormDetails = () => {
+  const dispatch = useDispatch()
+
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [voucherChoices, setVoucherChoices] = useState([]);
   const [mode, setMode] = useState(null)
+
   const accountTitles = useSelector((state) => state.accounting.accountTitles.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
   const groups = useSelector((state) => state.maintenance.groupsCategories.groupList);
-  const vouchers = []
+  const company = useSelector((state) => state.company.selectedCompany);
+  const purchaseVouchers = []
+  const journalVouchers = []
+  const vouchers = useSelector((state) => state.accounting.vouchers.list);
+
+  useEffect(() => {
+
+    switch(mode){
+      case "1 Voucher": 
+        setVoucherChoices(vouchers)
+        break;
+      case "Multiple PJV": 
+        break;
+      case "Multiple JV": 
+        break;
+      default:
+        break;
+
+    }
+  }, [mode])
 
   const formDetails = {
     form_name: 'voucher_payables',
@@ -81,23 +105,36 @@ const FormDetails = () => {
         type: 'select',
         choices: [
           {
-            id: 1,
-            value: "Single Voucher",
+            id: "1 Voucher",
+            value: "1 Voucher",
             name: "Single Voucher"
           },
           {
-            id: 2,
-            value: "Multiple Purchase Voucher",
+            id: "Multiple PJV",
+            value: "Multiple PJV",
             name: "Multiple Purchase Voucher"
           },
           {
-            id: 3,
-            value: "Multiple Journal Voucher",
+            id: "Multiple JV",
+            value: "Multiple JV",
             name: "Multiple Journal Voucher"
           }
         ],
         onChange: (value) => {
-          setMode(value)
+          switch(value){
+            case "1 Voucher": 
+              dispatch(listVoucherByCompany({ company })).then(() => {
+                setMode(value)
+              })
+              break;
+            case "Multiple PJV": 
+              break;
+            case "Multiple JV": 
+              break;
+            default:
+              break;
+
+          }
         }
       },
     ],
@@ -212,10 +249,10 @@ const FormDetails = () => {
 
   const tableDetails = {
     label: 'Voucher',
-    name: 'payables',
-    key: 'payables',
+    name: 'vouchers',
+    key: 'vouchers',
     rules: [{ required: true }],
-    isVisible: mode !== null,
+    isVisible: voucherChoices.length > 0,
     fields: [
       {
         label: 'Number',
@@ -224,16 +261,23 @@ const FormDetails = () => {
       {
         label: 'Date',
         name: 'date',
-        render: (data) => `${moment(new Date(data)).format('DD/MM/YYYY')}`
+        render: (data) => `${moment(new Date(data.data)).format('DD/MM/YYYY')}`
       },
       {
-        label: 'Payee',
-        name: 'vendor',
-        render: (data) => `[${data.code}] ${data.name}`
+        label: 'DR',
+        name: 'drNumber',
       },
       {
-        label: 'Remarks',
-        name: 'remarks',
+        label: 'SI',
+        name: 'siNumber',
+      },
+      {
+        label: 'PO',
+        name: 'poNumber',
+      },
+      {
+        label: 'RR',
+        name: 'rrNumber',
       },
       {
         label: 'Amount',
@@ -242,8 +286,12 @@ const FormDetails = () => {
     ],
     foreignKey: 'id',
     selectedKey: 'id',
-    selectData: vouchers,
+    selectData: voucherChoices,
     selectFields: [
+      {
+        title: 'Type',
+        dataIndex: 'type',
+      },
       {
         title: 'Number',
         dataIndex: 'number',
@@ -254,17 +302,24 @@ const FormDetails = () => {
         render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
       },
       {
-        title: 'Payee',
-        dataIndex: 'vendor',
-        render: (data) => `[${data.code}] ${data.name}`
+        title: 'Status',
+        dataIndex: 'status',
       },
       {
-        title: 'Remarks',
-        dataIndex: 'remarks',
+        title: 'DR',
+        dataIndex: 'drNumber',
       },
       {
-        title: 'Amount',
-        dataIndex: 'totalAmount',
+        title: 'SI',
+        dataIndex: 'siNumber',
+      },
+      {
+        title: 'PO',
+        dataIndex: 'poNumber',
+      },
+      {
+        title: 'RR',
+        dataIndex: 'rrNumber',
       },
     ],
     processData: (data) => {

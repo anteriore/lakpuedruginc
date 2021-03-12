@@ -338,7 +338,7 @@ const InputForm = (props) => {
                       <Table
                         dataSource={tableData}
                         columns={renderTableColumns(formTable)}
-                        pagination={{simple: true}}
+                        pagination={false}
                         locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                         summary={formTable.summary}
                       />
