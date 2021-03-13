@@ -58,16 +58,16 @@ const PurchaseVouchers = (props) => {
 			setContentLoading(false);
 			if(isCancelled) {
 				dispatch(clearData());
-				dispatch(clearAC());
-				dispatch(clearDeptArea());
-				dispatch(clearRR());
-				dispatch(clearGroupCat());
-				dispatch(clearVendor());
 			}
 		})
 
 		return function clearUp() {
 			dispatch(clearData());
+			dispatch(clearAC());
+			dispatch(clearDeptArea());
+			dispatch(clearRR());
+			dispatch(clearGroupCat());
+			dispatch(clearVendor());
 			isCancelled = true
 		}
 	}, [company, dispatch]);

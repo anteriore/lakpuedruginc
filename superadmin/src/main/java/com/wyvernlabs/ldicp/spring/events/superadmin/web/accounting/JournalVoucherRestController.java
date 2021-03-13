@@ -73,6 +73,11 @@ public class JournalVoucherRestController {
 		return journalVoucherService.approve(jvId, userId);
 	}
 
+	@PostMapping("/reject/{jvId}/user/{userId}")
+	public JournalVoucher reject(@PathVariable Long jvId, @PathVariable Long userId) {
+		return journalVoucherService.reject(jvId, userId);
+	}
+
 	@GetMapping("/company/{companyId}/voucher/{voucherId}/adjustments")
 	public List<JournalVoucher> getAdjustmentsOfVoucherByCompany(@PathVariable Long companyId,
 			@PathVariable Long voucherId) {

@@ -3,11 +3,11 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listPurchaseVouchers = createAsyncThunk('listPurchaseVouchers', async (payload, thunkAPI) => {
+export const listJournalVouchers = createAsyncThunk('listJournalVouchers', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.get(
-      `/rest/purchase-vouchers/company/${payload}?token=${accessToken}`
+      `/rest/journal-vouchers/company/${payload}?token=${accessToken}`
     );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
@@ -21,11 +21,11 @@ export const listPurchaseVouchers = createAsyncThunk('listPurchaseVouchers', asy
   }
 });
 
-export const createPurchaseVouchers = createAsyncThunk('createPurchaseVouchers', async (payload, thunkAPI) => {
+export const createJournalVouchers = createAsyncThunk('createJournalVouchers', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.post(
-      `/rest/purchase-vouchers?token=${accessToken}`,
+      `/rest/journal-vouchers?token=${accessToken}`,
       payload
     );
 
@@ -40,13 +40,12 @@ export const createPurchaseVouchers = createAsyncThunk('createPurchaseVouchers',
   }
 })
 
-export const updatePurchaseVouchers = createAsyncThunk('updatePurchaseVouchers', async (payload, thunkAPI) => {
+export const approveJournalVouchers = createAsyncThunk('approveJournalVouchers', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.post(
-        `/rest/purchase-vouchers?token=${accessToken}`,
-        payload
-      );
+      `/rest/journal-vouchers/approve/${payload.jvId}/user/${payload.user}?token=${accessToken}`
+    );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -57,13 +56,14 @@ export const updatePurchaseVouchers = createAsyncThunk('updatePurchaseVouchers',
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data);
   }
-})
+});
 
-export const approvePurchaseVoucher = createAsyncThunk('approvePurchaseVoucher', async (payload, thunkAPI) => {
+export const rejectJournalVouchers = createAsyncThunk('rejectJournalVouchers', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.post(
-        `/rest/purchase-vouchers/approve/${payload.pvId}/user/${payload.user}?token=${accessToken}`);
+      `/rest/journal-vouchers/reject/${payload.jvId}/user/${payload.user}?token=${accessToken}`
+    );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -74,26 +74,7 @@ export const approvePurchaseVoucher = createAsyncThunk('approvePurchaseVoucher',
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data);
   }
-})
-
-export const rejectPurchaseVoucher = createAsyncThunk('rejectPurchaseVoucher', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.post(
-        `/rest/purchase-vouchers/reject/${payload.pvId}/user/${payload.user}?token=${accessToken}`,
-        payload
-      );
-
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-    if (valid) {
-      return validatedResponse;
-    }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
-  }
-})
+});
 
 const initialState = {
   list: [],
@@ -104,21 +85,21 @@ const initialState = {
   action: '',
 };
 
-const purchaseVouchersSlice = createSlice({
-  name: 'purchaseVouchers',
+const journalVouchersSlice = createSlice({
+  name: 'journalVouchers',
   initialState,
   reducers: {
     clearData: () => initialState,
   },
   extraReducers: {
-    [listPurchaseVouchers.pending]: (state) => {
+    [listJournalVouchers.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
         statusMessage: `${message.ITEMS_GET_PENDING} for purchase vouchers`,
       };
     },
-    [listPurchaseVouchers.fulfilled]: (state, action) => {
+    [listJournalVouchers.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
@@ -134,7 +115,7 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [listPurchaseVouchers.rejected]: (state, action) => {
+    [listJournalVouchers.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
@@ -150,21 +131,21 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [createPurchaseVouchers.pending]: (state) => {
+    [createJournalVouchers.pending]: (state) => {
       return {
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for purchase vouchers`,
+        statusMessage: `${message.ITEM_ADD_PENDING} for journal vouchers`,
         statusLevel: '',
         responseCode: null,
       };
     },
-    [createPurchaseVouchers.fulfilled]: (state, action) => {
+    [createJournalVouchers.fulfilled]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
       );
 
       return {
@@ -175,11 +156,11 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [createPurchaseVouchers.rejected]: (state, action) => {
+    [createJournalVouchers.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
       );
 
       return {
@@ -190,21 +171,21 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [updatePurchaseVouchers.pending]: (state) => {
+    [approveJournalVouchers.pending]: (state) => {
       return {
         ...state,
-        action: 'create',
+        action: 'approving',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for purchase vouchers`,
+        statusMessage: `Approving selected journal voucher`,
         statusLevel: '',
         responseCode: null,
       };
     },
-    [updatePurchaseVouchers.fulfilled]: (state, action) => {
+    [approveJournalVouchers.fulfilled]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
       );
 
       return {
@@ -215,11 +196,11 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [updatePurchaseVouchers.rejected]: (state, action) => {
+    [approveJournalVouchers.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
       );
 
       return {
@@ -230,21 +211,21 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [approvePurchaseVoucher.pending]: (state) => {
+    [rejectJournalVouchers.pending]: (state) => {
       return {
         ...state,
-        action: 'create',
+        action: 'rejecting',
         status: 'loading',
-        statusMessage: `Approving selected purchase voucher`,
+        statusMessage: `Reject selected journal voucher`,
         statusLevel: '',
         responseCode: null,
       };
     },
-    [approvePurchaseVoucher.fulfilled]: (state, action) => {
+    [rejectJournalVouchers.fulfilled]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
       );
 
       return {
@@ -255,11 +236,11 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [approvePurchaseVoucher.rejected]: (state, action) => {
+    [rejectJournalVouchers.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
       );
 
       return {
@@ -270,48 +251,8 @@ const purchaseVouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [rejectPurchaseVoucher.pending]: (state) => {
-      return {
-        ...state,
-        action: 'create',
-        status: 'loading',
-        statusMessage: `Rejecting selected purchase voucher`,
-        statusLevel: '',
-        responseCode: null,
-      };
-    },
-    [rejectPurchaseVoucher.fulfilled]: (state, action) => {
-      const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Purchase Vouchers'
-      );
-
-      return {
-        ...state,
-        status: 'succeeded',
-        statusLevel: level,
-        responseCode: status,
-        statusMessage,
-      };
-    },
-    [rejectPurchaseVoucher.rejected]: (state, action) => {
-      const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Purchase Vouchers'
-      );
-
-      return {
-        ...state,
-        status: 'failed',
-        statusLevel: level,
-        responseCode: status,
-        statusMessage,
-      };
-    }
-  },
+  }
 });
 
-export const { clearData } = purchaseVouchersSlice.actions;
-export default purchaseVouchersSlice.reducer;
+export const {clearData} = journalVouchersSlice.actions;
+export default journalVouchersSlice.reducer;

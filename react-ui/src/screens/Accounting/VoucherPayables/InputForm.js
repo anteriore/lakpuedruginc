@@ -12,16 +12,17 @@ import {
   Typography,
   Table,
   Empty,
+  Space,
   message,
   TimePicker,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import FormItem from './FormItem';
+import FormItem from '../../../components/forms/FormItem';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-const FormScreen = (props) => {
+const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
   const [form] = Form.useForm();
   const history = useHistory();
@@ -311,31 +312,46 @@ const FormScreen = (props) => {
             })}
 
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
-                {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
-                    <div style={{ float: 'right', marginBottom: '1%' }}>
-                      <Button
-                        onClick={() => {
-                          setDisplayModal(true);
-                          setLoadingModal(false);
-                        }}
-                        icon={<SelectOutlined />}
-                      >
-                        {`Select ${formTable.label}`}
-                      </Button>
-                    </div>
-                    <Table
-                      dataSource={tableData}
-                      columns={renderTableColumns(formTable)}
-                      pagination={{simple: true}}
-                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                      summary={formTable.summary}
-                    />
-                  </Col>
-                )}
-              </Form.List>
+              <Space 
+                direction="vertical" 
+                size={15} 
+                style={{ 
+                  width: '100%', 
+                  marginBottom: '5%',
+                }}
+              >
+                <Row style={{ width: '87.5%'}}>
+                <Button
+                  onClick={() => {
+                    setDisplayModal(true);
+                    setLoadingModal(false);
+                  }}
+                  icon={<SelectOutlined />}
+                  style={{marginLeft: "auto"}}
+                >
+                  {`Select ${formTable.label}`}
+                </Button>
+                </Row>
+                <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
+                  {(fields, { errors }) => (
+                    <Col span={20} offset={1}>
+                      <Table
+                        dataSource={tableData}
+                        columns={renderTableColumns(formTable)}
+                        pagination={false}
+                        locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                        summary={formTable.summary}
+                      />
+                    </Col>
+                  )}
+                </Form.List>
+              </Space>
             )}
+            
+            <Space direction="vertical" size={15} style={{ width: '95%' }}>
+              <FormItem item={formDetails.accountTitles} onFail={onFail} formInstance={form} />
+            </Space>
+
           </Form>
 
           <div style={styles.tailLayout}>
@@ -386,7 +402,7 @@ const FormScreen = (props) => {
   );
 };
 
-export default FormScreen;
+export default InputForm;
 
 const styles = {
   layout: {
@@ -413,6 +429,7 @@ const styles = {
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
+    marginTop: '2%',
     width: '87.5%',
   },
   listTailLayout: {

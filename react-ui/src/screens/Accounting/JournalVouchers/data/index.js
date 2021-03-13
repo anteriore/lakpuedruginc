@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 export const tableHeader = [
   {
-    title: 'PV No',
+    title: 'JV No',
     dataIndex: 'number',
     key: 'number',
     align: 'center',
@@ -51,7 +51,7 @@ export const tableHeader = [
     sorter: (a, b) => a.number.length - b.number.length,
   },
   {
-    title: 'Total AMount',
+    title: 'Total Amount',
     dataIndex: 'totalAmount',
     key: 'totalAmount',
     align: 'center',
@@ -117,15 +117,18 @@ export const tableHeaderAccounts = [
   },
 ]
 
+
 const FormDetails = () => {
-  const defaultValManual = {
+  const defaultValWithAdj = {
+    voucher: undefined,
     siNumber: undefined,
     rrNumber: undefined,
+    rrDate: undefined,
     poNumber: undefined,
     drNumber: undefined
   };
 
-  const defaultValAuto = {
+  const defaultValNewAdj = {
     siNumber: undefined,
     rrNumber: undefined,
     poNumber: undefined,
@@ -150,19 +153,19 @@ const FormDetails = () => {
         rules: [{ required: true }],
       },
       {
-        label: 'Type',
-        name: 'manual',
+        label: 'Adjustment',
+        name: 'adjustment',
         type: 'radioGroup',
         selectName: 'name',
         initialValue: false,
         choices: [
           {
             id: false,
-            name: "Automatic",
+            name: "New",
           },
           {
             id: true,
-            name: "Manual",
+            name: "With Adjustment",
           },
         ],
         rules: [{ required: true }],
@@ -232,11 +235,19 @@ const FormDetails = () => {
     ]
   }
 
-  // Manual Form Details
-  const manualFormDetails = {
+  const newAdjustmentFormDetails = {
     form_items:   [
       {
-        label: 'RR Number',
+        label: 'Vendor',
+        name: 'vendor',
+        rules: [{ required: true, message: 'Please select a vendor' }],
+        placeholder: 'Select Vendor',
+        render: (object) => `[${object?.code ?? ""}] ${object?.fullName ?? ""}`,
+        type: 'selectSearch',
+        choices: [],
+      },
+      {
+        label: 'RR #',
         name: 'rrNumber',
         placeholder: 'Enter RR Number',
         rules: [{ required: true, message: "Please enter RR number" }],
@@ -246,15 +257,6 @@ const FormDetails = () => {
         name: 'rrDate',
         type: 'date',
         rules: [{ required: true }],
-      },
-      {
-        label: 'Vendor',
-        name: 'vendor',
-        rules: [{ required: true, message: 'Please select a vendor' }],
-        placeholder: 'Select Vendor',
-        render: (object) => `[${object?.code ?? ""}] ${object?.fullName ?? ""}`,
-        type: 'selectSearch',
-        choices: [],
       },
       {
         label: 'SI #',
@@ -277,16 +279,28 @@ const FormDetails = () => {
     ]
   }
 
-  const autoFormDetails = {
+  const withAdjustmentFormDetails = {
     form_items: [
       {
-        label: 'RR Number',
-        name: 'rrNumber',
-        rules: [{ required: true, message: 'Please select RR number' }],
-        placeholder: 'Select RR Number',
+        label: 'Voucher',
+        name: 'voucher',
+        rules: [{ required: true, message: 'Please select voucher number' }],
+        placeholder: 'Select Voucher',
         render: (object) => `${object?.number ?? ""} - ${object?.status ?? ""}`,
         type: 'selectSearch',
         choices: [],
+      },
+      {
+        label: 'RR #',
+        name: 'rrNumber',
+        placeholder: '',
+        readOnly: true,
+      },
+      {
+        label: 'RR Date',
+        name: 'rrDate',
+        placeholder: '',
+        readOnly: true,
       },
       {
         label: 'SI #',
@@ -345,7 +359,7 @@ const FormDetails = () => {
     },
   ];
 
-  return { formDetails, manualFormDetails, autoFormDetails, accountTableHeader, defaultValManual, defaultValAuto}
+  return { formDetails, withAdjustmentFormDetails, newAdjustmentFormDetails, accountTableHeader, defaultValNewAdj, defaultValWithAdj}
 }
 
 

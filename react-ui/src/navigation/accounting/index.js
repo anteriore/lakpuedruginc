@@ -1,9 +1,15 @@
 import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
+import VoucherPayables from '../../screens/Accounting/VoucherPayables';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
+import CashReceiptVouchers from '../../screens/Accounting/CashReceiptVouchers';
+import ChequePrintings from '../../screens/Accounting/ChequePrintings';
+import ChequeDisbursements from '../../screens/Accounting/ChequeDisbursements';
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PDCVouchers from '../../screens/Accounting/PDCVouchers';
 import DebitMemo from '../../screens/Accounting/DebitMemo';
 import CreditMemo from '../../screens/Accounting/CreditMemo';
+import JournalVouchers from '../../screens/Accounting/JournalVouchers';
+
 
 export const routes = [
   {
@@ -14,12 +20,12 @@ export const routes = [
   {
     title: 'Journal Vouchers',
     path: '/journal-vouchers',
-    component: null,
+    component: JournalVouchers,
   },
   {
     title: 'Vouchers Payables',
     path: '/vouchers-payables',
-    component: null,
+    component: VoucherPayables,
   },
   {
     title: 'Account Titles',
@@ -29,12 +35,12 @@ export const routes = [
   {
     title: 'Cheque Printings',
     path: '/cheque-printings',
-    component: null,
+    component: ChequePrintings,
   },
   {
     title: 'Cheque Disbursement Vouchers',
     path: '/cheque-disbursement-vouchers',
-    component: null,
+    component: ChequeDisbursements,
   },
   {
     title: 'Credit Memos',
@@ -49,7 +55,7 @@ export const routes = [
   {
     title: 'Cash Receipt Vouchers',
     path: '/cash-receipt-vouchers',
-    component: null,
+    component: CashReceiptVouchers,
   },
   {
     title: 'PDC Disbursements',
