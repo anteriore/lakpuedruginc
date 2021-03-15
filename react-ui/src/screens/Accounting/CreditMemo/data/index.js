@@ -34,6 +34,17 @@ export const DisplayDetails = () => {
             }
         },
         {
+            title: 'Client',
+            dataIndex: 'reference',
+            key: 'reference',
+            align: 'center',
+            defaultSortOrder: 'ascend',
+            datatype: 'object',
+            dataToString: (object) => {
+                return object.salesOrder.client.name
+            }
+        },
+        {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
