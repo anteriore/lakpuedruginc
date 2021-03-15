@@ -64,7 +64,7 @@ export const checkResponseValidity = (response) => {
   switch (response.status) {
     case 200:
       if (response.data.length === 0) {
-        response.statusText = 'empty';
+        response.statusText = 'list is empty';
         return { response, valid: true };
       }
       response.statusText = 'succesful';
@@ -72,76 +72,31 @@ export const checkResponseValidity = (response) => {
 
     case 404:
     case 400:
-      response.statusText = 'not existing';
+      response.statusText = 'process from client failed';
       return { response, valid: false };
     case 500:
-      response.statusText = 'something went wrong to the server';
+      response.statusText = 'process from server failed';
       return { response, valid: false };
     default:
       break;
   }
 };
 
-export const generateStatusMessage = (payload, currentModule) => {
-  const { status, data } = payload;
-  switch (status) {
-    case 200:
-      if (data.length !== 0) {
-        return {
-          level: 'success',
-          message: `${code.STATUS_200}: (${currentModule})`,
-        };
+export const generateStatusMessage = (payload, currentModule, action) => {
+  const { status, data, statusText } = payload; 
+  const getMessageLevel = () => {
+    if (status === 200) {
+      if (data.length === 0) {
+        return 'warning'
       }
-      return {
-        level: 'warning',
-        message: `There's no data in ${currentModule}`,
-      };
+      return 'success'
+    }
+    return 'error';
+  }
 
-    case 201:
-      return {
-        level: 'error',
-        message: `{${code.STATUS_201}: (${currentModule})}`,
-      };
-    case 400:
-      return {
-        level: 'error',
-        message: `${code.STATUS_400}: (${currentModule})`,
-      };
-    case 401:
-      return {
-        level: 'error',
-        message: `${code.STATUS_401}: (${currentModule})`,
-      };
-    case 404:
-      return {
-        level: 'error',
-        message: `${code.STATUS_404}: (${currentModule})`,
-      };
-    case 500:
-      return {
-        level: 'error',
-        message: `${code.STATUS_500}: (${currentModule})`,
-      };
-    case 501:
-      return {
-        level: 'error',
-        message: `${code.STATUS_501}: (${currentModule})`,
-      };
-    case 503:
-      return {
-        level: 'error',
-        message: `${code.STATUS_503}: (${currentModule})`,
-      };
-    case 504:
-      return {
-        level: 'error',
-        message: `${code.STATUS_504}: (${currentModule})`,
-      };
-    default:
-      return {
-        level: 'error',
-        message: code.STATUS_DEFAULT,
-      };
+  return {
+    level: getMessageLevel(),
+    message: `${currentModule}: ${_.upperFirst(action)} ${statusText}`
   }
 };
 

@@ -46,17 +46,31 @@ export const createFG = createAsyncThunk('createFG', async (payload, thunkAPI) =
 
 export const updateFG = createAsyncThunk('updateFG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/finished-goods?token=${accessToken}`, payload);
-
-  return response;
+  try {
+    const response = await axiosInstance.post(`/rest/finished-goods?token=${accessToken}`, payload);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  const response = await axiosInstance.post(`/rest/finished-goods/delete?token=${accessToken}`, id);
-
-  return response;
+  try {
+    const response = await axiosInstance.post(`/rest/finished-goods/delete?token=${accessToken}`, id);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 const initialState = {
@@ -80,6 +94,7 @@ const finishedGoodsSlice = createSlice({
       return { 
         ...state,  
         action: 'fetch', 
+        status: 'loading',
         statusMessage: ITEMS_GET_PENDING 
       };
     },
@@ -87,7 +102,8 @@ const finishedGoodsSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finished Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
@@ -103,7 +119,8 @@ const finishedGoodsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finished Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
@@ -126,10 +143,10 @@ const finishedGoodsSlice = createSlice({
     },
     [createFG.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      console.log("Finished Good Fulfilled", action.payload)
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finshed Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
@@ -144,7 +161,8 @@ const finishedGoodsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finished Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
@@ -169,7 +187,8 @@ const finishedGoodsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finshed Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
@@ -184,7 +203,8 @@ const finishedGoodsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finished Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
@@ -209,7 +229,8 @@ const finishedGoodsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finshed Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
@@ -224,7 +245,8 @@ const finishedGoodsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Finished Goods'
+        'Finished Goods',
+        state.action
       );
 
       return {
