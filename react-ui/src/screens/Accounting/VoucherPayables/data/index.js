@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
-import { listVoucherByCompany, clearData as clearVouchers } from '../../Vouchers/redux';
 import { Table, Typography } from 'antd';
 
 const { Text } = Typography;
@@ -40,43 +39,24 @@ export const columns = [
     key: 'status',
     datatype: 'string',
   },
-
 ];
 
 const FormDetails = () => {
-  const dispatch = useDispatch()
 
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [voucherChoices, setVoucherChoices] = useState([]);
-  const [mode, setMode] = useState(null)
+  const [selectedPayee, setSelectedPayee] = useState(false);
 
+  const vendors = useSelector((state) => state.maintenance.vendors.list);
   const accountTitles = useSelector((state) => state.accounting.accountTitles.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
   const groups = useSelector((state) => state.maintenance.groupsCategories.groupList);
-  const company = useSelector((state) => state.company.selectedCompany);
-  const purchaseVouchers = []
-  const journalVouchers = []
-  const vouchers = useSelector((state) => state.accounting.vouchers.list);
-
-  useEffect(() => {
-
-    switch(mode){
-      case "1 Voucher": 
-        setVoucherChoices(vouchers)
-        break;
-      case "Multiple PJV": 
-        break;
-      case "Multiple JV": 
-        break;
-      default:
-        break;
-
-    }
-  }, [mode])
 
   const formDetails = {
     form_name: 'voucher_payables',
+    setVoucherChoices: setVoucherChoices,
+    setSelectedPayee: setSelectedPayee,
     form_items: [
       {
         label: 'Number',
@@ -96,6 +76,16 @@ const FormDetails = () => {
         type: 'textArea',
         rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
+      },
+      {
+        label: 'Payee',
+        name: 'vendor',
+        rules: [{ required: selectedPayee, message: 'Please select a payee from the given options '}],
+        placeholder: 'Select Payee',
+        type: 'select',
+        choices: vendors,
+        readOnly: !selectedPayee,
+        render: (object) => `[${object.code}] ${object.name}`
       },
       {
         label: 'Voucher Selection',
@@ -120,22 +110,6 @@ const FormDetails = () => {
             name: "Multiple Journal Voucher"
           }
         ],
-        onChange: (value) => {
-          switch(value){
-            case "1 Voucher": 
-              dispatch(listVoucherByCompany({ company })).then(() => {
-                setMode(value)
-              })
-              break;
-            case "Multiple PJV": 
-              break;
-            case "Multiple JV": 
-              break;
-            default:
-              break;
-
-          }
-        }
       },
     ],
     accountTitles: 
@@ -261,7 +235,7 @@ const FormDetails = () => {
       {
         label: 'Date',
         name: 'date',
-        render: (data) => `${moment(new Date(data.data)).format('DD/MM/YYYY')}`
+        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`
       },
       {
         label: 'DR',

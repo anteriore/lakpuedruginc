@@ -15,10 +15,18 @@ import {
   Space,
   message,
   TimePicker,
+  Skeleton,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+
 import FormItem from '../../../components/forms/FormItem';
+import GeneralHelper from '../../../helpers/general-helper';
+
+import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../Vouchers/redux';
+import { listPurchaseVouchersByVendorWithoutAdjustent, clearData as clearPurchaseVouchers } from '../PurchaseVouchers/redux';
+import { listJournalVouchersByVendorWithoutAdjustent, clearData as clearJournalVouchers } from '../JournalVouchers/redux';
 
 const { Title, Text } = Typography;
 
@@ -27,26 +35,50 @@ const InputForm = (props) => {
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const dispatch = useDispatch()
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
+  const { handleRequestResponse } = GeneralHelper();
 
-  const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
+  const [loadingTable, setLoadingTable] = useState(false);
+
+  const [mode, setMode] = useState(null);
+  const [selectedVendor, setSelectedVendor] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
-  const toggleName = formDetails.toggle_name;
+  const company = useSelector((state) => state.company.selectedCompany);
+  const purchaseVouchers = useSelector((state) => state.accounting.purchaseVouchers.list);
+  const journalVouchers = useSelector((state) => state.accounting.journalVouchers.list);
+  const vouchers = useSelector((state) => state.accounting.vouchers.list);
+
 
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
-    }
     // eslint-disable-next-line
   }, [values, form]);
+
+  useEffect(() => {
+    console.log(mode)
+    switch(mode){
+      case "1 Voucher": 
+        //TODO: limit selection to one
+        formDetails.setVoucherChoices(vouchers)
+        break;
+      case "Multiple PJV": 
+        formDetails.setVoucherChoices(purchaseVouchers)
+        break;
+      case "Multiple JV": 
+        formDetails.setVoucherChoices(journalVouchers)
+        break;
+      default:
+        break;
+    }
+  }, [mode, purchaseVouchers, journalVouchers, vouchers])
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
@@ -277,11 +309,68 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
+    console.log(values)
+    
+    if(values.hasOwnProperty('variation')){
+      console.log("LOAD")
+      switch(values.variation){
+        case "1 Voucher": 
+            setLoadingTable(true)
+            formDetails.setSelectedPayee(false)
+            dispatch(listVoucherByCompanyAndStatus({ company, status: "Approved" })).then(() => {
+              setLoadingTable(false)
+              setMode(values.variation)
+            })
+          break;
+        case "Multiple PJV": 
+          formDetails.setSelectedPayee(true)
+          form.setFieldsValue({vendor: null})
+          setMode(values.variation)
+          break;
+        case "Multiple JV": 
+          formDetails.setSelectedPayee(true)
+          form.setFieldsValue({vendor: null})
+          setMode(values.variation)
+          break;
+        default:
+          break;
       }
     }
+
+    if(values.hasOwnProperty('vendor')){
+      console.log("VENDOR CHOSEN")
+      console.log("MODE: ", mode)
+      switch(mode){
+        case "Multiple PJV":
+          setLoadingTable(true)
+          dispatch(listPurchaseVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
+            const onSuccess = () => {
+              console.log(response.payload.data.length)
+              if(response.payload.data.length === 0){
+                message.error("The are no approved Purchase Journal Vouchers associated with the selected payee.")
+              }
+            };
+            handleRequestResponse([response], onSuccess, null, '');
+          })
+          setLoadingTable(false)
+          break;
+        case "Multiple JV": 
+          setLoadingTable(true)
+          dispatch(listJournalVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
+            const onSuccess = () => {
+              if(response.payload.data.length === 0){
+                message.error("The are no approved Journal Vouchers associated with the selected payee.")
+              }
+            };
+            handleRequestResponse([response], onSuccess, null, '');
+          })
+          setLoadingTable(false)
+          break;
+        default:
+          break;
+      }
+    }
+
   };
 
   return (
@@ -301,52 +390,51 @@ const InputForm = (props) => {
             onValuesChange={onValuesChange}
           >
             {formDetails.form_items.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
-                }
-                return null;
-              }
-
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
-            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-              <Space 
-                direction="vertical" 
-                size={15} 
-                style={{ 
-                  width: '100%', 
-                  marginBottom: '5%',
-                }}
-              >
-                <Row style={{ width: '87.5%'}}>
-                <Button
-                  onClick={() => {
-                    setDisplayModal(true);
-                    setLoadingModal(false);
-                  }}
-                  icon={<SelectOutlined />}
-                  style={{marginLeft: "auto"}}
-                >
-                  {`Select ${formTable.label}`}
-                </Button>
-                </Row>
-                <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
-                  {(fields, { errors }) => (
-                    <Col span={20} offset={1}>
-                      <Table
-                        dataSource={tableData}
-                        columns={renderTableColumns(formTable)}
-                        pagination={false}
-                        locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                        summary={formTable.summary}
-                      />
-                    </Col>
-                  )}
-                </Form.List>
-              </Space>
-            )}
+            {
+              loadingTable ? (
+                <Skeleton/>
+              ) : ( formTable.isVisible && 
+                (
+                  <Space 
+                    direction="vertical" 
+                    size={15} 
+                    style={{ 
+                      width: '100%', 
+                      marginBottom: '5%',
+                    }}
+                  >
+                    <Row style={{ width: '87.5%'}}>
+                    <Button
+                      onClick={() => {
+                        setDisplayModal(true);
+                        setLoadingModal(false);
+                      }}
+                      icon={<SelectOutlined />}
+                      style={{marginLeft: "auto"}}
+                    >
+                      {`Select ${formTable.label}`}
+                    </Button>
+                    </Row>
+                    <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
+                      {(fields, { errors }) => (
+                        <Col span={20} offset={1}>
+                          <Table
+                            dataSource={tableData}
+                            columns={renderTableColumns(formTable)}
+                            pagination={false}
+                            locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                            summary={formTable.summary}
+                          />
+                        </Col>
+                      )}
+                    </Form.List>
+                  </Space>
+                )
+              )
+            }
             
             <Space direction="vertical" size={15} style={{ width: '95%' }}>
               <FormItem item={formDetails.accountTitles} onFail={onFail} formInstance={form} />

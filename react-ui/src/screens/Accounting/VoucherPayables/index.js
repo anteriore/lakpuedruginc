@@ -15,6 +15,7 @@ import {
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
 import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux'
 
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
@@ -63,11 +64,13 @@ const VoucherPayables = (props) => {
       dispatch(listDepartment({ company, message })).then((response2) => {
         dispatch(listArea({ company, message })).then((response3) => {
           dispatch(listGroup({ company, message })).then((response4) => {
-            const onSuccess = () => {
-              history.push(`${path}/new`);
-              setLoading(false);
-            };
-            handleRequestResponse([response1, response2, response3, response4], onSuccess, null, '');
+              dispatch(listVendor({ company, message })).then((response5) => {
+              const onSuccess = () => {
+                history.push(`${path}/new`);
+                setLoading(false);
+              };
+              handleRequestResponse([response1, response2, response3, response4], onSuccess, null, '');
+            })
           })
         })
       })
@@ -105,8 +108,10 @@ const VoucherPayables = (props) => {
         [voucher] = data.vouchers
         break;
       case "Multiple PJV": 
+        vouchers = data.vouchers
         break;
-      case "Multiple JV": 
+      case "Multiple JV":
+        vouchers = data.vouchers
         break;
       default:
         break;
@@ -121,6 +126,10 @@ const VoucherPayables = (props) => {
       },
       voucher: voucher,
       vouchers: vouchers,
+      vendor: (data?.vendor ?? null) !== null ? 
+        ({
+          id: data.vendor
+        }) : null
     }
   }
 

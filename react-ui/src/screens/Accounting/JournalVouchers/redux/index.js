@@ -5,9 +5,29 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 export const listJournalVouchers = createAsyncThunk('listJournalVouchers', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  const { company } = payload
   try {
     const response = await axiosInstance.get(
-      `/rest/journal-vouchers/company/${payload}?token=${accessToken}`
+      `/rest/journal-vouchers/company/${company}?token=${accessToken}`
+    );
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const listJournalVouchersByVendorWithoutAdjustent = createAsyncThunk('listJournalVouchersByVendorWithoutAdjustent', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, vendor, status } = payload
+  try {
+    const response = await axiosInstance.get(
+      `/rest/journal-vouchers/company/${company}/vendor/${vendor}/status/${status}/journal-vouchers-no-adjustment?token=${accessToken}`
     );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
@@ -96,14 +116,14 @@ const journalVouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for purchase vouchers`,
+        statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
       };
     },
     [listJournalVouchers.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
       );
 
       return {
@@ -119,7 +139,46 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Journal Vouchers'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [listJournalVouchersByVendorWithoutAdjustent.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
+      };
+    },
+    [listJournalVouchersByVendorWithoutAdjustent.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Journal Vouchers'
+      );
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listJournalVouchersByVendorWithoutAdjustent.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Journal Vouchers'
       );
 
       return {

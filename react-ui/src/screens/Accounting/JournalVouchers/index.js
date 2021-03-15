@@ -54,7 +54,7 @@ const JournalVouchers = (props) => {
     let isCancelled = false;
     setContentLoading(true);
 
-    dispatch(listJournalVouchers(company)).then(() => {
+    dispatch(listJournalVouchers({company})).then(() => {
       setContentLoading(false);
       if(isCancelled){
         dispatch(clearData());
@@ -110,14 +110,14 @@ const JournalVouchers = (props) => {
 
   const handleApproveJV = () => {
     dispatch(approveJournalVouchers({jvId: journalVoucher.id, user: userId})).then(() => {
-      dispatch(listJournalVouchers(company));
+      dispatch(listJournalVouchers({company}));
       setDisplayModal(false);
     })
   }
 
   const handleRejectJV = () => {
     dispatch(rejectJournalVouchers({jvId: journalVoucher.id, user: userId})).then(() => {
-      dispatch(listJournalVouchers(company));
+      dispatch(listJournalVouchers({company}));
       setDisplayModal(false);
     })
   }
@@ -138,7 +138,7 @@ const JournalVouchers = (props) => {
       if (dataCreateJV.type.split('/')[1] === 'rejected') {
         message.warning("Debit and Credit should be same")
       } else{
-        dispatch(listJournalVouchers(company))
+        dispatch(listJournalVouchers({company}))
         payload.redirect();
       }
     })
