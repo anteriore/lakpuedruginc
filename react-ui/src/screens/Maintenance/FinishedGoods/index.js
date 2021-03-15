@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
@@ -16,6 +16,7 @@ const FinishedGoods = (props) => {
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [formValues, setFormValues] = useState('');
+  const [contentLoading, setContentLoading] = useState(true);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [mode, setMode] = useState('');
   const [currentID, setCurrentID] = useState('');
@@ -26,6 +27,7 @@ const FinishedGoods = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(getFGList({ company, message })).then(() => {
+      setContentLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -102,6 +104,7 @@ const FinishedGoods = (props) => {
   };
 
   const onSubmit = (values) => {
+    setContentLoading(true)
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
@@ -117,6 +120,7 @@ const FinishedGoods = (props) => {
         dispatch(getFGList());
       });
     }
+    setContentLoading(false)
     setFormValues('');
     setIsOpenForm(!isOpenForm);
   };
@@ -126,20 +130,22 @@ const FinishedGoods = (props) => {
       <Col style={styles.headerPage} span={20}>
         <Title level={3}>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+          <Button icon={<PlusOutlined />} loading={contentLoading} onClick={() => handleAddButton()}>
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        <TableDisplay
-          columns={tableHeader}
-          data={list}
-          handleUpdate={handleEditButton}
-          handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes('update')}
-          deleteEnabled={actions.includes('delete')}
-        />
+        {contentLoading ? <Skeleton/> : 
+          <TableDisplay
+            columns={tableHeader}
+            data={list}
+            handleUpdate={handleEditButton}
+            handleDelete={handleDeleteButton}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          />
+        }        
       </Col>
       <SimpleForm
         visible={isOpenForm}
