@@ -7,6 +7,8 @@ import { getFGList, createFG, deleteFG, updateFG, clearData } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import statusDialogue from '../../../components/StatusDialogue';
+import { reverse } from 'lodash';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -37,15 +39,7 @@ const FinishedGoods = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status,action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
