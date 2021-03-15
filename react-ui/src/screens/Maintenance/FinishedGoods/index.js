@@ -4,7 +4,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { tableHeader, formDetails } from './data';
 import { getFGList, createFG, deleteFG, updateFG, clearData } from './redux';
-import { listUnit, clearData as clearUnit } from '../Units/redux';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import statusDialogue from '../../../components/StatusDialogue';
@@ -33,7 +32,6 @@ const FinishedGoods = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
-      dispatch(clearUnit());
       isCancelled = true;
     };
   }, [dispatch, company]);
@@ -53,9 +51,7 @@ const FinishedGoods = (props) => {
   const handleAddButton = () => {
     setModalTitle('Add Finished Good');
     setMode('add');
-    dispatch(listUnit()).then(() => {
-      setIsOpenForm(!isOpenForm);
-    });
+    setIsOpenForm(!isOpenForm);
   };
 
   const handleEditButton = (row) => {
@@ -65,9 +61,7 @@ const FinishedGoods = (props) => {
     setFormValues({
       ...row
     });
-    dispatch(listUnit()).then(() => {
-      setIsOpenForm(!isOpenForm);
-    });
+    setIsOpenForm(!isOpenForm);
   };
 
   const handleDeleteButton = (row) => {
@@ -93,16 +87,16 @@ const FinishedGoods = (props) => {
 
       dispatch(updateFG(newValues)).then(() => {
         dispatch(getFGList());
+        setContentLoading(false)
       });
     } else if (mode === 'add') {
       const newValues = values;
       dispatch(createFG(newValues)).then(() => {
         dispatch(getFGList());
+        setContentLoading(false)
       });
     }
-    setContentLoading(false)
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    handleCancelButton()
   };
 
   return (

@@ -126,6 +126,7 @@ const finishedGoodsSlice = createSlice({
     },
     [createFG.fulfilled]: (state, action) => {
       const { status } = action.payload;
+      console.log("Finished Good Fulfilled", action.payload)
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
         'Finshed Goods'
