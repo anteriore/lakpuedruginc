@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 import { tableHeader, formDetails } from './data';
 import { getFGList, createFG, deleteFG, updateFG, clearData } from './redux';
 import { listUnit, clearData as clearUnit } from '../Units/redux';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
+import statusDialogue from '../../../components/StatusDialogue';
 
 const { Title } = Typography;
 
@@ -17,12 +17,10 @@ const FinishedGoods = (props) => {
   const [modalTitle, setModalTitle] = useState('');
   const [formValues, setFormValues] = useState('');
   const [contentLoading, setContentLoading] = useState(true);
-  const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [mode, setMode] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { list, statusMessage, action } = useSelector((state) => state.maintenance.finishedGoods);
-  const { unitList } = useSelector((state) => state.maintenance.units);
+  const { list, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.finishedGoods);
 
   useEffect(() => {
     let isCancelled = false;
@@ -41,31 +39,16 @@ const FinishedGoods = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
+    if (status !== 'loading') {
+      if (action === 'fetch' && statusLevel !== 'success') {
+        statusDialogue({ statusMessage, statusLevel }, 'message');
+      }
+
+      if (action !== 'fetch') {
+        statusDialogue({ statusMessage, statusLevel }, 'message');
       }
     }
-  }, [statusMessage, action]);
-
-  useEffect(() => {
-    const newForm = tempFormDetails;
-    newForm.form_items.forEach((form) => {
-      if (form.name === 'unit') {
-        unitList.forEach((unit) => {
-          const { id, code } = unit;
-          form.choices.push({ id, name: code });
-        });
-      }
-
-      form.choices = _.uniqBy(form.choices, 'id');
-    });
-    setTempFormDetails(newForm);
-  }, [unitList, tempFormDetails]);
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add Finished Good');
@@ -80,8 +63,7 @@ const FinishedGoods = (props) => {
     setModalTitle('Edit Finished Good');
     setMode('edit');
     setFormValues({
-      ...row,
-      unit: row.unit !== null ? row.unit.id : 1,
+      ...row
     });
     dispatch(listUnit()).then(() => {
       setIsOpenForm(!isOpenForm);
@@ -108,14 +90,12 @@ const FinishedGoods = (props) => {
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
-      newValues.unit = { id: values.unit };
 
       dispatch(updateFG(newValues)).then(() => {
         dispatch(getFGList());
       });
     } else if (mode === 'add') {
       const newValues = values;
-      newValues.unit = { id: values.unit };
       dispatch(createFG(newValues)).then(() => {
         dispatch(getFGList());
       });

@@ -67,7 +67,7 @@ export const checkResponseValidity = (response) => {
         response.statusText = 'empty';
         return { response, valid: true };
       }
-      response.statusText = 'succesfull';
+      response.statusText = 'succesful';
       return { response, valid: true };
 
     case 404:
