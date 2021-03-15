@@ -15,8 +15,9 @@ public class MemoSlipService {
 
 	@Transactional
 	public MemoSlip saveMemoSlip(MemoSlip memoSlip) {
-		memoSlip.setNumber(memoSlip.getType().getCode() + memoSlip.getId());
-		memoSlip.updateBalance();
-		return memoSlipRepository.save(memoSlip);
+		MemoSlip savedInstance = memoSlipRepository.save(memoSlip);
+		savedInstance.setNumber(savedInstance.getType().getCode() + savedInstance.getId());
+		savedInstance.updateBalance();
+		return memoSlipRepository.save(savedInstance);
 	}
 }
