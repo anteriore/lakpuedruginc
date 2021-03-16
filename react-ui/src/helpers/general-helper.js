@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
-import * as code from '../data/constants/status-code';
+import statusDialogue from '../components/StatusDialogue';
 
 // for adding values on list form inputs
 export const updateList = (form, choices) => {
@@ -99,6 +99,20 @@ export const generateStatusMessage = (payload, currentModule, action) => {
     message: `${currentModule}: ${_.upperFirst(action)} ${statusText}`
   }
 };
+
+export const reevalutateMessageStatus = (props) => {
+  const {status, action, statusMessage, statusLevel} = props
+
+  if (status !== 'loading') {
+    if (action === 'fetch' && statusLevel !== 'success') {
+      statusDialogue({ statusMessage, statusLevel }, 'message');
+    }
+
+    if (action !== 'fetch') {
+      statusDialogue({ statusMessage, statusLevel }, 'message');
+    }
+  }
+}
 
 // for helper functions that use hooks
 const GeneralHelper = (props) => {
