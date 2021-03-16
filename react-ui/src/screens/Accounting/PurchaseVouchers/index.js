@@ -54,20 +54,20 @@ const PurchaseVouchers = (props) => {
 		let isCancelled = false;
 		setContentLoading(true);
 
-		dispatch(listPurchaseVouchers(company)).then((data) => {
+		dispatch(listPurchaseVouchers({company})).then((data) => {
 			setContentLoading(false);
 			if(isCancelled) {
 				dispatch(clearData());
-				dispatch(clearAC());
-				dispatch(clearDeptArea());
-				dispatch(clearRR());
-				dispatch(clearGroupCat());
-				dispatch(clearVendor());
 			}
 		})
 
 		return function clearUp() {
 			dispatch(clearData());
+			dispatch(clearAC());
+			dispatch(clearDeptArea());
+			dispatch(clearRR());
+			dispatch(clearGroupCat());
+			dispatch(clearVendor());
 			isCancelled = true
 		}
 	}, [company, dispatch]);
@@ -119,14 +119,14 @@ const PurchaseVouchers = (props) => {
 
 	const handleApprovePV = () => {
 		dispatch(approvePurchaseVoucher({ pvId: purchaseVoucher.id, user: userId })).then(() => {
-			dispatch(listPurchaseVouchers(company));
+			dispatch(listPurchaseVouchers({company}));
 			setDisplayModal(false);
 		})
 	}
 
 	const handleRejectPV = () => {
 		dispatch(rejectPurchaseVoucher({ pvId: purchaseVoucher.id, user: userId })).then(() => {
-			dispatch(listPurchaseVouchers(company));
+			dispatch(listPurchaseVouchers({company}));
 			setDisplayModal(false);
 		})
 	}
@@ -138,7 +138,7 @@ const PurchaseVouchers = (props) => {
 
 	const onCreate = (payload) => {
 		dispatch(createPurchaseVouchers(formatPVPayload(payload.values, payload.addedAccounts, userId, company))).then(() => {
-			dispatch(listPurchaseVouchers(company));
+			dispatch(listPurchaseVouchers({company}));
 		})
 	}
 

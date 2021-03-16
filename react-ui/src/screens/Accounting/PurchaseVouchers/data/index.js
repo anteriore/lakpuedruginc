@@ -174,6 +174,7 @@ const FormDetails = () => {
         placeholder: 'Select Account Title',
         render: (object) => object?.title ?? "",
         type: 'selectSearch',
+        width: 240,
         choices: [],
       },
       {
@@ -182,6 +183,7 @@ const FormDetails = () => {
         rules: [{ required: true, message: 'Please select department' }],
         placeholder: 'Select Department',
         render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+        width: 240,
         type: 'selectSearch',
         choices: [],
       },
@@ -192,6 +194,7 @@ const FormDetails = () => {
         placeholder: 'Select Group',
         render: (object) => object?.name ?? "",
         type: 'selectSearch',
+        width: 150,
         choices: [],
       },
       {

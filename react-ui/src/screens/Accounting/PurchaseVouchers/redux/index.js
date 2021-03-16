@@ -5,9 +5,29 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 export const listPurchaseVouchers = createAsyncThunk('listPurchaseVouchers', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  const { company } = payload
   try {
     const response = await axiosInstance.get(
-      `/rest/purchase-vouchers/company/${payload}?token=${accessToken}`
+      `/rest/purchase-vouchers/company/${company}?token=${accessToken}`
+    );
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const listPurchaseVouchersByVendorWithoutAdjustent = createAsyncThunk('listPurchaseVouchersByVendorWithoutAdjustent', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { company, vendor, status } = payload
+  try {
+    const response = await axiosInstance.get(
+      `/rest/purchase-vouchers/company/${company}/vendor/${vendor}/status/${status}/purchase-vouchers-no-adjustment?token=${accessToken}`
     );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
@@ -63,9 +83,7 @@ export const approvePurchaseVoucher = createAsyncThunk('approvePurchaseVoucher',
   const accessToken = thunkAPI.getState().auth.token;
   try {
     const response = await axiosInstance.post(
-        `/rest/purchase-vouchers/approve/${payload.pvId}/user/${payload.user}?token=${accessToken}`,
-        payload
-      );
+        `/rest/purchase-vouchers/approve/${payload.pvId}/user/${payload.user}?token=${accessToken}`);
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -137,6 +155,45 @@ const purchaseVouchersSlice = createSlice({
       };
     },
     [listPurchaseVouchers.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Vouchers'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [listPurchaseVouchersByVendorWithoutAdjustent.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase vouchers`,
+      };
+    },
+    [listPurchaseVouchersByVendorWithoutAdjustent.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Vouchers'
+      );
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listPurchaseVouchersByVendorWithoutAdjustent.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,

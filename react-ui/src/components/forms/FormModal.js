@@ -27,7 +27,7 @@ const SimpleForm = (props) => {
         form.resetFields();
       }}
     >
-      <Form form={form} layout="vertical" initialValues={values} name={formDetails.form_name}>
+      <Form form={form} layout="vertical" name={formDetails.form_name}>
         {formDetails.form_items.map((item) => (
           <FormItem item={item} onFail={onCancel} formMode={formMode} />
         ))}

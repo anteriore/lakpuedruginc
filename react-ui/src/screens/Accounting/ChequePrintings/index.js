@@ -9,7 +9,6 @@ import FormDetails, { columns } from './data';
 import {
   listChequePrinting,
   addChequePrinting,
-  deleteChequePrinting,
   clearData,
 } from './redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
@@ -24,7 +23,6 @@ const ChequePrintings = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
@@ -50,13 +48,14 @@ const ChequePrintings = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearVendor());
+      dispatch(clearBankAccount());
       isCancelled = true;
     };
   }, [dispatch, company]);
 
   const handleAdd = () => {
     setFormTitle('Create Cheque Printing');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(listVendor({ company, message })).then((response) => {
@@ -83,8 +82,8 @@ const ChequePrintings = (props) => {
   const onSubmit = (data) => {
     const payload = {
       ...data,
-      payee: {
-        id: data.payee.id
+      vendor: {
+        id: data.vendor
       },
       bankAccount: {
         id: data.bankAccount

@@ -47,15 +47,33 @@ public class JournalVoucherService {
 		JournalVoucher jv = journalVoucherRepository.getOne(id);
 		User approvedBy = userRepository.getOne(userId);
 
-		Long maxId = journalVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+		/*Long maxId = journalVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
 
 		if (maxId == null) {
 			maxId = 0L;
 		}
 
-		jv.setNumber("J-" + ++maxId);
+		jv.setNumber("J-" + ++maxId);*/
 
 		jv.setStatus("Approved");
+		jv.setApprovedBy(approvedBy);
+		return journalVoucherRepository.save(jv);
+	}
+
+	@Transactional
+	public JournalVoucher reject(Long id, Long userId) {
+		JournalVoucher jv = journalVoucherRepository.getOne(id);
+		User approvedBy = userRepository.getOne(userId);
+
+		/*Long maxId = journalVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+
+		if (maxId == null) {
+			maxId = 0L;
+		}
+
+		jv.setNumber("J-" + ++maxId);*/
+
+		jv.setStatus("Rejected");
 		jv.setApprovedBy(approvedBy);
 		return journalVoucherRepository.save(jv);
 	}

@@ -133,9 +133,8 @@ export const FormDetails = () => {
                 type: 'selectSearch',
                 selectName: 'name',
                 choices: rrList,
-                dataToString: (object) => {
-                    return object.number
-                },
+                render: (object) => 
+                object.number,
                 rules: [{ required: true }],
                 /*onChange: (object) => {
                     itemList = object.receivingReceipts

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 import { tableHeader, formDetails } from './data';
 import { getFGList, createFG, deleteFG, updateFG, clearData } from './redux';
-import { listUnit, clearData as clearUnit } from '../Units/redux';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -16,16 +15,16 @@ const FinishedGoods = (props) => {
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [formValues, setFormValues] = useState('');
-  const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
+  const [contentLoading, setContentLoading] = useState(true);
   const [mode, setMode] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { list, statusMessage, action } = useSelector((state) => state.maintenance.finishedGoods);
-  const { unitList } = useSelector((state) => state.maintenance.units);
+  const { list, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.finishedGoods);
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(getFGList({ company, message })).then(() => {
+      setContentLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -33,44 +32,18 @@ const FinishedGoods = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
-      dispatch(clearUnit());
       isCancelled = true;
     };
   }, [dispatch, company]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
-
-  useEffect(() => {
-    const newForm = tempFormDetails;
-    newForm.form_items.forEach((form) => {
-      if (form.name === 'unit') {
-        unitList.forEach((unit) => {
-          const { id, code } = unit;
-          form.choices.push({ id, name: code });
-        });
-      }
-
-      form.choices = _.uniqBy(form.choices, 'id');
-    });
-    setTempFormDetails(newForm);
-  }, [unitList, tempFormDetails]);
+    reevalutateMessageStatus({status,action,statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add Finished Good');
     setMode('add');
-    dispatch(listUnit()).then(() => {
-      setIsOpenForm(!isOpenForm);
-    });
+    setIsOpenForm(!isOpenForm);
   };
 
   const handleEditButton = (row) => {
@@ -78,12 +51,9 @@ const FinishedGoods = (props) => {
     setModalTitle('Edit Finished Good');
     setMode('edit');
     setFormValues({
-      ...row,
-      unit: row.unit !== null ? row.unit.id : 1,
+      ...row
     });
-    dispatch(listUnit()).then(() => {
-      setIsOpenForm(!isOpenForm);
-    });
+    setIsOpenForm(!isOpenForm);
   };
 
   const handleDeleteButton = (row) => {
@@ -102,23 +72,23 @@ const FinishedGoods = (props) => {
   };
 
   const onSubmit = (values) => {
+    setContentLoading(true)
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
-      newValues.unit = { id: values.unit };
 
       dispatch(updateFG(newValues)).then(() => {
         dispatch(getFGList());
+        setContentLoading(false)
       });
     } else if (mode === 'add') {
       const newValues = values;
-      newValues.unit = { id: values.unit };
       dispatch(createFG(newValues)).then(() => {
         dispatch(getFGList());
+        setContentLoading(false)
       });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    handleCancelButton()
   };
 
   return (
@@ -126,20 +96,22 @@ const FinishedGoods = (props) => {
       <Col style={styles.headerPage} span={20}>
         <Title level={3}>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+          <Button icon={<PlusOutlined />} loading={contentLoading} onClick={() => handleAddButton()}>
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        <TableDisplay
-          columns={tableHeader}
-          data={list}
-          handleUpdate={handleEditButton}
-          handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes('update')}
-          deleteEnabled={actions.includes('delete')}
-        />
+        {contentLoading ? <Skeleton/> : 
+          <TableDisplay
+            columns={tableHeader}
+            data={list}
+            handleUpdate={handleEditButton}
+            handleDelete={handleDeleteButton}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          />
+        }        
       </Col>
       <SimpleForm
         visible={isOpenForm}

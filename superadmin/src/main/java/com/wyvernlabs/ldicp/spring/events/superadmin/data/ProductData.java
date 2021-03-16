@@ -11,6 +11,7 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.domain.FinishedGood;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Product;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ProductCategory;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ProductDivision;
+import com.wyvernlabs.ldicp.spring.events.superadmin.domain.ProductInventory;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ClassificationRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.FinishedGoodRepository;
@@ -18,8 +19,8 @@ import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductCategoryR
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductDivisionRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductRepository;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.UnitRepository;
-
-
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.ProductInventoryRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -42,6 +43,10 @@ public class ProductData {
 	private ClassificationRepository classificationRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+	@Autowired
+	private ProductInventoryRepository productInventoryRepository;
+	@Autowired
+	private DepotRepository depotRepository;
 
 	public void init() {
 		FinishedGood fg = finishedGoodRepository.getOne(1L);
@@ -49,7 +54,7 @@ public class ProductData {
 		Company company = companyRepository.getOne(1L);
 		Classification classification = classificationRepository.getOne(1L);
 
-		
+		/*
 		product.setClassification(classification);
 		product.setDivision(divisionRepository.getOne(1L));
 		product.setCategory(categoryRepository.getOne(1L));
@@ -97,7 +102,7 @@ public class ProductData {
 		product.setUnitPrice(50D);
 		product.setFinishedGood(fg);
 		productRepository.save(product);
-
+		*/
 
 
 
@@ -162,6 +167,7 @@ public class ProductData {
 					tempproduct.setExpiration(Integer.parseInt(  data[12].replace("\"", "") ));
 					tempproduct.setLotNumber(data[10].replace("\"", ""));
 					tempproduct.setQuantityPerBox(Integer.parseInt(  data[8].replace("\"", "") ));
+					tempproduct.setDepot(depotRepository.findByCode("BIN-001"));
 					tempproduct.setReorderLevel(1000);
 					tempproduct.setBigUnit(unitRepository.findByCode(data[7].replace("\"", "")));
 					tempproduct.setSmallUnit(unitRepository.findByCode(data[6].replace("\"", "")));
@@ -171,22 +177,15 @@ public class ProductData {
 
 
 
-
-
-					//tempproduct.setName(data[1].replace("\"", ""));
-					//tempproduct.setCompany(company);
-					//productRepository.save(tempproduct);
-
-
-					/*
+					
 					ProductInventory inventory = new ProductInventory();
-					inventory.setCompany(product.getCompany());
+					inventory.setCompany(tempproduct.getCompany());
 					inventory.setDateCreated(new Date());
-					inventory.setDepot(product.getDepot());
-					inventory.setProduct(product);
+					inventory.setDepot(depotRepository.findByCode("BIN-001"));
+					inventory.setProduct(tempproduct);
 					inventory.setQuantity(0);
 					productInventoryRepository.save(inventory);
-					*/
+					
 					
               
             }

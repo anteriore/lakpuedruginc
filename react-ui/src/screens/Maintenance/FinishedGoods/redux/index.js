@@ -2,65 +2,82 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import {
   ITEMS_GET_PENDING,
-  ITEMS_GET_FULFILLED,
-  ITEMS_GET_REJECTED,
   ITEM_ADD_PENDING,
-  ITEM_ADD_FULFILLED,
-  ITEM_ADD_REJECTED,
   ITEM_UPDATE_PENDING,
-  ITEM_UPDATE_FULFILLED,
-  ITEM_UPDATE_REJECTED,
   ITEM_DELETE_PENDING,
-  ITEM_DELETE_FULFILLED,
-  ITEM_DELETE_REJECTED,
 } from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 // Async Actions API section
 export const getFGList = createAsyncThunk(
   'getFGList',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
+    try{
+      const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for finished goods');
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-
-    return response;
   }
 );
 
 export const createFG = createAsyncThunk('createFG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/finished-goods?token=${accessToken}`, payload);
 
-  return response;
+  try{
+    const response = await axiosInstance.post(`/rest/finished-goods?token=${accessToken}`, payload);
+
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const updateFG = createAsyncThunk('updateFG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/finished-goods?token=${accessToken}`, payload);
-
-  return response;
+  try {
+    const response = await axiosInstance.post(`/rest/finished-goods?token=${accessToken}`, payload);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  const response = await axiosInstance.post(`/rest/finished-goods/delete?token=${accessToken}`, id);
-
-  return response;
+  try {
+    const response = await axiosInstance.post(`/rest/finished-goods/delete?token=${accessToken}`, id);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 const initialState = {
   list: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -74,68 +91,171 @@ const finishedGoodsSlice = createSlice({
   },
   extraReducers: {
     [getFGList.pending]: (state) => {
-      return { ...state, status: 'loading', action: 'get', statusMessage: ITEMS_GET_PENDING };
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusMessage: ITEMS_GET_PENDING 
+      };
     },
     [getFGList.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for finished goods';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level, 
+        responseCode: status, 
         statusMessage,
       };
     },
-    [getFGList.rejected]: (state) => {
+    [getFGList.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [createFG.pending]: (state) => {
-      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_ADD_PENDING };
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${ITEM_ADD_PENDING} for finished goods`,
+        statusLevel: '',
+        responseCode: null,
+      };
     },
-    [createFG.fulfilled]: (state) => {
-      return { ...state, status: 'Fulfilled', action: 'post', statusMessage: ITEM_ADD_FULFILLED };
+    [createFG.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
     },
-    [createFG.rejected]: (state) => {
-      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_ADD_REJECTED };
+    [createFG.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
     },
     [updateFG.pending]: (state) => {
-      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_UPDATE_PENDING };
-    },
-    [updateFG.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: ITEM_UPDATE_FULFILLED,
+        action: 'update',
+        status: 'loading',
+        statusMessage: `${ITEM_UPDATE_PENDING} for finished goods`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [updateFG.rejected]: (state) => {
-      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_UPDATE_REJECTED };
+    [updateFG.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateFG.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
     },
     [deleteFG.pending]: (state) => {
-      return { ...state, status: 'loading', action: 'pending', statusMessage: ITEM_DELETE_PENDING };
-    },
-    [deleteFG.fulfilled]: (state) => {
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: ITEM_DELETE_FULFILLED,
+        action: 'delete',
+        status: 'loading',
+        statusMessage: `${ITEM_DELETE_PENDING} for finished goods`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [deleteFG.rejected]: (state) => {
-      return { ...state, status: 'failed', action: 'error', statusMessage: ITEM_DELETE_REJECTED };
+    [deleteFG.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteFG.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Finished Goods',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
     },
   },
 });

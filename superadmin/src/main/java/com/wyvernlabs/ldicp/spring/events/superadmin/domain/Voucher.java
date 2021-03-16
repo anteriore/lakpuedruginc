@@ -68,9 +68,9 @@ public abstract class Voucher {
 	}
 
 	public boolean hasEqualDebitAndCreditAmount() {
-		return accountTitles.stream().filter(title -> title.getAccountTitle().equals("Credit"))
+		return accountTitles.stream().filter(title -> title.getAccountTitle().getType().equals("Credit"))
 				.mapToDouble(AccountTitleEntry::getAmount).sum() == accountTitles.stream()
-						.filter(title -> title.getAccountTitle().equals("Debit"))
+						.filter(title -> title.getAccountTitle().getType().equals("Debit"))
 						.mapToDouble(AccountTitleEntry::getAmount).sum();
 	}
 
