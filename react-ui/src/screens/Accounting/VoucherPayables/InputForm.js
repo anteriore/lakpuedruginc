@@ -63,7 +63,6 @@ const InputForm = (props) => {
   }, [values, form]);
 
   useEffect(() => {
-    console.log(mode)
     switch(mode){
       case "1 Voucher": 
         //TODO: limit selection to one
@@ -309,10 +308,8 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
-    console.log(values)
     
     if(values.hasOwnProperty('variation')){
-      console.log("LOAD")
       switch(values.variation){
         case "1 Voucher": 
             setLoadingTable(true)
@@ -338,14 +335,11 @@ const InputForm = (props) => {
     }
 
     if(values.hasOwnProperty('vendor')){
-      console.log("VENDOR CHOSEN")
-      console.log("MODE: ", mode)
       switch(mode){
         case "Multiple PJV":
           setLoadingTable(true)
           dispatch(listPurchaseVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
             const onSuccess = () => {
-              console.log(response.payload.data.length)
               if(response.payload.data.length === 0){
                 message.error("The are no approved Purchase Journal Vouchers associated with the selected payee.")
               }
@@ -465,7 +459,24 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
+              <Table
+                rowSelection={{
+                  type: mode === '1 Voucher' ? 'radio' : 'checkbox',
+                  //selectedRowKeys: item.selectedData,
+                  onChange: (selectedRowKeys, selectedRows) => {
+                    const fieldsValue = {};
+                    fieldsValue[formTable.name] = selectedRows;
+                    setTableData(selectedRows);
+                    form.setFieldsValue(fieldsValue);
+                  },
+                  preserveSelectedRowKeys: false,
+                }}
+                columns={formTable.selectFields}
+                dataSource={formTable.selectData}
+                rowKey={formTable.foreignKey}
+                pagination={{ size: 'small' }}
+              />
+              {/*typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
                 // for nested tables
                 <Table
                   dataSource={formTable.selectData}
@@ -481,7 +492,7 @@ const InputForm = (props) => {
                   pagination={{simple: true}}
                   rowKey={formTable.foreignKey}
                 />
-              )}
+              )*/}
             </Modal>
           )}
         </Col>

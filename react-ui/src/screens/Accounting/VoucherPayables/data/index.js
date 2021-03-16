@@ -258,8 +258,8 @@ const FormDetails = () => {
         name: 'totalAmount',
       },
     ],
-    foreignKey: 'id',
-    selectedKey: 'id',
+    foreignKey: 'number',
+    selectedKey: 'number',
     selectData: voucherChoices,
     selectFields: [
       {

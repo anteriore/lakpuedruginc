@@ -65,11 +65,11 @@ const VoucherPayables = (props) => {
         dispatch(listArea({ company, message })).then((response3) => {
           dispatch(listGroup({ company, message })).then((response4) => {
               dispatch(listVendor({ company, message })).then((response5) => {
-              const onSuccess = () => {
-                history.push(`${path}/new`);
-                setLoading(false);
-              };
-              handleRequestResponse([response1, response2, response3, response4], onSuccess, null, '');
+                const onSuccess = () => {
+                  history.push(`${path}/new`);
+                  setLoading(false);
+                };
+                handleRequestResponse([response1, response2, response3, response4], onSuccess, null, '');
             })
           })
         })
@@ -135,7 +135,6 @@ const VoucherPayables = (props) => {
 
   const onSubmit = (data) => {
     const payload = processSubmitPayload(data)
-    console.log(payload);
     dispatch(addVoucherPayable(payload)).then((response) => {
       setLoading(true);
       
