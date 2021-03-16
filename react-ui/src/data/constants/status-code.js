@@ -1,5 +1,5 @@
 export const STATUS_200 = 'Request succeeded';
-export const STATUS_201 = 'Request succeeded and new resource has beed created';
+export const STATUS_201 = 'Request succeeded and new resource has been created';
 export const STATUS_400 = "There's must have been an incorrect syntax on the request";
 export const STATUS_401 = 'Unauthorized request';
 export const STATUS_404 = 'Request does not exist';

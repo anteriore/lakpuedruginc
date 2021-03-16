@@ -6,7 +6,10 @@ import ChequePrintings from '../../screens/Accounting/ChequePrintings';
 import ChequeDisbursements from '../../screens/Accounting/ChequeDisbursements';
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PDCVouchers from '../../screens/Accounting/PDCVouchers';
+import DebitMemo from '../../screens/Accounting/DebitMemo';
+import CreditMemo from '../../screens/Accounting/CreditMemo';
 import JournalVouchers from '../../screens/Accounting/JournalVouchers';
+
 
 export const routes = [
   {
@@ -42,12 +45,12 @@ export const routes = [
   {
     title: 'Credit Memos',
     path: '/credit-memos',
-    component: null,
+    component: CreditMemo,
   },
   {
     title: 'Debit Memos',
     path: '/debit-memos',
-    component: null,
+    component: DebitMemo,
   },
   {
     title: 'Cash Receipt Vouchers',

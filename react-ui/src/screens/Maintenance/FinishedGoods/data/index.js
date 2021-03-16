@@ -22,19 +22,6 @@ export const tableHeader = [
     defaultSortOrder: 'ascend',
     sorter: (a, b) => a.code.length - b.code.length,
   },
-  {
-    title: 'Unit',
-    dataIndex: 'unit',
-    key: 'unit',
-    align: 'center',
-    defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.unit - b.unit,
-    render: (object) => {
-      if (object !== null) {
-        return object.code;
-      }
-    },
-  },
 ];
 
 export const dataFG = [
@@ -75,14 +62,6 @@ export const formDetails = {
       name: 'code',
       rules: [{ required: true, message: 'Please provide a proper finished goods code' }],
       placeholder: 'Finished goods code',
-    },
-    {
-      label: 'Unit',
-      name: 'unit',
-      rules: [{ required: true, message: 'Please select a unit' }],
-      placeholder: 'Units code',
-      type: 'select',
-      choices: [],
     },
   ],
 };
