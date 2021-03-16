@@ -105,6 +105,7 @@ export const reevalutateMessageStatus = (props) => {
 
   if (status !== 'loading') {
     if (action === 'fetch' && statusLevel !== 'success') {
+      console.log("Showing this ")
       statusDialogue({ statusMessage, statusLevel }, 'message');
     }
 

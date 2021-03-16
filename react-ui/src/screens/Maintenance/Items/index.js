@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-
+import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { listItemWithoutEng, addI, deleteI, clearData } from './redux';
+import { listItemWithoutEng, addI, updateI,deleteI, clearData } from './redux';
 import { listIT, clearData as clearIT } from '../ItemTypes/redux';
 import { listUnit } from '../Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -16,10 +17,10 @@ const Items = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-
+  const [contentLoading, setContentLoading] = useState(true)
   const { company, actions } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.items.list);
+  const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.items);
   const types = useSelector((state) => state.maintenance.itemTypes.list);
   const units = useSelector((state) => state.maintenance.units.unitList);
 
@@ -83,6 +84,7 @@ const Items = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listItemWithoutEng({ company, message })).then(() => {
+      setContentLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -94,6 +96,12 @@ const Items = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({
+      status, action, statusMessage, statusLevel
+    })
+  }, [status, action, statusMessage, statusLevel])
 
   const handleAdd = () => {
     setFormTitle('Add Item');
@@ -125,7 +133,6 @@ const Items = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteI(data.id)).then((response) => {
       dispatch(listItemWithoutEng({ company, message }));
-      message.success(`Successfully deleted Item ${data.name}`);
     });
   };
 
@@ -137,6 +144,7 @@ const Items = (props) => {
   };
 
   const onSubmit = (values) => {
+    setContentLoading(true);
     const payload = {
       ...values,
       company: {
@@ -152,12 +160,14 @@ const Items = (props) => {
     if (formMode === 'edit') {
       payload.id = formData.id;
 
-      dispatch(addI(payload)).then(() => {
+      dispatch(updateI(payload)).then(() => {
         dispatch(listItemWithoutEng({ company, message }));
+        setContentLoading(false);
       });
     } else if (formMode === 'add') {
       dispatch(addI(payload)).then(() => {
         dispatch(listItemWithoutEng({ company, message }));
+        setContentLoading(false);
       });
     }
 
@@ -166,49 +176,48 @@ const Items = (props) => {
   };
 
   return (
-    <>
-      <Row>
-        <Col span={20}>
-          <Title level={3} style={{ float: 'left' }}>
-            {props.title}
-          </Title>
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col span={20}>
-          {actions.includes('create') && (
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={(e) => {
-                handleAdd();
-              }}
-            >
-              Add
-            </Button>
-          )}
+    <Row gutter={[8, 24]}>
+      <Col style={GeneralStyles.headerPage}  span={20}>
+        <Title level={3} style={{ float: 'left' }}>
+          {props.title}
+        </Title>
+        {actions.includes('create') && (
+          <Button
+            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+            icon={<PlusOutlined />}
+            loading={contentLoading}
+            onClick={(e) => {
+              handleAdd();
+            }}
+          >
+            Add
+          </Button>
+        )}
+      </Col>
+      <Col span={20}>
+        { contentLoading ? <Skeleton/> : 
           <TableDisplay
             columns={columns}
-            data={data}
+            data={list}
             handleRetrieve={handleRetrieve}
             handleUpdate={handleUpdate}
             handleDelete={handleDelete}
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        </Col>
-        {displayForm && (
-          <SimpleForm
-            visible={displayForm}
-            title={formTitle}
-            onSubmit={onSubmit}
-            values={formData}
-            onCancel={handleCancelButton}
-            formDetails={formDetail}
-          />
-        )}
-      </Row>
-    </>
+        }
+      </Col>
+      {displayForm && (
+        <SimpleForm
+          visible={displayForm}
+          title={formTitle}
+          onSubmit={onSubmit}
+          values={formData}
+          onCancel={handleCancelButton}
+          formDetails={formDetail}
+        />
+      )}
+    </Row>
   );
 };
 
