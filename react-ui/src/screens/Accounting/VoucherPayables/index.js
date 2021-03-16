@@ -126,10 +126,9 @@ const VoucherPayables = (props) => {
       },
       voucher: voucher,
       vouchers: vouchers,
-      vendor: (data?.vendor ?? null) !== null ? 
-        ({
-          id: data.vendor
-        }) : null
+      vendor: {
+          id: data?.vendor ?? voucher.vendor.id
+        }
     }
   }
 
@@ -157,6 +156,33 @@ const VoucherPayables = (props) => {
     });
     setFormData(null);
   };
+
+  
+  //for data display
+  const renderTableColumns = (fields) => {
+    const columns = [];
+    fields.forEach((field) => {
+      if (typeof field.render === 'undefined' || field.render === null) {
+        field.render = (object) => object;
+      }
+      if (field.name === 'credit' || field.name === 'debit'){
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => field.render({[object.accountTitle.type.toLowerCase()]: object['amount']}),
+        });
+      }
+      else {
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) => {console.log(object); console.log(field.name); return field.render(object[field.name])},
+        });
+      }
+    });
+
+    return columns;
+  }
 
   return (
     <Switch>
@@ -227,6 +253,18 @@ const VoucherPayables = (props) => {
                   title={`${selectedData.number} Details`}
                   selectedData={selectedData}
                   formItems={formDetails.form_items}
+                />
+                <Text>{'Voucher(s): '}</Text>
+                <Table
+                  dataSource={selectedData.variation === '1 Voucher' ? ([selectedData.voucher]) : (selectedData.vouchers)}
+                  columns={renderTableColumns(tableDetails.fields)}
+                  pagination={false}
+                />
+                <Text>{'Account Title Entries: '}</Text>
+                <Table
+                  dataSource={selectedData.accountTitles}
+                  columns={renderTableColumns(formDetails.accountTitles.fields)}
+                  pagination={false}
                 />
               </Space>
             )}
