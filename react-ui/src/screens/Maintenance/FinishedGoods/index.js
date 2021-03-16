@@ -6,8 +6,6 @@ import { tableHeader, formDetails } from './data';
 import { getFGList, createFG, deleteFG, updateFG, clearData } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
-import statusDialogue from '../../../components/StatusDialogue';
-import { reverse } from 'lodash';
 import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;

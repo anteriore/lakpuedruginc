@@ -90,7 +90,7 @@ const ItemTypes = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id, code } = val;
+    const { id } = val;
     dispatch(deleteIT(id)).then(() => {
       dispatch(listIT({ company, message }));
     });
