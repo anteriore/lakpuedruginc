@@ -85,10 +85,10 @@ const FormDetails = () => {
         type: 'select',
         choices: vendors,
         readOnly: !selectedPayee,
-        render: (object) => `[${object.code}] ${object.name}`
+        render: (object) => `[${object?.code}] ${object?.name}`
       },
       {
-        label: 'Voucher Selection',
+        label: 'Mode',
         name: 'variation',
         rules: [{ required: true, message: 'Please select a Voucher selection mode '}],
         placeholder: 'Select Voucher selection mode',
@@ -110,6 +110,7 @@ const FormDetails = () => {
             name: "Multiple Journal Voucher"
           }
         ],
+        render: (data) => data
       },
     ],
     accountTitles: 
@@ -169,6 +170,7 @@ const FormDetails = () => {
           dependencies: ['accountTitle'],
           rules: [{ required: true, message: 'Please provide debit' }],
           isVisible: (selectedAccount?.type ?? "") === "Debit",
+          render: (object) => object.debit,
           initialValue: 0,
           min: 0,
           width: 200,
@@ -179,6 +181,7 @@ const FormDetails = () => {
           type: 'number',
           rules: [{ required: true, message: 'Please provide credit' }],
           isVisible: (selectedAccount?.type ?? "") === "Credit",
+          render: (object) => object.credit,
           initialValue: 0,
           min: 0,
           width: 200,
