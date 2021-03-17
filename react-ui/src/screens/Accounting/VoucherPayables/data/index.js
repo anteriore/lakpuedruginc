@@ -110,7 +110,7 @@ const FormDetails = () => {
             name: "Multiple Journal Voucher"
           }
         ],
-        render: (data) => data
+        render: (data) => data.name
       },
     ],
     accountTitles: 
@@ -170,7 +170,7 @@ const FormDetails = () => {
           dependencies: ['accountTitle'],
           rules: [{ required: true, message: 'Please provide debit' }],
           isVisible: (selectedAccount?.type ?? "") === "Debit",
-          render: (object) => object.debit,
+          render: (object) => object?.debit,
           initialValue: 0,
           min: 0,
           width: 200,
@@ -181,7 +181,7 @@ const FormDetails = () => {
           type: 'number',
           rules: [{ required: true, message: 'Please provide credit' }],
           isVisible: (selectedAccount?.type ?? "") === "Credit",
-          render: (object) => object.credit,
+          render: (object) => object?.credit,
           initialValue: 0,
           min: 0,
           width: 200,
