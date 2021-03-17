@@ -67,6 +67,12 @@ public class VouchersPayableRestController {
 		return vouchersPayableService.approveVouchersPayable(vpId, userId);
 	}
 
+	
+	@PostMapping("/reject/{vpId}/user/{userId}")
+	public VouchersPayable reject(@PathVariable Long vpId, @PathVariable Long userId) {
+		return vouchersPayableService.rejectVouchersPayable(vpId, userId);
+	}
+
 	@GetMapping("/company/{companyId}/vendor/{vendorId}/status/{status}")
 	public List<VouchersPayable> listByCompanyAndVendor(@PathVariable Long companyId, @PathVariable Long vendorId,
 			@PathVariable String status) {
