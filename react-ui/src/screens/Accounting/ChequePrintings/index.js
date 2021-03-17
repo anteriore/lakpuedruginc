@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, Popconfirm, message } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
@@ -10,6 +10,8 @@ import {
   listChequePrinting,
   addChequePrinting,
   clearData,
+  approveChequePrinting,
+  rejectChequePrinting
 } from './redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listBankAccount, clearData as clearBankAccount } from '../../Maintenance/BankAccounts/redux';
@@ -27,6 +29,7 @@ const ChequePrintings = (props) => {
   const [selectedData, setSelectedData] = useState(null);
 
   const listData = useSelector((state) => state.accounting.chequePrintings.list);
+  const user = useSelector((state) => state.auth.user);
 
   const { company } = props;
   const { formDetails, tableDetails } = FormDetails();
@@ -73,6 +76,30 @@ const ChequePrintings = (props) => {
 
   const handleDelete = (data) => {
   };
+
+  const handleApprove = (data) => {
+    setLoading(true)
+    dispatch(approveChequePrinting({ id: data.id, user: user.id })).then(() => {
+      setDisplayModal(false);
+      setSelectedData(null);
+      dispatch(listChequePrinting({ company, message })).then(() => {
+        setLoading(false)
+      });
+    });
+
+  }
+
+  const handleReject = (data) => {
+    setLoading(true)
+    dispatch(rejectChequePrinting({ id: data.id, user: user.id })).then(() => {
+      setDisplayModal(false);
+      setSelectedData(null);
+      dispatch(listChequePrinting({ company, message })).then(() => {
+        setLoading(false)
+      });
+    });
+
+  }
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -205,6 +232,54 @@ const ChequePrintings = (props) => {
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
+                
+                {(selectedData.status === 'Pending' && // add approval permissions here
+                  <>
+                    <Text>{'Actions: '}</Text>
+                    <Space>
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={(e) => {
+                          handleApprove(selectedData);
+                        }}
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button
+                          style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
+                          icon={<CheckOutlined />}
+                          type="primary"
+                        >
+                          Approve
+                        </Button>
+                      </Popconfirm>
+                      
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={(e) => {
+                          handleReject(selectedData);
+                        }}
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button
+                          style={{ marginRight: '1%' }}
+                          icon={<CloseOutlined />}
+                          type="primary"
+                          danger
+                        >
+                          Reject
+                        </Button>
+                      </Popconfirm>
+                    </Space>
+                  </>
+                )}
               </Space>
             )}
           </Modal>}

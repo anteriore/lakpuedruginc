@@ -33,6 +33,50 @@ export const listChequePrinting = createAsyncThunk(
   }
 );
 
+export const approveChequePrinting = createAsyncThunk(
+  'approveChequePrinting',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id, user } = payload;
+
+    try {
+      const response = await axiosInstance.get(
+        `rest/cheque-printings/approve/${id}/user/${user}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const rejectChequePrinting = createAsyncThunk(
+  'rejectChequePrinting',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id, user } = payload;
+
+    try {
+      const response = await axiosInstance.get(
+        `rest/cheque-printings/reject/${id}/user/${user}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
 export const addChequePrinting = createAsyncThunk(
   'addChequePrinting',
   async (payload, thunkAPI) => {
