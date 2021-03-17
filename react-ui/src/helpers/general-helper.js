@@ -93,7 +93,6 @@ export const generateStatusMessage = (payload, currentModule, action) => {
     }
     return 'error';
   }
-
   return {
     level: getMessageLevel(),
     message: `${currentModule}: ${_.upperFirst(action)} ${statusText}`
@@ -105,7 +104,6 @@ export const reevalutateMessageStatus = (props) => {
 
   if (status !== 'loading') {
     if (action === 'fetch' && statusLevel !== 'success') {
-      console.log("Showing this ")
       statusDialogue({ statusMessage, statusLevel }, 'message');
     }
 
@@ -131,7 +129,6 @@ const GeneralHelper = (props) => {
   const handleRequestResponse = (responseList, onSuccess, onFail, returnPath) => {
     let hasFailed = false;
     responseList.forEach((response) => {
-      console.log(response, "Checking Response", hasFailed)
       if (response.hasOwnProperty('error') && !hasFailed) {
         hasFailed = true;
         if (typeof onFail === 'function') {

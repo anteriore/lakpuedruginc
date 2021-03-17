@@ -52,13 +52,13 @@ public class PurchaseVoucherService {
 		PurchaseVoucher pv = purchaseVoucherRepository.getOne(id);
 		User approvedBy = userRepository.getOne(userId);
 
-		//Long maxId = purchaseVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+		Long maxId = purchaseVoucherRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
 
-		/*if (maxId == null) {
+		if (maxId == null) {
 			maxId = 0L;
-		}*/
+		}
 
-		//pv.setNumber("PJV-" + ++maxId);
+		pv.setNumber("PJV-" + ++maxId);
 
 		pv.setStatus("Approved");
 		pv.setApprovedBy(approvedBy);

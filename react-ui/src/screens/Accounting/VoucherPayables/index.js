@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, message } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
@@ -10,6 +10,8 @@ import FormDetails, { columns } from './data';
 import {
   listVoucherPayableByCompany,
   addVoucherPayable,
+  approveVoucherPayable,
+  rejectVoucherPayable,
   clearData,
 } from './redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
@@ -31,6 +33,7 @@ const VoucherPayables = (props) => {
   const [selectedData, setSelectedData] = useState(null);
 
   const listData = useSelector((state) => state.accounting.voucherPayables.list);
+  const user = useSelector((state) => state.auth.user);
 
   const { company } = props;
   const { formDetails, tableDetails } = FormDetails();
@@ -87,6 +90,30 @@ const VoucherPayables = (props) => {
     setDisplayModal(true);
   };
 
+  const handleApprove = (data) => {
+    setLoading(true)
+    dispatch(approveVoucherPayable({ id: data.id, user: user.id })).then(() => {
+      setDisplayModal(false);
+      setSelectedData(null);
+      dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
+        setLoading(false)
+      });
+    });
+
+  }
+
+  const handleReject = (data) => {
+    setLoading(true)
+    dispatch(rejectVoucherPayable({ id: data.id, user: user.id })).then(() => {
+      setDisplayModal(false);
+      setSelectedData(null);
+      dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
+        setLoading(false)
+      });
+    });
+
+  }
+
   const processSubmitPayload = (data) => {
     const accountTitles = []
     data.accountTitles.forEach((item) => {
@@ -128,7 +155,10 @@ const VoucherPayables = (props) => {
       vouchers: vouchers,
       vendor: {
           id: data?.vendor ?? voucher.vendor.id
-        }
+      },
+      preparedBy: {
+        id: user.id
+      }
     }
   }
 
@@ -176,7 +206,7 @@ const VoucherPayables = (props) => {
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => {console.log(object); console.log(field.name); return field.render(object[field.name])},
+          render: (object) => field.render(object[field.name]),
         });
       }
     });
@@ -266,6 +296,53 @@ const VoucherPayables = (props) => {
                   columns={renderTableColumns(formDetails.accountTitles.fields)}
                   pagination={false}
                 />
+                {(selectedData.status === 'Pending' && // add approval permissions here
+                  <>
+                    <Text>{'Actions: '}</Text>
+                    <Space>
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={(e) => {
+                          handleApprove(selectedData);
+                        }}
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button
+                          style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
+                          icon={<CheckOutlined />}
+                          type="primary"
+                        >
+                          Approve
+                        </Button>
+                      </Popconfirm>
+                      
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={(e) => {
+                          handleReject(selectedData);
+                        }}
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button
+                          style={{ marginRight: '1%' }}
+                          icon={<CloseOutlined />}
+                          type="primary"
+                          danger
+                        >
+                          Reject
+                        </Button>
+                      </Popconfirm>
+                    </Space>
+                  </>
+                )}
               </Space>
             )}
           </Modal>}

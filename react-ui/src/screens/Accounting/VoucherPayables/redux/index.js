@@ -54,6 +54,25 @@ export const listVoucherPayableByCompanyAndVendorAndStatus = createAsyncThunk(
     }
   }
 );
+export const approveVoucherPayable = createAsyncThunk('approveVoucherPayable', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { id, user } = payload;
+
+  const response = await axiosInstance.post(
+    `rest/vouchers-payables/approve/${id}/user/${user}?token=${accessToken}`
+  );
+  return response;
+});
+
+export const rejectVoucherPayable = createAsyncThunk('rejectVoucherPayable', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { id, user } = payload;
+
+  const response = await axiosInstance.post(
+    `rest/vouchers-payables/reject/${id}$user/${user}?token=${accessToken}`
+  );
+  return response;
+});
 
 export const addVoucherPayable = createAsyncThunk(
   'addVoucherPayable',
