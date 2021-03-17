@@ -1,54 +1,82 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
+import { NodeCollapseOutlined } from '@ant-design/icons';
+
 
 export const listProduct = createAsyncThunk(
   'listProduct',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(
-      `/rest/products/company/${payload.company}?token=${accessToken}`
-    );
+    try{
+      const response = await axiosInstance.get(
+        `/rest/products/company/${payload.company}?token=${accessToken}`
+      );
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for products');
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-
-    return response;
   }
 );
 
 export const createProduct = createAsyncThunk('createProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
+  try {
+    const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const updateProduct = createAsyncThunk('updateProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
+  try {
+    const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deleteProduct = createAsyncThunk('deleteProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload;
-  const response = await axiosInstance.post(`/rest/products/delete?token=${accessToken}`, id);
+  try {
+    const { id } = payload;
+    const response = await axiosInstance.post(`/rest/products/delete?token=${accessToken}`, id);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 const initialState = {
   productList: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: NodeCollapseOutlined,
   statusMessage: '',
   action: '',
 };
@@ -64,104 +92,163 @@ const productSlice = createSlice({
       return {
         ...state,
         status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
       };
     },
     [listProduct.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for products';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
 
       return {
         ...state,
         productList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
-    [listProduct.rejected]: (state) => {
+    [listProduct.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
+
       return {
         ...state,
+        productList: [],
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
       };
     },
     [createProduct.pending]: (state) => {
       return {
         ...state,
+        action: 'create',
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
+        statusMessage: `${message.ITEM_ADD_PENDING} for products`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [createProduct.fulfilled]: (state) => {
+    [createProduct.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [createProduct.rejected]: (state) => {
+    [createProduct.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [updateProduct.pending]: (state) => {
       return {
         ...state,
+        action: 'update',
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for products`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [updateProduct.fulfilled]: (state) => {
+    [updateProduct.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [updateProduct.rejected]: (state) => {
+    [updateProduct.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [deleteProduct.pending]: (state) => {
       return {
         ...state,
+        action: 'delete',
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
+        statusMessage: `${message.ITEM_DELETE_PENDING} for products`,
+        statusLevel: '',
+        responseCode: null,
       };
     },
-    [deleteProduct.fulfilled]: (state) => {
+    [deleteProduct.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [deleteProduct.rejected]: (state) => {
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        status: 'failed',
+        statusLevel: 'error',
+        responseCode: 500,
+        statusMessage: "Products: Delete process from server failed",
       };
     },
   },
