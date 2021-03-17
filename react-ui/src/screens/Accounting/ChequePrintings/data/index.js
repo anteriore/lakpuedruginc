@@ -179,12 +179,12 @@ const FormDetails = () => {
       const columns = [];
       fields.forEach((field) => {
         if (typeof field.render === 'undefined' || field.render === null) {
-          field.render = (object) => object[field.name];
+          field.render = (object) => object;
         }
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => field.render(object),
+          render: (object) => field.render(object[field.name]),
         });
       });
 

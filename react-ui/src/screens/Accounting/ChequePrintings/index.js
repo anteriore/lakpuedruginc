@@ -118,7 +118,6 @@ const ChequePrintings = (props) => {
       company: {
         id: company
       },
-      payables: []
     }
     dispatch(addChequePrinting(payload)).then((response) => {
       setLoading(true);
