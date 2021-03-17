@@ -125,7 +125,7 @@ const chequePrintingSlice = createSlice({
     },
     [listChequePrinting.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Printings');
+      const { message, level } = generateStatusMessage(action.payload, 'Cheque Voucher');
 
       return {
         ...state,

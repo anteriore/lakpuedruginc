@@ -58,7 +58,7 @@ const ChequePrintings = (props) => {
   }, [dispatch, company]);
 
   const handleAdd = () => {
-    setFormTitle('Create Cheque Printing');
+    setFormTitle('Create Cheque Voucher');
     setFormData(null);
     setLoading(true);
     dispatch(listVendor({ company, message })).then((response) => {
@@ -133,7 +133,7 @@ const ChequePrintings = (props) => {
       const onFail = () => {
         setLoading(false);
         message.error(
-          `Unable to create Cheque Printing. Please double check the provided information.`
+          `Unable to create Cheque Voucher. Please double check the provided information.`
         );
 
       }
