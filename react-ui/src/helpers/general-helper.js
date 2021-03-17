@@ -93,7 +93,6 @@ export const generateStatusMessage = (payload, currentModule, action) => {
     }
     return 'error';
   }
-  console.log("Checking Action Message", action)
   return {
     level: getMessageLevel(),
     message: `${currentModule}: ${_.upperFirst(action)} ${statusText}`
@@ -109,7 +108,6 @@ export const reevalutateMessageStatus = (props) => {
     }
 
     if (action !== 'fetch') {
-      console.log(statusMessage)
       statusDialogue({ statusMessage, statusLevel }, 'message');
     }
   }
