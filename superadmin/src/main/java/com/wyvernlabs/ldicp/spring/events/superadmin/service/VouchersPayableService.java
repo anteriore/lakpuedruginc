@@ -83,4 +83,22 @@ public class VouchersPayableService {
 		return vouchersPayableRepository.save(vp);
 	}
 
+	@Transactional
+	public VouchersPayable rejectVouchersPayable(Long id, Long userId) {
+		VouchersPayable vp = vouchersPayableRepository.getOne(id);
+		User approvedBy = userRepository.getOne(userId);
+
+		/*Long maxId = vouchersPayableRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+
+		if (maxId == null) {
+			maxId = 0L;
+		}
+
+		vp.setNumber("VP-" + ++maxId);*/
+
+		vp.setStatus("Rejected");
+		vp.setApprovedBy(approvedBy);
+		return vouchersPayableRepository.save(vp);
+	}
+
 }
