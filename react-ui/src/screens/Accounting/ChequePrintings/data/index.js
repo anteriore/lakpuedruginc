@@ -1,5 +1,7 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
+
+import { listVoucherPayableByCompanyAndVendorAndStatus, clearData as clearVoucherPayables } from '../../VoucherPayables/redux';
 
 export const columns = [
   {
@@ -40,9 +42,11 @@ export const columns = [
 ];
 
 const FormDetails = () => {
+  const dispatch = useDispatch()
+  const company = useSelector((state) => state.company.selectedCompany);
   const payees = useSelector((state) => state.maintenance.vendors.list);
   const bankAccounts = useSelector((state) => state.maintenance.bankAccount.bankAccountList);
-  const vouchers = []
+  const voucherPayables = useSelector((state) => state.accounting.voucherPayables.list);
 
   const formDetails = {
     form_name: 'cheque_printing',
@@ -60,6 +64,9 @@ const FormDetails = () => {
         selectName: 'name',
         choices: payees,
         render: (payee) => `[${payee?.code}] ${payee?.name}`,
+        onChange: (e) => {
+          dispatch(listVoucherPayableByCompanyAndVendorAndStatus({company, vendor: e, status: "Approved"}))
+        },
         rules: [{ required: true }],
       },
       {
@@ -103,8 +110,8 @@ const FormDetails = () => {
     label: 'Voucher',
     name: 'payables',
     key: 'payables',
-    //rules: [{ required: true }],
-    //isVisible: vouchers.length > 0,
+    rules: [{ required: true }],
+    isVisible: voucherPayables.length > 0,
     fields: [
       {
         label: 'Number',
@@ -131,7 +138,7 @@ const FormDetails = () => {
     ],
     foreignKey: 'id',
     selectedKey: 'id',
-    selectData: vouchers,
+    selectData: voucherPayables,
     selectFields: [
       {
         title: 'Number',
