@@ -40,7 +40,7 @@ export const approveChequePrinting = createAsyncThunk(
     const { id, user } = payload;
 
     try {
-      const response = await axiosInstance.get(
+      const response = await axiosInstance.post(
         `rest/cheque-printings/approve/${id}/user/${user}?token=${accessToken}`
       );
       const { response: validatedResponse, valid } = checkResponseValidity(response);
@@ -62,7 +62,7 @@ export const rejectChequePrinting = createAsyncThunk(
     const { id, user } = payload;
 
     try {
-      const response = await axiosInstance.get(
+      const response = await axiosInstance.post(
         `rest/cheque-printings/reject/${id}/user/${user}?token=${accessToken}`
       );
       const { response: validatedResponse, valid } = checkResponseValidity(response);
