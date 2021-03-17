@@ -11,7 +11,7 @@ import {
   addChequeDisbursement,
   clearData,
 } from './redux';
-import { listChequePrinting, clearData as clearChequePrinting } from '../ChequePrintings/redux';
+import { listChequePrintingByCompanyAndStatus, clearData as clearChequePrinting } from '../ChequePrintings/redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
 import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
@@ -62,7 +62,7 @@ const ChequeDisbursements = (props) => {
     setFormTitle('Create Cheque Disbursement Voucher');
     setFormData(null);
     setLoading(true);
-    dispatch(listChequePrinting({ company, message })).then((response1) => {
+    dispatch(listChequePrintingByCompanyAndStatus({ company, status: "Approved" })).then((response1) => {
       dispatch(listAccountTitles({ company, message })).then((response2) => {
         dispatch(listDepartment({ company, message })).then((response3) => {
           dispatch(listArea({ company, message })).then((response4) => {
