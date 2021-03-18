@@ -33,6 +33,15 @@ export const listChequePrinting = createAsyncThunk(
   }
 );
 
+export const listChequePrintingByCompanyAndStatus = createAsyncThunk(
+  'listChequePrintingByCompanyAndStatus',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company, status } = payload;
+
+    try {
+      const response = await axiosInstance.get(
+        `rest/cheque-printings/company/${company}/status/${status}?token=${accessToken}`
 export const approveChequePrinting = createAsyncThunk(
   'approveChequePrinting',
   async (payload, thunkAPI) => {
@@ -136,6 +145,29 @@ const chequePrintingSlice = createSlice({
       };
     },
     [listChequePrinting.rejected]: (state, action) => {
+      return {
+        ...state,
+        status: 'failed',
+        action: 'get',
+        statusMessage: message.ITEMS_GET_REJECTED,
+      };
+    },
+    [listChequePrintingByCompanyAndStatus.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [listChequePrintingByCompanyAndStatus.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Cheque Printings');
+
+      return {
+        ...state,
+        list: data,
+        responseCode: status,
+        statusLevel: level,
+        statusMessage: message,
+      };
+    },
+    [listChequePrintingByCompanyAndStatus.rejected]: (state, action) => {
       return {
         ...state,
         status: 'failed',

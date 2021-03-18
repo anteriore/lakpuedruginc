@@ -5,6 +5,8 @@ import {
   Row,
   Col,
   Typography,
+  Table,
+  Empty,
   message,
 } from 'antd';
 import { useSelector } from 'react-redux';
@@ -20,6 +22,7 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
 
   const [selectedData, setSelectedData] = useState([]);
+  const [tableData, setTableData] = useState([]);
 
   const chequePrintings = useSelector((state) => state.accounting.chequePrintings.list);
 
@@ -60,6 +63,24 @@ const InputForm = (props) => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
 
+  // for rendering tables
+  const renderTableColumns = (items) => {
+    const columns = [];
+    items.forEach((field) => {
+      if (typeof field.render === 'undefined' || field.render === null) {
+        field.render = (object) => object[field.name];
+      }
+      columns.push({
+        title: field.label,
+        key: field.name,
+        width: field.width,
+        render: (object) => field.render(object),
+      });
+    })
+
+    return columns;
+  };
+
   const onTableSelect = (key, value) => {
     const formValues = {};
 
@@ -74,6 +95,8 @@ const InputForm = (props) => {
       formValues.chequeNumber = selectedData.chequeNumber
       formValues.payeeName = selectedData.payeeName
       formValues.bankAccount = formDetails.form_items.find((item) => item.name === 'bankAccount').render(selectedData.bankAccount)
+
+      setTableData(selectedData.payables)
 
       //TODO: Display selected vouchers
 
@@ -110,6 +133,15 @@ const InputForm = (props) => {
 
               return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} formInstance={form} />;
             })}
+            <Table
+              dataSource={tableData}
+              columns={renderTableColumns(formDetails.form_table)}
+              pagination={{simple: true}}
+              locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+            />
+
+            <FormItem item={formDetails.account_titles} onFail={onFail} onTableSelect={onTableSelect} formInstance={form} />
+
             <div style={styles.tailLayout}>
               <Button type="primary" onClick={() => form.submit()}>
                 Submit
