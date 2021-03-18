@@ -10,6 +10,7 @@ import TableDisplay from '../../components/TableDisplay';
 import FormScreen from '../../components/forms/FormScreen';
 import FormDetails, { columns } from './data';
 import ItemDescription from '../../components/ItemDescription';
+import GeneralHelper from '../../helpers/general-helper';
 
 import { listPO, addPO, deletePO, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
@@ -45,6 +46,7 @@ const Purchasing = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { formDetails, tableDetails } = FormDetails();
+  const { handleRequestResponse } = GeneralHelper();
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -114,8 +116,6 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            // dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
-            // dispatch(listPR({ company: selectedCompany, message }))
             history.push(`${path}/new`);
             setLoadingCompany(false);
           });
@@ -151,8 +151,6 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            // dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }))
-            // dispatch(listPR({ company: selectedCompany, message }))
             history.push(`${path}/${data.id}`);
             setLoadingCompany(false);
           });
@@ -164,15 +162,19 @@ const Purchasing = () => {
   const handleDelete = (data) => {
     dispatch(deletePO(data.id)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         dispatch(listPO({ company: selectedCompany, message })).then(() => {
           setLoading(false);
           message.success(`Successfully deleted ${data.number}`);
         });
-      } else {
+      } 
+      
+      const onFail = () => {
         setLoading(false);
         message.error(`Unable to delete ${data.number}`);
       }
+      
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -224,8 +226,8 @@ const Purchasing = () => {
 
     dispatch(addPO(payload)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
-        dispatch(listPO({ company: selectedCompany, message })).then((response) => {
+      const onSuccess = () => {
+        dispatch(listPO({ company: selectedCompany, message })).then(() => {
           setLoading(false);
           history.goBack();
           if (formMode === 'edit') {
@@ -234,14 +236,17 @@ const Purchasing = () => {
             message.success(`Successfully added purchase order "${response.payload.data.number}"`);
           }
         });
-      } else {
+      } 
+      const onFail = () => {
         setLoading(false);
         if (formMode === 'edit') {
           message.error(`Unable to update ${formData.number}`);
         } else {
           message.error(`Unable to add purchase order`);
         }
+        
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -284,7 +289,7 @@ const Purchasing = () => {
                     handleUpdate={handleUpdate}
                     handleDelete={handleDelete}
                     updateEnabled={actions.includes('update')}
-                    deleteEnabled={actions.includes('delete')}
+                    deleteEnabled={false}
                   />
                 ) : (
                   <Empty
