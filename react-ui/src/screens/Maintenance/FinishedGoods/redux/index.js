@@ -76,7 +76,7 @@ export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) =
 const initialState = {
   list: [],
   status: 'loading',
-  statusLevel: '',
+  statusLevel: 'loading',
   responseCode: null,
   statusMessage: '',
   action: '',
@@ -95,7 +95,8 @@ const finishedGoodsSlice = createSlice({
         ...state,  
         action: 'fetch', 
         status: 'loading',
-        statusMessage: ITEMS_GET_PENDING 
+        statusLevel: 'loading',
+        statusMessage: `${ITEMS_GET_PENDING} for finished goods` 
       };
     },
     [getFGList.fulfilled]: (state, action) => {
@@ -138,7 +139,7 @@ const finishedGoodsSlice = createSlice({
         action: 'create',
         status: 'loading',
         statusMessage: `${ITEM_ADD_PENDING} for finished goods`,
-        statusLevel: '',
+        statusLevel: 'loading',
         responseCode: null,
       };
     },
@@ -180,7 +181,7 @@ const finishedGoodsSlice = createSlice({
         action: 'update',
         status: 'loading',
         statusMessage: `${ITEM_UPDATE_PENDING} for finished goods`,
-        statusLevel: '',
+        statusLevel: 'loading',
         responseCode: null,
       };
     },
@@ -222,7 +223,7 @@ const finishedGoodsSlice = createSlice({
         action: 'delete',
         status: 'loading',
         statusMessage: `${ITEM_DELETE_PENDING} for finished goods`,
-        statusLevel: '',
+        statusLevel: 'loading',
         responseCode: null,
       };
     },
