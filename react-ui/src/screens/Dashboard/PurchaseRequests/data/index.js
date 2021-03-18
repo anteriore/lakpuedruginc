@@ -221,7 +221,7 @@ export const FormDetails = () => {
         render: (object) => {
           return object.stockQuantity - object.quantityRequested > 0
             ? object.stockQuantity - object.quantityRequested
-            : 0;
+            : object.stockQuantity;
         },
       },
     ],
