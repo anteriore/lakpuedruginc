@@ -125,6 +125,7 @@ const finishedGoodsSlice = createSlice({
 
       return {
         ...state,
+        data: [],
         status: 'failed',
         statusLevel: level,
         responseCode: status,

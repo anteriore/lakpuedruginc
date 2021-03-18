@@ -37,7 +37,7 @@ const FinishedGoods = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status,action,statusMessage, statusLevel})
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
