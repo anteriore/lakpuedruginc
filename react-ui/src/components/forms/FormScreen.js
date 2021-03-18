@@ -354,7 +354,12 @@ const FormScreen = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" loading={loading} onClick={() => form.submit()}>
+            <Button 
+              type="primary" 
+              loading={loading} 
+              onClick={() => form.submit()}
+              disabled={hasTable && !(typeof formTable.isVisible === 'undefined' || formTable.isVisible)}
+            >
               Submit
             </Button>
             <Button
