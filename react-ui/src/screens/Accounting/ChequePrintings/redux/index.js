@@ -42,6 +42,19 @@ export const listChequePrintingByCompanyAndStatus = createAsyncThunk(
     try {
       const response = await axiosInstance.get(
         `rest/cheque-printings/company/${company}/status/${status}?token=${accessToken}`
+        );
+        const { response: validatedResponse, valid } = checkResponseValidity(response);
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+
 export const approveChequePrinting = createAsyncThunk(
   'approveChequePrinting',
   async (payload, thunkAPI) => {
