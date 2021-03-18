@@ -157,13 +157,15 @@ const PurchaseRequests = (props) => {
     }
 
     dispatch(addPR(payload)).then((response) => {
-      if (response.payload.status === 200) {
+
+      const onSuccess = () => {
         message.success(`Successfully saved ${response.payload.data.number}`);
         dispatch(listPR({ company, message })).then(() => {
           history.goBack();
           setLoading(false);
         });
-      } else {
+      }
+      const onFail = () => {
         setLoading(false);
         if (formMode === 'add') {
           message.error(
@@ -173,7 +175,9 @@ const PurchaseRequests = (props) => {
           message.error(`Something went wrong. Unable to update ${data.number}.`);
         }
       }
-    });
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    })
   };
 
   const handleCancelButton = () => {
