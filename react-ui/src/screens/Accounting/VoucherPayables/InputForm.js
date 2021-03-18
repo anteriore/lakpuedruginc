@@ -5,7 +5,6 @@ import {
   Input,
   InputNumber,
   Select,
-  Checkbox,
   Modal,
   Row,
   Col,
@@ -28,7 +27,7 @@ import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../Vo
 import { listPurchaseVouchersByVendorWithoutAdjustent, clearData as clearPurchaseVouchers } from '../PurchaseVouchers/redux';
 import { listJournalVouchersByVendorWithoutAdjustent, clearData as clearJournalVouchers } from '../JournalVouchers/redux';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
@@ -43,7 +42,6 @@ const InputForm = (props) => {
   const [loadingTable, setLoadingTable] = useState(false);
 
   const [mode, setMode] = useState(null);
-  const [selectedVendor, setSelectedVendor] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -77,7 +75,7 @@ const InputForm = (props) => {
       default:
         break;
     }
-  }, [mode, purchaseVouchers, journalVouchers, vouchers])
+  }, [mode, purchaseVouchers, journalVouchers, vouchers, formDetails])
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
@@ -223,82 +221,6 @@ const InputForm = (props) => {
     return columns;
   };
 
-  // for selecting selecting a new row in a table
-  const onModalSelect = (data, isSelected) => {
-    let selectedItems = [];
-    if (hasTable) {
-      if (isSelected) {
-        // add existing data
-        if (tableData !== null && typeof tableData !== 'undefined') {
-          selectedItems = selectedItems.concat(tableData);
-        }
-
-        // process the new data before adding if necessary
-        let processedData = data;
-        if (typeof formTable.processData === 'function') {
-          processedData = formTable.processData(data);
-        }
-        selectedItems = selectedItems.concat(processedData);
-      } else if (tableData !== null && typeof tableData !== 'undefined') {
-        selectedItems = tableData;
-
-        // key for the selected item
-        if (typeof formTable.selectedKey === 'undefined') {
-          formTable.selectedKey = 'id';
-        }
-        // foreign key that corresponds to the selected item
-        if (typeof formTable.foreignKey === 'undefined') {
-          formTable.foreignKey = 'id';
-        }
-        selectedItems = selectedItems.filter(
-          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
-        );
-      }
-      const fieldsValue = {};
-      fieldsValue[formTable.name] = selectedItems;
-      setTableData(selectedItems);
-      form.setFieldsValue(fieldsValue);
-    }
-  };
-
-  // for rendering the columns inside the row selection modal
-  const renderModalColumns = (columns) => {
-    let modalColumns = [
-      {
-        key: 'select',
-        render: (row) => {
-          return (
-            <Checkbox
-              onChange={(e) => {
-                onModalSelect(row, e.target.checked);
-              }}
-              defaultChecked={formTable.checkSelected(tableData, row)}
-            />
-          );
-        },
-      },
-    ];
-
-    modalColumns = modalColumns.concat(columns);
-
-    return modalColumns;
-  };
-
-  const expandedRowRender = (row) => {
-    if (formTable.hasOwnProperty('nestedData')) {
-      return (
-        <>
-          <Title level={5}>{formTable.nestedData.label}</Title>
-          <Table
-            columns={formTable.nestedData.fields}
-            dataSource={row[formTable.nestedData.data]}
-            pagination={false}
-          />
-        </>
-      );
-    }
-  };
-
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
@@ -314,6 +236,7 @@ const InputForm = (props) => {
         case "1 Voucher": 
             setLoadingTable(true)
             formDetails.setSelectedPayee(false)
+            dispatch(clearVouchers())
             dispatch(listVoucherByCompanyAndStatus({ company, status: "Approved" })).then(() => {
               setLoadingTable(false)
               setMode(values.variation)
@@ -338,6 +261,7 @@ const InputForm = (props) => {
       switch(mode){
         case "Multiple PJV":
           setLoadingTable(true)
+          dispatch(clearPurchaseVouchers())
           dispatch(listPurchaseVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
             const onSuccess = () => {
               if(response.payload.data.length === 0){
@@ -350,6 +274,7 @@ const InputForm = (props) => {
           break;
         case "Multiple JV": 
           setLoadingTable(true)
+          dispatch(clearJournalVouchers())
           dispatch(listJournalVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
             const onSuccess = () => {
               if(response.payload.data.length === 0){

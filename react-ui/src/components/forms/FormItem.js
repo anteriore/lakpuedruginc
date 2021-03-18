@@ -13,7 +13,6 @@ import {
   Radio,
   Modal,
   Table,
-  message,
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SelectOutlined, DeleteOutlined } from '@ant-design/icons';
 

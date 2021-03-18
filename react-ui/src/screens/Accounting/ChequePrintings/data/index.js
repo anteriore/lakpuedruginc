@@ -65,6 +65,7 @@ const FormDetails = () => {
         choices: payees,
         render: (payee) => `[${payee?.code}] ${payee?.name}`,
         onChange: (e) => {
+          dispatch(clearVoucherPayables())
           dispatch(listVoucherPayableByCompanyAndVendorAndStatus({company, vendor: e, status: "Approved"}))
         },
         rules: [{ required: true }],

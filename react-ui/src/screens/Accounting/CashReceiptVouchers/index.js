@@ -3,7 +3,6 @@ import { Row, Col, Typography, Button, Skeleton, Space, Modal, Table, message } 
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import moment from 'moment';
 import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
@@ -29,7 +28,6 @@ const CashReceiptVouchers = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
@@ -46,12 +44,16 @@ const CashReceiptVouchers = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearBankAccount());
+      dispatch(clearAccountTitles());
+      dispatch(clearVouchers());
+      dispatch(clearDeptArea());
+      dispatch(clearGroupCat());
     };
   }, [dispatch, company]);
 
   const handleAdd = () => {
     setFormTitle('Create Cash Receipt Voucher');
-    setFormMode('add');
     setFormData(null);
     dispatch(listBankAccount({message})).then((response1) => {
       dispatch(listAccountTitles({ company, message })).then((response2) => {

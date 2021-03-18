@@ -55,6 +55,10 @@ const VoucherPayables = (props) => {
 
     return function cleanup() {
       dispatch(clearData());
+      dispatch(clearAccountTitles());
+      dispatch(clearDeptArea());
+      dispatch(clearGroupCat());
+      dispatch(clearVendor());
       isCancelled = true;
     };
   }, [dispatch, company]);
