@@ -305,10 +305,8 @@ const FormScreen = (props) => {
                 return <FormItem item={item} onFail={onFail} />;
             })}
 
-            
-
             {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
-              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
+              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? [{ required: true }]}>
                 {(fields, { errors }) => (
                   <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
