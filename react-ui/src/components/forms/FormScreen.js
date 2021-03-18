@@ -31,6 +31,7 @@ const FormScreen = (props) => {
   const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
 
+  const [loading, setLoading] = useState(false);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
@@ -48,6 +49,7 @@ const FormScreen = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setLoading(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -60,7 +62,9 @@ const FormScreen = (props) => {
       }
     });
 
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setLoading(false)
+    });
   };
 
   const onFinishFailed = () => {
@@ -339,7 +343,7 @@ const FormScreen = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button type="primary" loading={loading} onClick={() => form.submit()}>
               Submit
             </Button>
             <Button
