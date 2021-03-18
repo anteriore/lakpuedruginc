@@ -57,8 +57,13 @@ public class ChequePrintingRestController {
 	}
 
 	@PostMapping("/approve/{cpId}/user/{userId}")
-	public ChequePrinting aprove(@PathVariable Long cpId, @PathVariable Long userId) {
+	public ChequePrinting approve(@PathVariable Long cpId, @PathVariable Long userId) {
 		return chequePrintingService.approve(cpId, userId);
+	}
+
+	@PostMapping("/reject/{cpId}/user/{userId}")
+	public ChequePrinting reject(@PathVariable Long cpId, @PathVariable Long userId) {
+		return chequePrintingService.reject(cpId, userId);
 	}
 
 	@PostMapping("/delete")
