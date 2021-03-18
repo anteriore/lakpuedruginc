@@ -213,7 +213,7 @@ const FormDetails = () => {
       let totalAmount = 0;
 
       data.forEach(({ quantity, unitPrice }) => {
-        totalAmount += quantity * unitPrice;
+        totalAmount += quantity * (unitPrice ?? 0);
       });
 
       return (
