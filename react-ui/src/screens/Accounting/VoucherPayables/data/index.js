@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
 import { Table, Typography } from 'antd';
+import moment from 'moment';
 
 const { Text } = Typography;
 
@@ -92,7 +92,7 @@ const FormDetails = () => {
         name: 'variation',
         rules: [{ required: true, message: 'Please select a Voucher selection mode '}],
         placeholder: 'Select Voucher selection mode',
-        type: 'select',
+        type: 'radioGroup',
         choices: [
           {
             id: "1 Voucher",
