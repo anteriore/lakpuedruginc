@@ -25,6 +25,7 @@ import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 import ItemDescription from '../../../components/ItemDescription';
+import GeneralHelper from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -50,6 +51,7 @@ const PurchaseRequests = (props) => {
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     let isCancelled = false;
@@ -96,9 +98,18 @@ const PurchaseRequests = (props) => {
   const handleDelete = (data) => {
     setLoading(true);
     dispatch(deletePR(data.id)).then(() => {
-      dispatch(listPR({ company, message })).then(() => {
-        setLoading(false);
-        message.success(`Successfully deleted Purchase Request ${data.number}`);
+      dispatch(listPR({ company, message })).then((response) => {
+        const onSuccess = () => {
+          setLoading(false);
+          message.success(`Successfully deleted Purchase Request ${data.number}`);
+        }
+
+        const onFail = () => {
+          setLoading(false);
+          message.error(`Unable to delete Purchase Request`);
+        }
+
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     });
   };
