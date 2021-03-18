@@ -42,6 +42,37 @@ export const listChequePrintingByCompanyAndStatus = createAsyncThunk(
     try {
       const response = await axiosInstance.get(
         `rest/cheque-printings/company/${company}/status/${status}?token=${accessToken}`
+export const approveChequePrinting = createAsyncThunk(
+  'approveChequePrinting',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id, user } = payload;
+
+    try {
+      const response = await axiosInstance.post(
+        `rest/cheque-printings/approve/${id}/user/${user}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const rejectChequePrinting = createAsyncThunk(
+  'rejectChequePrinting',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id, user } = payload;
+
+    try {
+      const response = await axiosInstance.post(
+        `rest/cheque-printings/reject/${id}/user/${user}?token=${accessToken}`
       );
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -103,7 +134,7 @@ const chequePrintingSlice = createSlice({
     },
     [listChequePrinting.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Printings');
+      const { message, level } = generateStatusMessage(action.payload, 'Cheque Voucher');
 
       return {
         ...state,

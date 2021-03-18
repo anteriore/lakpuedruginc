@@ -50,4 +50,13 @@ public class ChequePrintingService {
 
 		return chequePrintingRepository.save(chequePrinting);
 	}
+	
+	@Transactional
+	public ChequePrinting reject(Long cpId, Long userId) {
+		ChequePrinting chequePrinting = chequePrintingRepository.getOne(cpId);
+		chequePrinting.setApprovedBy(userRepository.getOne(userId));
+		chequePrinting.setStatus("Reject");
+
+		return chequePrintingRepository.save(chequePrinting);
+	}
 }

@@ -7,7 +7,7 @@ import moment from 'moment';
 import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
-import FormScreen from '../../../components/forms/FormScreen';
+import InputForm from './InputForm';
 import GeneralHelper from '../../../helpers/general-helper';
 import ItemDescription from '../../../components/ItemDescription';
 
@@ -32,7 +32,7 @@ const CashReceiptVouchers = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
-  const { formDetails } = FormDetails();
+  const { formDetails, tableDetails } = FormDetails();
 
   const { handleRequestResponse } = GeneralHelper();
 
@@ -107,9 +107,11 @@ const CashReceiptVouchers = (props) => {
         id: data.bankAccount
       },
       preparedBy: {
-        id: user
+        id: user.id
       },
-      variation: "New",
+      voucher: data.variation === 'Adjustment' ? {
+        ...data.voucher[0]
+      } : null
     }
   }
 
@@ -168,7 +170,7 @@ const CashReceiptVouchers = (props) => {
   return (
     <Switch>
       <Route path={`${path}/new`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -176,10 +178,11 @@ const CashReceiptVouchers = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
-        <FormScreen
+        <InputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
@@ -187,6 +190,7 @@ const CashReceiptVouchers = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
+          formTable={tableDetails}
         />
       </Route>
       <Route>
@@ -219,8 +223,8 @@ const CashReceiptVouchers = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={actions.includes('update')}
-                deleteEnabled={actions.includes('delete')}
+                updateEnabled={false}
+                deleteEnabled={false}
               />
             )}
           </Col>
@@ -244,12 +248,20 @@ const CashReceiptVouchers = (props) => {
                 <ItemDescription
                   title={`${selectedData.number} Details`}
                   selectedData={selectedData}
-                  formItems={formDetails.form_items}
+                  formItems={selectedData.variation === 'Adjustment' ? ( 
+                      formDetails.form_items.concat(formDetails.voucher_fields).concat({
+                        label: 'Voucher',
+                        name: 'voucher',
+                        render: (object) => object?.number
+                      })
+                    ) : (
+                      formDetails.form_items
+                  )}
                 />
                 <Text>{'Account Title Entries: '}</Text>
                 <Table
                   dataSource={selectedData.accountTitles}
-                  columns={renderTableColumns(formDetails.form_items.find((item) => item.name === 'accountTitles').fields)}
+                  columns={renderTableColumns(formDetails.account_titles.fields)}
                   pagination={false}
                 />
               </Space>

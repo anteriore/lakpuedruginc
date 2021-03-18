@@ -12,47 +12,27 @@ import {
   Typography,
   Table,
   Empty,
-  Space,
   message,
   TimePicker,
-  Skeleton,
 } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
-import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-
 import FormItem from '../../../components/forms/FormItem';
-import GeneralHelper from '../../../helpers/general-helper';
 
-import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../Vouchers/redux';
-import { listPurchaseVouchersByVendorWithoutAdjustent, clearData as clearPurchaseVouchers } from '../PurchaseVouchers/redux';
-import { listJournalVouchersByVendorWithoutAdjustent, clearData as clearJournalVouchers } from '../JournalVouchers/redux';
-
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const dispatch = useDispatch()
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
-  const { handleRequestResponse } = GeneralHelper();
 
   const [tableData, setTableData] = useState();
-  const [loadingTable, setLoadingTable] = useState(false);
-
-  const [mode, setMode] = useState(null);
-  const [selectedVendor, setSelectedVendor] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
-
-  const company = useSelector((state) => state.company.selectedCompany);
-  const purchaseVouchers = useSelector((state) => state.accounting.purchaseVouchers.list);
-  const journalVouchers = useSelector((state) => state.accounting.journalVouchers.list);
-  const vouchers = useSelector((state) => state.accounting.vouchers.list);
-
+  const [displayVoucherFields, setDisplayVoucherFields] = useState(false)
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -61,23 +41,6 @@ const InputForm = (props) => {
     }
     // eslint-disable-next-line
   }, [values, form]);
-
-  useEffect(() => {
-    switch(mode){
-      case "1 Voucher": 
-        //TODO: limit selection to one
-        formDetails.setVoucherChoices(vouchers)
-        break;
-      case "Multiple PJV": 
-        formDetails.setVoucherChoices(purchaseVouchers)
-        break;
-      case "Multiple JV": 
-        formDetails.setVoucherChoices(journalVouchers)
-        break;
-      default:
-        break;
-    }
-  }, [mode, purchaseVouchers, journalVouchers, vouchers])
 
   const onFinish = (data) => {
     formDetails.form_items.forEach((item) => {
@@ -308,57 +271,13 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
-    
     if(values.hasOwnProperty('variation')){
       switch(values.variation){
-        case "1 Voucher": 
-            setLoadingTable(true)
-            formDetails.setSelectedPayee(false)
-            dispatch(listVoucherByCompanyAndStatus({ company, status: "Approved" })).then(() => {
-              setLoadingTable(false)
-              setMode(values.variation)
-            })
+        case "New":
+          setDisplayVoucherFields(false)
           break;
-        case "Multiple PJV": 
-          formDetails.setSelectedPayee(true)
-          form.setFieldsValue({vendor: null})
-          setMode(values.variation)
-          break;
-        case "Multiple JV": 
-          formDetails.setSelectedPayee(true)
-          form.setFieldsValue({vendor: null})
-          setMode(values.variation)
-          break;
-        default:
-          break;
-      }
-    }
-
-    if(values.hasOwnProperty('vendor')){
-      switch(mode){
-        case "Multiple PJV":
-          setLoadingTable(true)
-          dispatch(listPurchaseVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
-            const onSuccess = () => {
-              if(response.payload.data.length === 0){
-                message.error("The are no approved Purchase Journal Vouchers associated with the selected payee.")
-              }
-            };
-            handleRequestResponse([response], onSuccess, null, '');
-          })
-          setLoadingTable(false)
-          break;
-        case "Multiple JV": 
-          setLoadingTable(true)
-          dispatch(listJournalVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
-            const onSuccess = () => {
-              if(response.payload.data.length === 0){
-                message.error("The are no approved Journal Vouchers associated with the selected payee.")
-              }
-            };
-            handleRequestResponse([response], onSuccess, null, '');
-          })
-          setLoadingTable(false)
+        case "Adjustment":
+          setDisplayVoucherFields(true)
           break;
         default:
           break;
@@ -387,53 +306,40 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
-            {
-              loadingTable ? (
-                <Skeleton/>
-              ) : ( formTable.isVisible && 
-                (
-                  <Space 
-                    direction="vertical" 
-                    size={15} 
-                    style={{ 
-                      width: '100%', 
-                      marginBottom: '5%',
-                    }}
-                  >
-                    <Row style={{ width: '87.5%'}}>
-                    <Button
-                      onClick={() => {
-                        setDisplayModal(true);
-                        setLoadingModal(false);
-                      }}
-                      icon={<SelectOutlined />}
-                      style={{marginLeft: "auto"}}
-                    >
-                      {`Select ${formTable.label}`}
-                    </Button>
-                    </Row>
-                    <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
-                      {(fields, { errors }) => (
-                        <Col span={20} offset={1}>
-                          <Table
-                            dataSource={tableData}
-                            columns={renderTableColumns(formTable)}
-                            pagination={false}
-                            locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                            summary={formTable.summary}
-                          />
-                        </Col>
-                      )}
-                    </Form.List>
-                  </Space>
-                )
-              )
-            }
-            
-            <Space direction="vertical" size={15} style={{ width: '95%' }}>
-              <FormItem item={formDetails.accountTitles} onFail={onFail} formInstance={form} />
-            </Space>
+            {displayVoucherFields && formDetails.voucher_fields.map((item) => {
+              return <FormItem item={item} onFail={onFail} formInstance={form} />;
+            })}
 
+{displayVoucherFields && hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
+                {(fields, { errors }) => (
+                  <Col span={20} offset={1}>
+                    <div style={{ float: 'right', marginBottom: '1%' }}>
+                      <Button
+                        onClick={() => {
+                          setDisplayModal(true);
+                          setLoadingModal(false);
+                        }}
+                        icon={<SelectOutlined />}
+                      >
+                        {`Select ${formTable.label}`}
+                      </Button>
+                    </div>
+                    <Table
+                      dataSource={tableData}
+                      columns={renderTableColumns(formTable)}
+                      pagination={false}
+                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      summary={formTable.summary}
+                    />
+                  </Col>
+                )}
+              </Form.List>
+            )}
+
+            <FormItem item={formDetails.account_titles} onFail={onFail} formInstance={form} />
+
+            
           </Form>
 
           <div style={styles.tailLayout}>
@@ -461,7 +367,7 @@ const InputForm = (props) => {
             >
               <Table
                 rowSelection={{
-                  type: mode === '1 Voucher' ? 'radio' : 'checkbox',
+                  type: 'radio',
                   //selectedRowKeys: item.selectedData,
                   onChange: (selectedRowKeys, selectedRows) => {
                     const fieldsValue = {};
@@ -511,7 +417,6 @@ const styles = {
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    marginTop: '2%',
     width: '87.5%',
   },
   listTailLayout: {

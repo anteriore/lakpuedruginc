@@ -33,7 +33,7 @@ export const routes = [
     component: AccountTitles,
   },
   {
-    title: 'Cheque Printings',
+    title: 'Cheque Vouchers',
     path: '/cheque-printings',
     component: ChequePrintings,
   },

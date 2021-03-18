@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
 import { Table, Typography } from 'antd';
+import moment from 'moment';
 
 const { Text } = Typography;
 
@@ -92,7 +92,7 @@ const FormDetails = () => {
         name: 'variation',
         rules: [{ required: true, message: 'Please select a Voucher selection mode '}],
         placeholder: 'Select Voucher selection mode',
-        type: 'select',
+        type: 'radioGroup',
         choices: [
           {
             id: "1 Voucher",
@@ -110,7 +110,7 @@ const FormDetails = () => {
             name: "Multiple Journal Voucher"
           }
         ],
-        render: (data) => data
+        render: (data) => data.name
       },
     ],
     accountTitles: 
@@ -170,7 +170,7 @@ const FormDetails = () => {
           dependencies: ['accountTitle'],
           rules: [{ required: true, message: 'Please provide debit' }],
           isVisible: (selectedAccount?.type ?? "") === "Debit",
-          render: (object) => object.debit,
+          render: (object) => object?.debit,
           initialValue: 0,
           min: 0,
           width: 200,
@@ -181,7 +181,7 @@ const FormDetails = () => {
           type: 'number',
           rules: [{ required: true, message: 'Please provide credit' }],
           isVisible: (selectedAccount?.type ?? "") === "Credit",
-          render: (object) => object.credit,
+          render: (object) => object?.credit,
           initialValue: 0,
           min: 0,
           width: 200,
