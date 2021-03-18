@@ -116,7 +116,15 @@ const AcknowledgementReceipts = (props) => {
 
   const onSubmit = (data) => {
     const payments = [];
+    let totalSI = 0
+    let totalOS = 0;
     data.payments.forEach((payment) => {
+      if(payment.type === 'DR_SI'){
+        totalSI += payment.appliedAmount
+      }
+      else {
+        totalOS += payment.appliedAmount
+      }
       payments.push({
         reference: {
           ...payment,
@@ -140,6 +148,8 @@ const AcknowledgementReceipts = (props) => {
         id: user.id,
       },
       payments,
+      osAmount: totalOS,
+      siAmount: totalSI,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;

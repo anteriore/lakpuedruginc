@@ -148,7 +148,8 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
             onChange={item.onChange}
             placeholder={item.placeholder}
             optionFilterProp="children"
-            disabled={item.type === 'readOnly' || item.readOnly}
+            disabled={item.type === 'readOnly' || item.readOnly || (item?.loading ?? false)}
+            loading={item?.loading ?? false}
             notFoundContent={item?.notFoundContent ?? "Not Found"}
             style={{width: item.width ?? '100%', minWidth: 100}}
           >
