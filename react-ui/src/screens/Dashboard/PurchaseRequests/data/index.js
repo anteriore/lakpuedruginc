@@ -105,13 +105,13 @@ export const FormDetails = () => {
         label: 'PRF Date',
         name: 'date',
         type: 'date',
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please provide a valid date' }],
       },
       {
         label: 'Date Needed',
         name: 'dateNeeded',
         type: 'date',
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please provide a valid date needed' }],
       },
       {
         label: 'Requested By',
@@ -148,7 +148,7 @@ export const FormDetails = () => {
           }
         },
         loading: loadingItemInventory,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please provide a valid department' }],
       },
       {
         label: 'Remarks',
@@ -165,7 +165,7 @@ export const FormDetails = () => {
     label: 'Requested Items',
     name: 'requestedItems',
     key: 'id',
-    rules: [{ required: true }],
+    rules: [{ required: true, message: 'Please select items to be requested' }],
     isVisible: items.length > 0 && !loadingItemInventory,
     emptyText: "Please select a department for the items to be requested",
     fields: [

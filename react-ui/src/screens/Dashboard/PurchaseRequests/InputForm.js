@@ -19,7 +19,7 @@ import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formTable } = props;
@@ -277,9 +277,9 @@ const InputForm = (props) => {
             })}
 
             {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
-              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
+              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? [{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
+                  <Col span={23} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
                       <Button
                         onClick={() => {
@@ -298,6 +298,7 @@ const InputForm = (props) => {
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       summary={formTable.summary}
                     />
+                    <Text style={{color: 'red'}}>{form.getFieldError(formTable.name)}</Text>
                   </Col>
                 )}
               </Form.List>
@@ -390,7 +391,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'row-reverse',
     marginTop: '2%',
-    width: '100%',
+    width: '87.5%',
   },
   listTailLayout: {
     labelCol: {
