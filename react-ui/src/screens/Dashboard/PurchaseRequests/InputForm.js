@@ -12,10 +12,10 @@ import {
   Typography,
   Table,
   Empty,
+  Alert,
   message,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
@@ -276,10 +276,10 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+            {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={24} offset={1}>
+                  <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
                       <Button
                         onClick={() => {
@@ -301,7 +301,17 @@ const InputForm = (props) => {
                   </Col>
                 )}
               </Form.List>
-            )}
+            ): (
+              <Col span={15} offset={6}>
+              <Alert
+                message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
+                type="warning"
+                showIcon
+                icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+              />
+              </Col>
+            ))}
           </Form>
 
           <div style={styles.tailLayout}>

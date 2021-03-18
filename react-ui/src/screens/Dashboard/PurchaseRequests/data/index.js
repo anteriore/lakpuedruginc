@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { listItemSummaryNonEngineering, listItemSummaryEngineering, clearData as clearItem } from '../../../Maintenance/Items/redux';
 
@@ -89,6 +90,7 @@ export const FormDetails = () => {
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const company = useSelector((state) => state.company.selectedCompany);
   const user = useSelector((state) => state.auth.user);
+  const [loadingItemInventory, setLoadingItemInventory] = useState(false)
 
   const formDetails = {
     form_name: 'purchase_request',
@@ -132,13 +134,20 @@ export const FormDetails = () => {
           const departmentData = departments.find((department) => department.id === e)
           if(departmentData?.code === 'PL-ENGG'){
             dispatch(clearItem())
-            dispatch(listItemSummaryEngineering({ company }))
+            setLoadingItemInventory(true)
+            dispatch(listItemSummaryEngineering({ company })).then(() => {
+              setLoadingItemInventory(false)
+            })
           }
           else {
             dispatch(clearItem())
-            dispatch(listItemSummaryNonEngineering({ company }))
+            setLoadingItemInventory(true)
+            dispatch(listItemSummaryNonEngineering({ company })).then(() => {
+              setLoadingItemInventory(false)
+            })
           }
         },
+        loading: loadingItemInventory,
         rules: [{ required: true }],
       },
       {
@@ -157,7 +166,8 @@ export const FormDetails = () => {
     name: 'requestedItems',
     key: 'id',
     rules: [{ required: true }],
-    isVisible: items.length > 0,
+    isVisible: items.length > 0 && !loadingItemInventory,
+    emptyText: "Please select a department for the items to be requested",
     fields: [
       {
         label: 'Item ID',
