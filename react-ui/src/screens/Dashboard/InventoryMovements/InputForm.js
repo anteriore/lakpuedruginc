@@ -326,23 +326,12 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
-                // for nested tables
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  expandable={{ expandedRowRender }}
-                  rowKey={formTable.foreignKey}
-                />
-              ) : (
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  rowKey={formTable.foreignKey}
-                />
-              )}
+              <Table
+                dataSource={formTable.selectData}
+                columns={renderModalColumns(formTable.selectFields)}
+                pagination={{simple: true}}
+                rowKey={formTable.foreignKey}
+              />
             </Modal>
           )}
         </Col>
