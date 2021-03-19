@@ -9,7 +9,6 @@ import FormDetails, { columns } from './data';
 import {
   listMaterialIssuance,
   addMaterialIssuance,
-  deleteMaterialIssuance,
   clearData,
 } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
@@ -24,7 +23,6 @@ const MaterialIssuances = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
@@ -61,7 +59,6 @@ const MaterialIssuances = (props) => {
 
   const handleAdd = () => {
     setFormTitle('Create Material Issuance');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(listDepot({ company, message })).then((response1) => {
