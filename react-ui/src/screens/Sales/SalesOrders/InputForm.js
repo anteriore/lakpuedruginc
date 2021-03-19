@@ -6,7 +6,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash';
-import { formDetails, tableProduct, tableProductInventory } from './data';
+import FormDetails from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList } from '../../../helpers/general-helper';
@@ -19,6 +19,7 @@ const InputForm = (props) => {
   const [form] = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const { formDetails, tableProduct, tableProductInventory } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
   const [productModal, setProductModal] = useState(false);
@@ -181,7 +182,6 @@ const InputForm = (props) => {
   };
 
   const onFail = () => {
-    console.log('Fail item detected', `/${path.split('/')[1]}/${path.split('/')[2]}`);
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 

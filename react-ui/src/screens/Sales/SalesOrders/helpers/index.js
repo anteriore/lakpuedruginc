@@ -48,7 +48,6 @@ export const formatPayload = (approvalId, company, value) => {
     ...formattedValue,
     company: { id: company },
     date: value.date,
-    approvedBy: { id: approvalId },
     preparedBy: { id: approvalId },
     checkedBy: { id: approvalId },
     depot: { id: value.depot },

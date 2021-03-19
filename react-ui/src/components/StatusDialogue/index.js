@@ -13,11 +13,11 @@ const statusDialogue = (response, dialogueType) => {
   } else {
     switch (response.statusLevel) {
       case 'warning':
-        return Modal.warning(response.modalContent);
+        return Modal.warning(response?.modalContent ?? {});
       case 'error':
-        return Modal.error(response.modalContent);
+        return Modal.error(response?.modalContent ?? {});
       default:
-        return Modal.success(response.modalContent);
+        return Modal.success(response?.modalContent ?? {});
     }
   }
 };
