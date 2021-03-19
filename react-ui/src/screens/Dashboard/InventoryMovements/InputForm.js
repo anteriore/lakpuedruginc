@@ -26,7 +26,6 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
-  const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
 
   const [loadingModal, setLoadingModal] = useState(true);
@@ -34,16 +33,19 @@ const InputForm = (props) => {
 
   const [requireMO, setRequireMO] = useState(false); // for toggling MO input
 
-  const toggleName = formDetails.toggle_name;
 
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
-    }
+
+    formDetails.required_data.forEach((data) => {
+      if(data === null || data.length === 0){
+        onFail()
+      }
+    })
+
     // eslint-disable-next-line
   }, [values, form]);
 
@@ -240,12 +242,6 @@ const InputForm = (props) => {
     } else if (values.hasOwnProperty('type')) {
       form.setFieldsValue({ classification: null });
     }
-
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
-      }
-    }
   };
 
   return (
@@ -275,32 +271,30 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
-                {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
-                    <div style={{ float: 'right', marginBottom: '1%' }}>
-                      <Button
-                        onClick={() => {
-                          setDisplayModal(true);
-                          setLoadingModal(false);
-                        }}
-                        icon={<SelectOutlined />}
-                      >
-                        {`Select ${formTable.label}`}
-                      </Button>
-                    </div>
-                    <Table
-                      dataSource={tableData}
-                      columns={renderTableColumns(formTable)}
-                      pagination={false}
-                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                      summary={formTable.summary}
-                    />
-                  </Col>
-                )}
-              </Form.List>
-            )}
+            <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
+              {(fields, { errors }) => (
+                <Col span={20} offset={1}>
+                  <div style={{ float: 'right', marginBottom: '1%' }}>
+                    <Button
+                      onClick={() => {
+                        setDisplayModal(true);
+                        setLoadingModal(false);
+                      }}
+                      icon={<SelectOutlined />}
+                    >
+                      {`Select ${formTable.label}`}
+                    </Button>
+                  </div>
+                  <Table
+                    dataSource={tableData}
+                    columns={renderTableColumns(formTable)}
+                    pagination={false}
+                    locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                    summary={formTable.summary}
+                  />
+                </Col>
+              )}
+            </Form.List>
           </Form>
 
           <div style={styles.tailLayout}>

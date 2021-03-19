@@ -137,6 +137,9 @@ const FormDetails = () => {
         placeholder: 'Remarks',
       },
     ],
+    required_data: [
+      inventories
+    ]
   };
 
   const tableDetails = {
