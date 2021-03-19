@@ -46,6 +46,15 @@ const FormScreen = (props) => {
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
+
+    if(typeof formDetails.required_data !== 'undefined'){
+      formDetails.required_data.forEach((data) => {
+        if(data === null || data.length === 0){
+          onFail()
+        }
+      })
+    }
+    
     // eslint-disable-next-line
   }, [values, form]);
 
