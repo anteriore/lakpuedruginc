@@ -12,7 +12,7 @@ export const tableHeader = [
     key: 'number',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string'
   },
   {
     title: 'Prepared By',
