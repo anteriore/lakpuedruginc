@@ -90,6 +90,7 @@ const FormDetails = () => {
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
   const [displayModal, setDisplayModal] = useState(false);
+  const [loadingDepot, setLoadingDepot] = useState(false);
   let salesSlips = [];
   salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
@@ -117,11 +118,16 @@ const FormDetails = () => {
         choices: depots,
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
+        loading: loadingDepot,
         onChange: (e) => {
-          dispatch(clearOS());
-          dispatch(clearSI());
-          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] }));
-          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] }));
+          dispatch(clearOS())
+          dispatch(clearSI())
+          setLoadingDepot(true)
+          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] })).then(() => {
+            dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] })).then(() => {
+              setLoadingDepot(false)
+            })
+          })
         },
       },
       {
@@ -214,7 +220,7 @@ const FormDetails = () => {
         name: 'goodQuantity',
         render: (object) => {
           if (typeof object.quantity !== 'undefined' && object.quantity !== null) {
-            return object.quantity - object.badQuantity || object.quantity;
+            return object.quantity - (object?.badQuantity ?? 0);
           }
 
           return object.goodQuantity;
@@ -265,8 +271,8 @@ const FormDetails = () => {
     ],
     summary: (data) => {
       let totalAmount = 0;
-      data.forEach(({ goodQuantity, unitPrice }) => {
-        totalAmount += goodQuantity * unitPrice || 0;
+      data.forEach(({ quantity, badQuantity, unitPrice }) => {
+        totalAmount += (quantity - (badQuantity ?? 0)) * (unitPrice ?? 0);
       });
 
       return (
