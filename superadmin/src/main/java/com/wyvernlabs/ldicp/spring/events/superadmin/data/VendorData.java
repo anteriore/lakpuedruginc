@@ -66,12 +66,10 @@ public class VendorData {
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-				//for (int i = 0; i < data.length; i++) {
-					//System.out.print(i+")["+ data[i].replace("\"", "")+"]" );
-					//Client(String code,String name,String Address,String proprietor,String telephoneNumbers,int terms, String tin,String vat)
+	
 
 					Vendor tempvendor = new Vendor();
-
+					/*
 					tempvendor.setCompany(company);
 					tempvendor.setCode(data[0].replace("\"", ""));
 					tempvendor.setName(data[1].replace("\"", ""));
@@ -82,7 +80,18 @@ public class VendorData {
 					tempvendor.setTin(data[6].replace("\"", ""));
 					tempvendor.setVat(data[7].replace("\"", ""));
 					vendorRepository.save(tempvendor);
+					*/
 
+					tempvendor.setCompany(company);
+					tempvendor.setCode(data[0].replace("\"", ""));
+					tempvendor.setName(data[1].replace("\"", ""));
+					tempvendor.setAddress(data[3].replace("\"", ""));//tempvendor.setDeliveryAddress(data[2].replace("\"", ""));
+					tempvendor.setContactPerson(data[4].replace("\"", ""));
+					tempvendor.setPhoneNumber(data[5].replace("\"", ""));
+					tempvendor.setTerms(Integer.parseInt( data[6].replace("\"", "")));
+					tempvendor.setTin(data[7].replace("\"", ""));
+					tempvendor.setVat(data[8].replace("\"", ""));
+					vendorRepository.save(tempvendor);
 
 
 
