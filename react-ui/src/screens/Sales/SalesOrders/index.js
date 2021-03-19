@@ -25,6 +25,7 @@ import {
   tempListProductInventory,
 } from '../../Maintenance/redux/productInventory';
 import { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
 
@@ -32,7 +33,7 @@ const SalesOrders = (props) => {
   const { title, company, actions } = props;
   const dispatch = useDispatch();
   const history = useHistory();
-  const { itemColumn } = FormDetails();
+  const { itemColumn, formDetails } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
   const [selectedSO, setSelectedSO] = useState(null);
@@ -263,14 +264,11 @@ const SalesOrders = (props) => {
             <Skeleton />
           ) : (
             <>
-              <Descriptions
-                bordered
-                title={`Sales Order ${selectedSO.number}`}
-                size="default"
-                layout="vertical"
-              >
-               
-              </Descriptions>
+              <ItemDescription
+                title="Sales Order Details"
+                selectedData={selectedSO}
+                formItems={formDetails.form_items}
+              />
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Sales Order Product Items:
               </Title>

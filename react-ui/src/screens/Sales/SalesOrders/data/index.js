@@ -63,6 +63,7 @@ const FormDetails = () => {
         rules: [{ required: true, message: 'Please provide a sales order type' }],
         placeholder: 'Sales order type',
         type: 'select',
+        render: (object) => object.name,
         choices: [
           { id: 'DR_SI', name: 'DR/SI' },
           { id: 'OS', name: 'OS' },
@@ -75,7 +76,7 @@ const FormDetails = () => {
         rules: [{ required: true, message: 'Please provide a sales order depot' }],
         placeholder: 'Sales order depot',
         render: (depot) => {
-          return `[${depot.code}] ${depot.name}`;
+          return `[${depot?.code ?? ""}] ${depot?.name ?? ""}`;
         },
         type: 'select',
         choices: [],
@@ -96,7 +97,7 @@ const FormDetails = () => {
         name: 'preparedBy',
         type: 'selectSearch',
         choices: [user],
-        render: (user) => `${user?.firstName} ${user?.lastName}`,
+        render: (user) => `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
         initialValue: user.id,
         rules: [{ required: true }],
         readOnly: true,
@@ -106,7 +107,7 @@ const FormDetails = () => {
         name: 'requestedBy',
         type: 'selectSearch',
         choices: [user],
-        render: (user) => `${user?.firstName} ${user?.lastName}`,
+        render: (user) => `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
         initialValue: user.id,
         rules: [{ required: true }],
         readOnly: true,
