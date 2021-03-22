@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Typography, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -75,6 +75,7 @@ const FormDetails = () => {
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
   let salesSlips = [];
   salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
+  const [loadingSalesSlips, setLoadingSalesSlips] = useState(false)
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -100,13 +101,18 @@ const FormDetails = () => {
         type: 'selectSearch',
         selectName: 'name',
         choices: depots,
+        loading: loadingSalesSlips,
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearOS());
           dispatch(clearSI());
-          dispatch(listOrderSlipsByDepotAndBalance({ message, depot: e, hasBalance: true }));
-          dispatch(listSalesInvoiceByDepotAndBalance({ depot: e, hasBalance: true }));
+          setLoadingSalesSlips(true)
+          dispatch(listOrderSlipsByDepotAndBalance({ message, depot: e, hasBalance: true })).then(() => {
+            dispatch(listSalesInvoiceByDepotAndBalance({ depot: e, hasBalance: true })).then(() => {
+              setLoadingSalesSlips(false)
+            })
+          })
         },
       },
       {
@@ -219,7 +225,8 @@ const FormDetails = () => {
     name: 'payments',
     key: 'id',
     rules: [{ required: true }],
-    isVisible: salesSlips.length > 0,
+    isVisible: salesSlips.length > 0 && !loadingSalesSlips,
+    emptyText: "Please select a depot with a pending Order Slip or Sales Invoice",
     fields: [
       {
         label: 'Type',

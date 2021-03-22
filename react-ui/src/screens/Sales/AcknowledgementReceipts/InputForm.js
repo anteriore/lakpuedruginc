@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Form,
+  Alert,
   Button,
   InputNumber,
   Input,
@@ -14,7 +15,7 @@ import {
   Empty,
   message,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
+import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 
@@ -302,10 +303,10 @@ const FormScreen = (props) => {
                 }
 
                 return <FormItem item={item} onFail={onFail} />;
-              })}
+            })}
 
-            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
+            {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
+              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? [{ required: true }]}>
                 {(fields, { errors }) => (
                   <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
@@ -322,14 +323,24 @@ const FormScreen = (props) => {
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
-                      pagination={false}
+                      pagination={{simple: true}}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       summary={formTable.summary}
                     />
                   </Col>
                 )}
               </Form.List>
-            )}
+            ): (
+              <Col span={15} offset={6}>
+              <Alert
+                message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
+                type="warning"
+                showIcon
+                icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+              />
+              </Col>
+            ))}
           </Form>
 
           <div style={styles.tailLayout}>
@@ -360,7 +371,7 @@ const FormScreen = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   expandable={{ expandedRowRender }}
                   rowKey={formTable.foreignKey}
                 />
@@ -368,7 +379,7 @@ const FormScreen = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   rowKey={formTable.foreignKey}
                 />
               )}
@@ -408,6 +419,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',
+    marginTop: '2%'
   },
   listTailLayout: {
     labelCol: {
