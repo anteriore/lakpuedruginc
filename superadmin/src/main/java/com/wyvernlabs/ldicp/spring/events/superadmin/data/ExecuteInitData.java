@@ -92,6 +92,12 @@ public class ExecuteInitData {
     private ProductCategoryData productCategoryData;
     @Autowired
     private ProvinceCodeData provinceCodeData;
+    @Autowired
+    private InstitutionData institutionData;
+    @Autowired
+    private ClusterCodeData clusterCodeData;
+    @Autowired
+    private SalesRepData salesRepData;
 
     @PostConstruct
     public void init() {
@@ -109,6 +115,16 @@ public class ExecuteInitData {
         System.out.println("Depots initialized.");
         userData.init();
         System.out.println("Users initialized.");
+
+        salesRepData.init();
+        System.out.println("salesRep initialized");
+
+        institutionData.init();
+        System.out.println("institution initialized");
+        
+        clusterCodeData.init();
+        System.out.println("cluster initialized");
+
         clientData.init();
         System.out.println("Clients initialized.");
         vendorData.init();
@@ -180,5 +196,6 @@ public class ExecuteInitData {
 
         provinceCodeData.init();
         System.out.println("Province Code initialized");
+
     }
 }

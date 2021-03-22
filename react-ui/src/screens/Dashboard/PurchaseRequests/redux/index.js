@@ -48,8 +48,8 @@ export const listPRByStatus = createAsyncThunk('listPRByStatus', async (payload,
   }
 });
 
-export const listPRByStatusAndDepartment = createAsyncThunk(
-  'listPRByStatus',
+export const listPRByCompanyAndStatusAndDepartment = createAsyncThunk(
+  'listPRByCompanyAndStatusAndDepartment',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const { company, department, status } = payload;
@@ -257,14 +257,14 @@ const purchaseRequestSlice = createSlice({
       };
     },
 
-    [listPRByStatusAndDepartment.pending]: (state) => {
+    [listPRByCompanyAndStatusAndDepartment.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
         statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
       };
     },
-    [listPRByStatusAndDepartment.fulfilled]: (state, action) => {
+    [listPRByCompanyAndStatusAndDepartment.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
 
@@ -277,7 +277,7 @@ const purchaseRequestSlice = createSlice({
         statusMessage: message,
       };
     },
-    [listPRByStatusAndDepartment.rejected]: (state, action) => {
+    [listPRByCompanyAndStatusAndDepartment.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
 

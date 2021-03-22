@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Table, Typography, message } from 'antd';
-import { listPRByStatus, clearData as clearPR } from '../../Dashboard/PurchaseRequests/redux';
+import { Table, Typography } from 'antd';
+import { listPRByCompanyAndStatusAndDepartment, clearData as clearPR } from '../../Dashboard/PurchaseRequests/redux';
 
 const { Text } = Typography;
 
@@ -56,6 +56,7 @@ const FormDetails = () => {
   const units = useSelector((state) => state.maintenance.units.unitList);
   const purchaseRequests = useSelector((state) => state.dashboard.purchaseRequests.list);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
+  const [loadingPR, setLoadingPR] = useState(false)
 
   const formDetails = {
     form_name: 'depot',
@@ -90,8 +91,12 @@ const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearPR());
-          dispatch(listPRByStatus({ company: selectedCompany, message, status: 'Approved' }));
+          setLoadingPR(true)
+          dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: e, status: 'Approved' })).then(() => {
+            setLoadingPR(false)
+          })
         },
+        loading: loadingPR
       },
       {
         label: 'Area',
@@ -156,8 +161,9 @@ const FormDetails = () => {
     label: 'Purchase Request',
     name: 'orderedItems',
     key: 'id',
-    rules: [{ required: true }],
-    isVisible: purchaseRequests.length > 0,
+    rules: [{ required: true, message: "Please select a Purchase Request" }],
+    isVisible: purchaseRequests.length > 0 && !loadingPR,
+    emptyText: "Please select a department with an approved Purchase Request",
     fields: [
       {
         label: 'Item',
@@ -207,7 +213,7 @@ const FormDetails = () => {
       let totalAmount = 0;
 
       data.forEach(({ quantity, unitPrice }) => {
-        totalAmount += quantity * unitPrice;
+        totalAmount += quantity * (unitPrice ?? 0);
       });
 
       return (
