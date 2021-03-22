@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Button, Row, Col, Typography, Table, Empty, Alert, message } from 'antd';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import FormItem from '../../../components/forms/FormItem';
@@ -15,6 +16,7 @@ const FormScreen = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
+  const [selectedAR, setSelectedAR] = useState(null)
   const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
 
   useEffect(() => {
@@ -114,16 +116,35 @@ const FormScreen = (props) => {
 
             {areceipts !== null && areceipts.length > 0 ? (
               formDetails.ar_items.map((item) => {
-                return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
+                if(item.type === 'selectTable'){
+                  return (
+                    <FormItem 
+                      item={{
+                        ...item,
+                        selectedData: selectedAR,
+                        setSelectedData: setSelectedAR
+                      }} 
+                      onFail={onFail} 
+                      onTableSelect={onTableSelect} 
+                    />
+                  );
+                }
+                else {
+                  return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
+                }
               })
             ) : (
-              <Alert
-                message="Please select a depot with a pending acknowledgement receipt."
-                type="warning"
-                showIcon
-                style={{ width: '62.5%', marginLeft: '25%', marginBottom: '2%' }}
-              />
-            )}
+              <Col span={15} offset={6}>
+                <Alert
+                  message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
+                  type="warning"
+                  showIcon
+                  icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                  style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                />
+              </Col>
+            )
+          }
           </Form>
 
           {areceipts !== null && areceipts.length > 0 && (

@@ -78,6 +78,7 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
   const [displayModal, setDisplayModal] = useState(false);
+  const [loadingAR, setLoadingAR] = useState(false)
 
   const formDetails = {
     form_name: 'official_receipt',
@@ -101,10 +102,14 @@ const FormDetails = () => {
         type: 'selectSearch',
         selectName: 'name',
         choices: depots,
+        loading: loadingAR,
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          dispatch(listAReceiptWithSIByDepot({ message, depot: e }));
+          setLoadingAR(true)
+          dispatch(listAReceiptWithSIByDepot({ message, depot: e })).then(() => {
+            setLoadingAR(false)
+          })
         },
       },
     ],
