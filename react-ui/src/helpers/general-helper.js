@@ -78,7 +78,22 @@ export const checkResponseValidity = (response) => {
       response.statusText = 'process from server failed';
       return { response, valid: false };
     default:
-      break;
+      if(response.status >= 300){
+        response.statusText = 'an error has occured';
+        return { response, valid: false };
+      }
+      else if(response.status > 200){
+        if (response.data.length === 0) {
+          response.statusText = 'list is empty';
+          return { response, valid: true };
+        }
+        response.statusText = 'succesful';
+        return { response, valid: true };
+      }
+      else {
+        response.statusText = 'an error has occured';
+        return { response, valid: false };
+      }
   }
 };
 
