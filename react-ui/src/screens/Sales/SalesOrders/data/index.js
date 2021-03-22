@@ -103,8 +103,8 @@ const FormDetails = () => {
         readOnly: true,
       },
       {
-        label: 'Requested By',
-        name: 'requestedBy',
+        label: 'Checked By',
+        name: 'checkedBy',
         type: 'selectSearch',
         choices: [user],
         render: (user) => `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,

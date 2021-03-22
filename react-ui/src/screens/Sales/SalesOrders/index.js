@@ -9,7 +9,7 @@ import statusDialogue from '../../../components/StatusDialogue';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails ,{ tableHeader } from './data';
-import { formatPayload } from './helpers';
+import { formatDescItems, formatPayload } from './helpers';
 import InputForm from './InputForm';
 import {
   listSalesOrder,
@@ -267,7 +267,7 @@ const SalesOrders = (props) => {
               <ItemDescription
                 title="Sales Order Details"
                 selectedData={selectedSO}
-                formItems={formDetails.form_items}
+                formItems={formatDescItems(formDetails.form_items)}
               />
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Sales Order Product Items:
