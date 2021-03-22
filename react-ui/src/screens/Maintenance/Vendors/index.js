@@ -138,10 +138,12 @@ const Vendors = (props) => {
     setFormTitle('Add Vendor');
     setFormMode('add');
     setFormData(null);
+    setLoading(true);
     dispatch(listA({ company, message })).then(() => {
       dispatch(listD({ company, message })).then(() => {
         dispatch(listG({ company, message })).then(() => {
           history.push(`${path}/new`);
+          setLoading(false);
         });
       });
     });
@@ -302,6 +304,7 @@ const Vendors = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={(e) => {
                   handleAdd();
                 }}

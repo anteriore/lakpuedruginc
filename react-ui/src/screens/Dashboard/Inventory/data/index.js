@@ -1,9 +1,14 @@
+import { object } from "prop-types"
+
 export const columns = [
   {
     title: 'Item ID',
     dataIndex: 'item',
     key: 'itemName',
-    render: (object) => object.name,
+    datatype: 'object',
+    dataToString: (object) => {
+        return object.name
+    }
   },
   {
     title: 'Control Number',
@@ -20,24 +25,27 @@ export const columns = [
     title: 'Unit',
     dataIndex: 'item',
     key: 'itemUnit',
-    render: (object) => object.unit.name,
+    datatype: 'object',
+    dataToString: (object) => {
+        return object.unit.name
+    }
   },
   {
     title: 'Date Created',
     dataIndex: 'dateCreated',
-    key: 'date',
+    key: 'dateCreated',
     datatype: 'date',
   },
   {
     title: 'Expiration Date',
     dataIndex: 'expiration',
-    key: 'date',
+    key: 'expiration',
     datatype: 'date',
   },
   {
     title: 'Re-evaluation Date',
     dataIndex: 'reevaluation',
-    key: 'date',
+    key: 'reevaluation',
     datatype: 'date',
   },
 ];

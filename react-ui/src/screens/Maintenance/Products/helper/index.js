@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import moment from 'moment';
 
 export const updateList = (form, choices) => {
   Object.entries(choices).forEach(([key, value]) => {
@@ -18,44 +17,57 @@ export const updateList = (form, choices) => {
   return form;
 };
 
-export const formatPayload = (rawValues, selectedFinishedGoods) => {
-  if (rawValues !== null && selectedFinishedGoods !== null) {
-    delete rawValues.fg_code;
-    delete rawValues.fg_name;
-    rawValues.depot = { id: rawValues.depot };
-    rawValues.classification = { id: rawValues.classification };
-    rawValues.category = { id: rawValues.category };
-    rawValues.division = { id: rawValues.division };
-    rawValues.smallUnit = { id: rawValues.smallUnit };
-    rawValues.bigUnit = { id: rawValues.bigUnit };
-    rawValues.finishedGood = { id: selectedFinishedGoods.id };
-  }
-
-  return rawValues;
-};
-
-export const formatInitialFormVal = (rawValues) => {
-  const newValue = _.clone(rawValues);
-  Object.entries(newValue).forEach(([key, values]) => {
-    /*if (key === 'expiration') {
-      newValue[key] = moment(new Date(values));
-    }*/
-
-    if (
-      typeof values === 'object' &&
-      key !== 'company' &&
-      key !== 'status' &&
-      key !== 'packageDescription'
-    ) {
-      if (key === 'finishedGood') {
-        newValue.fg_code = rawValues.finishedGood.code;
-        newValue.fg_name = rawValues.finishedGood.name;
-        delete newValue.finishedGood;
-      } else if (values !== null) {
-        newValue[key] = values.id;
-      }
+export const formatPayload = (values) => {
+  if ( values?.id !== undefined) {
+    return {
+      id: values.id,
+      company: values.company,
+      finishedGood: {id: values.finishedGood},
+      depot: {id: values.depot},
+      division: {id: values.division},
+      bigUnit: {id: values.bigUnit},
+      smallUnit: {id: values.smallUnit},
+      classification: {id: values.classification},
+      category: {id: values.category},
+      quantityPerBox: values.quantityPerBox,
+      expiration: values.expiration,
+      reorderLevel: values.reorderLevel,
+      lotNumber: values.lotNumber,
+      unitPrice: values.unitPrice
     }
-  });
-
-  return newValue;
+  } else {
+    return {
+      company: values.company,
+      finishedGood: {id: values.finishedGood},
+      depot: {id: values.depot},
+      division: {id: values.division},
+      bigUnit: {id: values.bigUnit},
+      smallUnit: {id: values.smallUnit},
+      classification: {id: values.classification},
+      category: {id: values.category},
+      quantityPerBox: values.quantityPerBox,
+      expiration: values.expiration,
+      reorderLevel: values.reorderLevel,
+      lotNumber: values.lotNumber,
+      unitPrice: values.unitPrice
+    }
+  }
 };
+
+export const formatInitialValue = (object) => {
+  return {
+    bigUnit: object?.bigUnit?.id,
+    smallUnit: object?.smallUnit?.id,
+    category: object?.category?.id,
+    classification: object?.classification?.id,
+    depot: object?.depot?.id,
+    division: object?.division?.id,
+    expiration: object?.expiration,
+    finishedGood: object?.finishedGood?.id,
+    id: object?.id,
+    lotNumber: object?.lotNumber,
+    quantityPerBox: object?.quantityPerBox,
+    reorderLevel: object?.reorderLevel,
+    unitPrice: object?.unitPrice
+  }
+}

@@ -6,6 +6,8 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 const initialState = {
   list: [],
   status: '',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -115,6 +117,24 @@ export const listRRByPO = createAsyncThunk(
   }
 );
 
+export const listRRByNoPV = createAsyncThunk('listRRByNoPV', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try {
+    const response = await axiosInstance.get(
+      `/rest/receiving-receipts/company/${payload.company}/no-purchase-voucher?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
 const receivingReceiptsSlice = createSlice({
   name: 'receivingReceipt',
   initialState,
@@ -150,6 +170,46 @@ const receivingReceiptsSlice = createSlice({
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
         'Product Movement'
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [listRRByNoPV.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for receiving receipts`,
+      };
+    },
+    [listRRByNoPV.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Receiving Receipts'
+      );
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listRRByNoPV.rejected]: (state, action) => {
+      console.log(action)
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Receiving Receipts'
       );
 
       return {

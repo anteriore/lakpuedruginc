@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 export const tableHeader = [
   {
     title: 'Date',
@@ -41,6 +39,8 @@ export const tableHeader = [
     sorter: (a, b) => a.status.length - b.status.length,
   },
 ];
+
+export const accountValidations = ['accountTitles', 'area', 'department', 'credit', 'debit', 'group'];
 
 export const salesOrderHeader = [
   {

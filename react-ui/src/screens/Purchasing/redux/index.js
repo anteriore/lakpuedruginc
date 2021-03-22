@@ -2,33 +2,34 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../utils/axios-instance';
 import * as message from '../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../helpers/general-helper';
 
 const initialState = {
   list: null,
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
 
 export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
-  console.log(`rest/clients/${payload.company}?token=${accessToken}`);
 
+  try { 
   const response = await axiosInstance.get(
     `rest/purchase-orders/company/${payload.company}/?token=${accessToken}`
   );
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for purchase orders');
-    }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return rejectWithValue(response);
-  }
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const getOrderedQuantityByItem = createAsyncThunk(
@@ -57,28 +58,56 @@ export const getOrderedQuantityByItem = createAsyncThunk(
 
 export const addPO = createAsyncThunk('addPO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try { 
+    const response = await axiosInstance.post(`rest/purchase-orders/?token=${accessToken}`, payload);
+  
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(`rest/purchase-orders/?token=${accessToken}`, payload);
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deletePO = createAsyncThunk('deletePO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try { 
+    const response = await axiosInstance.post(
+      `rest/purchase-orders/delete?token=${accessToken}`,
+      payload
+    );
+  
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(
-    `rest/purchase-orders/delete?token=${accessToken}`,
-    payload
-  );
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const getPO = createAsyncThunk('getPO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(
-    `rest/purchase-orders/${payload.id}?token=${accessToken}`
-  );
-  return response;
+  try {
+    const response = await axiosInstance.get(
+      `rest/purchase-orders/${payload.id}?token=${accessToken}`
+    );
+  
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 const purchaseOrderSlice = createSlice({
@@ -88,31 +117,37 @@ const purchaseOrderSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listPO.pending]: (state, action) => {
-      state.status = 'loading';
+    [listPO.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Order`,
+      };
     },
     [listPO.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for purchase orders';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Purchase Order');
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [listPO.rejected]: (state) => {
+    [listPO.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Purchase Order');
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage: message,
       };
     },
   },

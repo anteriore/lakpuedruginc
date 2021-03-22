@@ -1,22 +1,31 @@
+import PurchaseVouchers from '../../screens/Accounting/PurchaseVouchers';
+import VoucherPayables from '../../screens/Accounting/VoucherPayables';
 import AccountTitles from '../../screens/Accounting/AccountTitles';
+import CashReceiptVouchers from '../../screens/Accounting/CashReceiptVouchers';
+import ChequePrintings from '../../screens/Accounting/ChequePrintings';
+import ChequeDisbursements from '../../screens/Accounting/ChequeDisbursements';
 import PDCDisbursements from '../../screens/Accounting/PDCDisbursements';
 import PDCVouchers from '../../screens/Accounting/PDCVouchers';
+import DebitMemo from '../../screens/Accounting/DebitMemo';
+import CreditMemo from '../../screens/Accounting/CreditMemo';
+import JournalVouchers from '../../screens/Accounting/JournalVouchers';
+
 
 export const routes = [
   {
     title: 'Purchase Vouchers',
     path: '/purchase-vouchers',
-    component: null,
+    component: PurchaseVouchers,
   },
   {
     title: 'Journal Vouchers',
     path: '/journal-vouchers',
-    component: null,
+    component: JournalVouchers,
   },
   {
     title: 'Vouchers Payables',
     path: '/vouchers-payables',
-    component: null,
+    component: VoucherPayables,
   },
   {
     title: 'Account Titles',
@@ -24,29 +33,29 @@ export const routes = [
     component: AccountTitles,
   },
   {
-    title: 'Cheque Printings',
+    title: 'Cheque Vouchers',
     path: '/cheque-printings',
-    component: null,
+    component: ChequePrintings,
   },
   {
     title: 'Cheque Disbursement Vouchers',
     path: '/cheque-disbursement-vouchers',
-    component: null,
+    component: ChequeDisbursements,
   },
   {
     title: 'Credit Memos',
     path: '/credit-memos',
-    component: null,
+    component: CreditMemo,
   },
   {
     title: 'Debit Memos',
     path: '/debit-memos',
-    component: null,
+    component: DebitMemo,
   },
   {
     title: 'Cash Receipt Vouchers',
     path: '/cash-receipt-vouchers',
-    component: null,
+    component: CashReceiptVouchers,
   },
   {
     title: 'PDC Disbursements',
