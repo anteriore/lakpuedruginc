@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import Layout from 'antd/lib/layout/layout';
+import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message, Empty, InputNumber } from 'antd';
+import { PlusOutlined, DeleteOutlined, SelectOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash';
 import FormDetails from './data';
 import FormItem from '../../../components/forms/FormItem';
-import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList } from '../../../helpers/general-helper';
 import { formatProduct } from './helpers';
 
@@ -19,10 +17,11 @@ const InputForm = (props) => {
   const [form] = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { formDetails, tableProduct, tableProductInventory } = FormDetails();
+  const { formDetails, tableDetails, tableProductInventory } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
   const [productModal, setProductModal] = useState(false);
+  const [tableProductDetails, setTableProductDetails] = useState(_.clone(tableDetails));
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [productInv, setProductInv] = useState([]);
   const [requestedProductList, setRequestedProductList] = useState([]);
@@ -31,13 +30,6 @@ const InputForm = (props) => {
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
   const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
-
-  const component = {
-    body: {
-      cell: EditableCell,
-      row: EditableRow,
-    },
-  };
 
   useEffect(() => {
     form.setFieldsValue({
@@ -71,8 +63,9 @@ const InputForm = (props) => {
     setTempFormDetails(updateList(newForm, masterList));
   }, [depotList, clientList, tempFormDetails, productInventoryList, form]);
 
-  const modProductColumn = tableProduct.map((col) => {
-    if (!col.editable) {
+  const renderTableColumns = (table) => table.fields.map((col) => {
+    console.log(col)
+    if(!col.editable) {
       if (col.title === 'Action') {
         const filteredColumn = {
           ...col,
@@ -80,51 +73,27 @@ const InputForm = (props) => {
             return (
               <Button
                 type="dashed"
-                onClick={() => handleRemoveSalesProduct(row)}
                 icon={<DeleteOutlined />}
                 danger
               />
             );
           },
         };
-
+  
         return filteredColumn;
       }
-
+  
       return col;
     }
+    console.log(col, "Editable Col")
     return {
-      ...col,
-      onCell: (record) => {
-        return {
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          limit: col.limit,
-          title: col.title,
-          maxLimit: record.quantity,
-          minLimit: 0,
-          precisionEnabled: col.precisionEnabled,
-          precision: col.precision,
-          handleSave: (row) => {
-            const newData = [...requestedProductList];
-            const index = _.findIndex(newData, (o) => o.key === row.key);
-            const item = newData[index];
-
-            row = {
-              ...row,
-              amount: (row.quantityRequested * row.unitPrice).toFixed(2),
-              quantityRemaining: row.quantity - row.quantityRequested,
-            };
-
-            newData.splice(index, 1, { ...item, ...row });
-            form.setFieldsValue({ product: newData });
-            setRequestedProductList(newData);
-          },
-        };
-      },
-    };
-  });
+      ...col, 
+      render: (value, _, index) => <InputNumber value={value} min={1} />,
+      shouldCellUpdate: (record, prevRecord) => {
+        console.log(record.name, prevRecord)
+      }
+    }
+  }) 
 
   // render Product Items with add button
   const renderProductItemColumns = (rawColumns) => {
@@ -152,10 +121,10 @@ const InputForm = (props) => {
     return filteredColumn;
   };
 
-  const handleRemoveSalesProduct = (data) => {
-    const newData = [...requestedProductList];
-    setRequestedProductList(_.filter(newData, (o) => o.key !== data.key));
-  };
+  // const handleRemoveSalesProduct = (data) => {
+  //   const newData = [...requestedProductList];
+  //   setRequestedProductList(_.filter(newData, (o) => o.key !== data.key));
+  // };
 
   const handleAddSalesProduct = (data) => {
     if (data.quantity !== 0 && data.quantity > 0) {
@@ -200,34 +169,37 @@ const InputForm = (props) => {
           {contentLoading ? (
             <Skeleton />
           ) : (
-            <Layout style={styles.layout}>
               <Form form={form} onFinish={onFinish} {...styles.formLayout}>
                 {_.dropRight(tempFormDetails.form_items).map((item) => (
                   <FormItem key={item.name} onFail={onFail} item={item} />
                 ))}
-                <Form.Item
-                  wrapperCol={{ span: 15, offset: 4 }}
-                  name="product"
-                  rules={[{ required: true, message: 'Please select a product' }]}
-                >
-                  <Table
-                    components={component}
-                    columns={modProductColumn}
-                    rowClassName={() => styles.editableRow}
-                    dataSource={requestedProductList}
-                    pagination={false}
-                  />
-                </Form.Item>
-                <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
+                <Form.Item wrapperCol={{ offset: 11, span: 11 }}>
                   <Button
+                    icon={<SelectOutlined />}
                     onClick={() => {
                       setProductModal(true);
                     }}
-                    style={{ width: '40%', float: 'right' }}
                   >
-                    Select Product item(s)
+                    {`Select ${tableProductDetails.label}`}
                   </Button>
                 </Form.Item>
+                <Form.List
+                  label={tableProductDetails.label} 
+                  name={tableProductDetails.name}
+                >
+                  {(fields) => (
+                    <Form.Item
+                      wrapperCol={{ span: 17, offset: 3 }}
+                    >
+                      <Table
+                        dataSource={requestedProductList}
+                        columns={renderTableColumns(tableProductDetails)}
+                        pagination={false}
+                        locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                      />
+                    </Form.Item>
+                  )}
+                </Form.List>
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
@@ -240,7 +212,6 @@ const InputForm = (props) => {
                   </Space>
                 </Form.Item>
               </Form>
-            </Layout>
           )}
         </Col>
         <Modal
