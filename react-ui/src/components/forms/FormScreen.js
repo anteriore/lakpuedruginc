@@ -13,9 +13,10 @@ import {
   Table,
   Empty,
   message,
+  Alert,
   TimePicker,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
+import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from './FormItem';
 
@@ -45,6 +46,15 @@ const FormScreen = (props) => {
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
+
+    if(typeof formDetails.required_data !== 'undefined'){
+      formDetails.required_data.forEach((data) => {
+        if(data === null || data.length === 0){
+          onFail()
+        }
+      })
+    }
+    
     // eslint-disable-next-line
   }, [values, form]);
 
@@ -314,8 +324,8 @@ const FormScreen = (props) => {
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
-            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
+            {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
+              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? [{ required: true }]}>
                 {(fields, { errors }) => (
                   <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
@@ -339,11 +349,26 @@ const FormScreen = (props) => {
                   </Col>
                 )}
               </Form.List>
-            )}
+            ): (
+              <Col span={15} offset={6}>
+              <Alert
+                message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
+                type="warning"
+                showIcon
+                icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+              />
+              </Col>
+            ))}
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" loading={loading} onClick={() => form.submit()}>
+            <Button 
+              type="primary" 
+              loading={loading} 
+              onClick={() => form.submit()}
+              disabled={hasTable && !(typeof formTable.isVisible === 'undefined' || formTable.isVisible)}
+            >
               Submit
             </Button>
             <Button
@@ -418,6 +443,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',
+    marginTop: '2%'
   },
   listTailLayout: {
     labelCol: {
