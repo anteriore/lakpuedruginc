@@ -100,16 +100,10 @@ export const generateStatusMessage = (payload, currentModule, action) => {
 };
 
 export const reevalutateMessageStatus = (props) => {
-  const {status, action, statusMessage, statusLevel} = props
+  const { action, statusMessage, statusLevel} = props
 
-  if (status !== 'loading') {
-    if (action === 'fetch' && statusLevel !== 'success') {
-      statusDialogue({ statusMessage, statusLevel }, 'message');
-    }
-
-    if (action !== 'fetch') {
-      statusDialogue({ statusMessage, statusLevel }, 'message');
-    }
+  if ( action !== '') {
+    statusDialogue({ statusMessage, statusLevel, action }, 'message');
   }
 }
 

@@ -25,6 +25,7 @@ const FinishedGoods = (props) => {
     let isCancelled = false;
     dispatch(getFGList({ company, message })).then(() => {
       setContentLoading(false);
+
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -37,7 +38,7 @@ const FinishedGoods = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({status,action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
