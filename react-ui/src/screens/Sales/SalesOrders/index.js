@@ -1,16 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import _ from 'lodash';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, Empty, Table } from 'antd';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import moment from 'moment';
 import { unwrapResult } from '@reduxjs/toolkit';
 import statusDialogue from '../../../components/StatusDialogue';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader, formDetails } from './data';
-import { formatPayload } from './helpers';
+import FormDetails ,{ tableHeader } from './data';
+import { formatDescItems, formatPayload } from './helpers';
 import InputForm from './InputForm';
 import {
   listSalesOrder,
@@ -25,6 +24,8 @@ import {
   clearData as clearPI,
   tempListProductInventory,
 } from '../../Maintenance/redux/productInventory';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
 
@@ -32,6 +33,7 @@ const SalesOrders = (props) => {
   const { title, company, actions } = props;
   const dispatch = useDispatch();
   const history = useHistory();
+  const { itemColumn, formDetails } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
   const [selectedSO, setSelectedSO] = useState(null);
@@ -77,15 +79,7 @@ const SalesOrders = (props) => {
   );
 
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
@@ -270,59 +264,20 @@ const SalesOrders = (props) => {
             <Skeleton />
           ) : (
             <>
-              <Descriptions
-                bordered
-                title={`Sales Order ${selectedSO.number}`}
-                size="default"
-                layout="vertical"
-              >
-                {formDetails.form_items.map((item) => {
-                  if (!item.writeOnly) {
-                    if (item.type === 'select') {
-                      const itemData = selectedSO[item.name];
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {typeof itemData === 'object' ? itemData.code : itemData}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    if (item.type === 'date') {
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {moment(new Date(selectedSO[item.name])).format('DD/MM/YYYY')}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    return (
-                      <Descriptions.Item key={item.name} label={item.label}>
-                        {typeof selectedSO[item.name] === 'object' && selectedSO[item.name] !== null
-                          ? selectedSO[item.name].code
-                          : selectedSO[item.name]}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  return null;
-                })}
-              </Descriptions>
+              <ItemDescription
+                title="Sales Order Details"
+                selectedData={selectedSO}
+                formItems={formatDescItems(formDetails.form_items)}
+              />
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Sales Order Product Items:
               </Title>
-              {selectedSO.products.map((item) => {
-                return (
-                  <Descriptions title={`[${item.finishedGood.name}]`} size="default">
-                    <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
-                    <Descriptions.Item label="Quantity">{item.quantity}</Descriptions.Item>
-                    <Descriptions.Item label="Quantity Requested">
-                      {item.quantityRequested}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
-                    <Descriptions.Item label="Company">{item.company.name}</Descriptions.Item>
-                  </Descriptions>
-                );
-              })}
+              <Table
+                dataSource={selectedSO.products}
+                columns={itemColumn}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+              />
               {_.toLower(selectedSO.status) === 'pending' && (
                 <>
                   <Space>
