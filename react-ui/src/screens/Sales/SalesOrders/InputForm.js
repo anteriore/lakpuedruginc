@@ -21,6 +21,7 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const { formDetails, tableProduct, tableProductInventory } = FormDetails();
 
+  const [formButtonLoading, setFormButtonLoading] = useState(true)
   const [contentLoading, setContentLoading] = useState(true);
   const [productModal, setProductModal] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
@@ -47,6 +48,7 @@ const InputForm = (props) => {
     });
 
     setContentLoading(false);
+    setFormButtonLoading(false)
   }, [user, form]);
 
   useEffect(() => {
@@ -186,7 +188,9 @@ const InputForm = (props) => {
   };
 
   const onFinish = () => {
+    setFormButtonLoading(true)
     onSubmit(form.getFieldsValue());
+    setFormButtonLoading(false)
     history.goBack();
   };
 
@@ -231,10 +235,10 @@ const InputForm = (props) => {
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
-                    <Button htmlType="button" onClick={() => history.goBack()}>
+                    <Button htmlType="button" onClick={() => history.goBack()} loading={formButtonLoading}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={formButtonLoading}>
                       Submit
                     </Button>
                   </Space>
