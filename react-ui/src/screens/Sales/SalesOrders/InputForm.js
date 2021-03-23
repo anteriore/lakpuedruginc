@@ -8,7 +8,7 @@ import _ from 'lodash';
 import FormDetails from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
-import { formatProduct } from './helpers';
+import { formatProduct, calcRqstdQtyPerProduct } from './helpers';
 
 const { Title } = Typography;
 
@@ -22,7 +22,6 @@ const InputForm = (props) => {
   const [formButtonLoading, setFormButtonLoading] = useState(true)
   const [contentLoading, setContentLoading] = useState(true);
   const [productModal, setProductModal] = useState(false);
-  const [tableProductDetails, setTableProductDetails] = useState(_.clone(tableDetails));
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [productInv, setProductInv] = useState([]);
   const [requestedProductList, setRequestedProductList] = useState([]);
@@ -65,8 +64,48 @@ const InputForm = (props) => {
     setTempFormDetails(updateList(newForm, masterList));
   }, [depotList, clientList, tempFormDetails, productInventoryList, form]);
 
+  const handleChange = (value, index, name) => {
+    setRequestedProductList((prevData) => {
+      const newData = [...prevData];
+      const newItem = {...newData[index]};
+      newItem[name] = value;
+      newData[index] = newItem;
+      newData[index]['amount'] = (newData[index]['quantityRequested'] 
+      * newData[index]['unitPrice']).toFixed(2);
+
+      return calcRqstdQtyPerProduct(newData);
+    })
+  }
+
+  const handleRemoveSalesProduct = (data) => {
+    const newData = [...requestedProductList];
+    setRequestedProductList(calcRqstdQtyPerProduct(_.filter(newData, (o) => o.key !== data.key)));
+  };
+
+  const handleAddSalesProduct = (data) => {
+    if (data.quantity !== 0 && data.quantity > 0) {
+      const newData = _.clone(formatProduct(data));
+      if (requestedProductList.length !== 16) {
+        if (requestedProductList.length !== 0) {
+          const { key } = _.last(requestedProductList);
+          newData.key = key + 1;
+
+          form.setFieldsValue({ product: requestedProductList.concat(newData) });
+          setRequestedProductList(calcRqstdQtyPerProduct(requestedProductList.concat(newData)));
+        } else {
+          newData.key = 1;
+          setRequestedProductList(calcRqstdQtyPerProduct(requestedProductList.concat(newData)));
+        }
+      } else {
+        message.warning('Cannot add more than 16 requested products');
+      }
+      setProductModal(false);
+    } else {
+      message.warning('Cannot add requested product with empty stock on hand');
+    }
+  };
+
   const renderTableColumns = (table) => table.fields.map((col) => {
-    console.log(col)
     if(!col.editable) {
       if (col.title === 'Action') {
         const filteredColumn = {
@@ -76,6 +115,7 @@ const InputForm = (props) => {
               <Button
                 type="dashed"
                 icon={<DeleteOutlined />}
+                onClick={() => handleRemoveSalesProduct(row)}
                 danger
               />
             );
@@ -87,13 +127,12 @@ const InputForm = (props) => {
   
       return col;
     }
-    console.log(col, "Editable Col")
     return {
       ...col, 
-      render: (value, _, index) => <InputNumber value={value} min={1} />,
-      shouldCellUpdate: (record, prevRecord) => {
-        console.log(record.name, prevRecord)
-      }
+      render: (value, _, index) => <InputNumber
+      value={value} min={ col.dataIndex === 'unitPrice' ? 0 : 1}
+      precision={col.dataIndex === 'unitPrice' ? 2 : 0}
+      onChange={(value) => handleChange(value, index, col.dataIndex)}/>,
     }
   }) 
 
@@ -121,35 +160,6 @@ const InputForm = (props) => {
     filteredColumn = filteredColumn.concat(inputColumn);
 
     return filteredColumn;
-  };
-
-  // const handleRemoveSalesProduct = (data) => {
-  //   const newData = [...requestedProductList];
-  //   setRequestedProductList(_.filter(newData, (o) => o.key !== data.key));
-  // };
-
-  const handleAddSalesProduct = (data) => {
-    if (data.quantity !== 0 && data.quantity > 0) {
-      const newData = _.clone(formatProduct(data));
-
-      if (requestedProductList.length !== 16) {
-        if (requestedProductList.length !== 0) {
-          const { key } = _.last(requestedProductList);
-          newData.key = key + 1;
-
-          form.setFieldsValue({ product: requestedProductList.concat(newData) });
-          setRequestedProductList(requestedProductList.concat(newData));
-        } else {
-          newData.key = 1;
-          setRequestedProductList(requestedProductList.concat(newData));
-        }
-      } else {
-        message.warning('Cannot add more than 16 requested products');
-      }
-      setProductModal(false);
-    } else {
-      message.warning('Cannot add requested product with empty stock on hand');
-    }
   };
 
   const onFail = () => {
@@ -184,12 +194,12 @@ const InputForm = (props) => {
                       setProductModal(true);
                     }}
                   >
-                    {`Select ${tableProductDetails.label}`}
+                    {`Select ${tableDetails.label}`}
                   </Button>
                 </Form.Item>
                 <Form.List
-                  label={tableProductDetails.label} 
-                  name={tableProductDetails.name}
+                  label={tableDetails.label} 
+                  name={tableDetails.name}
                 >
                   {(fields) => (
                     <Form.Item
@@ -197,7 +207,7 @@ const InputForm = (props) => {
                     >
                       <Table
                         dataSource={requestedProductList}
-                        columns={renderTableColumns(tableProductDetails)}
+                        columns={renderTableColumns(tableDetails)}
                         pagination={false}
                         locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       />

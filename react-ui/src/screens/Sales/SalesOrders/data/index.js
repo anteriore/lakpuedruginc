@@ -210,13 +210,6 @@ const FormDetails = () => {
         dataIndex: 'quantityRequested',
         key: 'quantityRequested',
         editable: true,
-        item: {
-          name: 'requestedQuantiry',
-          rules: [{ required: true, message: 'Quantity is missing' }],
-          min: 1,
-          placeholder: 'quantity',
-          type: 'number',
-        },
       },
       {
         title: 'Remaining',
@@ -227,13 +220,6 @@ const FormDetails = () => {
         dataIndex: 'unitPrice',
         key: 'unitPrice',
         editable: true,
-        item: {
-          name: 'unitPrice',
-          rules: [{ required: true, message: 'Unit price is missing' }],
-          min: 1,
-          placeholder: 'price',
-          type: 'number',
-        },
       },
       {
         title: 'Amount',
