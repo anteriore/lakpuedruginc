@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import _ from 'lodash';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, Empty, Table } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Space, Empty, Table } from 'antd';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -139,15 +139,16 @@ const SalesOrders = (props) => {
     dispatch(listSalesOrder(company))
       .then(unwrapResult)
       .then(() => {
+        setContentLoading(false)
         if (isCancelled) {
           dispatch(clearData());
         }
       })
-      .catch((rejectedValueOrSerializedError) => {
-        console.log(rejectedValueOrSerializedError);
+      .catch(() => {
+        setContentLoading(false)
       });
 
-    setContentLoading(false);
+    
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
