@@ -60,23 +60,25 @@ export const formatPayload = (approvalId, company, value) => {
     products: [],
   };
 
-  value.product.forEach((prod) => {
-    let newProductValue = {};
-    totalAmount += parseFloat(prod.amount);
-    totalQuantity += prod.quantity;
-    newProductValue = {
-      ...newProductValue,
-      finishedGood: { id: prod.finishedGood.id },
-      product: { id: prod.id },
-      quantity: prod.quantity,
-      quantityRemaining: prod.quantityRemaining,
-      quantityRequested: prod.quantityRequested,
-      unitPrice: prod.unitPrice,
-      depot: { id: value.depot },
-    };
-
-    formattedValue.products.push(newProductValue);
-  });
+  if(value.salesOrderProducts){
+    value.salesOrderProducts.forEach((prod) => {
+      let newProductValue = {};
+      totalAmount += parseFloat(prod.amount);
+      totalQuantity += prod.quantity;
+      newProductValue = {
+        ...newProductValue,
+        finishedGood: { id: prod.finishedGood.id },
+        product: { id: prod.id },
+        quantity: prod.quantity,
+        quantityRemaining: prod.quantityRemaining,
+        quantityRequested: prod.quantityRequested,
+        unitPrice: prod.unitPrice,
+        depot: { id: value.depot },
+      };
+  
+      formattedValue.products.push(newProductValue);
+    });
+  }
 
   formattedValue = { ...formattedValue, totalAmount, totalQuantity };
 
@@ -130,8 +132,6 @@ export const calcRqstdQtyPerProduct = (prevData) => {
       )
     }
   });
-
-  console.log(productQuantityList)
 
   _.forEach(newData, (item, index) => {
     const product = _.find(productQuantityList, (o) => o.product === item.product);

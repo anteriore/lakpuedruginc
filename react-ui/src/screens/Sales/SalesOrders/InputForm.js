@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message, Empty, InputNumber } from 'antd';
-import { PlusOutlined, DeleteOutlined, SelectOutlined } from '@ant-design/icons';
+import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message, Empty, InputNumber, Alert } from 'antd';
+import { PlusOutlined, DeleteOutlined, SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -167,6 +167,7 @@ const InputForm = (props) => {
   };
 
   const onFinish = () => {
+    form.setFieldsValue({salesOrderProducts: requestedProductList});
     setFormButtonLoading(true)
     onSubmit(form.getFieldsValue());
     setFormButtonLoading(false)
@@ -187,33 +188,48 @@ const InputForm = (props) => {
                 {_.dropRight(tempFormDetails.form_items).map((item) => (
                   <FormItem key={item.name} onFail={onFail} item={item} />
                 ))}
-                <Form.Item wrapperCol={{ offset: 11, span: 11 }}>
-                  <Button
-                    icon={<SelectOutlined />}
-                    onClick={() => {
-                      setProductModal(true);
-                    }}
+                { productInv.length !== 0 ? 
+                  <Form.List
+                    label={tableDetails.label} 
+                    name={tableDetails.name}
                   >
-                    {`Select ${tableDetails.label}`}
-                  </Button>
-                </Form.Item>
-                <Form.List
-                  label={tableDetails.label} 
-                  name={tableDetails.name}
-                >
-                  {(fields) => (
-                    <Form.Item
-                      wrapperCol={{ span: 17, offset: 3 }}
-                    >
-                      <Table
-                        dataSource={requestedProductList}
-                        columns={renderTableColumns(tableDetails)}
-                        pagination={false}
-                        locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                      />
-                    </Form.Item>
-                  )}
-                </Form.List>
+                    {(fields) => (
+                      <Form.Item
+                        wrapperCol={{ span: 17, offset: 3 }}
+                      >
+                        <Form.Item wrapperCol={{ offset: 15, span: 11 }}>
+                          <Button
+                            icon={<SelectOutlined />}
+                            onClick={() => {
+                              setProductModal(true);
+                            }}
+                          >
+                            {`Select ${tableDetails.label}`}
+                          </Button>
+                        </Form.Item>
+                        <Form.Item> 
+                          <Table
+                            rowKey={record => record.uid}
+                            dataSource={requestedProductList}
+                            columns={renderTableColumns(tableDetails)}
+                            pagination={false}
+                            locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                          />
+                        </Form.Item>
+                      </Form.Item>
+                    )}
+                  </Form.List>  
+                : 
+                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                    <Alert
+                      message={tableDetails?.emptyText ?? `Please provide the necessary data for ${tableDetails.label}`}
+                      type="warning"
+                      showIcon
+                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                    />
+                  </Form.Item>
+                }
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
@@ -238,6 +254,7 @@ const InputForm = (props) => {
           footer={null}
         >
           <Table
+            rowKey={record => record.uid}
             columns={renderProductItemColumns(tableProductInventory)}
             dataSource={productInv}
             pagination={{simple: true}}

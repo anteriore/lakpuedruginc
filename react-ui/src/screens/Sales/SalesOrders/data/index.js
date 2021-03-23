@@ -136,7 +136,7 @@ const FormDetails = () => {
       render: (object) => object?.code ?? "",
     },
     {
-      title: 'Quantity',
+      title: 'Stock On Hand',
       dataIndex: 'quantity',
       key: 'quantity',
     },
