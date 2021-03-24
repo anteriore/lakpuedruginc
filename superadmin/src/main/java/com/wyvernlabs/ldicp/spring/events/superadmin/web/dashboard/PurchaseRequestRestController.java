@@ -151,11 +151,11 @@ public class PurchaseRequestRestController {
 	@GetMapping("/company/{companyId}/department/{department}/status/{status}")
 	public Set<PurchaseRequest> getPurchaseRequestsByCompanyAndDepartmentAndStatus(
 		@PathVariable Long companyId, 
-		@PathVariable String department,
+		@PathVariable Long department,
 		@PathVariable String status
 	) {
 		Company company = companyRepository.getOne(companyId);
-		Department d = departmentRepository.findByName(department);
+		Department d = departmentRepository.getOne(department);
 		return purchaseRequestRepository.findByCompanyAndDepartmentAndStatus(company, d, status);
 	}
 	
