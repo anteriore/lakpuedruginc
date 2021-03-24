@@ -5,11 +5,10 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import Layout from 'antd/lib/layout/layout';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
-import { formDetails } from './data';
+import FormDetails from '../OrderSlips/data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
 import { formatLotProducts, formatOrderedProducts } from '../OrderSlips/helpers';
-import { salesInfoHeader, salesOrderHeader } from '../OrderSlips/data';
 
 const { Title } = Typography;
 
@@ -18,6 +17,7 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [form] = useForm();
+  const { formDetails, salesInfoHeader, salesOrderHeader } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));

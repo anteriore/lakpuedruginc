@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import moment from 'moment';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Table, Empty } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,19 +7,21 @@ import _ from 'lodash';
 import { unwrapResult } from '@reduxjs/toolkit';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader, formDetails } from './data';
+import FormDetails ,{ tableHeader } from './data';
 import InputForm from './InputForm';
-import { formatPayload } from './helpers';
+import { formatDescItems, formatPayload } from './helpers';
 import { listOrderSlips, createOrderSlips, clearData } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
 import statusDialogue from '../../../components/StatusDialogue';
+import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
 
 const OrderSlips = (props) => {
   const { title, company, actions } = props;
+  const { formDetails, itemColumns } = FormDetails();
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
@@ -243,63 +244,20 @@ const OrderSlips = (props) => {
             <Skeleton />
           ) : (
             <>
-              <Descriptions
-                bordered
-                title={`Ordser Slip ${selectedOS.number}`}
-                size="default"
-                layout="vertical"
-              >
-                {formDetails.form_items.map((item) => {
-                  if (!item.writeOnly && item.type !== 'readOnly') {
-                    if (item.type === 'select' || item.type === 'selectSearch') {
-                      const itemData = selectedOS[item.name];
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {typeof itemData === 'object'
-                            ? typeof itemData.code === 'undefined'
-                              ? itemData.number
-                              : itemData.code
-                            : itemData}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    if (item.type === 'date') {
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {moment(new Date(selectedOS[item.name])).format('DD/MM/YYYY')}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    return (
-                      <Descriptions.Item key={item.name} label={item.label}>
-                        {typeof selectedOS[item.name] === 'object' && selectedOS[item.name] !== null
-                          ? selectedOS[item.name].code
-                          : selectedOS[item.name]}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  return null;
-                })}
-              </Descriptions>
+              <ItemDescription
+                title="Order Slips Details"
+                selectedData={selectedOS}
+                formItems={formatDescItems(formDetails.form_items)}
+              />  
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Ordered Product Items:
               </Title>
-              {selectedOS.orderedProducts.map((item) => {
-                return (
-                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
-                    <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
-                    <Descriptions.Item label="Order Slip No">{item.orderSlipNo}</Descriptions.Item>
-                    <Descriptions.Item label="Sales Order Product ID">
-                      {item.salesOrderProductId}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Amount">{item.amount}</Descriptions.Item>
-                    <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
-                  </Descriptions>
-                );
-              })}
+              <Table
+                dataSource={selectedOS.orderedProducts}
+                columns={itemColumns}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+              />
             </>
           )}
         </Modal>

@@ -12,7 +12,7 @@ export const tableHeader = [
     key: 'number',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string'
   },
   {
     title: 'Total Amount',
@@ -20,7 +20,7 @@ export const tableHeader = [
     key: 'totalAmount',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.totalAmount - b.totalAmount,
+    datatype: 'number'
   },
   {
     title: 'Remaining Balance',
@@ -28,7 +28,7 @@ export const tableHeader = [
     key: 'remainingBalance',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.remainingBalance - b.remainingBalance,
+    datatype: 'number'
   },
   {
     title: 'Status',
@@ -40,170 +40,208 @@ export const tableHeader = [
   },
 ];
 
-export const accountValidations = ['accountTitles', 'area', 'department', 'credit', 'debit', 'group'];
+const FormDetails = () => {
+  const accountValidations = [
+    'accountTitles', 
+    'area', 
+    'department', 
+    'credit', 
+    'debit', 
+    'group'];
 
-export const salesOrderHeader = [
-  {
-    title: 'Lot #',
-    dataIndex: 'product',
-    key: 'lotNumber',
-    render: (object) => object.lotNumber,
-  },
-  {
-    title: 'FG Code',
-    dataIndex: 'product',
-    key: 'fgCode',
-    render: (object) => object.finishedGood.code,
-  },
-  {
-    title: 'Expiration',
-    dataIndex: 'product',
-    key: 'expiration',
-    render: (object) => object.expiration
-    //render: (object) => moment(new Date(object.expiration)).format('DD/MM/YYYY'),
-    //datatype: 'date',
-  },
-  {
-    title: 'Stock on Hand',
-    dataIndex: 'quantity',
-    key: 'stockOnHand',
-  },
-  {
-    title: 'Quantity',
-    dataIndex: 'quantity',
-    key: 'quantity',
-  },
-];
-
-export const salesInfoHeader = [
-  {
-    title: 'FG',
-    dataIndex: 'finishedGood',
-    key: 'finishedGood',
-    render: (object) => {
-      return object.code;
-    },
-  },
-  {
-    title: 'Requested',
-    dataIndex: 'quantiyRequested',
-    key: 'quantityRequested',
-    render: (_, row) => {
-      return row.quantityRequested;
-    },
-  },
-  {
-    title: 'Remaining',
-    dataIndex: 'quantityRemaining',
-    key: 'quantityRemaining',
-    render: (_, row) => {
-      return row.quantity - row.quantityRequested;
-    },
-  },
-  {
-    title: 'Unit Price',
-    dataIndex: 'unitPrice',
-    key: 'unitPrice',
-  },
-  {
-    title: 'Amount',
-    dataIndex: 'amount',
-    key: 'amount',
-    render: (_, row) => {
-      return row.quantityRequested * row.unitPrice;
-    },
-  },
-];
-
-export const formDetails = {
-  form_name: 'order_slips',
-  form_items: [
+  const salesOrderHeader = [
     {
-      label: 'Number',
-      name: 'number',
-      rules: [{ required: true, message: 'Please provide a order slip number' }],
-      placeholder: 'Order slip number',
+      title: 'Lot #',
+      dataIndex: 'product',
+      key: 'lotNumber',
+      render: (object) => object.lotNumber,
     },
     {
-      label: 'Date',
-      name: 'date',
-      rules: [{ required: true, message: 'Please provide a order slip date' }],
-      placeholder: 'order slip number',
-      type: 'date',
+      title: 'FG Code',
+      dataIndex: 'product',
+      key: 'fgCode',
+      render: (object) => object.finishedGood.code,
     },
     {
-      label: 'Depot',
-      name: 'depot',
-      rules: [{ required: true, message: 'Please provide a order slip depot' }],
-      placeholder: 'Order slip depot',
-      render: (depot) => {
-        return `[${depot.code}] ${depot.name}`;
+      title: 'Expiration',
+      dataIndex: 'product',
+      key: 'expiration',
+      render: (object) => object.expiration
+    },
+    {
+      title: 'Stock on Hand',
+      dataIndex: 'quantity',
+      key: 'stockOnHand',
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      key: 'quantity',
+    },
+  ];
+
+  const salesInfoHeader = [
+    {
+      title: 'FG',
+      dataIndex: 'finishedGood',
+      key: 'finishedGood',
+      render: (object) => {
+        return object.code;
       },
-      type: 'select',
-      choices: [],
     },
     {
-      label: 'Sales Order',
-      name: 'salesOrder',
-      rules: [{ required: true, message: 'Please select sales order' }],
-      placeholder: 'Sales order',
-      type: 'selectSearch',
-      render: (sales) => {
-        console.log(sales);
-        return `[${sales?.number ?? ""}] ${sales?.client?.name ?? ""}, Sales Rep: ${sales?.client?.salesRep?.name ?? ""}`;
+      title: 'Requested',
+      dataIndex: 'quantiyRequested',
+      key: 'quantityRequested',
+      render: (_, row) => {
+        return row.quantityRequested;
       },
-      choices: [],
     },
     {
-      label: 'Prepared By',
-      name: 'preparedBy',
-      rules: [{ required: true, message: 'Please login a valid user' }],
-      placeholder: '',
-      type: 'readOnly',
+      title: 'Remaining',
+      dataIndex: 'quantityRemaining',
+      key: 'quantityRemaining',
+      render: (_, row) => {
+        return row.quantity - row.quantityRequested;
+      },
     },
     {
-      label: 'Released By',
-      name: 'releasedBy',
-      rules: [{ required: true, message: 'Please login a valid user' }],
-      placeholder: '',
-      type: 'readOnly',
+      title: 'Unit Price',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
     },
     {
-      label: 'Checked By',
-      name: 'checkedBy',
-      rules: [{ required: true, message: 'Please login a valid user' }],
-      placeholder: '',
-      type: 'readOnly',
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      render: (_, row) => {
+        return row.quantityRequested * row.unitPrice;
+      },
     },
-    {
-      label: 'Remarks',
-      name: 'remarks',
-      rules: [{}],
-      placeholder: 'Remarks (optional)',
-      type: 'textArea',
-    },
-  ],
-};
+  ];
 
-export const initValueForm = [
-  {
-    name: 'number',
-    type: 'input',
-  },
-  {
-    name: 'date',
-    type: 'date',
-  },
-  {
-    name: 'depot',
-    type: 'select',
-  },
-  {
-    name: 'salesOrder',
-    type: 'select',
-  },
-  {
-    name: 'remarks',
-    type: 'input',
-  },
-];
+  const formDetails = {
+    form_name: 'order_slips',
+    form_items: [
+      {
+        label: 'Number',
+        name: 'number',
+        rules: [{ required: true, message: 'Please provide a order slip number' }],
+        placeholder: 'Order slip number',
+      },
+      {
+        label: 'Date',
+        name: 'date',
+        rules: [{ required: true, message: 'Please provide a order slip date' }],
+        placeholder: 'order slip number',
+        type: 'date',
+      },
+      {
+        label: 'Depot',
+        name: 'depot',
+        rules: [{ required: true, message: 'Please provide a order slip depot' }],
+        placeholder: 'Order slip depot',
+        render: (depot) => {
+          return `[${depot.code}] ${depot.name}`;
+        },
+        type: 'select',
+        choices: [],
+      },
+      {
+        label: 'Sales Order',
+        name: 'salesOrder',
+        rules: [{ required: true, message: 'Please select sales order' }],
+        placeholder: 'Sales order',
+        type: 'selectSearch',
+        render: (sales) => {
+          console.log(sales);
+          return `[${sales?.number ?? ""}] ${sales?.client?.name ?? ""}, Sales Rep: ${sales?.client?.salesRep?.name ?? ""}`;
+        },
+        choices: [],
+      },
+      {
+        label: 'Prepared By',
+        name: 'preparedBy',
+        rules: [{ required: true, message: 'Please login a valid user' }],
+        render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
+        placeholder: '',
+        type: 'readOnly',
+      },
+      {
+        label: 'Released By',
+        name: 'releasedBy',
+        rules: [{ required: true, message: 'Please login a valid user' }],
+        render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
+        placeholder: '',
+        type: 'readOnly',
+      },
+      {
+        label: 'Checked By',
+        name: 'checkedBy',
+        rules: [{ required: true, message: 'Please login a valid user' }],
+        render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
+        placeholder: '',
+        type: 'readOnly',
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        rules: [{}],
+        placeholder: 'Remarks (optional)',
+        type: 'textArea',
+      },
+    ]
+  }
+
+  const itemColumns = [
+    {
+      title: 'SO Prod ID',
+      dataIndex: 'salesOrderProductId',
+      key: 'salesOrderProductID',
+    },
+    {
+      title: 'Finished Good',
+      dataIndex: 'product',
+      key: 'product',
+      render: (object) => object?.finishedGood?.name ?? ""
+    },
+    {
+      title: 'Depot',
+      dataIndex: 'depot',
+      key: 'depot',
+      render: (object) => object?.code ?? "",
+    },
+
+    {
+      title: 'Quantity Requested',
+      dataIndex: 'quantity',
+      key: 'quantity',
+    },
+    {
+      title: 'Unit Price',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+    },
+  ]
+
+
+  return {
+    accountValidations,
+    salesOrderHeader,
+    formDetails,
+    salesInfoHeader,
+    itemColumns
+  }
+}
+
+export default FormDetails;
