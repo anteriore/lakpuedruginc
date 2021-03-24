@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { formDetails, salesOrderHeader, salesInfoHeader } from './data';
+import FormDetails from './data';
 import { updateList } from '../../../helpers/general-helper';
 import FormItem from '../../../components/forms/FormItem';
 
@@ -14,6 +14,7 @@ const { Title } = Typography;
 
 const InputForm = (props) => {
   const { title, onSubmit } = props;
+  const { formDetails, salesInfoHeader, salesOrderHeader } = FormDetails();
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
