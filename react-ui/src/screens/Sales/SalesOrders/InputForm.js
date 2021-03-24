@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import Layout from 'antd/lib/layout/layout';
+import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message, Empty, InputNumber, Alert } from 'antd';
+import { PlusOutlined, DeleteOutlined, SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash';
 import FormDetails from './data';
 import FormItem from '../../../components/forms/FormItem';
-import { EditableRow, EditableCell } from '../../../components/TableRowInput';
 import { updateList } from '../../../helpers/general-helper';
-import { formatProduct } from './helpers';
+import { formatProduct, calcRqstdQtyPerProduct } from './helpers';
 
 const { Title } = Typography;
 
@@ -19,7 +17,7 @@ const InputForm = (props) => {
   const [form] = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { formDetails, tableProduct, tableProductInventory } = FormDetails();
+  const { formDetails, tableDetails, tableProductInventory } = FormDetails();
 
   const [formButtonLoading, setFormButtonLoading] = useState(true)
   const [contentLoading, setContentLoading] = useState(true);
@@ -32,13 +30,6 @@ const InputForm = (props) => {
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
   const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
-
-  const component = {
-    body: {
-      cell: EditableCell,
-      row: EditableRow,
-    },
-  };
 
   useEffect(() => {
     form.setFieldsValue({
@@ -73,8 +64,49 @@ const InputForm = (props) => {
     setTempFormDetails(updateList(newForm, masterList));
   }, [depotList, clientList, tempFormDetails, productInventoryList, form]);
 
-  const modProductColumn = tableProduct.map((col) => {
-    if (!col.editable) {
+  const handleChange = (value, index, name) => {
+    setRequestedProductList((prevData) => {
+      const newData = [...prevData];
+      const newItem = {...newData[index]};
+      newItem[name] = value;
+      newData[index] = newItem;
+      newData[index]['amount'] = (newData[index]['quantityRequested'] 
+      * newData[index]['unitPrice']).toFixed(2);
+
+      return calcRqstdQtyPerProduct(newData);
+    })
+  }
+
+  const handleRemoveSalesProduct = (data) => {
+    const newData = [...requestedProductList];
+    setRequestedProductList(calcRqstdQtyPerProduct(_.filter(newData, (o) => o.key !== data.key)));
+  };
+
+  const handleAddSalesProduct = (data) => {
+    if (data.quantity !== 0 && data.quantity > 0) {
+      const newData = _.clone(formatProduct(data));
+      if (requestedProductList.length !== 16) {
+        if (requestedProductList.length !== 0) {
+          const { key } = _.last(requestedProductList);
+          newData.key = key + 1;
+
+          form.setFieldsValue({ product: requestedProductList.concat(newData) });
+          setRequestedProductList(calcRqstdQtyPerProduct(requestedProductList.concat(newData)));
+        } else {
+          newData.key = 1;
+          setRequestedProductList(calcRqstdQtyPerProduct(requestedProductList.concat(newData)));
+        }
+      } else {
+        message.warning('Cannot add more than 16 requested products');
+      }
+      setProductModal(false);
+    } else {
+      message.warning('Cannot add requested product with empty stock on hand');
+    }
+  };
+
+  const renderTableColumns = (table) => table.fields.map((col) => {
+    if(!col.editable) {
       if (col.title === 'Action') {
         const filteredColumn = {
           ...col,
@@ -82,51 +114,27 @@ const InputForm = (props) => {
             return (
               <Button
                 type="dashed"
-                onClick={() => handleRemoveSalesProduct(row)}
                 icon={<DeleteOutlined />}
+                onClick={() => handleRemoveSalesProduct(row)}
                 danger
               />
             );
           },
         };
-
+  
         return filteredColumn;
       }
-
+  
       return col;
     }
     return {
-      ...col,
-      onCell: (record) => {
-        return {
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          limit: col.limit,
-          title: col.title,
-          maxLimit: record.quantity,
-          minLimit: 0,
-          precisionEnabled: col.precisionEnabled,
-          precision: col.precision,
-          handleSave: (row) => {
-            const newData = [...requestedProductList];
-            const index = _.findIndex(newData, (o) => o.key === row.key);
-            const item = newData[index];
-
-            row = {
-              ...row,
-              amount: (row.quantityRequested * row.unitPrice).toFixed(2),
-              quantityRemaining: row.quantity - row.quantityRequested,
-            };
-
-            newData.splice(index, 1, { ...item, ...row });
-            form.setFieldsValue({ product: newData });
-            setRequestedProductList(newData);
-          },
-        };
-      },
-    };
-  });
+      ...col, 
+      render: (value, _, index) => <InputNumber
+      value={value} min={ col.dataIndex === 'unitPrice' ? 0 : 1}
+      precision={col.dataIndex === 'unitPrice' ? 2 : 0}
+      onChange={(value) => handleChange(value, index, col.dataIndex)}/>,
+    }
+  }) 
 
   // render Product Items with add button
   const renderProductItemColumns = (rawColumns) => {
@@ -154,40 +162,12 @@ const InputForm = (props) => {
     return filteredColumn;
   };
 
-  const handleRemoveSalesProduct = (data) => {
-    const newData = [...requestedProductList];
-    setRequestedProductList(_.filter(newData, (o) => o.key !== data.key));
-  };
-
-  const handleAddSalesProduct = (data) => {
-    if (data.quantity !== 0 && data.quantity > 0) {
-      const newData = _.clone(formatProduct(data));
-
-      if (requestedProductList.length !== 16) {
-        if (requestedProductList.length !== 0) {
-          const { key } = _.last(requestedProductList);
-          newData.key = key + 1;
-
-          form.setFieldsValue({ product: requestedProductList.concat(newData) });
-          setRequestedProductList(requestedProductList.concat(newData));
-        } else {
-          newData.key = 1;
-          setRequestedProductList(requestedProductList.concat(newData));
-        }
-      } else {
-        message.warning('Cannot add more than 16 requested products');
-      }
-      setProductModal(false);
-    } else {
-      message.warning('Cannot add requested product with empty stock on hand');
-    }
-  };
-
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 
   const onFinish = () => {
+    form.setFieldsValue({salesOrderProducts: requestedProductList});
     setFormButtonLoading(true)
     onSubmit(form.getFieldsValue());
     setFormButtonLoading(false)
@@ -204,34 +184,52 @@ const InputForm = (props) => {
           {contentLoading ? (
             <Skeleton />
           ) : (
-            <Layout style={styles.layout}>
               <Form form={form} onFinish={onFinish} {...styles.formLayout}>
                 {_.dropRight(tempFormDetails.form_items).map((item) => (
                   <FormItem key={item.name} onFail={onFail} item={item} />
                 ))}
-                <Form.Item
-                  wrapperCol={{ span: 15, offset: 4 }}
-                  name="product"
-                  rules={[{ required: true, message: 'Please select a product' }]}
-                >
-                  <Table
-                    components={component}
-                    columns={modProductColumn}
-                    rowClassName={() => styles.editableRow}
-                    dataSource={requestedProductList}
-                    pagination={false}
-                  />
-                </Form.Item>
-                <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
-                  <Button
-                    onClick={() => {
-                      setProductModal(true);
-                    }}
-                    style={{ width: '40%', float: 'right' }}
+                { productInv.length !== 0 ? 
+                  <Form.List
+                    label={tableDetails.label} 
+                    name={tableDetails.name}
                   >
-                    Select Product item(s)
-                  </Button>
-                </Form.Item>
+                    {(fields) => (
+                      <Form.Item
+                        wrapperCol={{ span: 17, offset: 3 }}
+                      >
+                        <Form.Item wrapperCol={{ offset: 15, span: 11 }}>
+                          <Button
+                            icon={<SelectOutlined />}
+                            onClick={() => {
+                              setProductModal(true);
+                            }}
+                          >
+                            {`Select ${tableDetails.label}`}
+                          </Button>
+                        </Form.Item>
+                        <Form.Item> 
+                          <Table
+                            rowKey={record => record.uid}
+                            dataSource={requestedProductList}
+                            columns={renderTableColumns(tableDetails)}
+                            pagination={false}
+                            locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                          />
+                        </Form.Item>
+                      </Form.Item>
+                    )}
+                  </Form.List>  
+                : 
+                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                    <Alert
+                      message={tableDetails?.emptyText ?? `Please provide the necessary data for ${tableDetails.label}`}
+                      type="warning"
+                      showIcon
+                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                    />
+                  </Form.Item>
+                }
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
@@ -244,7 +242,6 @@ const InputForm = (props) => {
                   </Space>
                 </Form.Item>
               </Form>
-            </Layout>
           )}
         </Col>
         <Modal
@@ -257,6 +254,7 @@ const InputForm = (props) => {
           footer={null}
         >
           <Table
+            rowKey={record => record.uid}
             columns={renderProductItemColumns(tableProductInventory)}
             dataSource={productInv}
             pagination={{simple: true}}

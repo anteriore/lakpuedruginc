@@ -9,7 +9,7 @@ export const formatProduct = (rawProducts) => {
       code: rawProducts.product.finishedGood,
       finishedGood: rawProducts.product.finishedGood,
       quantity: rawProducts.quantity,
-      quantityRequested: 0,
+      quantityRequested: 1,
       quantityRemaining: rawProducts.quantity,
       unitPrice: 0.0,
       amount: 0,
@@ -60,23 +60,25 @@ export const formatPayload = (approvalId, company, value) => {
     products: [],
   };
 
-  value.product.forEach((prod) => {
-    let newProductValue = {};
-    totalAmount += parseFloat(prod.amount);
-    totalQuantity += prod.quantity;
-    newProductValue = {
-      ...newProductValue,
-      finishedGood: { id: prod.finishedGood.id },
-      product: { id: prod.id },
-      quantity: prod.quantity,
-      quantityRemaining: prod.quantityRemaining,
-      quantityRequested: prod.quantityRequested,
-      unitPrice: prod.unitPrice,
-      depot: { id: value.depot },
-    };
-
-    formattedValue.products.push(newProductValue);
-  });
+  if(value.salesOrderProducts){
+    value.salesOrderProducts.forEach((prod) => {
+      let newProductValue = {};
+      totalAmount += parseFloat(prod.amount);
+      totalQuantity += prod.quantity;
+      newProductValue = {
+        ...newProductValue,
+        finishedGood: { id: prod.finishedGood.id },
+        product: { id: prod.id },
+        quantity: prod.quantity,
+        quantityRemaining: prod.quantityRemaining,
+        quantityRequested: prod.quantityRequested,
+        unitPrice: prod.unitPrice,
+        depot: { id: value.depot },
+      };
+  
+      formattedValue.products.push(newProductValue);
+    });
+  }
 
   formattedValue = { ...formattedValue, totalAmount, totalQuantity };
 
@@ -113,3 +115,28 @@ export const formatDescItems = (items) => {
   
   return descItems;
 }
+
+export const calcRqstdQtyPerProduct = (prevData) => {
+  const newData = [...prevData];
+  let productQuantityList = [];
+  _.forEach(newData, (item) => {
+    if (!_.find(productQuantityList, ['product', item.product])){
+      const { product, quantityRequested} = item;
+      productQuantityList = [...productQuantityList, {product, quantityRequested}];
+    }else{
+      const existing = _.find(productQuantityList, (o) => o.product === item.product);
+      productQuantityList.splice(
+        _.findIndex(productQuantityList,{product: item.product}), 1,
+        {...existing, quantityRequested: existing.quantityRequested 
+          + item.quantityRequested}
+      )
+    }
+  });
+
+  _.forEach(newData, (item, index) => {
+    const product = _.find(productQuantityList, (o) => o.product === item.product);
+    newData[index] = {...item, quantityRemaining: item.quantity - product.quantityRequested};
+  })
+
+  return newData
+} 

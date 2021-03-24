@@ -136,7 +136,7 @@ const FormDetails = () => {
       render: (object) => object?.code ?? "",
     },
     {
-      title: 'Quantity',
+      title: 'Stock On Hand',
       dataIndex: 'quantity',
       key: 'quantity',
     },
@@ -179,54 +179,60 @@ const FormDetails = () => {
     },
   ];
 
-  const tableProduct = [
-    {
-      title: 'FG ID',
-      dataIndex: 'finishedGoodID',
-    },
-    {
-      title: 'Code',
-      dataIndex: 'code',
-      render: (object) => object.code,
-    },
-    {
-      title: 'Finished Good',
-      dataIndex: 'finishedGood',
-      key: 'finishedGood',
-      render: (object) => object.name,
-    },
-    {
-      title: 'Stock on Hand',
-      dataIndex: 'quantity',
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantityRequested',
-      editable: true,
-      limit: true,
-    },
-    {
-      title: 'Remaining',
-      dataIndex: 'quantityRemaining',
-    },
-    {
-      title: 'Unit Price',
-      dataIndex: 'unitPrice',
-      editable: true,
-      precisionEnabled: true,
-      precision: 2,
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-    },
-    {
-      title: 'Action',
-    },
-  ];
+  const tableDetails = {
+    label: 'Sales Order Products',
+    name: 'salesOrderProducts',
+    key: 'id',
+    rules: [{required: true, message: "Please select items to be requested"}],
+    emptyText: "Please select a department for the items to be requested",
+    fields: [
+      {
+        title: 'FG ID',
+        key: 'finishedGoodID',
+        dataIndex: 'finishedGoodID',
+      },
+      {
+        title: 'Code',
+        dataIndex: 'code',
+        render: (object) => object.code,
+      },
+      {
+        title: 'Finished Good',
+        dataIndex: 'finishedGood',
+        render: (object) => object.name,
+      },
+      {
+        title: 'Stock on Hand',
+        dataIndex: 'quantity',
+      },
+      {
+        title: 'Quantity',
+        dataIndex: 'quantityRequested',
+        key: 'quantityRequested',
+        editable: true,
+      },
+      {
+        title: 'Remaining',
+        dataIndex: 'quantityRemaining',
+      },
+      {
+        title: 'Unit Price',
+        dataIndex: 'unitPrice',
+        key: 'unitPrice',
+        editable: true,
+      },
+      {
+        title: 'Amount',
+        dataIndex: 'amount',
+      },
+      {
+        title: 'Action',
+      },
+    ]
+  }
   
   return {
-    tableProduct, 
+    tableDetails,
     tableProductInventory, 
     itemColumn, 
     formDetails
