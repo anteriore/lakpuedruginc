@@ -160,6 +160,21 @@ export const FormDetails = () => {
     ],
   };
 
+  const processSelectData = (data) => {
+    const processedData = []
+    data.forEach((item) => {
+      const processedItem = {
+        ...item,
+        ...item.item,
+        itemID: item.item.id,
+      }
+      delete processedItem.item;
+      delete processedItem.id;
+      processedData.push(processedItem)
+    })
+    return processedData
+  }
+
 
   const tableDetails = {
     label: 'Requested Items',
@@ -236,32 +251,32 @@ export const FormDetails = () => {
       },
     ],
     foreignKey: 'itemID',
-    selectedKey: 'id',
-    selectData: items,
+    selectedKey: 'itemID',
+    selectData: processSelectData(items),
     selectFields: [
       {
         title: 'Item Name',
-        dataIndex: 'item',
-        key: 'item',
-        render: (object) => object.name,
+        dataIndex: 'name',
+        key: 'name',
+        //render: (object) => object.name,
       },
       {
         title: 'Code',
-        dataIndex: 'item',
-        key: 'item',
-        render: (object) => object.code,
+        dataIndex: 'code',
+        key: 'code',
+        //render: (object) => object.code,
       },
       {
         title: 'Type',
-        dataIndex: 'item',
-        key: 'item',
-        render: (object) => object.type.name,
+        dataIndex: 'type',
+        key: 'type',
+        render: (object) => object.name,
       },
       {
         title: 'Unit of Measurement',
-        dataIndex: 'item',
-        key: 'item',
-        render: (object) => object.unit.name,
+        dataIndex: 'unit',
+        key: 'unit',
+        render: (object) => object.name,
       },
       {
         title: 'Current Stocks',
@@ -284,25 +299,6 @@ export const FormDetails = () => {
         key: 'quarantineQuantity',
       },
     ],
-    processData: (data) => {
-      const processedData = {
-        ...data,
-        ...data.item,
-        itemID: data.item.id,
-      };
-      delete processedData.item;
-      delete processedData.id;
-      return processedData;
-    },
-    checkSelected: (selectedData, rowData) => {
-      if (
-        typeof selectedData !== 'undefined' &&
-        selectedData !== null &&
-        selectedData.some((item) => item.itemID === rowData.item.id)
-      ) {
-        return true;
-      }
-    },
   };
 
   return { formDetails, tableDetails };

@@ -63,6 +63,7 @@ export const loadDataForUpdate = (data, itemSummaryList) => {
     date: moment(new Date(data.date)) || moment(),
     dateNeeded: moment(new Date(data.dateNeeded)) || moment(),
     department: data.department !== null ? data.department.id : null,
+    requestedBy: data.requestedBy !== null ? data.requestedBy.id : null,
     requestedItems,
   };
 };
