@@ -158,6 +158,8 @@ public class PermissionsData {
         p1.setSortOrder(2);
         p1Subs = new ArrayList<>();
         p1Subs.add(new PermissionSub(null, "Users", "users", 1));
+        p1.setPermissionSubs(p1Subs);
+        permissionRepository.save(p1);
 
         p1 = new Permission();
         p1.setCategory("Accounting");
@@ -174,6 +176,8 @@ public class PermissionsData {
         p1Subs.add(new PermissionSub(null, "Cash Receipt Vouchers", "cash-receipt-vouchers", 9));
         p1Subs.add(new PermissionSub(null, "PDC Disbursements", "pdc-disbursements", 10));
         p1Subs.add(new PermissionSub(null, "PDC Vouchers", "pdc-vouchers", 11));
+        p1.setPermissionSubs(p1Subs);
+        permissionRepository.save(p1);
 
         p1 = new Permission();
         p1.setCategory("Sales");
@@ -186,15 +190,16 @@ public class PermissionsData {
         p1Subs.add(new PermissionSub(null, "Return Slips", "return-slips", 5));
         p1Subs.add(new PermissionSub(null, "Sales Journal Vouchers", "sales-journal-vouchers", 6));
         p1Subs.add(new PermissionSub(null, "Official Receipts", "official-receipts", 7));
+        p1.setPermissionSubs(p1Subs);
+        permissionRepository.save(p1);
 
         p1 = new Permission();
         p1.setCategory("Purchasing");
         p1.setSortOrder(5);
         p1Subs = new ArrayList<>();
         p1Subs.add(new PermissionSub(null, "Purchase Orders", "purchase-orders", 1));
-
-        
-        
+        p1.setPermissionSubs(p1Subs);
+        permissionRepository.save(p1);
 
     }
 }
