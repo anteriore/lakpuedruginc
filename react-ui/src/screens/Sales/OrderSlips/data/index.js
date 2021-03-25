@@ -74,9 +74,10 @@ const FormDetails = () => {
       key: 'stockOnHand',
     },
     {
-      title: 'Quantity',
-      dataIndex: 'quantity',
+      title: 'Quantity Per Box',
+      dataIndex: 'product',
       key: 'quantity',
+      render: (object) => object.quantityPerBox
     },
   ];
 
@@ -154,7 +155,6 @@ const FormDetails = () => {
         placeholder: 'Sales order',
         type: 'selectSearch',
         render: (sales) => {
-          console.log(sales);
           return `[${sales?.number ?? ""}] ${sales?.client?.name ?? ""}, Sales Rep: ${sales?.client?.salesRep?.name ?? ""}`;
         },
         choices: [],

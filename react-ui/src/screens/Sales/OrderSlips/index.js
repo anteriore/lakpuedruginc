@@ -124,6 +124,7 @@ const OrderSlips = (props) => {
         dispatch(listSalesOrder(company)).then((dataSO) => {
           const dataList = [dataDepot, dataPI, dataSO];
           handleRequestResponse(dataList, onSuccess, onFail, '/sales')
+          setContentLoading(false);
         });
       });
     });
