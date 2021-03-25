@@ -4,7 +4,7 @@ export const columns = [
   {
     title: 'Item ID',
     dataIndex: 'item',
-    key: 'itemName',
+    key: 'item',
     datatype: 'object',
     dataToString: (object) => {
         return object.name
@@ -24,7 +24,7 @@ export const columns = [
   {
     title: 'Unit',
     dataIndex: 'item',
-    key: 'itemUnit',
+    key: 'item',
     datatype: 'object',
     dataToString: (object) => {
         return object.unit.name
