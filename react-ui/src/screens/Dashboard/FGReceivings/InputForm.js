@@ -125,7 +125,7 @@ const InputForm = (props) => {
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Space direction="vertical" size={20} style={{ width: '100%' }}>
+                  <Space direction="vertical" size={20} style={{ width: '100%', marginBottom: '2%' }}>
                     <Text style={{ float: 'left', marginLeft: '2%' }}>{'Received Items: '}</Text>
                     <Table
                       dataSource={tableData}
@@ -141,7 +141,11 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button 
+              type="primary" 
+              onClick={() => form.submit()}
+              disabled={hasTable && !(typeof formTable.isVisible === 'undefined' || formTable.isVisible)}
+            >
               Submit
             </Button>
             <Button

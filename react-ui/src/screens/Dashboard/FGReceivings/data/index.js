@@ -71,6 +71,7 @@ const FormDetails = () => {
           dispatch(clearFGIS());
           dispatch(listFGIssuanceByDepot({ company, depot: e }));
         },
+        tooltip: 'Receiving Depot'
       },
       {
         label: 'FG-IS Number',
