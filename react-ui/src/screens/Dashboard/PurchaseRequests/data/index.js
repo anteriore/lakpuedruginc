@@ -299,6 +299,9 @@ export const FormDetails = () => {
         key: 'quarantineQuantity',
       },
     ],
+    processData: (data) => {
+      return data
+    }
   };
 
   return { formDetails, tableDetails };

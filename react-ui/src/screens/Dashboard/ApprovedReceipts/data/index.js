@@ -198,6 +198,21 @@ export const FormDetails = () => {
         ]
     };
 
+    const processSelectData = (data) => {
+        const processedData = []
+        data.forEach((item) => {
+          const processedItem = {
+            ...item,
+            ...item.item,
+            itemID: item.item.id,
+          }
+          delete processedItem.item;
+          delete processedItem.id;
+          processedData.push(processedItem)
+        })
+        return processedData
+    }
+
     const tableDetails = {
         label: 'Received Item',
         name: 'receivedItems',
@@ -279,50 +294,36 @@ export const FormDetails = () => {
         ],
         
         foreignKey: 'itemID',
-        selectedKey: 'id',
-        selectData: itemList,
+        selectedKey: 'itemID',
+        selectData: processSelectData(itemList),
         selectFields: [
             {
-            title: 'Item',
-            dataIndex: 'item',
-            key: 'item',
-            render: (object) => 
-                `[${object.code}] ${object.name}`,
+            title: 'Item Code',
+            dataIndex: 'code',
+            key: 'code',
+            },
+            {
+            title: 'Item Name',
+            dataIndex: 'name',
+            key: 'name',
             },
             {
             title: 'Type',
-            dataIndex: 'item',
-            key: 'item',
+            dataIndex: 'type',
+            key: 'type',
             render: (object) => 
-                object.type.name,
+                object.name,
             },
             {
             title: 'Unit',
-            dataIndex: 'item',
-            key: 'item',
+            dataIndex: 'unit',
+            key: 'unit',
             render: (object) => 
-                object.unit.code,
+                object.code,
             },
         ],
-    
         processData: (data) => {
-            const processedData = {
-            ...data,
-            ...data.item,
-            itemID: data.item.id,
-            };
-            delete processedData.item;
-            delete processedData.id;
-            return processedData;
-        },
-        checkSelected: (selectedData, rowData) => {
-            if (
-            typeof selectedData !== 'undefined' &&
-            selectedData !== null &&
-            selectedData.some((item) => item.itemID === rowData.item.id)
-            ) {
-            return true;
-            }
+          return data
         },
     };
   return { formDetails, tableDetails };
