@@ -184,7 +184,6 @@ const salesInvoiceSlice = createSlice({
     },
     [listSalesInvoice.rejected]: (state, action) => {
       const { status } = action?.payload ?? { status: 400 };
-      console.log(status);
       const { message: statusMessage, level } = generateStatusMessage(
         action?.payload ?? { status: 400 },
         'Sales Invoice',
