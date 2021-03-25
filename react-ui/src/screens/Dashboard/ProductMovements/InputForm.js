@@ -213,7 +213,7 @@ const InputForm = (props) => {
             columns={renderProductItemColumns(tableProductInventory)}
             rowKey={(record) => record.uid}
             dataSource={productInv}
-            pagination={false}
+            pagination={{ simple:true }}
           />
         </Modal>
       </Row>
