@@ -114,11 +114,30 @@ export const generateStatusMessage = (payload, currentModule, action) => {
   }
 };
 
-export const reevalutateMessageStatus = (props) => {
-  const { action, statusMessage, statusLevel} = props
-
+export const reevalutateMessageStatus = ({ action, statusMessage, statusLevel}) => {
   if ( action !== '') {
     statusDialogue({ statusMessage, statusLevel, action }, 'message');
+  }
+}
+
+export const reevalDependencyMsgStats = ({
+  status, action, 
+  statusLevel, statusMessage, 
+  module}) => {
+
+  if (status !== 'loading' && status !== 'succeeded') {
+    if (action === 'fetch') {
+      statusDialogue(
+        {
+          statusLevel: statusLevel,
+          modalContent: {
+            title: `${_.capitalize(statusLevel)} - ${module}`,
+            content: statusMessage,
+          },
+        },
+        'modal'
+      );  
+    }
   }
 }
 

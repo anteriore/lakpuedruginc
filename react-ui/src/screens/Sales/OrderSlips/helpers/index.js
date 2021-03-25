@@ -1,43 +1,23 @@
 import _ from 'lodash';
 
-export const formatOrderedProducts = (lotProducts, salesProducts) => {
-  if (salesProducts !== null && lotProducts !== null) {
-    const { products } = salesProducts;
-    const orderedProducts = [];
+export const formatOrderedProducts = (lotProducts, sales) => {
+  const orderedProducts = _.filter(sales?.products ?? [], 
+    (o) => _.some(lotProducts, {'product': {'finishedGood': {'id': o.finishedGood.id}}}));
 
-    lotProducts.forEach((lotProduct) => {
-      const mtchdProduct = _.find(
-        products,
-        (o) =>
-          o.product.id === lotProduct.id &&
-          o.product.product.finishedGood.id === lotProduct.product.finishedGood.id
-      );
-      orderedProducts.push(mtchdProduct);
-    });
-
-    return orderedProducts;
-  }
-  return null;
+  return orderedProducts;
 };
 
-export const formatLotProducts = (salesProducts, inventoryProducts) => {
-  if (salesProducts !== null) {
-    const listLotProducts = [];
-    salesProducts.products.forEach((soProduct) => {
-      const { product } = soProduct;
-      const results = _.filter(inventoryProducts, (o) => {
-        return o.product?.finishedGood?.id === product?.product?.finishedGood?.id && o?.quantity !== 0;
-      }).filter((o) => o?.depot?.id === product?.depot?.id);
+export const formatLotProducts = (sales, inventoryProducts) => {
+  const pendingProducts = _.filter(sales?.products ?? [], (o) => _.toLower(o.status) === 'pending' ||
+  _.toLower(o.status) === 'incomplete');
 
-      results.forEach((result) => {
-        listLotProducts.push(result);
-      });
-    });
+  const lotProducts = _.filter(inventoryProducts ?? [], 
+  (o) => o?.depot?.id !== undefined && sales?.depot?.id !== undefined)
+  .filter(o => o.depot.id === sales.depot.id).filter(o => _.some(pendingProducts, 
+  {'finishedGood': {'id': o.product.finishedGood.id}}))
+  .filter(o => o.quantity !== 0);
 
-    return _.uniqBy(listLotProducts, 'id');
-  }
-
-  return null;
+  return lotProducts;
 };
 
 export const formatSalesInfo = (sales) => {
@@ -130,8 +110,6 @@ export const formatDescItems = (items) => {
   addedItems.forEach((item) => {
     descItems.splice(-1,0,item)
   });
-
-  console.log(descItems)
   
   return descItems;
 }

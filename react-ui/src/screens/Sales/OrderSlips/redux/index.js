@@ -158,6 +158,7 @@ const orderSlipsSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for order slips`,
       };
     },
@@ -165,7 +166,8 @@ const orderSlipsSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Order Slips'
+        'Order Slips',
+        state.action
       );
 
       return {
@@ -181,7 +183,8 @@ const orderSlipsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Order Slips'
+        'Order Slips',
+        state.action
       );
 
       return {
@@ -303,7 +306,8 @@ const orderSlipsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Order Slips'
+        'Order Slips',
+        state.action
       );
 
       return {
@@ -318,7 +322,8 @@ const orderSlipsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Order Slips'
+        'Order Slips',
+        state.action
       );
 
       return {
