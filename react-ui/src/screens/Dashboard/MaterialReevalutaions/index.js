@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Descriptions } from 'antd';
+import { Row, Col, Skeleton, Typography, Button, Modal } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
 import { listMaterialReevaluations, clearData, createMaterialReevaluations } from './redux';
 import TableDisplay from '../../../components/TableDisplay';
-import { formDetails, tableHeader } from './data';
+import { modalColumns, tableHeader } from './data';
 import InputForm from './InputForm';
 import { listApprovedReceipts, clearData as clearAR } from '../ApprovedReceipts/redux';
 import GeneralHelper from '../../../helpers/general-helper';
 import { formatPayload } from './helpers';
-import statusDialogue from '../../../components/StatusDialogue';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper'
+import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
 
@@ -38,33 +38,23 @@ const MaterialReevaluations = (props) => {
   }, [history, path]);
 
   const onFailed = useCallback(() => {
-    console.log('FAiling');
-  }, []);
+    history.goBack();
+		setContentLoading(false);
+  }, [history]);
 
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listMaterialReevaluations(company))
-      .then(() => {
-        setContentLoading(false);
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      })
-      .catch((rejectedValueOrSerializedError) => {
-        console.log(rejectedValueOrSerializedError);
-      });
+    .then(() => {
+      setContentLoading(false);
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+    })
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearAR());
@@ -73,8 +63,12 @@ const MaterialReevaluations = (props) => {
   }, [dispatch, company]);
 
   const handleAddButton = () => {
+    setContentLoading(true)
     dispatch(listApprovedReceipts({company})).then((dataAR) => {
       handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
+      setContentLoading(false);
+    }).catch(() => {
+      setContentLoading(false);
     });
   };
 
@@ -148,39 +142,11 @@ const MaterialReevaluations = (props) => {
             <Skeleton />
           ) : (
             <>
-              <Descriptions
-                bordered
-                title={`Material Reevaluation ${matReev?.approvedReceipt?.number ?? ''}`}
-                size="default"
-                layout="vertical"
-              >
-                {formDetails.form_items.map((item) => {
-                  if (item.type === 'select' || item.type === 'selectSearch') {
-                    const itemData = matReev.approvedReceipt;
-                    return (
-                      <Descriptions.Item key={item.name} label={item.label}>
-                        {typeof itemData === 'object' ? itemData.controlNumber : itemData}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  if (item.type === 'date') {
-                    return (
-                      <Descriptions.Item key={item.name} label={item.label}>
-                        {moment(new Date(matReev[item.name])).format('DD/MM/YYYY')}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  return (
-                    <Descriptions.Item key={item.name} label={item.label}>
-                      {typeof matReev[item.name] === 'object' && matReev[item.name] !== null
-                        ? matReev[item.name].code
-                        : matReev[item.name]}
-                    </Descriptions.Item>
-                  );
-                })}
-              </Descriptions>
+              <ItemDescription
+                title="Material Reevaluation Details"
+                selectedData={matReev}
+                formItems={modalColumns}
+              />
             </>
           )}
         </Modal>

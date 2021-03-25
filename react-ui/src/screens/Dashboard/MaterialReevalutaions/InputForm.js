@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Typography, Form, Skeleton, Space, Button, Descriptions } from 'antd';
+import { Row, Col, Typography, Form, Skeleton, Space, Button, Descriptions, Alert } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
+import {InfoCircleFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -81,7 +82,15 @@ const InputForm = (props) => {
               />
               <Form.Item wrapperCol={{ span: 24, offset: 0 }}>
                 {appReceipts === null ? (
-                  ''
+                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                    <Alert
+                      message="Please select a control number"
+                      type="warning"
+                      showIcon
+                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                    />
+                  </Form.Item>
                 ) : (
                   <Descriptions size="small" layout="vertical" bordered {...styles.description}>
                     <Descriptions.Item label={appReceipts?.item?.type?.name ?? ''}>

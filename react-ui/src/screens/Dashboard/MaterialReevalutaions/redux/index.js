@@ -65,6 +65,7 @@ const materialReevaluationsSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for material reevaluations`,
       };
     },
@@ -72,7 +73,8 @@ const materialReevaluationsSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Material Reevaluations'
+        'Material Reevaluations',
+        state.action
       );
 
       return {
@@ -88,7 +90,8 @@ const materialReevaluationsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Material Reevaluations'
+        'Material Reevaluations',
+        state.action
       );
 
       return {
@@ -114,7 +117,8 @@ const materialReevaluationsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Material Reevaluations'
+        'Material Reevaluations',
+        state.action
       );
 
       return {
@@ -129,7 +133,8 @@ const materialReevaluationsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Material Reevaluations'
+        'Material Reevaluations',
+        state.action
       );
 
       return {
