@@ -1,3 +1,5 @@
+import { initial } from "lodash";
+
 export const tableHeader = [
   {
     title: 'Date',
@@ -12,7 +14,7 @@ export const tableHeader = [
     key: 'number',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string',
   },
   {
     title: 'Total Amount',
@@ -20,7 +22,7 @@ export const tableHeader = [
     key: 'totalAmount',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.totalAmount - b.totalAmount,
+    dataType: 'number',
   },
   {
     title: 'Remaining Balance',
@@ -28,7 +30,7 @@ export const tableHeader = [
     key: 'remainingBalance',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.remainingBalance - b.remainingBalance,
+    datatype: 'number'
   },
   {
     title: 'Status',
@@ -36,7 +38,7 @@ export const tableHeader = [
     key: 'status',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.status.length - b.status.length,
+    datatype: 'string'
   },
 ];
 
@@ -58,11 +60,13 @@ export const formDetails = {
     },
     {
       label: 'Tax Percentage',
-      name: 'tax_percentage',
+      name: 'taxPercentage',
       type: 'number',
       rules: [{ required: true, message: 'Please provide a proper tax percentage' }],
       min: 0,
+      initialValue: 12,
       placeholder: 'Tax percentage',
+      type: 'readOnly'
     },
     {
       label: 'Depot',
@@ -72,7 +76,7 @@ export const formDetails = {
       render: (depot) => {
         return `[${depot.code}] ${depot.name}`;
       },
-      type: 'select',
+      type: 'selectSearch',
       choices: [],
     },
     {
@@ -83,7 +87,6 @@ export const formDetails = {
       type: 'selectSearch',
       choices: [],
       render: (sales) => {
-        console.log(sales);
         return `[${sales?.number ?? ""}] ${sales?.client?.name ?? ""}, Sales Rep: ${sales?.client?.salesRep?.name ?? ""}`;
       },
     },
@@ -91,6 +94,7 @@ export const formDetails = {
       label: 'Prepared By',
       name: 'preparedBy',
       rules: [{ required: true, message: 'Please login a valid user' }],
+      render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
       placeholder: '',
       type: 'readOnly',
     },
@@ -98,6 +102,7 @@ export const formDetails = {
       label: 'Released By',
       name: 'releasedBy',
       rules: [{ required: true, message: 'Please login a valid user' }],
+      render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
       placeholder: '',
       type: 'readOnly',
     },
@@ -105,6 +110,7 @@ export const formDetails = {
       label: 'Checked By',
       name: 'checkedBy',
       rules: [{ required: true, message: 'Please login a valid user' }],
+      render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
       placeholder: '',
       type: 'readOnly',
     },

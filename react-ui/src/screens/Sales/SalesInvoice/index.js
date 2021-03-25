@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Row, Col, Typography, Skeleton, Modal, Descriptions } from 'antd';
+import { Button, Row, Col, Typography, Skeleton, Modal, Table, Empty } from 'antd';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
-import _ from 'lodash';
-import moment from 'moment';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
@@ -13,24 +11,33 @@ import { listSalesInvoice, clearData, createSalesInvoice } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import InputForm from './InputForm';
-import statusDialogue from '../../../components/StatusDialogue';
 import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
 import { formatPayload } from './helpers';
+import ItemDescription from '../../../components/ItemDescription';
+import { formatDescItems } from '../OrderSlips/helpers';
+import FormDetails from '../OrderSlips/data';
+import GeneralHelper, {reevalDependencyMsgStats, reevalutateMessageStatus} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const SalesInvoice = (props) => {
   const { title, company } = props;
-  const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
-  const { salesInvoiceList, action, statusMessage, status, statusLevel } = useSelector(
+  const { path } = useRouteMatch();
+  const { handleRequestResponse } = GeneralHelper();
+  const { itemColumns } = FormDetails();
+  const { 
+    salesInvoiceList, 
+    action, statusMessage, 
+    status, statusLevel } = useSelector(
     (state) => state.sales.salesInvoice
   );
   const { id } = useSelector((state) => state.auth.user);
 
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedSI, setSelectedSI] = useState(null);
+  const [contentLoading, setContentLoading] = useState(true);
 
   const {
     action: actionDepot,
@@ -53,93 +60,51 @@ const SalesInvoice = (props) => {
     statusLevel: statusLevelSO,
   } = useSelector((state) => state.sales.salesOrders);
 
-  const pushErrorPage = useCallback(
-    (statusCode) => {
-      history.push({
-        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
-        state: {
-          moduleList: '/sales',
-        },
-      });
-    },
-    [history]
-  );
-
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    if (statusSO !== 'loading') {
-      if (actionSO === 'fetch' && statusLevelSO === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelSO,
-            modalContent: {
-              title: `${_.capitalize(statusLevelSO)} - (Sales Order)`,
-              content: statusMessageSO,
-            },
-          },
-          'modal'
-        );
-      }
-    }
-  }, [actionSO, statusMessageSO, statusSO, statusLevelSO]);
+    reevalDependencyMsgStats({
+      status: statusSO,
+      statusMessage: statusMessageSO,
+      action: actionSO, 
+      statusLevel: statusLevelSO,
+      module: title
+    })
+  }, [actionSO, statusMessageSO, statusSO, statusLevelSO, title]);
 
   useEffect(() => {
-    if (statusPI !== 'loading') {
-      if (actionPI === 'fetch' && statusLevelPI === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelPI,
-            modalContent: {
-              title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
-              content: statusMessagePI,
-            },
-          },
-          'modal'
-        );
-      }
-    }
-  }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
+    reevalDependencyMsgStats({
+      status: statusPI,
+      statusMessage: statusMessagePI,
+      action: actionPI, 
+      statusLevel: statusLevelPI,
+      module: title
+    })
+  }, [actionPI, statusMessagePI, statusPI, statusLevelPI, title]);
 
   useEffect(() => {
-    if (statusDepot !== 'loading') {
-      if (actionDepot === 'fetch' && statusLevelDepot === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelDepot,
-            modalContent: {
-              title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
-              content: statusMessageDepot,
-            },
-          },
-          'modal'
-        );
-      }
-    }
-  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: title
+    })
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot, title]);
 
   useEffect(() => {
+    setContentLoading(true);
     let isCancelled = false;
     dispatch(listSalesInvoice(company))
-      .then(unwrapResult)
-      .then(() => {
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      })
-      .catch((rejectedValueOrSerializedError) => {
-        console.log(rejectedValueOrSerializedError);
-      });
+    .then(unwrapResult)
+    .then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+      setContentLoading(false);
+    })
 
     return function cleanup() {
       dispatch(clearData());
@@ -148,29 +113,25 @@ const SalesInvoice = (props) => {
 
       isCancelled = true;
     };
-  }, [dispatch, company, history]);
+  }, [dispatch, company]);
+
+  const onSuccess = useCallback(() => {
+    history.push(`${path}/new`);
+	},[history, path])
+
+	const onFail = useCallback(() => {
+		history.goBack();
+		setContentLoading(false);
+	},[history])
 
   const handleAddButton = () => {
+    setContentLoading(true);
     dispatch(tempListDepot(company)).then((dataDepot) => {
       dispatch(tempListProductInventory()).then((dataPI) => {
         dispatch(listSalesOrder(company)).then((dataSO) => {
-          const promiseList = [dataDepot, dataPI, dataSO];
-          const promiseResult = _.some(promiseList, (o) => {
-            return o.type.split(/[/?]/g)[1] === 'rejected';
-          });
-
-          if (!promiseResult) {
-            const promiseValues = _.some(promiseList, (o) => {
-              return o.payload.status !== 200 && o.payload.data.length === 0;
-            });
-
-            if (!promiseValues) {
-              history.push(`${path}/new`);
-            }
-          } else {
-            const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
-            pushErrorPage(payload.status);
-          }
+          const dataList = [dataDepot, dataPI, dataSO];
+          handleRequestResponse(dataList, onSuccess, onFail, '/sales')
+          setContentLoading(false);
         });
       });
     });
@@ -182,6 +143,7 @@ const SalesInvoice = (props) => {
   };
 
   const onCreate = (value, salesOrder, salesInvoiceProducts) => {
+    setContentLoading(true)
     const payload = formatPayload({
       id,
       company,
@@ -191,8 +153,14 @@ const SalesInvoice = (props) => {
     });
 
     dispatch(createSalesInvoice(payload)).then(() => {
-      dispatch(listSalesInvoice(company));
-    });
+      dispatch(listSalesInvoice(company)).then(() => {
+        setContentLoading(false);
+      }).catch(() => {
+        setContentLoading(false)
+      });
+    }).catch(() => {
+      setContentLoading(false)
+    });;
   };
 
   return (
@@ -204,12 +172,16 @@ const SalesInvoice = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+            <Button 
+              loading={contentLoading}
+              icon={<PlusOutlined />} 
+              onClick={() => handleAddButton()}
+            >
               Add
             </Button>
           </Col>
           <Col span={20}>
-            {status === 'loading' ? (
+            {contentLoading ? (
               <Skeleton />
             ) : (
               <TableDisplay
@@ -240,62 +212,20 @@ const SalesInvoice = (props) => {
             <Skeleton />
           ) : (
             <>
-              <Descriptions
-                bordered
-                title={`Sales Invoice ${selectedSI.number}`}
-                size="default"
-                layout="vertical"
-              >
-                {formDetails.form_items.map((item) => {
-                  if (!item.writeOnly && item.type !== 'readOnly') {
-                    if (item.type === 'select' || item.type === 'selectSearch') {
-                      const itemData = selectedSI[item.name];
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {typeof itemData === 'object'
-                            ? typeof itemData.code === 'undefined'
-                              ? itemData.number
-                              : itemData.code
-                            : itemData}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    if (item.type === 'date') {
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {moment(new Date(selectedSI[item.name])).format('DD/MM/YYYY')}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    return (
-                      <Descriptions.Item key={item.name} label={item.label}>
-                        {typeof selectedSI[item.name] === 'object' && selectedSI[item.name] !== null
-                          ? selectedSI[item.name].code
-                          : selectedSI[item.name]}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  return null;
-                })}
-              </Descriptions>
+              <ItemDescription
+                title="Sales Invoice Details"
+                selectedData={selectedSI}
+                formItems={formatDescItems(formDetails.form_items)}
+              />
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Sales Invoice Product Items:
               </Title>
-              {selectedSI.orderedProducts.map((item) => {
-                return (
-                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
-                    <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
-                    <Descriptions.Item label="Sales Order Product ID">
-                      {item.salesOrderProductId}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Amount">{item.amount}</Descriptions.Item>
-                    <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
-                  </Descriptions>
-                );
-              })}
+              <Table
+                dataSource={selectedSI.orderedProducts}
+                columns={itemColumns}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+              />
             </>
           )}
         </Modal>

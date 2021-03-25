@@ -92,13 +92,13 @@ const OrderSlips = (props) => {
     setContentLoading(true);
     let isCancelled = false;
     dispatch(listOrderSlips(company))
-      .then(unwrapResult)
-      .then(() => {
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-        setContentLoading(false);
-      })
+    .then(unwrapResult)
+    .then(() => {
+      if (isCancelled) {
+        dispatch(clearData());
+      }
+      setContentLoading(false);
+    })
 
     return function cleanup() {
       dispatch(clearData());
@@ -136,11 +136,18 @@ const OrderSlips = (props) => {
   };
 
   const onCreate = (value, salesOrder, orderedProducts) => {
+    setContentLoading(true);
     const payload = formatPayload(id, company, value, salesOrder, orderedProducts);
 
     dispatch(createOrderSlips(payload)).then(() => {
-      dispatch(listOrderSlips(company));
-    });
+      dispatch(listOrderSlips(company)).then(() => {
+        setContentLoading(false);
+      }).catch(() => {
+        setContentLoading(false)
+      });
+    }).catch(() => {
+      setContentLoading(false)
+    });;
   };
 
   return (
