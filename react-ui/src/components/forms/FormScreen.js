@@ -43,12 +43,13 @@ const FormScreen = (props) => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
-      const selectedKeys = []
+      let selectedKeys = []
       if(values !== null && values[formTable.name] !== null){
         values[formTable.name].forEach((item) => {
-          selectedKeys.push(item[formTable.selectedKey])
+          selectedKeys.push(item[formTable.foreignKey])
         })
       }
+      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
       setTableSelectedKeys(selectedKeys)
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
