@@ -7,16 +7,20 @@ import org.springframework.stereotype.Service;
 
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.MemoSlip;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MemoSlipRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.MemoTypeRepository;
 
 @Service
 public class MemoSlipService {
 	@Autowired
 	private MemoSlipRepository memoSlipRepository;
+	@Autowired
+	private MemoTypeRepository memoTypeRepository;
 
 	@Transactional
 	public MemoSlip saveMemoSlip(MemoSlip memoSlip) {
 		MemoSlip savedInstance = memoSlipRepository.save(memoSlip);
-		savedInstance.setNumber(savedInstance.getType().getCode() + savedInstance.getId());
+		MemoType typeInstance = memoTypeRepository.getOne(savedInstance.getType())
+		savedInstance.setNumber(typeInstance.getCode() + savedInstance.getId());
 		savedInstance.updateBalance();
 		return memoSlipRepository.save(savedInstance);
 	}
