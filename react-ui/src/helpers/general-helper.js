@@ -78,7 +78,22 @@ export const checkResponseValidity = (response) => {
       response.statusText = 'process from server failed';
       return { response, valid: false };
     default:
-      break;
+      if(response.status >= 300){
+        response.statusText = 'an error has occured';
+        return { response, valid: false };
+      }
+      else if(response.status > 200){
+        if (response.data.length === 0) {
+          response.statusText = 'list is empty';
+          return { response, valid: true };
+        }
+        response.statusText = 'succesful';
+        return { response, valid: true };
+      }
+      else {
+        response.statusText = 'an error has occured';
+        return { response, valid: false };
+      }
   }
 };
 
@@ -99,16 +114,29 @@ export const generateStatusMessage = (payload, currentModule, action) => {
   }
 };
 
-export const reevalutateMessageStatus = (props) => {
-  const {status, action, statusMessage, statusLevel} = props
+export const reevalutateMessageStatus = ({ action, statusMessage, statusLevel}) => {
+  if ( action !== '') {
+    statusDialogue({ statusMessage, statusLevel, action }, 'message');
+  }
+}
 
-  if (status !== 'loading') {
-    if (action === 'fetch' && statusLevel !== 'success') {
-      statusDialogue({ statusMessage, statusLevel }, 'message');
-    }
+export const reevalDependencyMsgStats = ({
+  status, action, 
+  statusLevel, statusMessage, 
+  module}) => {
 
-    if (action !== 'fetch') {
-      statusDialogue({ statusMessage, statusLevel }, 'message');
+  if (status !== 'loading' && status !== 'succeeded') {
+    if (action === 'fetch') {
+      statusDialogue(
+        {
+          statusLevel: statusLevel,
+          modalContent: {
+            title: `${_.capitalize(statusLevel)} - ${module}`,
+            content: statusMessage,
+          },
+        },
+        'modal'
+      );  
     }
   }
 }

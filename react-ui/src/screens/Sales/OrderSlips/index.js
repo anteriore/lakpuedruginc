@@ -1,26 +1,27 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import moment from 'moment';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Table, Empty } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 import { unwrapResult } from '@reduxjs/toolkit';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { tableHeader, formDetails } from './data';
+import FormDetails ,{ tableHeader } from './data';
 import InputForm from './InputForm';
-import { formatPayload } from './helpers';
+import { formatDescItems, formatPayload } from './helpers';
 import { listOrderSlips, createOrderSlips, clearData } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
-import statusDialogue from '../../../components/StatusDialogue';
+import ItemDescription from '../../../components/ItemDescription';
+import GeneralHelper, { reevalDependencyMsgStats, reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const OrderSlips = (props) => {
   const { title, company, actions } = props;
+  const { formDetails, itemColumns } = FormDetails();
+  const { handleRequestResponse } = GeneralHelper();
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
@@ -53,80 +54,39 @@ const OrderSlips = (props) => {
     statusLevel: statusLevelSO,
   } = useSelector((state) => state.sales.salesOrders);
 
-  const pushErrorPage = useCallback(
-    (statusCode) => {
-      history.push({
-        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
-        state: {
-          moduleList: '/sales',
-        },
-      });
-    },
-    [history]
-  );
-
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    if (statusSO !== 'loading') {
-      if (actionSO === 'fetch' && statusLevelSO === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelSO,
-            modalContent: {
-              title: `${_.capitalize(statusLevelSO)} - (Sales Order)`,
-              content: statusMessageSO,
-            },
-          },
-          'modal'
-        );
-      }
-    }
-  }, [actionSO, statusMessageSO, statusSO, statusLevelSO]);
+    reevalDependencyMsgStats({
+      status: statusSO,
+      statusMessage: statusMessageSO,
+      action: actionSO, 
+      statusLevel: statusLevelSO,
+      module: title
+    })
+  }, [actionSO, statusMessageSO, statusSO, statusLevelSO, title]);
 
   useEffect(() => {
-    if (statusPI !== 'loading') {
-      if (actionPI === 'fetch' && statusLevelPI === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelPI,
-            modalContent: {
-              title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
-              content: statusMessagePI,
-            },
-          },
-          'modal'
-        );
-      }
-    }
-  }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
+    reevalDependencyMsgStats({
+      status: statusPI,
+      statusMessage: statusMessagePI,
+      action: actionPI, 
+      statusLevel: statusLevelPI,
+      module: title
+    })
+  }, [actionPI, statusMessagePI, statusPI, statusLevelPI, title]);
 
   useEffect(() => {
-    if (statusDepot !== 'loading') {
-      if (actionDepot === 'fetch' && statusLevelDepot === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelDepot,
-            modalContent: {
-              title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
-              content: statusMessageDepot,
-            },
-          },
-          'modal'
-        );
-      }
-    }
-  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: title
+    })
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot, title]);
 
   useEffect(() => {
     setContentLoading(true);
@@ -139,9 +99,6 @@ const OrderSlips = (props) => {
         }
         setContentLoading(false);
       })
-      .catch((rejectValueOrSerializedError) => {
-        console.log(rejectValueOrSerializedError);
-      });
 
     return function cleanup() {
       dispatch(clearData());
@@ -149,31 +106,25 @@ const OrderSlips = (props) => {
       dispatch(clearSO());
       isCancelled = true;
     };
-  }, [dispatch, company, pushErrorPage]);
+  }, [dispatch, company]);
+
+  const onSuccess = useCallback(() => {
+    history.push(`${path}/new`);
+	},[history, path])
+
+	const onFail = useCallback(() => {
+		history.goBack();
+		setContentLoading(false);
+	},[history])
 
   const handleAddButton = () => {
     setContentLoading(true);
     dispatch(tempListDepot(company)).then((dataDepot) => {
       dispatch(tempListProductInventory()).then((dataPI) => {
         dispatch(listSalesOrder(company)).then((dataSO) => {
-          const promiseList = [dataDepot, dataPI, dataSO];
-          const promiseResult = _.some(promiseList, (o) => {
-            return o.type.split(/[/?]/g)[1] === 'rejected';
-          });
-
-          if (!promiseResult) {
-            const promiseValues = _.some(promiseList, (o) => {
-              return o.payload.status !== 200 && o.payload.data.length === 0;
-            });
-
-            if (!promiseValues) {
-              history.push(`${path}/new`);
-            }
-            setContentLoading(false);
-          } else {
-            const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
-            pushErrorPage(payload.status);
-          }
+          const dataList = [dataDepot, dataPI, dataSO];
+          handleRequestResponse(dataList, onSuccess, onFail, '/sales')
+          setContentLoading(false);
         });
       });
     });
@@ -243,63 +194,20 @@ const OrderSlips = (props) => {
             <Skeleton />
           ) : (
             <>
-              <Descriptions
-                bordered
-                title={`Ordser Slip ${selectedOS.number}`}
-                size="default"
-                layout="vertical"
-              >
-                {formDetails.form_items.map((item) => {
-                  if (!item.writeOnly && item.type !== 'readOnly') {
-                    if (item.type === 'select' || item.type === 'selectSearch') {
-                      const itemData = selectedOS[item.name];
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {typeof itemData === 'object'
-                            ? typeof itemData.code === 'undefined'
-                              ? itemData.number
-                              : itemData.code
-                            : itemData}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    if (item.type === 'date') {
-                      return (
-                        <Descriptions.Item key={item.name} label={item.label}>
-                          {moment(new Date(selectedOS[item.name])).format('DD/MM/YYYY')}
-                        </Descriptions.Item>
-                      );
-                    }
-
-                    return (
-                      <Descriptions.Item key={item.name} label={item.label}>
-                        {typeof selectedOS[item.name] === 'object' && selectedOS[item.name] !== null
-                          ? selectedOS[item.name].code
-                          : selectedOS[item.name]}
-                      </Descriptions.Item>
-                    );
-                  }
-
-                  return null;
-                })}
-              </Descriptions>
+              <ItemDescription
+                title="Order Slips Details"
+                selectedData={selectedOS}
+                formItems={formatDescItems(formDetails.form_items)}
+              />  
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Ordered Product Items:
               </Title>
-              {selectedOS.orderedProducts.map((item) => {
-                return (
-                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
-                    <Descriptions.Item label="Depot">{item.depot.code}</Descriptions.Item>
-                    <Descriptions.Item label="Order Slip No">{item.orderSlipNo}</Descriptions.Item>
-                    <Descriptions.Item label="Sales Order Product ID">
-                      {item.salesOrderProductId}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Amount">{item.amount}</Descriptions.Item>
-                    <Descriptions.Item label="Unit Price">{item.unitPrice}</Descriptions.Item>
-                  </Descriptions>
-                );
-              })}
+              <Table
+                dataSource={selectedOS.orderedProducts}
+                columns={itemColumns}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+              />
             </>
           )}
         </Modal>

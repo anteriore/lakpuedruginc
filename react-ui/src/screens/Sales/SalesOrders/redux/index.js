@@ -41,21 +41,35 @@ export const approveSalesOrder = createAsyncThunk(
   'approveSalesOrder',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(
-      `/rest/sales-orders/approve/${payload}?token=${accessToken}`
-    );
-
-    return response;
+    try{
+      const response = await axiosInstance.post(
+        `/rest/sales-orders/approve/${payload}?token=${accessToken}`
+      );
+      const { response: validateResponse, valid } = checkResponseValidity(response);
+      if (valid) {
+        return validateResponse;
+      }
+      return thunkAPI.rejectWithValue(validateResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
 );
 
 export const rejectSalesOrder = createAsyncThunk('rejectSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(
-    `/rest/sales-orders/reject/${payload}?token=${accessToken}`
-  );
-
-  return response;
+  try{
+    const response = await axiosInstance.post(
+      `/rest/sales-orders/reject/${payload}?token=${accessToken}`
+    );
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const listSalesOrderByDepot = createAsyncThunk(
@@ -99,6 +113,7 @@ const salesOrdersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales orders`,
       };
     },
@@ -106,7 +121,8 @@ const salesOrdersSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Order'
+        'Sales Order',
+        state.action
       );
 
       return {
@@ -122,7 +138,8 @@ const salesOrdersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Order'
+        'Sales Order',
+        state.action
       );
 
       return {
@@ -130,42 +147,48 @@ const salesOrdersSlice = createSlice({
         status: 'failed',
         statusLevel: level,
         responseCode: status,
-        action: 'fetch',
         statusMessage,
       };
     },
     [listSalesOrderByDepot.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
-        action: 'get',
+        status: 'loading',
+        action: 'fetch',
         statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listSalesOrderByDepot.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for sales orders';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Order',
+        state.action
+      );
 
       return {
         ...state,
         salesOrderList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
     [listSalesOrderByDepot.rejected]: (state, action) => {
-      const { data } = action.payload;
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Order',
+        state.action
+      );
+
       return {
         ...state,
-        salesOrderList: data,
-        status: 'Error',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [createSalesOrder.pending]: (state) => {
@@ -182,7 +205,8 @@ const salesOrdersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Orders'
+        'Sales Orders',
+        state.action
       );
 
       return {
@@ -197,7 +221,92 @@ const salesOrdersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Orders'
+        'Sales Orders',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [approveSalesOrder.pending]: (state) => {
+      return {
+        ...state,
+        action: 'approve',
+        status: 'loading',
+        statusMessage: `Approving for selected sales order`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [approveSalesOrder.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [approveSalesOrder.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [rejectSalesOrder.pending]: (state) => {
+      return {
+        ...state,
+        action: 'reject',
+        status: 'loading',
+        statusMessage: `Rejecting for selected sales order`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [rejectSalesOrder.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [rejectSalesOrder.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Sales Orders',
+        state.action
       );
 
       return {

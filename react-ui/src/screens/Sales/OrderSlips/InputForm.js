@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Layout, Checkbox } from 'antd';
+import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Checkbox, Alert } from 'antd';
+import { InfoCircleFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { formDetails, salesOrderHeader, salesInfoHeader } from './data';
+import FormDetails from './data';
 import { updateList } from '../../../helpers/general-helper';
 import FormItem from '../../../components/forms/FormItem';
-
 import { formatLotProducts, formatOrderedProducts } from './helpers';
 
 const { Title } = Typography;
 
 const InputForm = (props) => {
   const { title, onSubmit } = props;
+  const { formDetails, salesInfoHeader, salesOrderHeader } = FormDetails();
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
@@ -30,6 +31,8 @@ const InputForm = (props) => {
 
   const handleSalesChange = useCallback(
     (value) => {
+      setSelectedLot([]);
+      setSelectedSales(null);
       const salesOrder = _.find(salesOrderList, (o) => {
         return o.id === value;
       });
@@ -42,9 +45,13 @@ const InputForm = (props) => {
     (value) => {
       form.setFieldsValue({ salesOrder: '' });
       setSelectedSales(null);
-      const selectedSalesList = _.filter(salesOrderList, (o) => {
-        return o.depot.id === value && _.toLower(o.status) !== 'pending';
-      }).filter((o) => _.toLower(o.type) === 'os');
+      setSelectedLot([]);
+
+      const selectedSalesList = _.filter(salesOrderList, (o) =>  o.depot.id === value )
+      .filter((o) =>  _.toLower(o.status) === 'approved' || _.toLower(o.status) === 'incomplete')
+      .filter((o) => _.toLower(o.type) === 'os')
+      .filter((o) => _.some(o.products, ['status', 'Pending']) ||
+      _.some(o.products, ['status', 'Incomplete']));
 
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
@@ -143,49 +150,58 @@ const InputForm = (props) => {
           {contentLoading ? (
             <Skeleton />
           ) : (
-            <Layout style={styles.layout}>
-              <Form form={form} onFinish={onFinish} {...styles.formLayout}>
-                {_.dropRight(tempFormDetails.form_items, 5).map((item) => (
-                  <FormItem onFail={onFail} key={item.name} item={item} />
-                ))}
-                {showSalesSection
-                  ? _.dropRight(_.drop(tempFormDetails.form_items, 3), 1).map((item) => (
-                      <FormItem onFail={onFail} key={item.name} item={item} />
-                    ))
-                  : ''}
-                {showSalesSection ? (
-                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
-                    <Form.Item>
-                      <Table
-                        columns={renderLotColumns(salesOrderHeader)}
-                        dataSource={formatLotProducts(selectedSales, productInvList)}
-                        pagination={false}
-                      />
-                    </Form.Item>
-                    <Form.Item>
-                      <Table
-                        columns={salesInfoHeader}
-                        dataSource={formatOrderedProducts(selectedLot, selectedSales)}
-                        pagination={false}
-                      />
-                    </Form.Item>
+            <Form form={form} onFinish={onFinish} {...styles.formLayout}>
+              {_.dropRight(tempFormDetails.form_items, 5).map((item) => (
+                <FormItem onFail={onFail} key={item.name} item={item} />
+              ))}
+              {showSalesSection
+                ? _.dropRight(_.drop(tempFormDetails.form_items, 3), 1).map((item) => (
+                    <FormItem onFail={onFail} key={item.name} item={item} />
+                  ))
+                : ''}
+              { selectedSales !== null ? (
+                <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                  <Form.Item>
+                    <Table
+                      columns={renderLotColumns(salesOrderHeader)}
+                      dataSource={formatLotProducts(selectedSales, productInvList)}
+                      pagination={false}
+                    />
                   </Form.Item>
-                ) : (
-                  ''
-                )}
-                <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
-                <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
-                  <Space size={16}>
-                    <Button htmlType="button" onClick={() => history.goBack()}>
-                      Cancel
-                    </Button>
-                    <Button type="primary" htmlType="submit">
-                      Submit
-                    </Button>
-                  </Space>
+                  <Form.Item>
+                    <Table
+                      columns={salesInfoHeader}
+                      dataSource={formatOrderedProducts(selectedLot, selectedSales)}
+                      pagination={false}
+                    />
+                  </Form.Item>
                 </Form.Item>
-              </Form>
-            </Layout>
+              ) : (
+                <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                  <Alert
+                    message="Please salect a depot and then select an existing sales order."
+                    type="warning"
+                    showIcon
+                    icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                    style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                  />
+                </Form.Item>
+              )}
+              <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
+              <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
+                <Space size={16}>
+                  <Button htmlType="button" onClick={() => history.goBack()}>
+                    Cancel
+                  </Button>
+                  <Button
+                  disabled={ orderedProducts.length !== 0 && selectedSales !== null ? false : true } 
+                  type="primary" 
+                  htmlType="submit">
+                    Submit
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Form>
           )}
         </Col>
       </Row>

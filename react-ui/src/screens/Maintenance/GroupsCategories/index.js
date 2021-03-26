@@ -98,10 +98,11 @@ const GroupsCategories = (props) => {
     dispatch(deleteG(data.id)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Group ${data.name}`);
+        setselectedGroup(null);
+        setselectedCategory(null);
         dispatch(listG({ company, message })).then(() => {
           dispatch(listC({ company, message })).then(() => {
             setLoading(false);
-            setselectedGroup(null);
           });
         });
       } else {
@@ -169,10 +170,10 @@ const GroupsCategories = (props) => {
       dispatch(addG(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
-          setselectedGroup(response.payload.data);
+          setselectedGroup(null);
           dispatch(listG({ company, message })).then(() => {
-            setLoading(false);
             setselectedCategory(null);
+            setLoading(false);
           });
         } else {
           message.error(`Unable to update ${data.name}`);
@@ -190,10 +191,10 @@ const GroupsCategories = (props) => {
       dispatch(addG(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully added ${data.name}`);
-          setselectedGroup(response.payload.data);
+          setselectedGroup(null);
           dispatch(listG({ company, message })).then(() => {
-            setLoading(false);
             setselectedCategory(null);
+            setLoading(false);
           });
         } else {
           message.error(`Unable to add ${data.name}`);

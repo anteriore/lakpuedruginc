@@ -305,10 +305,8 @@ const FormScreen = (props) => {
                 return <FormItem item={item} onFail={onFail} />;
             })}
 
-            
-
             {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
-              <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
+              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? [{ required: true }]}>
                 {(fields, { errors }) => (
                   <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
@@ -325,7 +323,7 @@ const FormScreen = (props) => {
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
-                      pagination={false}
+                      pagination={{simple: true}}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       summary={formTable.summary}
                     />
@@ -373,7 +371,7 @@ const FormScreen = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   expandable={{ expandedRowRender }}
                   rowKey={formTable.foreignKey}
                 />
@@ -381,7 +379,7 @@ const FormScreen = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   rowKey={formTable.foreignKey}
                 />
               )}

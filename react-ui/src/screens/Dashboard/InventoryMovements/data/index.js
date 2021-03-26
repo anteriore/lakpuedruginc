@@ -137,6 +137,9 @@ const FormDetails = () => {
         placeholder: 'Remarks',
       },
     ],
+    required_data: [
+      inventories
+    ]
   };
 
   const tableDetails = {
@@ -230,11 +233,9 @@ const FormDetails = () => {
     processData: (data) => {
       const processedData = {
         ...data,
-        key: data.id,
         stockOnHand: data.quantity,
       };
       delete processedData.quantity;
-      delete processedData.id;
       return processedData;
     },
     checkSelected: (selectedData, rowData) => {

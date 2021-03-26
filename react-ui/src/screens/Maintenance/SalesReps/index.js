@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
 import { listS, addS, deleteS, clearData } from './redux';
 import { listC, clearData as clearC } from '../GroupsCategories/redux';
@@ -20,7 +20,7 @@ const SalesReps = (props) => {
 
   const { company, actions } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.salesReps.list);
+  const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.salesReps);
   const categories = useSelector((state) => state.maintenance.groupsCategories.categoryList);
   const regionCodes = useSelector((state) => state.maintenance.regionCodes.regionCodeList);
 
@@ -59,7 +59,7 @@ const SalesReps = (props) => {
   ];
 
   const formDetail = {
-    form_name: 'depot',
+    form_name: 'salesRep',
     form_items: [
       {
         label: 'Name',
@@ -84,7 +84,7 @@ const SalesReps = (props) => {
         name: 'productCategory',
         type: 'select',
         choices: categories,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please select category' }],
       },
       {
         label: 'Region Codes',
@@ -92,10 +92,14 @@ const SalesReps = (props) => {
         type: 'select',
         selectName: 'code',
         choices: regionCodes,
-        rules: [{ required: true }],
+        rules: [{ required: true, message: 'Please select region code' }],
       },
     ],
   };
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -164,6 +168,7 @@ const SalesReps = (props) => {
   };
 
   const onSubmit = (data) => {
+    setLoading(true);
     if (formMode === 'edit') {
       const payload = {
         ...data,
@@ -180,15 +185,14 @@ const SalesReps = (props) => {
       };
 
       dispatch(addS(payload)).then((response) => {
-        if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
           dispatch(listS({ company, message })).then(() => {
             setLoading(false);
+          }).catch(() => {
+            setLoading(false);
           });
-        } else {
-          message.success(`Unable to update ${data.name}`);
-          setLoading(false);
-        }
+      }).catch(() => {
+        setLoading(false);
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -204,16 +208,13 @@ const SalesReps = (props) => {
         },
       };
       dispatch(addS(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          message.success(`Successfully added ${data.name}`);
-          dispatch(listS({ company, message })).then(() => {
-            setLoading(false);
-          });
-        } else {
-          message.success(`Unable to added ${data.name}`);
+        dispatch(listS({ company })).then(() => {
           setLoading(false);
-        }
+        }).catch(() => {
+          setLoading(false);
+        });
+      }).catch(() => {
+        setLoading(false);
       });
     }
 
@@ -236,6 +237,7 @@ const SalesReps = (props) => {
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
+              loading={loading}
               onClick={(e) => {
                 handleAdd();
               }}
@@ -248,7 +250,7 @@ const SalesReps = (props) => {
           ) : (
             <TableDisplay
               columns={columns}
-              data={data}
+              data={list}
               handleRetrieve={handleRetrieve}
               handleUpdate={handleUpdate}
               handleDelete={handleDelete}

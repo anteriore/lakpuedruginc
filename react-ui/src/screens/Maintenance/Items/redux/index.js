@@ -8,7 +8,7 @@ const initialState = {
   list: [],
   report: null,
   status: 'loading',
-  statusLevel: '',
+  statusLevel: 'loading',
   responseCode: null,
   statusMessage: '',
   action: '',

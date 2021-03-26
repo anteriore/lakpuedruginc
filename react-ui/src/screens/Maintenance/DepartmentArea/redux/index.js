@@ -1,85 +1,143 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   deptList: null,
   areaList: null,
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
 
-export const listD = createAsyncThunk('listD', async (payload, thunkAPI, rejectWithValue) => {
+export const listD = createAsyncThunk('listD', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `rest/departments/company/${payload.company}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.get(
-    `rest/departments/company/${payload.company}?token=${accessToken}`
-  );
-
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for departments');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const addD = createAsyncThunk('addD', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/departments/?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(`rest/departments/?token=${accessToken}`, payload);
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const updateD = createAsyncThunk('updateD', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/departments/?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deleteD = createAsyncThunk('deleteD', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(
+      `rest/departments/delete?token=${accessToken}`,
+      payload
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(
-    `rest/departments/delete?token=${accessToken}`,
-    payload
-  );
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
-export const listA = createAsyncThunk('listA', async (payload, thunkAPI, rejectWithValue) => {
+export const listA = createAsyncThunk('listA', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try{
+    const response = await axiosInstance.get(
+      `rest/areas/company/${payload.company}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.get(
-    `rest/areas/company/${payload.company}?token=${accessToken}`
-  );
-
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for areas');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const addA = createAsyncThunk('addA', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/areas/?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(`rest/areas/?token=${accessToken}`, payload);
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const updateA = createAsyncThunk('updateA', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/areas/?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deleteA = createAsyncThunk('deleteA', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/areas/delete?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(`rest/areas/delete?token=${accessToken}`, payload);
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 const departmentAreaSlice = createSlice({
@@ -90,58 +148,340 @@ const departmentAreaSlice = createSlice({
   },
   extraReducers: {
     [listD.pending]: (state) => {
-      state.status = 'loading';
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusMessage: `${message.ITEMS_GET_PENDING} for departments`
+      }
     },
     [listD.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for departments';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
 
       return {
         ...state,
         deptList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level, 
+        responseCode: status, 
         statusMessage,
       };
     },
-    [listD.rejected]: (state) => {
+    [listD.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
+
+      return {
+        ...state,
+        deptList: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [addD.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for departments`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [addD.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [addD.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateD.pending]: (state) => {
+      return {
+        ...state,
+        action: 'update',
+        status: 'loading',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for departments`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [updateD.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateD.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteD.pending]: (state) => {
+      return {
+        ...state,
+        action: 'delete',
+        status: 'loading',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for departments`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [deleteD.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteD.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Departments',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
 
     [listA.pending]: (state) => {
-      state.status = 'loading';
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusMessage: `${message.ITEMS_GET_PENDING} for areas`
+      }
     },
     [listA.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for areas';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Areas',
+        state.action
+      );
 
       return {
         ...state,
         areaList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level, 
+        responseCode: status, 
         statusMessage,
       };
     },
-    [listA.rejected]: (state) => {
+    [listA.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Areas',
+        state.action
+      );
+
+      return {
+        ...state,
+        areasList: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [addA.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for areas`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [addA.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Areas',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [addA.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Areas',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateA.pending]: (state) => {
+      return {
+        ...state,
+        action: 'update',
+        status: 'loading',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for areas`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [updateA.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Areas',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateA.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Area',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteA.pending]: (state) => {
+      return {
+        ...state,
+        action: 'delete',
+        status: 'loading',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for areas`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [deleteA.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Areas',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteA.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Areas',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

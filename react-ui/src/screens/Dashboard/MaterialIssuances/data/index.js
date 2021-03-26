@@ -27,7 +27,7 @@ export const columns = [
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
-    datatype: 'status',
+    datatype: 'string',
   },
 ];
 
@@ -101,12 +101,12 @@ const FormDetails = () => {
         name: 'quantityRemaining',
         render: (object) => {
           if (object.stockOnHand !== null && typeof object.stockOnHand !== 'undefined') {
-            return object.stockOnHand - object?.quantity ?? object.stockOnHand;
+            return object.stockOnHand - (object?.quantity ?? 0);
           }
         },
       },
     ],
-    foreignKey: 'key',
+    foreignKey: 'id',
     selectedKey: 'id',
     selectData: inventories,
     selectFields: [
@@ -165,11 +165,9 @@ const FormDetails = () => {
     processData: (data) => {
       const processedData = {
         ...data,
-        key: data.id,
         stockOnHand: data.quantity,
       };
       delete processedData.quantity;
-      delete processedData.id;
       return processedData;
     },
     checkSelected: (selectedData, rowData) => {

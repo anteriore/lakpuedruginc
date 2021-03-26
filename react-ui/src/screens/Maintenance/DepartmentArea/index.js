@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
-import { listD, addD, deleteD, listA, addA, deleteA, clearData } from './redux';
+import { listD, addD, updateD,deleteD, listA, addA, updateA,deleteA, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -16,6 +16,7 @@ const DepartmentArea = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formDataA, setFormDataA] = useState(null);
   const [formDataD, setFormDataD] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const deptColumns = [
     {
@@ -87,13 +88,19 @@ const DepartmentArea = (props) => {
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
-  const deptData = useSelector((state) => state.maintenance.departmentArea.deptList);
-  const areaData = useSelector((state) => state.maintenance.departmentArea.areaList);
+  const {
+    areaList: areaData, 
+    deptList: deptData,
+    statusMessage, action,
+    statusLevel, status
+  } = useSelector((state) => state.maintenance.departmentArea);
+
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listD({ company })).then(() => {
       dispatch(listA({ company })).then(() => {
+        setLoading(false)
         if (isCancelled) {
           dispatch(clearData());
         }
@@ -105,6 +112,10 @@ const DepartmentArea = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddD = () => {
     setFormTitle('Add Department');
@@ -123,9 +134,12 @@ const DepartmentArea = (props) => {
   };
 
   const handleDeleteD = (data) => {
+    setLoading(true)
     dispatch(deleteD(data.id)).then(() => {
       dispatch(listD({ company }));
-      message.success(`Successfully deleted Department ${data.name}`);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
     });
   };
 
@@ -146,9 +160,12 @@ const DepartmentArea = (props) => {
   };
 
   const handleDeleteA = (data) => {
+    setLoading(true)
     dispatch(deleteA(data.id)).then(() => {
       dispatch(listA({ company }));
-      message.success(`Successfully deleted Area ${data.name}`);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
     });
   };
   const handleRetrieve = () => {};
@@ -161,6 +178,7 @@ const DepartmentArea = (props) => {
   };
 
   const onSubmitD = (values) => {
+    setLoading(true);
     if (formMode === 'edit') {
       const payload = {
         ...values,
@@ -170,8 +188,11 @@ const DepartmentArea = (props) => {
         },
       };
 
-      dispatch(addD(payload)).then(() => {
+      dispatch(updateD(payload)).then(() => {
         dispatch(listD({ company }));
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -182,6 +203,9 @@ const DepartmentArea = (props) => {
       };
       dispatch(addD(payload)).then(() => {
         dispatch(listD({ company }));
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
       });
     }
 
@@ -192,6 +216,7 @@ const DepartmentArea = (props) => {
   };
 
   const onSubmitA = (values) => {
+    setLoading(true);
     if (formMode === 'edit') {
       const payload = {
         ...values,
@@ -201,8 +226,11 @@ const DepartmentArea = (props) => {
         },
       };
 
-      dispatch(addA(payload)).then(() => {
+      dispatch(updateA(payload)).then(() => {
         dispatch(listA({ company }));
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -213,6 +241,9 @@ const DepartmentArea = (props) => {
       };
       dispatch(addA(payload)).then(() => {
         dispatch(listA({ company }));
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
       });
     }
 
@@ -240,6 +271,7 @@ const DepartmentArea = (props) => {
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
+              loading={loading}
               onClick={() => {
                 handleAddD();
               }}
@@ -247,17 +279,19 @@ const DepartmentArea = (props) => {
               Add
             </Button>
           )}
-          <TableDisplay
-            name={tableName}
-            columns={deptColumns}
-            data={deptData}
-            handleRetrieve={handleRetrieve}
-            handleUpdate={handleUpdateD}
-            handleDelete={handleDeleteD}
-            pagination={{ size: 'small' }}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
-          />
+          {loading ? <Skeleton/> : 
+            <TableDisplay
+              name={tableName}
+              columns={deptColumns}
+              data={deptData}
+              handleRetrieve={handleRetrieve}
+              handleUpdate={handleUpdateD}
+              handleDelete={handleDeleteD}
+              pagination={{ size: 'small' }}
+              updateEnabled={actions.includes('update')}
+              deleteEnabled={actions.includes('delete')}
+            />
+          }
         </Col>
         <Col span={12}>
           <Title level={5} style={{ float: 'left' }}>
@@ -266,23 +300,25 @@ const DepartmentArea = (props) => {
           <Button
             style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
             icon={<PlusOutlined />}
+            loading={loading}
             onClick={() => {
               handleAddA();
             }}
           >
             Add
           </Button>
-          <TableDisplay
-            name={tableName}
-            columns={areaColumns}
-            data={areaData}
-            handleRetrieve={handleRetrieve}
-            handleUpdate={handleUpdateA}
-            handleDelete={handleDeleteA}
-            pagination={{ size: 'small' }}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
-          />
+          {loading ? <Skeleton/> : 
+            <TableDisplay
+              name={tableName}
+              columns={areaColumns}
+              data={areaData}
+              handleRetrieve={handleRetrieve}
+              handleUpdate={handleUpdateA}
+              handleDelete={handleDeleteA}
+              pagination={{ size: 'small' }}
+              updateEnabled={actions.includes('update')}
+              deleteEnabled={actions.includes('delete')}
+            />}
         </Col>
         <SimpleForm
           visible={displayFormD}

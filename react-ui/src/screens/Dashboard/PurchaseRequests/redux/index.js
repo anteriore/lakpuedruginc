@@ -97,49 +97,95 @@ export const getRequestedQuantityByItem = createAsyncThunk(
 export const addPR = createAsyncThunk('addPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/purchase-requests/?token=${accessToken}`,
-    payload
-  );
-  return response;
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-requests/?token=${accessToken}`,
+      payload
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const approvePR = createAsyncThunk('approvePR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/purchase-requests/approve/${payload.id}?token=${accessToken}`
-  );
-  return response;
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-requests/approve/${payload.id}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const rejectPR = createAsyncThunk('rejectPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/purchase-requests/reject/${payload.id}?token=${accessToken}`
-  );
-  return response;
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-requests/reject/${payload.id}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 
 export const cancelPR = createAsyncThunk('cancelPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/purchase-requests/cancel/${payload.id}?token=${accessToken}`, payload
-  );
-  return response;
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-requests/cancel/${payload.id}?token=${accessToken}`, payload
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
 });
 
 export const deletePR = createAsyncThunk('deletePR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(
-    `rest/purchase-requests/delete?token=${accessToken}`,
-    payload
-  );
-  return response;
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-requests/delete?token=${accessToken}`,
+      payload
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+
 });
 
 const purchaseRequestSlice = createSlice({

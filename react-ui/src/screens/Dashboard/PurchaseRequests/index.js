@@ -16,7 +16,6 @@ import {
 import { PlusOutlined, CheckOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
 
 import { listPR, cancelPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
@@ -26,6 +25,7 @@ import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 import ItemDescription from '../../../components/ItemDescription';
+import GeneralHelper from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -51,6 +51,7 @@ const PurchaseRequests = (props) => {
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     let isCancelled = false;
@@ -97,9 +98,18 @@ const PurchaseRequests = (props) => {
   const handleDelete = (data) => {
     setLoading(true);
     dispatch(deletePR(data.id)).then(() => {
-      dispatch(listPR({ company, message })).then(() => {
-        setLoading(false);
-        message.success(`Successfully deleted Purchase Request ${data.number}`);
+      dispatch(listPR({ company, message })).then((response) => {
+        const onSuccess = () => {
+          setLoading(false);
+          message.success(`Successfully deleted Purchase Request ${data.number}`);
+        }
+
+        const onFail = () => {
+          setLoading(false);
+          message.error(`Unable to delete Purchase Request`);
+        }
+
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     });
   };
@@ -147,13 +157,15 @@ const PurchaseRequests = (props) => {
     }
 
     dispatch(addPR(payload)).then((response) => {
-      if (response.payload.status === 200) {
+
+      const onSuccess = () => {
         message.success(`Successfully saved ${response.payload.data.number}`);
         dispatch(listPR({ company, message })).then(() => {
           history.goBack();
           setLoading(false);
         });
-      } else {
+      }
+      const onFail = () => {
         setLoading(false);
         if (formMode === 'add') {
           message.error(
@@ -163,7 +175,9 @@ const PurchaseRequests = (props) => {
           message.error(`Something went wrong. Unable to update ${data.number}.`);
         }
       }
-    });
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    })
   };
 
   const handleCancelButton = () => {
