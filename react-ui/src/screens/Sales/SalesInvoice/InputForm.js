@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Typography, Form, Skeleton, Table, Checkbox, Space, Button } from 'antd';
+import { Row, Col, Typography, Form, Skeleton, Table, Checkbox, Space, Button, Alert } from 'antd';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import Layout from 'antd/lib/layout/layout';
@@ -9,6 +10,7 @@ import FormDetails from '../OrderSlips/data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
 import { formatLotProducts, formatOrderedProducts } from '../OrderSlips/helpers';
+import { formDetails } from './data';
 
 const { Title } = Typography;
 
@@ -17,7 +19,7 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [form] = useForm();
-  const { formDetails, salesInfoHeader, salesOrderHeader } = FormDetails();
+  const { salesInfoHeader, salesOrderHeader } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
@@ -33,6 +35,8 @@ const InputForm = (props) => {
 
   const handleSalesChange = useCallback(
     (value) => {
+      setSelectedLot([]);
+      setSelectedSales(null);
       const salesOrder = _.find(salesOrderList, (o) => {
         return o.id === value;
       });
@@ -45,6 +49,8 @@ const InputForm = (props) => {
     (value) => {
       form.setFieldsValue({ salesOrder: '' });
       setSelectedSales(null);
+      setSelectedLot([]);
+      
       const selectedSalesList = _.filter(salesOrderList, (o) => {
         return o?.depot?.id === value && _.toLower(o?.status) !== 'pending';
       }).filter((o) => _.toLower(o?.type) === 'dr_si');
@@ -155,7 +161,7 @@ const InputForm = (props) => {
                       <FormItem onFail={onFail} key={item.name} item={item} />
                     ))
                   : ''}
-                {showSalesSection ? (
+                { selectedSales !== null ? (
                   <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
                     <Form.Item>
                       <Table
@@ -173,7 +179,15 @@ const InputForm = (props) => {
                     </Form.Item>
                   </Form.Item>
                 ) : (
-                  ''
+                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                    <Alert
+                      message="Please salect a depot and then select an existing sales order."
+                      type="warning"
+                      showIcon
+                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                    />
+                  </Form.Item>
                 )}
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>

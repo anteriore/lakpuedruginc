@@ -209,9 +209,16 @@ const SalesOrders = (props) => {
   };
 
   const onCreate = (value) => {
+    setContentLoading(true);
     dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
-      dispatch(listSalesOrder(company));
-    });
+      dispatch(listSalesOrder(company)).then(() => {
+        setContentLoading(false);
+      }).catch(() => {
+        setContentLoading(false)
+      });
+    }).catch(() => {
+      setContentLoading(false)
+    });;
   };
 
   return (

@@ -36,7 +36,7 @@ export const tableHeader = [
     key: 'status',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.status.length - b.status.length,
+    datatype: 'string'
   },
 ];
 
@@ -145,7 +145,7 @@ const FormDetails = () => {
         render: (depot) => {
           return `[${depot.code}] ${depot.name}`;
         },
-        type: 'select',
+        type: 'selectSearch',
         choices: [],
       },
       {
