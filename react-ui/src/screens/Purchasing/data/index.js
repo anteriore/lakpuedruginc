@@ -85,7 +85,7 @@ const FormDetails = () => {
       {
         label: 'Department',
         name: 'department',
-        type: 'select',
+        type: 'selectSearch',
         selectName: 'name',
         choices: departments,
         rules: [{ required: true }],
@@ -226,8 +226,8 @@ const FormDetails = () => {
       );
     },
     // select data
-    foreignKey: 'number',
-    selectedKey: 'prfNumber',
+    foreignKey: 'prfNumber',
+    selectedKey: 'number',
     selectData: purchaseRequests,
     selectFields: [
       {
@@ -289,16 +289,15 @@ const FormDetails = () => {
     },
     processData: (data) => {
       const processedData = [];
-
       data.requestedItems.forEach((item) => {
         processedData.push({
           prfNumber: data.number,
           requestedItemId: item.id,
           item: item.item,
+          unit: item.item.unit.id,
           quantity: item.quantityRequested,
         });
-      });
-
+      })
       return processedData;
     },
     checkSelected: (selectedData, rowData) => {

@@ -29,6 +29,7 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState();
+  const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -36,6 +37,16 @@ const InputForm = (props) => {
   useEffect(() => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
+
+    const selectedKeys = []
+    if(values !== null && values[formTable.name] !== null){
+      values[formTable.name].forEach((item) => {
+        selectedKeys.push(item[formTable.selectedKey])
+      })
+      setTableData(values[formTable.name])
+    }
+    setTableSelectedKeys(selectedKeys)
+
     // eslint-disable-next-line
   }, [values, form]);
 
@@ -195,43 +206,25 @@ const InputForm = (props) => {
     }
   };
 
-  // for rendering the columns inside the row selection modal
-  const renderModalColumns = (columns) => {
-    let modalColumns = [
-      {
-        key: 'select',
-        render: (row) => {
-          return (
-            <Checkbox
-              onChange={(e) => {
-                onModalSelect(row, e.target.checked);
-              }}
-              defaultChecked={formTable.checkSelected(tableData, row)}
-            />
-          );
-        },
-      },
-    ];
-
-    modalColumns = modalColumns.concat(columns);
-
-    return modalColumns;
-  };
-
-  const expandedRowRender = (row) => {
-    if (formTable.hasOwnProperty('nestedData')) {
-      return (
-        <>
-          <Title level={5}>{formTable.nestedData.label}</Title>
-          <Table
-            columns={formTable.nestedData.fields}
-            dataSource={row[formTable.nestedData.data]}
-            pagination={{simple: true}}
-          />
-        </>
-      );
+  const onTableSelect = (selectedRowKeys, selectedRows) => {
+    setTableSelectedKeys(selectedRowKeys)
+    let prevSelectData = []
+    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
+      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
     }
-  };
+
+    prevSelectData.forEach((data) => {
+      const index = selectedRows.findIndex((item) => item[formTable.selectedKey] === data[formTable.selectedKey])
+      if(index !== -1){
+        selectedRows[index] = data 
+      }
+    })
+  
+    const fieldsValue = {};
+    fieldsValue[formTable.name] = selectedRows;
+    setTableData(selectedRows);
+    form.setFieldsValue(fieldsValue);
+  }
 
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
@@ -338,23 +331,19 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
-                // for nested tables
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={{simple: true}}
-                  expandable={{ expandedRowRender }}
-                  rowKey={formTable.foreignKey}
-                />
-              ) : (
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={{simple: true}}
-                  rowKey={formTable.foreignKey}
-                />
-              )}
+              <Table
+                rowSelection={{
+                  type: 'checkbox',
+                  //selectedRowKeys: item.selectedData,
+                  onChange: onTableSelect,
+                  //preserveSelectedRowKeys: false,
+                  selectedRowKeys: tableSelectedKeys
+                }}
+                columns={formTable.selectFields}
+                dataSource={formTable.selectData}
+                rowKey={formTable.selectedKey}
+                pagination={{simple: true}}
+              />
             </Modal>
           )}
         </Col>

@@ -398,7 +398,7 @@ const InputForm = (props) => {
                 }}
                 columns={formTable.selectFields}
                 dataSource={formTable.selectData}
-                rowKey={formTable.foreignKey}
+                rowKey={formTable.selectedKey}
                 pagination={{ size: 'small' }}
               />
             </Modal>

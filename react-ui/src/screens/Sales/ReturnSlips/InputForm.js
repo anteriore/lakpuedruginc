@@ -29,6 +29,7 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
+  const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
   const [orderedProducts, setOrderedProducts] = useState([]);
   const [selectedSaleSlip, setSelectedSaleSlip] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
@@ -45,8 +46,16 @@ const InputForm = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    if (hasTable && values !== null) {
-      setTableData(formTable.getValues(values));
+    if (hasTable) {
+      setTableData(form.getFieldValue(formTable.name));
+      let selectedKeys = []
+      if(values !== null && values[formTable.name] !== null){
+        values[formTable.name].forEach((item) => {
+          selectedKeys.push(item[formTable.foreignKey])
+        })
+      }
+      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
+      setTableSelectedKeys(selectedKeys)
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
@@ -184,67 +193,29 @@ const InputForm = (props) => {
     return columns;
   };
 
-  // for selecting selecting a new row in a table
-  const onModalSelect = (data, isSelected) => {
-    let selectedItems = [];
-    if (hasTable) {
-      if (isSelected) {
-        // add existing data
-        if (tableData !== null && typeof tableData !== 'undefined') {
-          selectedItems = selectedItems.concat(tableData);
-        }
-
-        // process the new data before adding if necessary
-        let processedData = data;
-        if (typeof formTable.processData === 'function') {
-          processedData = formTable.processData(data);
-        }
-        selectedItems = selectedItems.concat(processedData);
-      } else if (tableData !== null && typeof tableData !== 'undefined') {
-        selectedItems = tableData;
-
-        // key for the selected item
-        if (typeof formTable.selectedKey === 'undefined') {
-          formTable.selectedKey = 'id';
-        }
-        // foreign key that corresponds to the selected item
-        if (typeof formTable.foreignKey === 'undefined') {
-          formTable.foreignKey = 'id';
-        }
-        selectedItems = selectedItems.filter(
-          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
-        );
-      }
-      const fieldsValue = {};
-      fieldsValue[formTable.name] = selectedItems;
-      setTableData(selectedItems);
-      form.setFieldsValue(fieldsValue);
-      onValuesChange(fieldsValue);
+  const onModalSelect = (selectedRowKeys, selectedRows) => {
+    setTableSelectedKeys(selectedRowKeys)
+    let prevSelectData = []
+    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
+      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
     }
-  };
 
-  // for rendering the columns inside the row selection modal
-  const renderModalColumns = (columns) => {
-    let modalColumns = [
-      {
-        key: 'select',
-        render: (row) => {
-          return (
-            <Checkbox
-              onChange={(e) => {
-                onModalSelect(row, e.target.checked);
-              }}
-              defaultChecked={formTable.checkSelected(tableData, row)}
-            />
-          );
-        },
-      },
-    ];
+    let processedData = []
+    selectedRows.forEach((rowData) => {
+      const index = prevSelectData.findIndex((item) => item[formTable.selectedKey] === rowData[formTable.selectedKey])
+      if(index !== -1){
+        processedData.push(prevSelectData[index])
+      }
+      else {
+        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData])
+      }
+    })
 
-    modalColumns = modalColumns.concat(columns);
-
-    return modalColumns;
-  };
+    const fieldsValue = {};
+    fieldsValue[formTable.name] = processedData;
+    setTableData(processedData);
+    form.setFieldsValue(fieldsValue);
+  }
 
   const expandedRowRender = (row) => {
     if (formTable.hasOwnProperty('nestedData')) {
@@ -258,6 +229,9 @@ const InputForm = (props) => {
           />
         </>
       );
+    }
+    else {
+      return null
     }
   };
 
@@ -382,23 +356,20 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
-                // for nested tables
-                <Table
-                  dataSource={orderedProducts}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  expandable={{ expandedRowRender }}
-                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
-                />
-              ) : (
-                <Table
-                  dataSource={orderedProducts}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  locale={{ emptyText: formTable.emptyText || 'No Data' }}
-                />
-              )}
+            <Table
+              rowSelection={{
+                type: 'checkbox',
+                //selectedRowKeys: item.selectedData,
+                onChange: onModalSelect,
+                preserveSelectedRowKeys: false,
+                selectedRowKeys: tableSelectedKeys
+              }}
+              columns={formTable.selectFields}
+              dataSource={orderedProducts}
+              rowKey={formTable.selectedKey}
+              pagination={{simple: true}}
+              expandable={{ expandedRowRender: formTable.hasOwnProperty('nestedData') ? expandedRowRender : null }}
+            />
             </Modal>
           )}
         </Col>

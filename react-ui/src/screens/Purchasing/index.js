@@ -20,7 +20,7 @@ import {
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
 import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
-import { listPRByStatus, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
+import { listPRByCompanyAndStatusAndDepartment, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -151,8 +151,10 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
         dispatch(listArea({ company: selectedCompany, message })).then(() => {
           dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            history.push(`${path}/${data.id}`);
-            setLoadingCompany(false);
+            dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: poData.department.id, status: 'Approved' })).then(() => {
+              history.push(`${path}/${data.id}`);
+              setLoadingCompany(false);
+            });
           });
         });
       });
