@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 export const formatEmployeePayload = (value) => {
-  console.log(moment());
   const employeeList = [];
   if (typeof value !== 'undefined' && value !== null) {
     value.employees.forEach((employee) => {
