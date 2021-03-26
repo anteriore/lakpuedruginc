@@ -93,7 +93,7 @@ const productSlice = createSlice({
         ...state,
         status: 'loading',
         action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
+        statusMessage: `${message.ITEMS_GET_PENDING} for products`,
       };
     },
     [listProduct.fulfilled]: (state, action) => {
