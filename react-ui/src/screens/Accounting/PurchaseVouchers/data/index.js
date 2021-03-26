@@ -171,7 +171,7 @@ const FormDetails = () => {
         name: 'accountTitles',
         rules: [{ required: true, message: 'Please select account title' }],
         placeholder: 'Select Account Title',
-        render: (object) => object?.title ?? "",
+        render: (object) => `[${object?.type ?? ""}] ${object?.title ?? ""}`,
         type: 'selectSearch',
         width: 150,
         choices: [],
