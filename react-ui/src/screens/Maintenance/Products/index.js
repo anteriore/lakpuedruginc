@@ -180,9 +180,8 @@ const Product = (props) => {
                 columns={tableHeader}
                 data={productList}
                 handleUpdate={handleUpdate}
-                handleDelete={handleDelete}
                 updateEnabled={actions.includes('update')}
-                deleteEnabled={actions.includes('delete')}
+                deleteEnabled={false}
               />
             }
           </Col>
