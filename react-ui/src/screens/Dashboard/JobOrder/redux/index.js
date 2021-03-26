@@ -55,12 +55,13 @@ const jobOrderSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for job orders`,
       };
     },
     [listJobOrders.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders', state.action);
 
       return {
         ...state,
@@ -73,7 +74,7 @@ const jobOrderSlice = createSlice({
     },
     [listJobOrders.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders', state.action);
 
       return {
         ...state,
@@ -96,7 +97,7 @@ const jobOrderSlice = createSlice({
     },
     [createJobOrder.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order', state.action);
 
       return {
         ...state,
@@ -108,7 +109,7 @@ const jobOrderSlice = createSlice({
     },
     [createJobOrder.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order', state.action);
 
       return {
         ...state,

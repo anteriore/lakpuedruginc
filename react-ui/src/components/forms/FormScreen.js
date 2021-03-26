@@ -98,6 +98,7 @@ const FormScreen = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
+                  wrapperCol={{ span: 24, offset: 0 }}
                   initialValue={field.initialValue}
                 >
                   <Input placeholder={field.placeholder ?? ''} />
@@ -117,6 +118,7 @@ const FormScreen = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
+                  wrapperCol={{ span: 24, offset: 0 }}
                   initialValue={field.initialValue}
                 >
                   <InputNumber min={field.min} max={field.max} />
@@ -138,6 +140,7 @@ const FormScreen = (props) => {
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                   initialValue={field.initialValue}
+                  wrapperCol={{ span: 24, offset: 0 }}
                 >
                   <TimePicker use12Hours format="h:mm a" />
                 </Form.Item>
@@ -175,6 +178,7 @@ const FormScreen = (props) => {
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                   initialValue={field.initialValue}
+                  wrapperCol={{ span: 24, offset: 0 }}
                 >
                   <Select
                     showSearch={field.type === 'selectSearch'}
