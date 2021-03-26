@@ -16,6 +16,7 @@ import { listMoInventories, clearData as clearDataMO } from '../../RND/MOInvento
 import { listProcedure, clearData as clearDataProcedure } from '../../Maintenance/Procedures/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import { formatEmployeePayload } from './helpers';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -94,25 +95,19 @@ const JobOrder = (props) => {
   }, [actionEmployee, statusMessageEmployee, statusEmployee, statusLevelEmployee]);
 
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     let isCancelled = false;
+    setContentLoading(true);
     dispatch(listJobOrders())
       .then(unwrapResult)
       .then(() => {
         if (isCancelled) {
           dispatch(clearData());
         }
+        setContentLoading(false);
       })
       .catch((rejectedValueOrSerializedError) => {
         console.log(rejectedValueOrSerializedError);
@@ -176,6 +171,7 @@ const JobOrder = (props) => {
         <FormScreen
           title="Create Job Order"
           onSubmit={onSubmit}
+          onCancel={() => history.goBack()}
           values={null}
           formDetails={formDetails}
           formTable={tableDetails}

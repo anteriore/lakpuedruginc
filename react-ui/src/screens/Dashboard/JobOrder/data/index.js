@@ -112,14 +112,14 @@ const FormDetails = () => {
       {
         label: 'Time In',
         name: 'timeIn',
-        width: '15%',
+        width: '13%',
         type: 'timepicker',
         rules: [{ required: true, message: 'Please select a time in' }],
       },
       {
         label: 'Time Out',
         name: 'timeOut',
-        width: '15%',
+        width: '13%',
         type: 'timepicker',
         rules: [{ required: true, message: 'Please select a time in' }],
       },
@@ -127,6 +127,7 @@ const FormDetails = () => {
         label: '# of Hours',
         name: 'numberOfHours',
         type: 'number',
+        width: '10%',
         rules: [{ required: true, message: 'Please provide number of hours' }],
         min: 0,
       },
@@ -134,10 +135,11 @@ const FormDetails = () => {
         label: 'Procedure & Area',
         name: 'procedure',
         type: 'selectSearch',
-        width: '25%',
+        width: '15%',
         choices: procedureList,
         rules: [{ required: true }],
         placeholder: 'Area',
+        
         render: (object) => `${object.code ?? ''} - ${object.procedureArea?.code ?? ''}`,
       },
       {
