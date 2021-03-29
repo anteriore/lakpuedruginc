@@ -77,15 +77,18 @@ const MaterialReevaluations = (props) => {
     setMatReev(data);
   };
 
-  const onCreate = (value) => {
+  const onCreate = async (value) => {
     setContentLoading(true);
     const payload = formatPayload(value, ARList, company);
-    dispatch(createMaterialReevaluations(payload)).then((dataMR) => {
+    await dispatch(createMaterialReevaluations(payload)).then((dataMR) => {
       dispatch(listMaterialReevaluations(company)).then((dataListMR) => {
         handleRequestResponse([dataMR, dataListMR], null, onFailed, '/material-reevaluations');
         setContentLoading(false);
       });
     });
+
+    return 1
+
   };
 
   return (

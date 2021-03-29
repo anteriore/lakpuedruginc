@@ -18,6 +18,7 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const [form] = useForm();
   const [contentLoading, setContentLoading] = useState(true);
+  const [processingData, setProcessingData] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [appReceipts, setAppReceipts] = useState(null);
   const { list: approvedReceiptsList } = useSelector((state) => state.dashboard.approvedReceipts);
@@ -48,6 +49,7 @@ const InputForm = (props) => {
   };
 
   const onFinish = (value) => {
+    setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -60,7 +62,7 @@ const InputForm = (props) => {
       }
     });
 
-    onSubmit(value);
+    onSubmit(value).then(() => setProcessingData(false))
     history.goBack();
   };
 
@@ -150,7 +152,7 @@ const InputForm = (props) => {
                   <Button htmlType="button" onClick={() => history.goBack()}>
                     Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit">
+                  <Button type="primary" htmlType="submit" loading={processingData}>
                     Submit
                   </Button>
                 </Space>
