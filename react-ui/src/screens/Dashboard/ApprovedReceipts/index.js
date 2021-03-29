@@ -72,21 +72,21 @@ const ApprovedReceipts = (props) => {
     setSelectedData(data);
   };
 
-  const onSubmit = async(data) => {
+  const onSubmit = async (data) => {
     const payload = formatPayload(id, company, data);
     //const invPayload = inventoryPayload(company, data);
     
-    console.log(payload)
 
     if (formMode === 'edit') {
       payload.id = selectedData.id;
     }
 
-    dispatch(addApprovedReceipt(payload)).then((response) => {
+    await dispatch(addApprovedReceipt(payload)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully saved ${response.payload.data.number}`);
+        setLoading(true)
+        history.goBack();
         dispatch(listApprovedReceipts({ company, message })).then(() => {
-          history.goBack();
           setLoading(false);
         });
       } else {
@@ -100,6 +100,9 @@ const ApprovedReceipts = (props) => {
         }
       }
     });
+
+    return 1
+
   };
 
   const handleCancelButton = () => {
