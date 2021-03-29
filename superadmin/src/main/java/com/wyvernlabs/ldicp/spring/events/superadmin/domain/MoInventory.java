@@ -49,7 +49,7 @@ public class MoInventory {
 	}
 	*/
 	public String getTypeLabel() {
-		if (type.equals("RM")) {
+		if (type.equals("RM") && ingredientGroup != null) {
 			return ingredientGroup.getName();
 		}
 

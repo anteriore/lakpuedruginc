@@ -31,6 +31,9 @@ const JobOrder = (props) => {
   const { jobOrderList, action, statusMessage, status, statusLevel } = useSelector(
     (state) => state.dashboard.jobOrders
   );
+  const moList = useSelector(
+    (state) => state.rnd.moInventories.moInventoryList
+  );
 
   const {
     action: actionMO,
@@ -157,6 +160,7 @@ const JobOrder = (props) => {
 
   const onSubmit = (values) => {
     setContentLoading(true);
+    values.moType = moList.find((item) => item.id === values.moNumber)?.type
     dispatch(createJobOrder(formatEmployeePayload(values))).then(() => {
       dispatch(listJobOrders()).then(() => {
         setContentLoading(false);

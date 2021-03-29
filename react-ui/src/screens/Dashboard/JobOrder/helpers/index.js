@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 export const formatEmployeePayload = (value) => {
-  console.log(moment());
   const employeeList = [];
   if (typeof value !== 'undefined' && value !== null) {
     value.employees.forEach((employee) => {
@@ -12,7 +11,10 @@ export const formatEmployeePayload = (value) => {
         timeIn: employee.timeIn ?? moment(),
         timeOut: employee.timeOut ?? moment(),
         employee: { id: employee.id },
-        moInventory: { id: value.moNumber },
+        moInventory: { 
+          id: value.moNumber,
+          type: value.moType
+         },
         procedure: { id: employee.procedure },
       });
     });
