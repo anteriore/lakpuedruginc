@@ -5,7 +5,6 @@ import {
   InputNumber,
   Input,
   Select,
-  Checkbox,
   Modal,
   Row,
   Col,
@@ -51,7 +50,7 @@ const InputForm = (props) => {
     // eslint-disable-next-line
   }, [values, form]);
 
-  const onFinish = async (data) => {
+  const onFinish = (data) => {
     setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
@@ -168,45 +167,6 @@ const InputForm = (props) => {
     });
 
     return columns;
-  };
-
-  // for selecting selecting a new row in a table
-  const onModalSelect = (data, isSelected) => {
-    let selectedItems = [];
-    if (hasTable) {
-      if (isSelected) {
-        // add existing data
-        if (tableData !== null && typeof tableData !== 'undefined') {
-          selectedItems = selectedItems.concat(tableData);
-        }
-
-        // process the new data before adding if necessary
-        let processedData = data;
-        if (typeof formTable.processData === 'function') {
-          processedData = formTable.processData(data);
-        }
-        selectedItems = selectedItems.concat(processedData);
-      } else if (tableData !== null && typeof tableData !== 'undefined') {
-        selectedItems = tableData;
-
-        // key for the selected item
-        if (typeof formTable.selectedKey === 'undefined') {
-          formTable.selectedKey = 'id';
-        }
-        // foreign key that corresponds to the selected item
-        if (typeof formTable.foreignKey === 'undefined') {
-          formTable.foreignKey = 'id';
-        }
-        selectedItems = selectedItems.filter(
-          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
-        );
-      }
-      const fieldsValue = {};
-      fieldsValue[formTable.name] = selectedItems;
-      setTableData(selectedItems);
-      form.setFieldsValue(fieldsValue);
-      onValuesChange(fieldsValue);
-    }
   };
 
   const onTableSelect = (selectedRowKeys, selectedRows) => {

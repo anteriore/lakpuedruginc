@@ -149,7 +149,7 @@ const PurchaseRequests = (props) => {
     setRemarks(data)
   }
 
-  const onSubmit = async function (data) {
+  const onSubmit = async (data) => {
     const payload = processDataForSubmission(data, company);
 
     if (formMode === 'edit') {
