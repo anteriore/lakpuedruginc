@@ -123,10 +123,12 @@ const Product = (props) => {
     values.company = { id: company };
     setContentLoading(true)
     dispatch(createProduct(formatPayload(values))).then(() => {
-      dispatch(listProduct({ company, message }));
       history.goBack();
+      dispatch(listProduct({ company, message })).then(() => {
+        setContentLoading(false);
+      });
     });
-    setContentLoading(false);
+    
   };
 
   const onUpdate = (values) => {
@@ -134,10 +136,11 @@ const Product = (props) => {
     values.id = formData.id;
     setContentLoading(true);
     dispatch(updateProduct(formatPayload(values))).then(() => {
-      dispatch(listProduct({ company, message }));
       history.goBack();
+      dispatch(listProduct({ company, message })).then(() => {
+        setContentLoading(false);
+      });
     });
-    setContentLoading(false);
   };
 
   return (
