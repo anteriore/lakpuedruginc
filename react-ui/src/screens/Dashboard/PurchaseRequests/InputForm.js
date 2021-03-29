@@ -33,6 +33,7 @@ const InputForm = (props) => {
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+  const [processingData, setProcessingData] = useState(false);
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -50,7 +51,8 @@ const InputForm = (props) => {
     // eslint-disable-next-line
   }, [values, form]);
 
-  const onFinish = (data) => {
+  const onFinish = async (data) => {
+    setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -62,8 +64,9 @@ const InputForm = (props) => {
         )}`;
       }
     });
-
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setProcessingData(false)
+    })
   };
 
   const onFinishFailed = () => {
@@ -309,7 +312,11 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button 
+              type="primary" 
+              onClick={() => form.submit()}
+              loading={processingData}
+            >
               Submit
             </Button>
             <Button

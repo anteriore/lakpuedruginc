@@ -149,19 +149,20 @@ const PurchaseRequests = (props) => {
     setRemarks(data)
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async function (data) {
     const payload = processDataForSubmission(data, company);
 
     if (formMode === 'edit') {
       payload.id = formData.id;
     }
 
-    dispatch(addPR(payload)).then((response) => {
+    await dispatch(addPR(payload)).then((response) => {
 
-      const onSuccess = () => {
+      const onSuccess = async () => {
         message.success(`Successfully saved ${response.payload.data.number}`);
+        setLoading(true);
+        history.goBack();
         dispatch(listPR({ company, message })).then(() => {
-          history.goBack();
           setLoading(false);
         });
       }
@@ -178,6 +179,7 @@ const PurchaseRequests = (props) => {
 
       handleRequestResponse([response], onSuccess, onFail, '');
     })
+    return 1
   };
 
   const handleCancelButton = () => {
@@ -223,6 +225,7 @@ const PurchaseRequests = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={(e) => {
                   handleAdd();
                 }}
