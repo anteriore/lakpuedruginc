@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -8,7 +8,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { formDetails, tableHeader } from './data';
+import { formDetails, tableHeader, productModalHeader } from './data';
 import { listProductMovements, clearData, createProductMovement } from './redux';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
@@ -258,15 +258,12 @@ const ProductMovements = (props) => {
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Product Movement Items:
               </Title>
-              {productMovement.products.map((item) => {
-                return (
-                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
-                    <Descriptions.Item label="ID">{item.id}</Descriptions.Item>
-                    <Descriptions.Item label="Quantity">{item.quantity}</Descriptions.Item>
-                    <Descriptions.Item label="Lot #">{item.product.lotNumber}</Descriptions.Item>
-                  </Descriptions>
-                );
-              })}
+              <Table
+                dataSource={productMovement.products}
+                columns={productModalHeader}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+              />
             </>
           )}
         </Modal>
