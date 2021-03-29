@@ -55,10 +55,12 @@ const Clients = (props) => {
     setFormTitle('Add Client');
     setFormMode('add');
     setFormData(null);
+    setLoading(true);
     dispatch(listCluster({ company, message })).then(() => {
       dispatch(listInstitution({ company, message })).then(() => {
         dispatch(listS({ company, message })).then(() => {
           history.push(`${path}/new`);
+          setLoading(false);
         });
       });
     });
@@ -75,7 +77,6 @@ const Clients = (props) => {
       institutionalCode:
         clientData.institutionalCode !== null ? clientData.institutionalCode.id : null,
     };
-    console.log(formData);
     setFormData(formData);
     dispatch(listCluster({ company, message })).then(() => {
       dispatch(listInstitution({ company, message })).then(() => {
@@ -220,6 +221,7 @@ const Clients = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={(e) => {
                   handleAdd();
                 }}
