@@ -99,6 +99,10 @@ public class ExecuteInitData {
     @Autowired
     private SalesRepData salesRepData;
 
+    @Autowired
+    private ZipCodeData zipCodeData;
+
+
     @PostConstruct
     public void init() {
         unitData.init();
@@ -196,6 +200,10 @@ public class ExecuteInitData {
 
         provinceCodeData.init();
         System.out.println("Province Code initialized");
+
+
+        zipCodeData.init();
+        System.out.println("zip Code initialized");
 
     }
 }
