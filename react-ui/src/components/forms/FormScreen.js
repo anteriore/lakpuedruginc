@@ -51,6 +51,16 @@ const FormScreen = (props) => {
       }
       selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
       setTableSelectedKeys(selectedKeys)
+
+      if(typeof formTable.isVisible === 'undefined'){
+        formTable.isVisible = formTable.selectData.length > 0
+      }
+
+      if(!formTable.isVisible && formTable.preloadedData){
+        //selected data was pre-loaded but is empty
+        onFail()
+      }
+
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
