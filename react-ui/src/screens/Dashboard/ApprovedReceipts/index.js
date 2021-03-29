@@ -57,10 +57,11 @@ const ApprovedReceipts = (props) => {
   const handleAdd = () => {
     setFormTitle('Create Approved Receipt');
     setFormMode('add');
-    //setFormData(null);
     setSelectedData(null);
+    setLoading(true);
     dispatch(listRR({ company, message })).then(() => {
       dispatch(listItemSummary({ company, message })).then(() => {
+        setLoading(false);
         history.push(`${path}/new`);
       });
     });
@@ -71,9 +72,9 @@ const ApprovedReceipts = (props) => {
     setSelectedData(data);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     const payload = formatPayload(id, company, data);
-    const invPayload = inventoryPayload(company, data);
+    //const invPayload = inventoryPayload(company, data);
     
     console.log(payload)
 
@@ -83,17 +84,10 @@ const ApprovedReceipts = (props) => {
 
     dispatch(addApprovedReceipt(payload)).then((response) => {
       if (response.payload.status === 200) {
-        dispatch(addInventory(invPayload)).then((response) => {
-          if (response.payload.status === 200) {
-            message.success(`Successfully saved ${response.payload.data.number}`);
-            dispatch(listApprovedReceipts({ company, message })).then(() => {
-              history.goBack();
-              setLoading(false);
-            });
-          } else {
-            setLoading(false);
-            message.error(`Something went wrong. Unable to add Inventory.`);
-          }
+        message.success(`Successfully saved ${response.payload.data.number}`);
+        dispatch(listApprovedReceipts({ company, message })).then(() => {
+          history.goBack();
+          setLoading(false);
         });
       } else {
         setLoading(false);
@@ -145,6 +139,7 @@ const ApprovedReceipts = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={(e) => {
                   handleAdd();
                 }}
