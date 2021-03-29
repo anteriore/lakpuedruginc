@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Typography, Col, Button, message } from 'antd';
+import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
@@ -17,6 +17,7 @@ const ClusterCodes = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
+  const [loading, setLoading] = useState(true)
   const dispatch = useDispatch();
   const { clusterList, action, statusMessage } = useSelector(
     (state) => state.maintenance.clusterCode
@@ -25,6 +26,7 @@ const ClusterCodes = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listCluster({ message })).then(() => {
+      setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -63,9 +65,12 @@ const ClusterCodes = (props) => {
   };
 
   const handleDeleteButton = (row) => {
+    setLoading(true)
     dispatch(deleteCluster(row))
       .then(() => {
-        dispatch(listCluster({ message }));
+        dispatch(listCluster({ message })).then(() => {
+          setLoading(false)
+        });
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -78,16 +83,21 @@ const ClusterCodes = (props) => {
   };
 
   const onSubmit = (values) => {
+    setLoading(true)
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
       dispatch(updateCluster(newValues)).then(() => {
-        dispatch(listCluster({ message }));
+        dispatch(listCluster({ message })).then(() => {
+          setLoading(false);
+        });
       });
     } else if (mode === 'add') {
       dispatch(createCluster(values)).then(() => {
-        dispatch(listCluster({ message }));
+        dispatch(listCluster({ message })).then(() => {
+          setLoading(false);
+        });
       });
     }
     setFormValues('');
@@ -99,20 +109,22 @@ const ClusterCodes = (props) => {
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+          <Button loading={loading} icon={<PlusOutlined />} onClick={() => handleAddButton()}>
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        <TableDisplay
-          columns={tableHeader}
-          data={clusterList}
-          handleUpdate={handleEditButton}
-          handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes('update')}
-          deleteEnabled={actions.includes('delete')}
-        />
+        { loading ? <Skeleton/> : 
+          <TableDisplay
+            columns={tableHeader}
+            data={clusterList}
+            handleUpdate={handleEditButton}
+            handleDelete={handleDeleteButton}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          />
+        }
       </Col>
       <SimpleForm
         visible={isOpenForm}
