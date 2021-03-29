@@ -189,7 +189,12 @@ const InventoryMovements = (props) => {
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
                   title={`${selectedData.number} Details`}
-                  selectedData={selectedData}
+                  selectedData={{
+                    ...selectedData,
+                    classification: {
+                      name: selectedData.classification
+                    }
+                  }}
                   formItems={formDetails.form_items}
                 />
                 <Text>{'Items: '}</Text>
