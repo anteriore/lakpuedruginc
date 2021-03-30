@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,6 +14,7 @@ const ProductDivisions = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true)
 
   const columns = [
     {
@@ -67,6 +68,7 @@ const ProductDivisions = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listPD({ company, message })).then(() => {
+      setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -94,8 +96,11 @@ const ProductDivisions = (props) => {
 
   const handleDelete = (val) => {
     const { id, code } = val;
+    setLoading(true);
     dispatch(deletePD(id)).then(() => {
-      dispatch(listPD({ company, message }));
+      dispatch(listPD({ company, message })).then(() => {
+        setLoading(false);
+      });
       message.success(`Successfully deleted Product Division ${code}`);
     });
   };
@@ -108,6 +113,7 @@ const ProductDivisions = (props) => {
   };
 
   const onSubmit = (values) => {
+    setLoading(true)
     if (formMode === 'edit') {
       const payload = {
         ...values,
@@ -118,7 +124,9 @@ const ProductDivisions = (props) => {
       };
 
       dispatch(addPD(payload)).then(() => {
-        dispatch(listPD({ company, message }));
+        dispatch(listPD({ company, message })).then(() => {
+          setLoading(false)
+        });
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -128,7 +136,9 @@ const ProductDivisions = (props) => {
         },
       };
       dispatch(addPD(payload)).then(() => {
-        dispatch(listPD({ company, message }));
+        dispatch(listPD({ company, message })).then(() => {
+          setLoading(false)
+        });
       });
     }
 
@@ -149,6 +159,7 @@ const ProductDivisions = (props) => {
         <Col span={20}>
           {actions.includes('create') && (
             <Button
+              loading={loading}
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
               onClick={() => {
@@ -158,15 +169,17 @@ const ProductDivisions = (props) => {
               Add
             </Button>
           )}
-          <TableDisplay
-            columns={columns}
-            data={data}
-            handleRetrieve={handleRetrieve}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
-          />
+          { loading ? <Skeleton/> : 
+            <TableDisplay
+              columns={columns}
+              data={data}
+              handleRetrieve={handleRetrieve}
+              handleUpdate={handleUpdate}
+              handleDelete={handleDelete}
+              updateEnabled={actions.includes('update')}
+              deleteEnabled={actions.includes('delete')}
+            />
+          }
         </Col>
         <SimpleForm
           visible={displayForm}

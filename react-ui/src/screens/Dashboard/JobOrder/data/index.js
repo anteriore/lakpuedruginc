@@ -182,6 +182,7 @@ const FormDetails = () => {
         key: 'hourlyRate',
       },
     ],
+    processData: (data) => data,
     checkSelected: (selectedData, rowData) => {
       if (
         typeof selectedData !== 'undefined' &&

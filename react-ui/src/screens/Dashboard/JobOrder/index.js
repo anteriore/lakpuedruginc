@@ -21,7 +21,7 @@ import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 const { Title } = Typography;
 
 const JobOrder = (props) => {
-  const { title, company } = props;
+  const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -114,9 +114,11 @@ const JobOrder = (props) => {
       })
       .catch((rejectedValueOrSerializedError) => {
         console.log(rejectedValueOrSerializedError);
-      });
+      })
+      .finally(() => {
+        setContentLoading(false);
+      })
 
-    setContentLoading(false);
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDataEmployees());
@@ -158,15 +160,16 @@ const JobOrder = (props) => {
     setModalDisplay(true);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setContentLoading(true);
     values.moType = moList.find((item) => item.id === values.moNumber)?.type
-    dispatch(createJobOrder(formatEmployeePayload(values))).then(() => {
+    await dispatch(createJobOrder(formatEmployeePayload(values))).then(() => {
+      history.goBack();
       dispatch(listJobOrders()).then(() => {
         setContentLoading(false);
-        history.goBack();
       });
     });
+    return 1
   };
 
   return (
@@ -185,13 +188,15 @@ const JobOrder = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            <Button
-              loading={contentLoading}
-              icon={<PlusOutlined />}
-              onClick={() => handleAddButton()}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                loading={contentLoading}
+                icon={<PlusOutlined />}
+                onClick={() => handleAddButton()}
+              >
+                Add
+              </Button>
+            )}
           </Col>
           <Col span={20}>
             {contentLoading ? (

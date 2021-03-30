@@ -4,6 +4,7 @@ export const tableHeader = [
     dataIndex: 'number',
     key: 'number',
     align: 'center',
+    datatype: 'string'
   },
   {
     title: 'Date',
@@ -129,3 +130,22 @@ export const formDetails = {
     },
   ],
 };
+
+export const productModalHeader = [
+  {
+    title: 'ID',
+    dataIndex: 'id',
+    key: 'id'
+  },
+  {
+    title: 'Finished Goods',
+    dataIndex: 'product',
+    key: 'product',
+    render: (object) => `[${object?.finishedGood?.code ?? ""}] ${object?.finishedGood?.name ?? ""}`
+  },
+  {
+    title: 'Quantity',
+    dataIndex: 'quantity',
+    key: 'quantity',
+  }
+]

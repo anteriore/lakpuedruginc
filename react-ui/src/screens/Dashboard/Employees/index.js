@@ -15,7 +15,7 @@ import InputForm from './InputForm';
 const { Title } = Typography;
 
 const Employees = (props) => {
-  const { title, company } = props;
+  const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -51,9 +51,11 @@ const Employees = (props) => {
       })
       .catch((rejectedValueOrSeriealizedError) => {
         console.log(rejectedValueOrSeriealizedError);
-      });
+      })
+      .finally(() => {
+        setContentLoading(false);
+      })
 
-    setContentLoading(false);
     return function cleanup() {
       dispatch(clearData());
 
@@ -79,13 +81,14 @@ const Employees = (props) => {
     setSelectedEmployee(value);
   };
 
-  const onCreate = (values) => {
+  const onCreate = async (values) => {
     setContentLoading(true);
-    dispatch(createEmployee(values)).then(() => {
+    await dispatch(createEmployee(values)).then(() => {
       dispatch(listEmployees(company)).then(() => {
         setContentLoading(false);
       });
     });
+    return 1
   };
 
   return (
@@ -97,13 +100,15 @@ const Employees = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            <Button
-              loading={contentLoading}
-              icon={<PlusOutlined />}
-              onClick={() => handleAddButton()}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                loading={contentLoading}
+                icon={<PlusOutlined />}
+                onClick={() => handleAddButton()}
+              >
+                Add
+              </Button>
+            )}
           </Col>
           <Col span={20}>
             {contentLoading ? (

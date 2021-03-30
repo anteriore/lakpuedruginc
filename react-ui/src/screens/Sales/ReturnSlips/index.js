@@ -34,7 +34,7 @@ const ReturnSlips = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { company, title } = props;
+  const { company, title, actions } = props;
 
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -266,16 +266,18 @@ const ReturnSlips = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-              loading={loading}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                loading={loading}
+                onClick={() => {
+                  handleAdd();
+                }}
+              >
+                Add
+              </Button>
+            )}
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<FileTextOutlined />}

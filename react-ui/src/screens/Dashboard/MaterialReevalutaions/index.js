@@ -16,7 +16,7 @@ import ItemDescription from '../../../components/ItemDescription';
 const { Title } = Typography;
 
 const MaterialReevaluations = (props) => {
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -103,14 +103,16 @@ const MaterialReevaluations = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              loading={contentLoading}
-              onClick={() => handleAddButton()}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                loading={contentLoading}
+                onClick={() => handleAddButton()}
+              >
+                Add
+              </Button>
+            )}
             {contentLoading ? (
               <Skeleton />
             ) : (

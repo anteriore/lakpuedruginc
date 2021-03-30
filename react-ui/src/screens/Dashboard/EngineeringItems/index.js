@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,6 +14,7 @@ const { Title } = Typography;
 
 const EngineeringItems = (props) => {
   const [displayForm, setDisplayForm] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
@@ -27,6 +28,7 @@ const EngineeringItems = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listItemByType({ type: 'ENG', message })).then(() => {
+      setLoading(false)
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -43,9 +45,11 @@ const EngineeringItems = (props) => {
     setFormTitle('Add Item');
     setFormMode('add');
     setFormData(null);
+    setLoading(true)
     dispatch(listIT({ company, message })).then((response) => {
       dispatch(listUnit({ message })).then((response) => {
         setDisplayForm(true);
+        setLoading(false)
       });
     });
   };
@@ -59,16 +63,20 @@ const EngineeringItems = (props) => {
       type: data.type.id,
     };
     setFormData(formData);
+    setLoading(true)
     dispatch(listIT({ company, message })).then((response) => {
       dispatch(listUnit({ message })).then((response) => {
         setDisplayForm(true);
+        setLoading(false)
       });
     });
   };
 
   const handleDelete = (data) => {
+    setLoading(true)
     dispatch(deleteI(data.id)).then((response) => {
       dispatch(listItemByType({ type: 'ENG', message }));
+      setLoading(false)
       message.success(`Successfully deleted Item ${data.name}`);
     });
   };
@@ -124,6 +132,7 @@ const EngineeringItems = (props) => {
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
+              loading={loading}
               onClick={(e) => {
                 handleAdd();
               }}
@@ -131,15 +140,21 @@ const EngineeringItems = (props) => {
               Add
             </Button>
           )}
-          <TableDisplay
-            columns={columns}
-            data={data}
-            handleRetrieve={handleRetrieve}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
-          />
+          { loading ? (
+            <Skeleton/>
+          ) : (
+            <TableDisplay
+              columns={columns}
+              data={data}
+              handleRetrieve={handleRetrieve}
+              handleUpdate={handleUpdate}
+              handleDelete={handleDelete}
+              updateEnabled={actions.includes('update')}
+              deleteEnabled={actions.includes('delete')}
+            />  
+          )
+            
+          }
         </Col>
         {displayForm && (
           <SimpleForm

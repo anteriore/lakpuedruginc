@@ -22,7 +22,7 @@ const { Title, Text } = Typography;
 const CreditMemo = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { company } = props;
+  const { company, actions } = props;
   const { path } = useRouteMatch();
 
   const [loading, setLoading] = useState(true);
@@ -166,16 +166,18 @@ const CreditMemo = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-              loading={loading}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAdd();
+                }}
+                loading={loading}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (

@@ -35,7 +35,7 @@ const VoucherPayables = (props) => {
   const listData = useSelector((state) => state.accounting.voucherPayables.list);
   const user = useSelector((state) => state.auth.user);
 
-  const { company } = props;
+  const { company, actions } = props;
   const { formDetails, tableDetails } = FormDetails();
 
   const dispatch = useDispatch();
@@ -86,8 +86,7 @@ const VoucherPayables = (props) => {
 
   const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -242,16 +241,18 @@ const VoucherPayables = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-              loading={loading}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAdd();
+                }}
+                loading={loading}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (
