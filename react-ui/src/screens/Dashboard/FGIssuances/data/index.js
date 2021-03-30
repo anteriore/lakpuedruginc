@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 import moment from 'moment';
 
 import { listProductInventoryWithStockByDepot, clearData as clearPI } from '../../ProductInventories/redux';
@@ -56,6 +57,7 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const company = useSelector((state) => state.company.selectedCompany);
   const productInventories = useSelector((state) => state.dashboard.productInventories.list);
+  const [loadingDepot, setLoadingDepot] = useState(false);
 
   const formDetails = {
     form_name: 'fg_issuance',
@@ -80,9 +82,13 @@ const FormDetails = () => {
         choices: depots,
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
+        loading: loadingDepot,
         onChange: (e) => {
+          setLoadingDepot(true)
           dispatch(clearPI());
-          dispatch(listProductInventoryWithStockByDepot({ company, depot: e }));
+          dispatch(listProductInventoryWithStockByDepot({ company, depot: e })).then(() => {
+            setLoadingDepot(false)
+          })
         },
       },
       {

@@ -77,8 +77,7 @@ const FGIssuances = (props) => {
     })
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
     const inventoryList = [];
     data.inventoryList.forEach((inventory) => {
       inventoryList.push({
@@ -104,39 +103,23 @@ const FGIssuances = (props) => {
       },
       inventoryList,
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addFGIssuance(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listFGIssuance({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    await dispatch(addFGIssuance(payload)).then((response) => {
+      setLoading(true);
+      if (response.payload.status === 200) {
+        message.success(`Successfully added ${response.payload.data.pisNo}`);
+        history.goBack();
+        dispatch(listFGIssuance({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addFGIssuance(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listFGIssuance({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to create FG Issuance. Please double check the provided information.`
-          );
-        }
-      });
-    }
+        });
+      } else {
+        setLoading(false);
+        message.error(
+          `Unable to create FG Issuance. Please double check the provided information.`
+        );
+      }
+    });
     setFormData(null);
+    return 1
   };
 
   return (
