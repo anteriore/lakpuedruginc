@@ -22,6 +22,7 @@ const InputForm = (props) => {
   const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [contentLoading, setContentLoading] = useState(true);
+  const [processingData, setProcessingData] = useState(false);
   const [productModal, setProductModal] = useState(false);
   const [productInv, setProductInv] = useState([]);
   const [requestedProductList, setRequestedProductList] = useState([]);
@@ -135,8 +136,11 @@ const InputForm = (props) => {
   };
 
   const onFinish = () => {
-    onSubmit(form.getFieldsValue());
-    history.goBack();
+    setProcessingData(true)
+    onSubmit(form.getFieldsValue()).then(() => {
+      setProcessingData(false)
+      history.goBack();
+    })
   };
 
   return (
@@ -197,7 +201,7 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={processingData}>
                       Submit
                     </Button>
                   </Space>
@@ -213,7 +217,6 @@ const InputForm = (props) => {
           onOk={() => setProductModal(false)}
           cancelButtonProps={{ style: { display: 'none' } }}
           width={1000}
-          footer={null}
         >
           <Table
             columns={renderProductItemColumns(tableProductInventory)}

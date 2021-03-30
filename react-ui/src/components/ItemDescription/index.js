@@ -14,7 +14,7 @@ const ItemDescription = (props) => {
           }
           else if (item.type === 'select' || item.type === 'selectSearch') {
             if(typeof item.render === 'undefined'){
-              item.render = (object) => object[item?.selectName] ?? null
+              item.render = (object) => object?.[item?.selectName] ?? null
             }
             return (
               <Descriptions.Item label={item.label}>
