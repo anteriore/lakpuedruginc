@@ -53,8 +53,11 @@ const AccountCodes = (props) => {
 
   const handleDelete = (val) => {
     const { id, code } = val;
+    setLoading(true)
     dispatch(deleteAC(id)).then(() => {
-      dispatch(listAC({ company, message }));
+      dispatch(listAC({ company, message })).then(() => {
+        setLoading(false);
+      })
       message.success(`Successfully deleted Account Code ${code}`);
     });
   };
@@ -67,6 +70,7 @@ const AccountCodes = (props) => {
   };
 
   const onSubmit = (values) => {
+    setLoading(true)
     if (formMode === 'edit') {
       const payload = {
         ...values,
@@ -77,7 +81,9 @@ const AccountCodes = (props) => {
       };
 
       dispatch(addAC(payload)).then(() => {
-        dispatch(listAC({ company, message }));
+        dispatch(listAC({ company, message })).then(() => {
+          setLoading(false)
+        });
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -87,7 +93,9 @@ const AccountCodes = (props) => {
         },
       };
       dispatch(addAC(payload)).then(() => {
-        dispatch(listAC({ company, message }));
+        dispatch(listAC({ company, message })).then(() => {
+          setLoading(false)
+        });
       });
     }
 
@@ -108,6 +116,7 @@ const AccountCodes = (props) => {
         <Col span={20}>
           {actions.includes('create') && (
             <Button
+              loading={loading}
               style={{ float: 'right', marginRight: '0.7%' }}
               icon={<PlusOutlined />}
               onClick={(e) => {
