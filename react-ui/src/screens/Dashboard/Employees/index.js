@@ -51,9 +51,11 @@ const Employees = (props) => {
       })
       .catch((rejectedValueOrSeriealizedError) => {
         console.log(rejectedValueOrSeriealizedError);
-      });
+      })
+      .finally(() => {
+        setContentLoading(false);
+      })
 
-    setContentLoading(false);
     return function cleanup() {
       dispatch(clearData());
 
@@ -79,13 +81,14 @@ const Employees = (props) => {
     setSelectedEmployee(value);
   };
 
-  const onCreate = (values) => {
+  const onCreate = async (values) => {
     setContentLoading(true);
-    dispatch(createEmployee(values)).then(() => {
+    await dispatch(createEmployee(values)).then(() => {
       dispatch(listEmployees(company)).then(() => {
         setContentLoading(false);
       });
     });
+    return 1
   };
 
   return (
