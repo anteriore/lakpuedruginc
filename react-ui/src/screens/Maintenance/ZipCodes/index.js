@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Typography, Col, Button, message } from 'antd';
+import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
@@ -22,6 +22,7 @@ const ZipCodes = (props) => {
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
+  const [loading, setLoading] = useState(true);
   const { provinceCodeList } = useSelector((state) => state.maintenance.provinceCodes);
   const { regionCodeList } = useSelector((state) => state.maintenance.regionCodes);
   const { zipCodeList, action, statusMessage } = useSelector((state) => state.maintenance.zipCodes);
@@ -30,6 +31,7 @@ const ZipCodes = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listZipCode({ message })).then(() => {
+      setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -107,9 +109,12 @@ const ZipCodes = (props) => {
   };
 
   const handleDeleteButton = (row) => {
+    setLoading(true);
     dispatch(deleteZipCode(row))
       .then(() => {
-        dispatch(listZipCode({ message }));
+        dispatch(listZipCode({ message })).then(() => {
+          setLoading(false);
+        })
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -122,16 +127,21 @@ const ZipCodes = (props) => {
   };
 
   const onSubmit = (values) => {
+    setLoading(true);
     if (mode === 'edit') {
       const newValues = formatZipPayload(values, provinceCodeList, regionCodeList);
       newValues.id = currentID;
       dispatch(updateZipCode(newValues)).then(() => {
-        dispatch(listZipCode({ message }));
+        dispatch(listZipCode({ message })).then(() => {
+          setLoading(false)
+        })
       });
     } else if (mode === 'add') {
       dispatch(createZipCode(formatZipPayload(values, provinceCodeList, regionCodeList))).then(
         () => {
-          dispatch(listZipCode({ message }));
+          dispatch(listZipCode({ message })).then(() => {
+            setLoading(false)
+          })
         }
       );
     }
@@ -144,20 +154,22 @@ const ZipCodes = (props) => {
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+          <Button loading={loading} icon={<PlusOutlined />} onClick={() => handleAddButton()}>
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        <TableDisplay
-          columns={tableHeader}
-          data={zipCodeList}
-          handleUpdate={handleEditButton}
-          handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes('update')}
-          deleteEnabled={actions.includes('delete')}
-        />
+        { loading ? <Skeleton/> :
+          <TableDisplay
+            columns={tableHeader}
+            data={zipCodeList}
+            handleUpdate={handleEditButton}
+            handleDelete={handleDeleteButton}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          /> 
+        }
       </Col>
       <SimpleForm
         visible={isOpenForm}
