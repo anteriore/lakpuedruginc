@@ -16,6 +16,7 @@ const InputForm = (props) => {
   const [tableData, setTableData] = useState();
 
   const [selectedFGIS, setSelectedFGIS] = useState([]);
+  const [processingData, setProcessingData] = useState(false);
 
   const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
 
@@ -28,6 +29,7 @@ const InputForm = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -40,7 +42,9 @@ const InputForm = (props) => {
       }
     });
 
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setProcessingData(false)
+    })
   };
 
   const onFinishFailed = () => {
@@ -145,6 +149,7 @@ const InputForm = (props) => {
               type="primary" 
               onClick={() => form.submit()}
               disabled={hasTable && !(typeof formTable.isVisible === 'undefined' || formTable.isVisible)}
+              loading={processingData}
             >
               Submit
             </Button>

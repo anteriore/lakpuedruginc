@@ -43,6 +43,7 @@ const FormDetails = () => {
   const company = useSelector((state) => state.company.selectedCompany);
   const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
   const [displayModal, setDisplayModal] = useState(false);
+  const [loadingData, setLoadingData] = useState(false)
 
   const formDetails = {
     form_name: 'fg_receiving',
@@ -67,9 +68,13 @@ const FormDetails = () => {
         choices: depots,
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
+        loading: loadingData,
         onChange: (e) => {
           dispatch(clearFGIS());
-          dispatch(listFGIssuanceByDepot({ company, depot: e }));
+          setLoadingData(true)
+          dispatch(listFGIssuanceByDepot({ company, depot: e })).then(() => {
+            setLoadingData(false)
+          })
         },
         tooltip: 'Receiving Depot'
       },
