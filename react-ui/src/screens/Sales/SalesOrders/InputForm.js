@@ -9,7 +9,7 @@ import FormDetails from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
 import { formatProduct, calcRqstdQtyPerProduct } from './helpers';
-import { listProductInventoryWithStockByDepot } from '../../Dashboard/ProductInventories/redux';
+import { listProductInventoryWithStockByDepot, clearData as clearPI } from '../../Dashboard/ProductInventories/redux';
 
 const { Title } = Typography;
 
@@ -56,6 +56,7 @@ const InputForm = (props) => {
       setLoadingDepot(true)
       form.setFieldsValue({ product: [] });
       setRequestedProductList([]);
+      dispatch(clearPI())
       dispatch(listProductInventoryWithStockByDepot({depot: value})).then(() => {
         setLoadingDepot(false)
       })
