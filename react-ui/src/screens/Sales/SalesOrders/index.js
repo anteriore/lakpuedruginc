@@ -203,9 +203,9 @@ const SalesOrders = (props) => {
     });
   };
 
-  const onCreate = (value) => {
+  const onCreate = async (value) => {
     setContentLoading(true);
-    dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
+    await dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
       dispatch(listSalesOrder(company)).then(() => {
         setContentLoading(false);
       }).catch(() => {
@@ -213,7 +213,8 @@ const SalesOrders = (props) => {
       });
     }).catch(() => {
       setContentLoading(false)
-    });;
+    });
+    return 1
   };
 
   return (
