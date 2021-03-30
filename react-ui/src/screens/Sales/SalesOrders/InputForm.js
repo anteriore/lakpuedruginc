@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message, Empty, InputNumber, Alert } from 'antd';
 import { PlusOutlined, DeleteOutlined, SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash';
 import FormDetails from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
 import { formatProduct, calcRqstdQtyPerProduct } from './helpers';
-import { listProductInventoryWithStockByDepot, clearData as clearPI } from '../../Dashboard/ProductInventories/redux';
 
 const { Title } = Typography;
 
@@ -18,11 +17,9 @@ const InputForm = (props) => {
   const [form] = useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const dispatch = useDispatch();
   const { formDetails, tableDetails, tableProductInventory } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
-  const [loadingDepot, setLoadingDepot] = useState(false);
   const [processingData, setProcessingData] = useState(false);
   const [productModal, setProductModal] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
@@ -32,7 +29,7 @@ const InputForm = (props) => {
   const { user } = useSelector((state) => state.auth);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
-  const productInventoryList = useSelector((state) => state.dashboard.productInventories.list);
+  const { list: productInventoryList } = useSelector((state) => state.dashboard.productInventories);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -53,22 +50,18 @@ const InputForm = (props) => {
     };
 
     const handleDepotChange = (value) => {
-      setLoadingDepot(true)
       form.setFieldsValue({ product: [] });
       setRequestedProductList([]);
-      dispatch(clearPI())
-      dispatch(listProductInventoryWithStockByDepot({depot: value})).then(() => {
-        setLoadingDepot(false)
-      })
+      setProductInv(
+        _.filter(productInventoryList, (o) => {
+          return o.depot?.id === value && o.quantity !== 0 ;
+        })
+      );
     };
 
     formItem.onChange = (e) => handleDepotChange(e);
     setTempFormDetails(updateList(newForm, masterList));
   }, [depotList, clientList, tempFormDetails, productInventoryList, form]);
-
-  useEffect(() => {
-    setProductInv(productInventoryList)
-  }, [productInventoryList])
 
   const handleChange = (value, index, name) => {
     setRequestedProductList((prevData) => {
@@ -192,23 +185,9 @@ const InputForm = (props) => {
             <Skeleton />
           ) : (
               <Form form={form} onFinish={onFinish} {...styles.formLayout}>
-                {_.dropRight(tempFormDetails.form_items).map((item) => {
-                  if(item.name === 'depot'){
-                    return (
-                      <FormItem 
-                        key={item.name} 
-                        onFail={onFail} 
-                        item={{
-                          ...item,
-                          loading: loadingDepot
-                        }} 
-                      />
-                    )
-                  }
-                  else {
-                    return <FormItem key={item.name} onFail={onFail} item={item} />
-                  }
-                })}
+                {_.dropRight(tempFormDetails.form_items).map((item) => (
+                  <FormItem key={item.name} onFail={onFail} item={item} />
+                ))}
                 { productInv.length !== 0 ? 
                   <Form.List
                     label={tableDetails.label} 

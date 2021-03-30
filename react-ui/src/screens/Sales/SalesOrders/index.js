@@ -18,9 +18,12 @@ import {
   approveSalesOrder,
   rejectSalesOrder,
 } from './redux';
-import { clearData as clearPI } from '../../Dashboard/ProductInventories/redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearClient, tempListClient } from '../../Maintenance/Clients/redux';
+import {
+  clearData as clearPI,
+  listProductInventory,
+} from '../../Dashboard/ProductInventories/redux/';
 import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import ItemDescription from '../../../components/ItemDescription';
 
@@ -160,7 +163,8 @@ const SalesOrders = (props) => {
     setContentLoading(true);
     dispatch(tempListDepot(company)).then((dataDepot) => {
       dispatch(tempListClient(company)).then((dataClient) => {
-          const promiseList = [dataDepot, dataClient];
+        dispatch(listProductInventory({company})).then((dataPI) => {
+          const promiseList = [dataDepot, dataPI, dataClient];
           const promiseResult = _.some(promiseList, (o) => {
             return o.type.split(/[/?]/g)[1] === 'rejected';
           });
@@ -178,6 +182,7 @@ const SalesOrders = (props) => {
             const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
             pushErrorPage(payload.status);
           }
+        });
       });
     });
   };
