@@ -201,7 +201,7 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit" loading={processingData}>
+                    <Button disabled={requestedProductList.length === 0} type="primary" htmlType="submit" loading={processingData}>
                       Submit
                     </Button>
                   </Space>
