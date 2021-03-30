@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Typography, Col, Button, message } from 'antd';
+import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
@@ -23,6 +23,7 @@ const InstitutionalCodes = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const { institutionList, action, statusMessage } = useSelector(
     (state) => state.maintenance.institutionalCodes
@@ -31,6 +32,7 @@ const InstitutionalCodes = (props) => {
   useEffect(() => {
     let isCancelled = false;
     dispatch(listInstitution({ message })).then(() => {
+      setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -69,9 +71,12 @@ const InstitutionalCodes = (props) => {
   };
 
   const handleDeleteButton = (row) => {
+    setLoading(true)
     dispatch(deleteInstitution(row))
       .then(() => {
-        dispatch(listInstitution({ message }));
+        dispatch(listInstitution({ message })).then(() => {
+          setLoading(false);
+        });
       })
       .catch((err) => {
         message.error(`Something went wrong! details: ${err}`);
@@ -84,16 +89,21 @@ const InstitutionalCodes = (props) => {
   };
 
   const onSubmit = (values) => {
+    setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
       dispatch(updateInstitution(newValues)).then(() => {
-        dispatch(listInstitution({ message }));
+        dispatch(listInstitution({ message })).then(() => {
+          setLoading(false);
+        });
       });
     } else if (mode === 'add') {
       dispatch(createInstitution(values)).then(() => {
-        dispatch(listInstitution({ message }));
+        dispatch(listInstitution({ message })).then(() => {
+          setLoading(false);
+        });
       });
     }
     setFormValues('');
@@ -105,20 +115,22 @@ const InstitutionalCodes = (props) => {
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+          <Button loading={loading} icon={<PlusOutlined />} onClick={() => handleAddButton()}>
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        <TableDisplay
-          columns={tableHeader}
-          data={institutionList}
-          handleUpdate={handleEditButton}
-          handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes('update')}
-          deleteEnabled={actions.includes('delete')}
-        />
+        { loading ? <Skeleton/> : 
+          <TableDisplay
+            columns={tableHeader}
+            data={institutionList}
+            handleUpdate={handleEditButton}
+            handleDelete={handleDeleteButton}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          />
+        }
       </Col>
       <SimpleForm
         visible={isOpenForm}
