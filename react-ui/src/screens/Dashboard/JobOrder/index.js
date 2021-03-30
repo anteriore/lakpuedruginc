@@ -114,9 +114,11 @@ const JobOrder = (props) => {
       })
       .catch((rejectedValueOrSerializedError) => {
         console.log(rejectedValueOrSerializedError);
-      });
+      })
+      .finally(() => {
+        setContentLoading(false);
+      })
 
-    setContentLoading(false);
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDataEmployees());
@@ -158,15 +160,16 @@ const JobOrder = (props) => {
     setModalDisplay(true);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setContentLoading(true);
     values.moType = moList.find((item) => item.id === values.moNumber)?.type
-    dispatch(createJobOrder(formatEmployeePayload(values))).then(() => {
+    await dispatch(createJobOrder(formatEmployeePayload(values))).then(() => {
+      history.goBack();
       dispatch(listJobOrders()).then(() => {
         setContentLoading(false);
-        history.goBack();
       });
     });
+    return 1
   };
 
   return (
