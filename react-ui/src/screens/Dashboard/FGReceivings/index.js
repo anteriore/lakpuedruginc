@@ -73,8 +73,7 @@ const FGReceivings = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
     const payload = {
       ...data,
       company: {
@@ -90,39 +89,23 @@ const FGReceivings = (props) => {
         id: data.pis.id,
       },
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addFGReceiving(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listFGReceiving({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    await dispatch(addFGReceiving(payload)).then((response) => {
+      setLoading(true);
+      if (response.payload.status === 200) {
+        history.goBack();
+        message.success(`Successfully added ${response.payload.data.prsNo}`);
+        dispatch(listFGReceiving({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addFGReceiving(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listFGReceiving({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to create FG Issuance. Please double check the provided information.`
-          );
-        }
-      });
-    }
+        });
+      } else {
+        setLoading(false);
+        message.error(
+          `Unable to create FG Receiving. Please double check the provided information.`
+        );
+      }
+    });
     setFormData(null);
+    return 1
   };
 
   return (
@@ -164,10 +147,10 @@ const FGReceivings = (props) => {
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
+              loading={loading}
               onClick={() => {
                 handleAdd();
               }}
-              loading={loading}
             >
               Add
             </Button>
