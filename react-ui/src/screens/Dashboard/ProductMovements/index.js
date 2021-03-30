@@ -22,7 +22,7 @@ import { formatPMPayload } from './helpers';
 const { Title } = Typography;
 
 const ProductMovements = (props) => {
-  const { company, title } = props;
+  const { company, title, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -183,14 +183,16 @@ const ProductMovements = (props) => {
         <Row>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            <Button
-              loading={contentLoading}
-              onClick={() => handleAddButton()}
-              icon={<PlusOutlined />}
-              primary
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                loading={contentLoading}
+                onClick={() => handleAddButton()}
+                icon={<PlusOutlined />}
+                primary
+              >
+                Add
+              </Button>
+            )}
           </Col>
           <Col span={20}>
             {contentLoading ? (

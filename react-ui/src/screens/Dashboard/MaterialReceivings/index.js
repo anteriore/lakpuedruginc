@@ -32,7 +32,7 @@ const MaterialReceivings = (props) => {
   const listData = useSelector((state) => state.dashboard.materialReceivings.list);
   const user = useSelector((state) => state.auth.user);
 
-  const { company } = props;
+  const { company, actions } = props;
   const { formDetails, tableDetails } = FormDetails();
 
   const dispatch = useDispatch();
@@ -168,16 +168,18 @@ const MaterialReceivings = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              loading={loading}
-              onClick={() => {
-                handleAdd();
-              }}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                loading={loading}
+                onClick={() => {
+                  handleAdd();
+                }}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (

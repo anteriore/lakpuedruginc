@@ -11,7 +11,7 @@ import { listSalesInvoice, clearData as clearSalesInvoice } from '../SalesInvoic
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
-const AcknowledgementReceipts = (props) => {
+const SalesJournalVouchers = (props) => {
   const dispatch = useDispatch();
   const { company, title } = props;
 
@@ -86,4 +86,4 @@ const AcknowledgementReceipts = (props) => {
   );
 };
 
-export default AcknowledgementReceipts;
+export default SalesJournalVouchers;

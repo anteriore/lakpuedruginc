@@ -244,10 +244,10 @@ const AcknowledgementReceipts = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={() => {
                   handleAdd();
                 }}
-                loading={loading}
               >
                 Add
               </Button>
