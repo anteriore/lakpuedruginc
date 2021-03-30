@@ -297,16 +297,18 @@ const DepartmentArea = (props) => {
           <Title level={5} style={{ float: 'left' }}>
             Areas
           </Title>
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            loading={loading}
-            onClick={() => {
-              handleAddA();
-            }}
-          >
-            Add
-          </Button>
+          {actions.includes('create') && (
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<PlusOutlined />}
+              loading={loading}
+              onClick={() => {
+                handleAddA();
+              }}
+            >
+              Add
+            </Button>
+          )}
           {loading ? <Skeleton/> : 
             <TableDisplay
               name={tableName}

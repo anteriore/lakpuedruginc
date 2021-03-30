@@ -24,7 +24,7 @@ const { Title } = Typography;
 const { RangePicker } = DatePicker
 
 const PurchaseVouchers = (props) => {
-	const { title, company } = props;
+	const { title, company, actions } = props;
 	const { path } = useRouteMatch();
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -153,13 +153,15 @@ const PurchaseVouchers = (props) => {
 						<Title>
 							{title}
 						</Title>
-						<Button
-							icon={<PlusOutlined/>}
-							loading={contentLoading}
-							onClick={handleAddButton}
-						>
-							Add
-						</Button>
+						{actions.includes('create') && (
+							<Button
+								icon={<PlusOutlined/>}
+								loading={contentLoading}
+								onClick={handleAddButton}
+							>
+								Add
+							</Button>
+						)}
 					</Col>
 					<Col style={GeneralStyles.reportsArea} span={20}>
 						{contentLoading ? <Skeleton/> : (
