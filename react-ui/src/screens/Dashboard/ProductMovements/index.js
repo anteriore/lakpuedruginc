@@ -119,9 +119,11 @@ const ProductMovements = (props) => {
       })
       .catch((rejectedValueOrSerializedError) => {
         console.log(rejectedValueOrSerializedError);
+      })
+      .finally(() => {
+        setContentLoading(false);
       });
 
-    setContentLoading(false);
     return function cleanup() {
       dispatch(clearData());
       dispatch(clearDepot());
@@ -162,13 +164,14 @@ const ProductMovements = (props) => {
     setProductMovement(data);
   };
 
-  const onCreate = (values) => {
+  const onCreate = async (values) => {
     setContentLoading(true);
-    dispatch(createProductMovement(formatPMPayload(id, company, values))).then(() => {
+    await dispatch(createProductMovement(formatPMPayload(id, company, values))).then(() => {
       dispatch(listProductMovements(company)).then(() => {
         setContentLoading(false);
       });
     });
+    return 1
   };
 
   return (

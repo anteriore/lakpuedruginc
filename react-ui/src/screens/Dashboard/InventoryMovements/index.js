@@ -54,9 +54,9 @@ const InventoryMovements = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(listInventory({ company, message })).then(() => {
+      setLoading(false);
       history.push(`${path}/new`);
     });
-    setLoading(false);
   };
 
   const handleUpdate = (data) => {};
@@ -68,7 +68,7 @@ const InventoryMovements = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const inventory = [];
 
     data.inventory.forEach((item) => {
@@ -90,39 +90,24 @@ const InventoryMovements = (props) => {
       },
       inventory,
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addInventoryMovement(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listInventoryMovement({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    
+    await dispatch(addInventoryMovement(payload)).then((response) => {
+      setLoading(true);
+      if (response.payload.status === 200) {
+        message.success(`Successfully added ${response.payload.data.number}`);
+        history.goBack();
+        dispatch(listInventoryMovement({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addInventoryMovement(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listInventoryMovement({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to create Inventory Movement Slip. Please double check the provided information.`
-          );
-        }
-      });
-    }
+        });
+      } else {
+        setLoading(false);
+        message.error(
+          `Unable to create Inventory Movement Slip. Please double check the provided information.`
+        );
+      }
+    });
     setFormData(null);
+    return 1
   };
 
   return (
@@ -165,10 +150,10 @@ const InventoryMovements = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={() => {
                   handleAdd();
                 }}
-                loading={loading}
               >
                 Add
               </Button>
@@ -206,7 +191,12 @@ const InventoryMovements = (props) => {
               <Space direction="vertical" size={20} style={{ width: '100%' }}>
                 <ItemDescription
                   title={`${selectedData.number} Details`}
-                  selectedData={selectedData}
+                  selectedData={{
+                    ...selectedData,
+                    classification: {
+                      name: selectedData.classification
+                    }
+                  }}
                   formItems={formDetails.form_items}
                 />
                 <Text>{'Items: '}</Text>

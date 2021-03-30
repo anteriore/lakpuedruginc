@@ -65,8 +65,10 @@ const ReceivingReceipts = (props) => {
     setFormTitle('Create Receiving Receipt');
     setFormMode('add');
     setReceivingReceipt(null);
+    setLoading(true)
     dispatch(listPO({ company, message })).then(() => {
       dispatch(listItemSummary({ company, message })).then(() => {
+        setLoading(false)
         history.push(`${path}/new`);
       });
     });
@@ -77,18 +79,19 @@ const ReceivingReceipts = (props) => {
     setReceivingReceipt(data);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = formatPayload(id, company, data);
 
     if (formMode === 'edit') {
       payload.id = receivingReceipt.id;
     }
 
-    dispatch(addRR(payload)).then((response) => {
+    await dispatch(addRR(payload)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully saved ${response.payload.data.number}`);
+        setLoading(true);
+        history.goBack();
         dispatch(listRR({ company, message })).then(() => {
-          history.goBack();
           setLoading(false);
         });
       } else {
@@ -102,6 +105,7 @@ const ReceivingReceipts = (props) => {
         }
       }
     });
+    return 1
   };
 
   const handleCancelButton = () => {
@@ -141,6 +145,7 @@ const ReceivingReceipts = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={(e) => {
                   handleAdd();
                 }}

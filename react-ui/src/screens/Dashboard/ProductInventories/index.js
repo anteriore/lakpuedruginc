@@ -127,18 +127,28 @@ const ProductInventories = (props) => {
               cancelText="Cancel"
               okText="Generate Report"
               title="Report Details"
-              onCancel={() => setDisplayModal(false)}
+              onCancel={() => {
+                setDisplayModal(false)
+                setLoading(false)
+
+                //TODO: Cancel dispatch onCancel
+              }}
               onOk={() => {
+                setLoading(true)
                 if (selectedDepot !== null) {
                   dispatch(listProductInventoryByDepot({ depot: selectedDepot.id, message })).then(
                     () => {
+                      setLoading(false)
                       history.push(`${path}/report`);
                     }
                   );
-                } else {
+                } 
+                else {
+                  setLoading(false)
                   history.push(`${path}/report`);
                 }
               }}
+              okButtonProps={{ loading: loading }}
               afterClose={() => {
                 setSelectedDepot(null);
               }}

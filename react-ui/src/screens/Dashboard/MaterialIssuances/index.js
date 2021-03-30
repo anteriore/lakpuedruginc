@@ -98,7 +98,7 @@ const MaterialIssuances = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const inventoryList = [];
     data.inventoryList.forEach((inventory) => {
       inventoryList.push({
@@ -119,14 +119,13 @@ const MaterialIssuances = (props) => {
       },
       inventoryList,
     };
-    dispatch(addMaterialIssuance(payload)).then((response) => {
+    await dispatch(addMaterialIssuance(payload)).then((response) => {
       setLoading(true);
-      
       const onSuccess = () => {
+        message.success(`Successfully added ${response.payload.data.misNo}`);
+        history.goBack();
         dispatch(listMaterialIssuance({ company, message })).then(() => {
           setLoading(false);
-          history.goBack();
-          message.success(`Successfully added ${response.payload.data.misNo}`);
         });
       };
 
@@ -140,6 +139,7 @@ const MaterialIssuances = (props) => {
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
+    return 1
   };
 
   return (

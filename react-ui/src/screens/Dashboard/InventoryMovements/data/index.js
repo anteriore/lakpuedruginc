@@ -34,6 +34,7 @@ export const columns = [
 
 const FormDetails = () => {
   const inventories = useSelector((state) => state.dashboard.inventory.list);
+  const [mode, setMode] = useState('IN')
   const [classifications, setClassifications] = useState([
     {
       id: 'RETURN',
@@ -80,6 +81,7 @@ const FormDetails = () => {
         ],
         onChange: (e) => {
           if (e.target.value === 'IN') {
+            setMode(e.target.value)
             setClassifications([
               {
                 id: 'RETURN',
@@ -93,6 +95,7 @@ const FormDetails = () => {
               },
             ]);
           } else if (e.target.value === 'OUT') {
+            setMode(e.target.value)
             setClassifications([
               {
                 id: 'EXPIRED',
@@ -176,9 +179,13 @@ const FormDetails = () => {
         label: 'Quantity Remaining',
         name: 'quantityRemaining',
         render: (object) => {
-          if (object.stockOnHand !== null && typeof object.stockOnHand !== 'undefined') {
-            return object.stockOnHand - object.quantity || object.stockOnHand;
+          if (mode === 'IN') {
+            return (object?.stockOnHand ?? 0) + (object?.quantity ?? 0);
           }
+          else {
+            return (object?.stockOnHand ?? 0) - (object?.quantity ?? 0);
+          }
+          
         },
       },
     ],

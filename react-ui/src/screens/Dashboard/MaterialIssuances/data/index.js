@@ -64,7 +64,7 @@ const FormDetails = () => {
     name: 'inventoryList',
     key: 'inventoryList',
     rules: [{ required: true }],
-    isVisible: inventories.length > 0,
+    preloadedData: true, 
     fields: [
       {
         label: 'Control Number',
