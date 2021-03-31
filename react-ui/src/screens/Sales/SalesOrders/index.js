@@ -22,8 +22,8 @@ import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots
 import { clearData as clearClient, tempListClient } from '../../Maintenance/Clients/redux';
 import {
   clearData as clearPI,
-  tempListProductInventory,
-} from '../../Maintenance/redux/productInventory';
+  listProductInventory,
+} from '../../Dashboard/ProductInventories/redux/';
 import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import ItemDescription from '../../../components/ItemDescription';
 
@@ -163,7 +163,7 @@ const SalesOrders = (props) => {
     setContentLoading(true);
     dispatch(tempListDepot(company)).then((dataDepot) => {
       dispatch(tempListClient(company)).then((dataClient) => {
-        dispatch(tempListProductInventory()).then((dataPI) => {
+        dispatch(listProductInventory({company})).then((dataPI) => {
           const promiseList = [dataDepot, dataPI, dataClient];
           const promiseResult = _.some(promiseList, (o) => {
             return o.type.split(/[/?]/g)[1] === 'rejected';
@@ -208,9 +208,9 @@ const SalesOrders = (props) => {
     });
   };
 
-  const onCreate = (value) => {
+  const onCreate = async (value) => {
     setContentLoading(true);
-    dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
+    await dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
       dispatch(listSalesOrder(company)).then(() => {
         setContentLoading(false);
       }).catch(() => {
@@ -218,7 +218,8 @@ const SalesOrders = (props) => {
       });
     }).catch(() => {
       setContentLoading(false)
-    });;
+    });
+    return 1
   };
 
   return (

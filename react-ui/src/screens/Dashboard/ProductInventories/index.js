@@ -28,7 +28,7 @@ const ProductInventories = (props) => {
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listProductInventory({ company, message })).then(() => {
+    dispatch(listProductInventory({ company })).then(() => {
       setLoading(false);
 
       if (isCancelled) {
