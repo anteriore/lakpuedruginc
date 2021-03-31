@@ -113,8 +113,8 @@ const OfficialReceipts = (props) => {
     await dispatch(addOReceipt(payload)).then((response) => {
       setLoading(true);
       history.goBack();
-      message.success(`Successfully added ${response.payload.data.number}`);
       if (response.payload.status === 200) {
+        message.success(`Successfully added ${response.payload.data.number}`);
         dispatch(listOReceipt({ company, message })).then(() => {
           setLoading(false);
         });
