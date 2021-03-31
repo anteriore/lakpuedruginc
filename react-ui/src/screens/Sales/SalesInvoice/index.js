@@ -11,7 +11,7 @@ import { listSalesInvoice, clearData, createSalesInvoice } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import InputForm from './InputForm';
-import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
+import { listProductInventory } from '../../Dashboard/ProductInventories/redux';
 import { formatPayload } from './helpers';
 import ItemDescription from '../../../components/ItemDescription';
 import { formatDescItems } from '../OrderSlips/helpers';
@@ -127,7 +127,7 @@ const SalesInvoice = (props) => {
   const handleAddButton = () => {
     setContentLoading(true);
     dispatch(tempListDepot(company)).then((dataDepot) => {
-      dispatch(tempListProductInventory()).then((dataPI) => {
+      dispatch(listProductInventory({company})).then((dataPI) => {
         dispatch(listSalesOrder(company)).then((dataSO) => {
           const dataList = [dataDepot, dataPI, dataSO];
           handleRequestResponse(dataList, onSuccess, onFail, '/sales')
@@ -142,7 +142,7 @@ const SalesInvoice = (props) => {
     setDisplayModal(true);
   };
 
-  const onCreate = (value, salesOrder, salesInvoiceProducts) => {
+  const onCreate = async (value, salesOrder, salesInvoiceProducts) => {
     setContentLoading(true)
     const payload = formatPayload({
       id,
@@ -152,7 +152,7 @@ const SalesInvoice = (props) => {
       salesInvoiceProducts,
     });
 
-    dispatch(createSalesInvoice(payload)).then(() => {
+    await dispatch(createSalesInvoice(payload)).then(() => {
       dispatch(listSalesInvoice(company)).then(() => {
         setContentLoading(false);
       }).catch(() => {
@@ -160,7 +160,8 @@ const SalesInvoice = (props) => {
       });
     }).catch(() => {
       setContentLoading(false)
-    });;
+    });
+    return 1
   };
 
   return (
