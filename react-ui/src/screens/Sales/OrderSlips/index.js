@@ -12,7 +12,7 @@ import { formatDescItems, formatPayload } from './helpers';
 import { listOrderSlips, createOrderSlips, clearData } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
-import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
+import { listProductInventory } from '../../Dashboard/ProductInventories/redux';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper, { reevalDependencyMsgStats, reevalutateMessageStatus } from '../../../helpers/general-helper';
 
@@ -120,7 +120,7 @@ const OrderSlips = (props) => {
   const handleAddButton = () => {
     setContentLoading(true);
     dispatch(tempListDepot(company)).then((dataDepot) => {
-      dispatch(tempListProductInventory()).then((dataPI) => {
+      dispatch(listProductInventory({company})).then((dataPI) => {
         dispatch(listSalesOrder(company)).then((dataSO) => {
           const dataList = [dataDepot, dataPI, dataSO];
           handleRequestResponse(dataList, onSuccess, onFail, '/sales')
@@ -135,11 +135,11 @@ const OrderSlips = (props) => {
     setSelectedOS(data);
   };
 
-  const onCreate = (value, salesOrder, orderedProducts) => {
+  const onCreate = async (value, salesOrder, orderedProducts) => {
     setContentLoading(true);
     const payload = formatPayload(id, company, value, salesOrder, orderedProducts);
 
-    dispatch(createOrderSlips(payload)).then(() => {
+    await dispatch(createOrderSlips(payload)).then(() => {
       dispatch(listOrderSlips(company)).then(() => {
         setContentLoading(false);
       }).catch(() => {
@@ -147,7 +147,8 @@ const OrderSlips = (props) => {
       });
     }).catch(() => {
       setContentLoading(false)
-    });;
+    });
+    return 1
   };
 
   return (

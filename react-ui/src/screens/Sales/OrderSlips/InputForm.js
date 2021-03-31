@@ -18,13 +18,14 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [contentLoading, setContentLoading] = useState(true);
+  const [processingData, setProcessingData] = useState(false);
   const [showSalesSection, setShowSalesSection] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [selectedSales, setSelectedSales] = useState(null);
   const [selectedLot, setSelectedLot] = useState([]);
   const [orderedProducts, setOrderedProducts] = useState([]);
   const { user } = useSelector((state) => state.auth);
-  const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
+  const { list: productInvList } = useSelector((state) => state.dashboard.productInventories);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
   const [form] = useForm();
@@ -136,8 +137,11 @@ const InputForm = (props) => {
   };
 
   const onFinish = (value) => {
-    onSubmit(value, selectedSales, orderedProducts);
-    history.goBack();
+    setProcessingData(true)
+    onSubmit(value, selectedSales, orderedProducts).then(() => {
+      setProcessingData(false)
+      history.goBack()
+    })
   };
 
   return (
@@ -190,13 +194,15 @@ const InputForm = (props) => {
               <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
               <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                 <Space size={16}>
-                  <Button htmlType="button" onClick={() => history.goBack()}>
+                  <Button htmlType="button" onClick={() => history.goBack()} disabled={processingData}>
                     Cancel
                   </Button>
                   <Button
-                  disabled={ orderedProducts.length !== 0 && selectedSales !== null ? false : true } 
-                  type="primary" 
-                  htmlType="submit">
+                    disabled={ orderedProducts.length !== 0 && selectedSales !== null ? false : true } 
+                    type="primary" 
+                    htmlType="submit"
+                    loading={processingData}
+                  >
                     Submit
                   </Button>
                 </Space>
