@@ -151,7 +151,7 @@ const ReturnSlips = (props) => {
     );
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // TODO: Data Validation
     const products = [];
     data.returnSlipProducts.forEach((returnSlipProduct) => {
@@ -178,37 +178,21 @@ const ReturnSlips = (props) => {
       },
       returnSlipProducts: products,
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addReturnSlip(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listReturnSlip({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    await dispatch(addReturnSlip(payload)).then((response) => {
+      setLoading(true);
+      history.goBack();
+      message.success(`Successfully added ${response.payload.data.number}`);
+      if (response.payload.status === 200) {
+        dispatch(listReturnSlip({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addReturnSlip(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listReturnSlip({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(`Unable to add Return Slip. Please double check the provided information.`);
-        }
-      });
-    }
+        });
+      } else {
+        setLoading(false);
+        message.error(`Unable to add Return Slip. Please double check the provided information.`);
+      }
+    });
     setFormData(null);
+    return 1
   };
 
   const renderTableColumns = (fields) => {
