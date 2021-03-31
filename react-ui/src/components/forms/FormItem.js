@@ -373,6 +373,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
                     item.setDisplayModal(true);
                   }}
                   icon={<SelectOutlined />}
+                  loading={item?.loading ?? false}
                 >
                   Select
                 </Button>
