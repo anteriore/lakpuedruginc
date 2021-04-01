@@ -116,6 +116,7 @@ const journalVouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
       };
     },
@@ -123,7 +124,8 @@ const journalVouchersSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
@@ -139,7 +141,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
@@ -155,6 +158,7 @@ const journalVouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
       };
     },
@@ -178,7 +182,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
@@ -204,7 +209,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
@@ -219,7 +225,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
@@ -244,7 +251,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
@@ -259,7 +267,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
@@ -284,7 +293,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {

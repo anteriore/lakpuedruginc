@@ -12,8 +12,7 @@ import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
 import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
 import { listG, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
-import statusDialogue from '../../../components/StatusDialogue';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import moment from 'moment';
 import _ from "lodash";
 import InputForm from './InputForm';
@@ -39,15 +38,7 @@ const JournalVouchers = (props) => {
   const {list, status, action, statusMessage, statusLevel} = useSelector((state) => state.accounting.journalVouchers);
 
   useEffect(() => {
-		if (status !== 'loading') {
-			if (action === 'fetch' && statusLevel !== 'success') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-
-			if (action !== 'fetch') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-		}
+		reevalutateMessageStatus({status, action,statusMessage, statusLevel})
 	}, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
@@ -132,17 +123,23 @@ const JournalVouchers = (props) => {
 		setJournalVoucher(null);
 	}
 
-  const onCreate = (payload) => {
-    dispatch(createJournalVouchers(formatJVPaload(payload.values, 
+  const onCreate = async (payload) => {
+    setContentLoading(true)
+    await dispatch(createJournalVouchers(formatJVPaload(payload.values, 
       payload.addedAccounts, userId, company))).then((dataCreateJV) => {
       if (dataCreateJV.type.split('/')[1] === 'rejected') {
-        message.warning("Debit and Credit should be same")
+        message.warning(dataCreateJV?.payload?.data?.message ?? "Please double check your input data")
       } else{
-        dispatch(listJournalVouchers({company}))
-        payload.redirect();
-      }
-    })
-    
+        dispatch(listJournalVouchers({company})).then(() => {
+					setContentLoading(false);
+				}).catch(() => {
+					setContentLoading(false);
+				});
+				payload.redirect();
+			}
+		}).catch(() => {
+			setContentLoading(false);
+    });
   }
 
   return (
