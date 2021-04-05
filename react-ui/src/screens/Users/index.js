@@ -264,7 +264,7 @@ const Users = () => {
     setFormData(null);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const depotData = [];
     data.depots.forEach((depot) => {
       depotData.push({
@@ -306,7 +306,7 @@ const Users = () => {
 
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(updateUser(payload)).then((response) => {
+      await dispatch(updateUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
           updateUserDepartments(selectedCompany);
@@ -318,7 +318,7 @@ const Users = () => {
         }
       });
     } else if (formMode === 'add') {
-      dispatch(addUser(payload)).then((response) => {
+      await dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
         if (response.payload.status === 200) {
           updateUserDepartments(selectedCompany);
@@ -331,6 +331,7 @@ const Users = () => {
       });
     }
     setFormData(null);
+    return 1
   };
 
   const updateUserDepartments = (companyID) => {

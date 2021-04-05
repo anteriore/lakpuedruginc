@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Button, Input, Checkbox, Row, Col, Typography, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -10,6 +10,7 @@ const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
   const history = useHistory();
+  const [processingData, setProcessingData] = useState(false)
   const permissions = useSelector((state) => state.users.listPermission);
 
   useEffect(() => {
@@ -24,6 +25,13 @@ const InputForm = (props) => {
       'An error has occured. Please double check the information that you have provided.'
     );
   };
+
+  const onFinish = (data) => {
+    setProcessingData(true)
+    onSubmit(data).then(() => {
+      setProcessingData(false)
+    })
+  }
 
   const onFail = () => {
     history.push(`/users`);
@@ -121,7 +129,7 @@ const InputForm = (props) => {
             form={form}
             initialValues={values}
             name={formDetails.form_name}
-            onFinish={onSubmit}
+            onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
             {formDetails.form_items.map((item) => (
@@ -131,11 +139,12 @@ const InputForm = (props) => {
             {renderPermissions()}
 
             <div style={styles.tailLayout}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={processingData}>
                 Submit
               </Button>
               <Button
                 style={{ marginRight: '2%' }}
+                disabled={processingData}
                 onClick={() => {
                   onCancel();
                   history.goBack();
