@@ -20,7 +20,7 @@ export const DisplayDetails = () => {
             key: 'date',
             align: 'center',
             defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.number.length - b.number.length,
+            datatype: 'date'
         },
         {
             title: 'Type',

@@ -17,7 +17,7 @@ import { listMemo, clearData as clearMemo } from '../../Maintenance/MemoTypes/re
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const DebitMemo = (props) => {
   const dispatch = useDispatch();
@@ -60,6 +60,7 @@ const DebitMemo = (props) => {
     setFormTitle('Create Debit Memo');
     setFormMode('add');
     setFormData(null);
+    setLoading(true)
     setSelectedData(null);
     dispatch(clearOS());
     dispatch(clearSI());
@@ -95,9 +96,7 @@ const DebitMemo = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
-
+  const onSubmit = async (data) => {
     const payload = {
         ...data,
         memoSlipType: 'DM',
@@ -105,20 +104,18 @@ const DebitMemo = (props) => {
         type: {id: data.type},
     }
 
-    console.log(data.reference.salesType);
-
     if (formMode === 'edit') {
       payload.id = selectedData.id;
     }
 
-    dispatch(addDM(payload)).then((response) => {
+    await dispatch(addDM(payload)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
         message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listDM({ company, message })).then(() => {
-          history.goBack();
+        dispatch(listDM({ company, message })).then(() => {          
           setLoading(false);
         });
+        history.goBack();
       } else {
         setLoading(false);
         if (formMode === 'add') {
