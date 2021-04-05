@@ -148,6 +148,7 @@ const FormDetails = () => {
         type: 'selectTable',
         rules: [{ required: true }],
         allowEmpty: true,
+        loading: loadingDepot,
         placeholder: 'Select DR/OS',
         displayModal,
         setDisplayModal,

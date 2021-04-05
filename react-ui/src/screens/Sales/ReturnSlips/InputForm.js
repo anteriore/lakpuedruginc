@@ -5,7 +5,7 @@ import {
   InputNumber,
   Input,
   Select,
-  Checkbox,
+  Alert,
   Modal,
   Row,
   Col,
@@ -14,7 +14,7 @@ import {
   Empty,
   message,
 } from 'antd';
-import { SelectOutlined } from '@ant-design/icons';
+import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
@@ -36,6 +36,7 @@ const InputForm = (props) => {
 
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+  const [processingData, setProcessingData] = useState(false);
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
@@ -64,6 +65,7 @@ const InputForm = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -79,14 +81,18 @@ const InputForm = (props) => {
     if (hasTable) {
       if (tableData !== null) {
         data[formTable.name] = tableData;
-        onSubmit(data);
+        onSubmit(data).then(() => {
+          setProcessingData(false)
+        })
       } else {
         onFinishFailed(
           `Unable to submit. Please provide the necessary information on ${formTable.label}`
         );
       }
     } else {
-      onSubmit(data);
+      onSubmit(data).then(() => {
+        setProcessingData(false)
+      })
     }
   };
 
@@ -306,7 +312,7 @@ const InputForm = (props) => {
 
               return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
             })}
-            {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+            {(orderedProducts?.length ?? 0) > 0 ? (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
                   <Col span={20} offset={1}>
@@ -331,13 +337,24 @@ const InputForm = (props) => {
                   </Col>
                 )}
               </Form.List>
+            ) : (
+              <Col span={15} offset={6}>
+              <Alert
+                message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
+                type="warning"
+                showIcon
+                icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+              />
+              </Col>
             )}
             <div style={styles.tailLayout}>
-              <Button type="primary" onClick={() => form.submit()}>
+              <Button type="primary" onClick={() => form.submit()} loading={processingData}>
                 Submit
               </Button>
               <Button
                 style={{ marginRight: '2%' }}
+                disabled={processingData}
                 onClick={() => {
                   onCancel();
                   history.goBack();
@@ -403,6 +420,7 @@ const styles = {
     marginBottom: '2%',
   },
   tailLayout: {
+    marginTop: '2%',
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',
