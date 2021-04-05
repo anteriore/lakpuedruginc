@@ -93,7 +93,7 @@ const OfficialReceipts = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = {
       ...data,
       company: {
@@ -109,39 +109,22 @@ const OfficialReceipts = (props) => {
         id: user.id,
       },
     };
-    console.log(payload);
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addOReceipt(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listOReceipt({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    
+    await dispatch(addOReceipt(payload)).then((response) => {
+      setLoading(true);
+      history.goBack();
+      if (response.payload.status === 200) {
+        message.success(`Successfully added ${response.payload.data.number}`);
+        dispatch(listOReceipt({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addOReceipt(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listOReceipt({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to add Official Receipt. Please double check the provided information.`
-          );
-        }
-      });
-    }
+        });
+      } else {
+        setLoading(false);
+        message.error(
+          `Unable to add Official Receipt. Please double check the provided information.`
+        );
+      }
+    });
     setFormData(null);
   };
 

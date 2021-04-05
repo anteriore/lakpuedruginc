@@ -17,6 +17,7 @@ const FormScreen = (props) => {
 
   const [tableData, setTableData] = useState(null);
   const [selectedAR, setSelectedAR] = useState(null)
+  const [processingData, setProcessingData] = useState(false)
   const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const FormScreen = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -51,11 +53,12 @@ const FormScreen = (props) => {
       data[formTable.name] = tableData;
     }
 
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setProcessingData(false)
+    })
   };
 
   const onFinishFailed = () => {
-    // console.log(errorInfo)
     message.error("An error has occurred. Please double check the information you've provided.");
   };
 
@@ -209,11 +212,12 @@ const FormScreen = (props) => {
 
           {areceipts !== null && areceipts.length > 0 && (
             <div style={styles.tailLayout}>
-              <Button type="primary" onClick={() => form.submit()}>
+              <Button type="primary" onClick={() => form.submit()} loading={processingData}>
                 Submit
               </Button>
               <Button
                 style={{ marginRight: '2%' }}
+                disabled={processingData}
                 onClick={() => {
                   onCancel();
                   history.goBack();
