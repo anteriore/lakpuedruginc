@@ -34,6 +34,7 @@ const InputForm = (props) => {
   const { deptList, areaList } = useSelector(state => state.maintenance.departmentArea);
   const { groupList } = useSelector(state => state.maintenance.groupsCategories)
 
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [contentLoading, setContentLoading] = useState(true);
   const [tempMainForm, setTempMainForm] = useState(_.clone(formDetails));
   const [tempNewAdjForm, setTempNewAdjForm] = useState(_.clone(newAdjustmentFormDetails));
@@ -162,6 +163,7 @@ const InputForm = (props) => {
   }
 
   const onFinish = async () => {
+    setFormButtonLoading(true);
     try {
       const values = await form.validateFields([
         'rrNumber', 'date', 'rrDate', 
@@ -173,7 +175,9 @@ const InputForm = (props) => {
         values, 
         addedAccounts,
         redirect: () => history.goBack()
-      })
+      }).then(() => {
+        setFormButtonLoading(false)
+      });
 
     } catch (errorInfo) {
       console.log(errorInfo)
@@ -315,7 +319,7 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" onClick={onFinish}>
+                    <Button loading={formButtonLoading} disabled={addedAccounts.length === 0 ? true : false} type="primary" onClick={onFinish}>
                       Submit
                     </Button>
                   </Space>
