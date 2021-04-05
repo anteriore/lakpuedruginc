@@ -165,9 +165,9 @@ const VoucherPayables = (props) => {
     }
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = processSubmitPayload(data)
-    dispatch(addVoucherPayable(payload)).then((response) => {
+    await dispatch(addVoucherPayable(payload)).then((response) => {
       setLoading(true);
       
       const onSuccess = () => {
