@@ -95,9 +95,7 @@ const CreditMemo = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
-
+  const onSubmit = async (data) => {
     const payload = {
         ...data,
         memoSlipType: 'CM',
@@ -105,20 +103,18 @@ const CreditMemo = (props) => {
         type: {id: data.type},
     }
 
-    console.log(data.reference.salesType);
-
     if (formMode === 'edit') {
       payload.id = selectedData.id;
     }
 
-    dispatch(addCM(payload)).then((response) => {
+    await dispatch(addCM(payload)).then((response) => {
       setLoading(true);
       if (response.payload.status === 200) {
         message.success(`Successfully saved ${response.payload.data.number}`);
         dispatch(listCM({ company, message })).then(() => {
-          history.goBack();
           setLoading(false);
         });
+        history.goBack();
       } else {
         setLoading(false);
         if (formMode === 'add') {
