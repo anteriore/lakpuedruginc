@@ -135,6 +135,7 @@ const purchaseVouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for purchase vouchers`,
       };
     },
@@ -142,7 +143,8 @@ const purchaseVouchersSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -174,6 +176,7 @@ const purchaseVouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusMessage: `${message.ITEMS_GET_PENDING} for purchase vouchers`,
       };
     },
@@ -181,7 +184,8 @@ const purchaseVouchersSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -197,7 +201,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -223,7 +228,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -238,7 +244,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -252,7 +259,7 @@ const purchaseVouchersSlice = createSlice({
     [updatePurchaseVouchers.pending]: (state) => {
       return {
         ...state,
-        action: 'create',
+        action: 'update',
         status: 'loading',
         statusMessage: `${message.ITEM_UPDATE_PENDING} for purchase vouchers`,
         statusLevel: '',
@@ -263,7 +270,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -278,7 +286,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -292,7 +301,7 @@ const purchaseVouchersSlice = createSlice({
     [approvePurchaseVoucher.pending]: (state) => {
       return {
         ...state,
-        action: 'create',
+        action: 'approve',
         status: 'loading',
         statusMessage: `Approving selected purchase voucher`,
         statusLevel: '',
@@ -303,7 +312,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -318,7 +328,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -343,7 +354,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {
@@ -358,7 +370,8 @@ const purchaseVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Purchase Vouchers'
+        'Purchase Vouchers',
+        state.action
       );
 
       return {

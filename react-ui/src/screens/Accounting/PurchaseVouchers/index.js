@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
@@ -14,7 +14,7 @@ import { listG, clearData as clearGroupCat } from '../../Maintenance/GroupsCateg
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import moment from 'moment'
 import _ from 'lodash';
 import PVHelper from './helper';
@@ -39,15 +39,7 @@ const PurchaseVouchers = (props) => {
 	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers);
 
 	useEffect(() => {
-		if (status !== 'loading') {
-			if (action === 'fetch' && statusLevel !== 'success') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-
-			if (action !== 'fetch') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-		}
+		reevalutateMessageStatus({status, action,statusMessage, statusLevel})
 	}, [status, action, statusMessage, statusLevel]);
 
 	useEffect(() => {
@@ -109,7 +101,7 @@ const PurchaseVouchers = (props) => {
 	}
 
 	const handleRangedChanged = (value) => {
-		console.log(value)
+		console.log("Report feature is still not included in this system version")
 	}
 
 	const handleRetrieve = (value) => {
@@ -136,9 +128,22 @@ const PurchaseVouchers = (props) => {
 		setPurchaseVoucher(null);
 	}
 
-	const onCreate = (payload) => {
-		dispatch(createPurchaseVouchers(formatPVPayload(payload.values, payload.addedAccounts, userId, company))).then(() => {
-			dispatch(listPurchaseVouchers({company}));
+	const onCreate = async (payload) => {
+		setContentLoading(true);
+		await dispatch(createPurchaseVouchers(formatPVPayload(payload.values, 
+			payload.addedAccounts, userId, company))).then((dataCreatePV) => {
+			if (dataCreatePV.type.split('/')[1] === 'rejected'){
+				message.warning(dataCreatePV?.payload?.data?.message ?? "Please double check your input data")
+			}else{
+				dispatch(listPurchaseVouchers({company})).then(() => {
+					setContentLoading(false);
+				}).catch(() => {
+					setContentLoading(false);
+				});
+				payload.redirect();
+			}
+		}).catch(() => {
+			setContentLoading(false);
 		})
 	}
 

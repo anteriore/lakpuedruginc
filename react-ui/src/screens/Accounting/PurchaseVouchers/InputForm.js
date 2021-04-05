@@ -37,6 +37,7 @@ const InputForm = (props) => {
   const [addedAccounts, setAddedAccounts] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [subContentLoading, setSubContentLoading] = useState(true);
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [formType, setFormType] = useState(_.find(formDetails.form_items, {name: 'manual'}).initialValue);
   const [form] = useForm();
 
@@ -158,14 +159,20 @@ const InputForm = (props) => {
   }
 
   const onFinish = async () => {
+    setFormButtonLoading(true);
     try {
       const values = await form.validateFields([
         'rrNumber', 'date', 'rrDate', 
         'vendor', 'siNumber', 'drNumber', 
         'poNumber', 'manual', 'remarks'
       ]);
-      onSubmit({values, addedAccounts})
-      history.goBack();
+      onSubmit({
+        values, 
+        addedAccounts,
+        redirect: () => history.goBack()
+      }).then(() => {
+        setFormButtonLoading(false)
+      });
     } catch (errorInfo) {
       console.log(errorInfo)
     }
@@ -306,7 +313,7 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" onClick={onFinish}>
+                    <Button loading={formButtonLoading} disabled={addedAccounts.length === 0 ? true : false} type="primary" onClick={onFinish}>
                       Submit
                     </Button>
                   </Space>
