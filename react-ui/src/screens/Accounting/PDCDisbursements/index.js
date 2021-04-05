@@ -45,7 +45,9 @@ const PDCDisbursements = (props) => {
     setFormTitle('Create PDC Disbursement');
     setFormMode('add');
     setFormData(null);
+    setLoading(true);
     dispatch(listVendor({ company, message })).then(() => {
+      setLoading(false);
       history.push(`${path}/new`);
     });
   };
@@ -53,6 +55,7 @@ const PDCDisbursements = (props) => {
   const handleUpdate = (data) => {
     setFormTitle('Edit PDC Disbursement');
     setFormMode('edit');
+    setLoading(true);
     const pdcData = pdcDisbursements.find((pdc) => pdc.id === data.id);
     const cheques = [];
     pdcData.cheques.forEach((cheque) => {
@@ -69,6 +72,7 @@ const PDCDisbursements = (props) => {
     };
     setFormData(formData);
     dispatch(listVendor({ company, message })).then(() => {
+      setLoading(false);
       history.push(`${path}/${data.id}`);
     });
   };
@@ -176,6 +180,7 @@ const PDCDisbursements = (props) => {
           <Col span={20}>
             {actions.includes('create') && (
               <Button
+                loading={loading}
                 style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                 icon={<PlusOutlined />}
                 onClick={() => {
