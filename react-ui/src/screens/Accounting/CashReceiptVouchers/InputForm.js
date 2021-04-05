@@ -28,7 +28,7 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState();
-
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [displayVoucherFields, setDisplayVoucherFields] = useState(false)
@@ -42,6 +42,7 @@ const InputForm = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setFormButtonLoading(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -54,7 +55,7 @@ const InputForm = (props) => {
       }
     });
 
-    onSubmit(data);
+    onSubmit(data).then(() => setFormButtonLoading(false));
   };
 
   const onFinishFailed = () => {
@@ -266,7 +267,7 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button loading={formButtonLoading} type="primary" onClick={() => form.submit()}>
               Submit
             </Button>
             <Button

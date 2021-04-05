@@ -117,12 +117,10 @@ const CashReceiptVouchers = (props) => {
     }
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = processSubmitPayload(data)
-    console.log(payload)
-    dispatch(addCashReceiptVoucher(payload)).then((response) => {
+    await dispatch(addCashReceiptVoucher(payload)).then((response) => {
       setLoading(true);
-      
       const onSuccess = () => {
         dispatch(listCashReceiptVoucher()).then(() => {
           setLoading(false);
@@ -207,6 +205,7 @@ const CashReceiptVouchers = (props) => {
           <Col span={20}>
             {actions.includes('create') && (
               <Button
+                loading={loading}
                 style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                 icon={<PlusOutlined />}
                 onClick={() => {
