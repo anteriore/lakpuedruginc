@@ -39,6 +39,25 @@ export const columns = [
   },
 ];
 
+export const itemColumns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+  },
+  {
+    title: 'Type',
+    dataIndex: 'type',
+  },
+  {
+    title: 'Branch',
+    dataIndex: 'branch',
+  },
+  {
+    title: 'Telephone Number',
+    dataIndex: 'telephoneNumber',
+  },
+];
+
 const FormDetails = () => {
   const salesReps = useSelector((state) => state.maintenance.salesReps.list);
   const clusterCodes = useSelector((state) => state.maintenance.clusterCode.clusterList);
@@ -136,7 +155,7 @@ const FormDetails = () => {
         selectName: 'code',
         choices: clusterCodes,
         rules: [{ required: true, message: 'Please select a Cluster' }],
-        render: (object) => `[${object.code}] ${object.area}`,
+        render: (object) => `[${object?.code}] ${object?.area}`,
       },
       {
         label: 'Institutional Codes',
