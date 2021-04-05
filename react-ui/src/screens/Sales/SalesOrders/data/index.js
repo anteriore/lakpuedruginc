@@ -184,7 +184,7 @@ const FormDetails = () => {
     name: 'salesOrderProducts',
     key: 'id',
     rules: [{required: true, message: "Please select items to be requested"}],
-    emptyText: "Please select a department for the items to be requested",
+    emptyText: "Please select a depot for the items to be requested",
     fields: [
       {
         title: 'FG ID',

@@ -19,8 +19,8 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const { formDetails, tableDetails, tableProductInventory } = FormDetails();
 
-  const [formButtonLoading, setFormButtonLoading] = useState(true)
   const [contentLoading, setContentLoading] = useState(true);
+  const [processingData, setProcessingData] = useState(false);
   const [productModal, setProductModal] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [productInv, setProductInv] = useState([]);
@@ -29,7 +29,7 @@ const InputForm = (props) => {
   const { user } = useSelector((state) => state.auth);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { list: clientList } = useSelector((state) => state.maintenance.clients);
-  const { list: productInventoryList } = useSelector((state) => state.maintenance.productInventory);
+  const { list: productInventoryList } = useSelector((state) => state.dashboard.productInventories);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -39,7 +39,6 @@ const InputForm = (props) => {
     });
 
     setContentLoading(false);
-    setFormButtonLoading(false)
   }, [user, form]);
 
   useEffect(() => {
@@ -167,11 +166,12 @@ const InputForm = (props) => {
   };
 
   const onFinish = () => {
+    setProcessingData(true)
     form.setFieldsValue({salesOrderProducts: requestedProductList});
-    setFormButtonLoading(true)
-    onSubmit(form.getFieldsValue());
-    setFormButtonLoading(false)
-    history.goBack();
+    onSubmit(form.getFieldsValue()).then(() => {
+      setProcessingData(false)
+      history.goBack();
+    })
   };
 
   return (
@@ -233,10 +233,10 @@ const InputForm = (props) => {
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
-                    <Button htmlType="button" onClick={() => history.goBack()} loading={formButtonLoading}>
+                    <Button htmlType="button" onClick={() => history.goBack()} disabled={processingData}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit" loading={formButtonLoading}>
+                    <Button type="primary" htmlType="submit" loading={processingData}>
                       Submit
                     </Button>
                   </Space>
