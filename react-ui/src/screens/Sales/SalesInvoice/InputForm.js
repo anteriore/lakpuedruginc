@@ -22,13 +22,14 @@ const InputForm = (props) => {
   const { salesInfoHeader, salesOrderHeader } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
+  const [processingData, setProcessingData] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [selectedSales, setSelectedSales] = useState(null);
   const [showSalesSection, setShowSalesSection] = useState(false);
   const [selectedLot, setSelectedLot] = useState([]);
   const [salesInvoiceProducts, setSalesInvoiceProducts] = useState([]);
 
-  const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
+  const { list: productInvList } = useSelector((state) => state.dashboard.productInventories);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
   const { user } = useSelector((state) => state.auth);
@@ -137,8 +138,11 @@ const InputForm = (props) => {
   };
 
   const onFinish = (value) => {
-    onSubmit(value, selectedSales, salesInvoiceProducts);
-    history.goBack();
+    setProcessingData(true)
+    onSubmit(value, selectedSales, salesInvoiceProducts).then(() => {
+      setProcessingData(false)
+      history.goBack();
+    })
   };
 
   return (
