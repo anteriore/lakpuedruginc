@@ -69,29 +69,6 @@ const AcknowledgementReceipts = (props) => {
 
   const handleUpdate = (data) => {
     message.error('Unable to perform action.');
-    /*
-    setFormTitle('Edit Acknowledgement Receipt');
-    setFormMode('edit');
-    setLoading(true);
-    const itemData = listData.find((item) => item.id === data.id);
-    const formData = {
-      ...itemData,
-      date: moment(new Date(data.date)) || moment(),
-      chequeDate: data.cutOffDate !== null ? moment(new Date(data.chequeDate)) : null,
-      cutOffDate: data.cutOffDate !== null ? moment(new Date(data.cutOffDate)) : null,
-      client: itemData.client !== null ? itemData.client.id : null,
-      depot: itemData.depot !== null ? itemData.depot.id : null,
-    };
-    setFormData(formData);
-    dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          dispatch(listOrderSlips({ company, message })).then(() => {
-            history.push(`${path}/${data.id}`);
-            setLoading(false);
-          })
-        })
-    });
-    */
   };
 
   const handleDelete = (data) => {
@@ -114,7 +91,7 @@ const AcknowledgementReceipts = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payments = [];
     let totalSI = 0
     let totalOS = 0;
@@ -151,39 +128,23 @@ const AcknowledgementReceipts = (props) => {
       osAmount: totalOS,
       siAmount: totalSI,
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addAReceipt(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    await dispatch(addAReceipt(payload)).then((response) => {
+      setLoading(true);
+      if (response.payload.status === 200) {
+        message.success(`Successfully added ${response.payload.data.number}`);
+        history.goBack();
+        dispatch(listAReceipt({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addAReceipt(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to add Acknowledgement Receipt. Please double check the provided information.`
-          );
-        }
-      });
-    }
+        });
+      } else {
+        setLoading(false);
+        message.error(
+          `Unable to add Acknowledgement Receipt. Please double check the provided information.`
+        );
+      }
+    });
     setFormData(null);
+    return 1
   };
 
   const renderTableColumns = (item) => {

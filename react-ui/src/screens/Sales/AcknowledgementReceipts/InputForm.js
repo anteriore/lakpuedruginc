@@ -29,6 +29,7 @@ const FormScreen = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [toggleValue, setToggleValue] = useState(null);
+  const [processingData, setProcessingData] = useState(false);
   const [tableData, setTableData] = useState();
   const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
 
@@ -57,6 +58,7 @@ const FormScreen = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -69,7 +71,9 @@ const FormScreen = (props) => {
       }
     });
 
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setProcessingData(false)
+    })
   };
 
   const onFinishFailed = () => {
@@ -320,7 +324,7 @@ const FormScreen = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button type="primary" onClick={() => form.submit()} loading={processingData}>
               Submit
             </Button>
             <Button
@@ -329,6 +333,7 @@ const FormScreen = (props) => {
                 onCancel();
                 history.goBack();
               }}
+              disabled={processingData}
             >
               Cancel
             </Button>
