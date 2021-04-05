@@ -21,6 +21,7 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
 
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [tableData, setTableData] = useState([]);
 
@@ -35,6 +36,7 @@ const InputForm = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setFormButtonLoading(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -48,7 +50,9 @@ const InputForm = (props) => {
     });
 
     
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setFormButtonLoading(false);
+    });
   };
 
   const onFinishFailed = (errorInfo) => {

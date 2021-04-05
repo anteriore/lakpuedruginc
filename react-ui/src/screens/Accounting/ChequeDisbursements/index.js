@@ -113,10 +113,10 @@ const ChequeDisbursements = (props) => {
     }
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = processSubmitPayload(data)
-    console.log(payload)
-    dispatch(addChequeDisbursement(payload)).then((response) => {
+    
+    await dispatch(addChequeDisbursement(payload)).then((response) => {
       setLoading(true);
       
       const onSuccess = () => {
