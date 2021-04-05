@@ -19,7 +19,7 @@ import {
   rejectSalesOrder,
 } from './redux';
 import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
-import { clearData as clearClient, tempListClient } from '../../Maintenance/Clients/redux';
+import { clearData as clearClient, listClient } from '../../Maintenance/Clients/redux';
 import {
   clearData as clearPI,
   listProductInventory,
@@ -162,7 +162,7 @@ const SalesOrders = (props) => {
   const handleAddButton = () => {
     setContentLoading(true);
     dispatch(tempListDepot(company)).then((dataDepot) => {
-      dispatch(tempListClient(company)).then((dataClient) => {
+      dispatch(listClient(company)).then((dataClient) => {
         dispatch(listProductInventory({company})).then((dataPI) => {
           const promiseList = [dataDepot, dataPI, dataClient];
           const promiseResult = _.some(promiseList, (o) => {
