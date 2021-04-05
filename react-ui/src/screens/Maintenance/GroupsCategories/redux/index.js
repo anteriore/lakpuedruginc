@@ -4,9 +4,11 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
-  groupList: null,
-  categoryList: null,
-  status: '',
+  groupList: [],
+  categoryList: [],
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
