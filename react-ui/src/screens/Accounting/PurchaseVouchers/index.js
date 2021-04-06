@@ -10,7 +10,7 @@ import { listRRByNoPV, clearData as clearRR } from '../../Dashboard/ReceivingRec
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
 import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
@@ -89,7 +89,7 @@ const PurchaseVouchers = (props) => {
 				dispatch(listAccountTitles()).then((dataAC) => { 
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
-							dispatch(listG({company})).then((dataG) => {
+							dispatch(listGroupByCompany({company})).then((dataG) => {
 								const dataList = [dataVendor, dataAC, dataA, dataD, dataG];
 								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
 							})

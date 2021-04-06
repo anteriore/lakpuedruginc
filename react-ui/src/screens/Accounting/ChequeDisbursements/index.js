@@ -14,7 +14,7 @@ import {
 import { listChequePrintingByCompanyAndStatus, clearData as clearChequePrinting } from '../ChequePrintings/redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper from '../../../helpers/general-helper';
@@ -66,7 +66,7 @@ const ChequeDisbursements = (props) => {
       dispatch(listAccountTitles({ company, message })).then((response2) => {
         dispatch(listDepartment({ company, message })).then((response3) => {
           dispatch(listArea({ company, message })).then((response4) => {
-            dispatch(listGroup({ company, message })).then((response5) => {
+            dispatch(listGroupByCompany({ company })).then((response5) => {
               const onSuccess = () => {
                 history.push(`${path}/new`);
                 setLoading(false);

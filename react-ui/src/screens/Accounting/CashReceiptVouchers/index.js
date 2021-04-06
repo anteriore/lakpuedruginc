@@ -15,7 +15,7 @@ import { listBankAccount, clearData as clearBankAccount } from '../../Maintenanc
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../Vouchers/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux';
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux';
 
 const { Title, Text } = Typography;
 
@@ -59,7 +59,7 @@ const CashReceiptVouchers = (props) => {
       dispatch(listAccountTitles({ company, message })).then((response2) => {
         dispatch(listDepartment({ company, message })).then((response3) => {
           dispatch(listArea({ company, message })).then((response4) => {
-            dispatch(listGroup({ company, message })).then((response5) => {
+            dispatch(listGroupByCompany({ company })).then((response5) => {
               dispatch(listVoucherByCompanyAndStatus({ company, status: 'Completed' })).then((response6) => {
                 const onSuccess = () => {
                   history.push(`${path}/new`);

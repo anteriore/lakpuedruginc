@@ -8,7 +8,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import { columns } from './data';
 import { listVendor, addVendor, getVendor, deleteVendor, clearData } from './redux';
 import { listD, listA, clearData as clearA } from '../DepartmentArea/redux';
-import { listG, clearData as clearG } from '../GroupsCategories/redux';
+import { listGroupByCompany, clearData as clearG } from '../GroupsCategories/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 
 const { Title } = Typography;
@@ -141,7 +141,7 @@ const Vendors = (props) => {
     setLoading(true);
     dispatch(listA({ company, message })).then(() => {
       dispatch(listD({ company, message })).then(() => {
-        dispatch(listG({ company, message })).then(() => {
+        dispatch(listGroupByCompany({ company })).then(() => {
           history.push(`${path}/new`);
           setLoading(false);
         });
@@ -163,7 +163,7 @@ const Vendors = (props) => {
     setFormData(formData);
     dispatch(listA({ company, message })).then(() => {
       dispatch(listD({ company, message })).then(() => {
-        dispatch(listG({ company, message })).then(() => {
+        dispatch(listGroupByCompany({ company })).then(() => {
           history.push(`${path}/${data.id}`);
         });
       });

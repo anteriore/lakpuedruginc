@@ -8,7 +8,17 @@ import {
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { listG, addG, deleteG, listC, addC, deleteC, clearData } from './redux';
+import { 
+  listGroupByCompany, 
+  createGroup, 
+  updateGroup, 
+  deleteGroup, 
+  listCategory, 
+  createCategory, 
+  updateCategory, 
+  deleteCategory, 
+  clearData 
+} from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
@@ -55,13 +65,13 @@ const GroupsCategories = (props) => {
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listG({ company, message })).then((response) => {
+    dispatch(listGroupByCompany({ company })).then((response) => {
       setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
     });
-    dispatch(listC({ company, message }));
+    dispatch(listCategory());
     return () => {
       setselectedCategory(null);
       setselectedGroup(null);
@@ -95,13 +105,13 @@ const GroupsCategories = (props) => {
 
   const handleDeleteG = (data) => {
     setLoading(true);
-    dispatch(deleteG(data.id)).then((response) => {
+    dispatch(deleteGroup(data.id)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Group ${data.name}`);
         setselectedGroup(null);
         setselectedCategory(null);
-        dispatch(listG({ company, message })).then(() => {
-          dispatch(listC({ company, message })).then(() => {
+        dispatch(listGroupByCompany({ company })).then(() => {
+          dispatch(listCategory()).then(() => {
             setLoading(false);
           });
         });
@@ -116,7 +126,7 @@ const GroupsCategories = (props) => {
     setFormTitle('Add Category');
     setFormMode('add');
     setFormDataC(null);
-    dispatch(listG({ company, message })).then((response) => {
+    dispatch(listGroupByCompany({ company })).then((response) => {
       setDisplayFormC(true);
     });
     setDisplayFormG(false);
@@ -132,11 +142,11 @@ const GroupsCategories = (props) => {
 
   const handleDeleteC = (data) => {
     setLoading(true);
-    dispatch(deleteC(data.id)).then((response) => {
+    dispatch(deleteCategory(data.id)).then((response) => {
       if (response.payload.status === 200) {
         message.success(`Successfully deleted Category ${data.name}`);
-        dispatch(listG({ company, message })).then(() => {
-          dispatch(listC({ company, message })).then(() => {
+        dispatch(listGroupByCompany({ company })).then(() => {
+          dispatch(listCategory()).then(() => {
             setLoading(false);
             setselectedCategory(null);
           });
@@ -167,11 +177,11 @@ const GroupsCategories = (props) => {
         categories: selectedGroup.categories,
       };
 
-      dispatch(addG(payload)).then((response) => {
+      dispatch(updateGroup(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
           setselectedGroup(null);
-          dispatch(listG({ company, message })).then(() => {
+          dispatch(listGroupByCompany({ company, })).then(() => {
             setselectedCategory(null);
             setLoading(false);
           });
@@ -188,11 +198,11 @@ const GroupsCategories = (props) => {
         },
       };
 
-      dispatch(addG(payload)).then((response) => {
+      dispatch(createGroup(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully added ${data.name}`);
           setselectedGroup(null);
-          dispatch(listG({ company, message })).then(() => {
+          dispatch(listGroupByCompany({ company })).then(() => {
             setselectedCategory(null);
             setLoading(false);
           });
@@ -207,7 +217,7 @@ const GroupsCategories = (props) => {
     setFormDataG(null);
   };
 
-  const onSubmitC = (data) => {
+  const onSubmitC = async (data) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -218,10 +228,10 @@ const GroupsCategories = (props) => {
         },
       };
 
-      dispatch(addC(payload)).then((response) => {
+      await dispatch(updateCategory(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully updated ${data.name}`);
-          dispatch(listG({ company, message })).then((response) => {
+          dispatch(listGroupByCompany({ company })).then((response) => {
             const group = response.payload.data.find((group) => group.id === selectedGroup.id);
             const category = group.categories.find(
               (category) => category.id === selectedCategory.id
@@ -242,7 +252,7 @@ const GroupsCategories = (props) => {
           id: company,
         },
       };
-      dispatch(addC(payload)).then((response) => {
+      await dispatch(createCategory(payload)).then((response) => {
         if (response.payload.status === 200) {
           message.success(`Successfully added ${data.name}`);
           setselectedCategory(response.payload.data);
@@ -252,8 +262,8 @@ const GroupsCategories = (props) => {
             categories,
           };
           temp_workaround.categories.push(response.payload.data);
-          dispatch(addG(temp_workaround)).then(() => {
-            dispatch(listG({ company, message })).then((response) => {
+          dispatch(createGroup(temp_workaround)).then(() => {
+            dispatch(listGroupByCompany({ company })).then((response) => {
               const group = response.payload.data.find((group) => group.id === selectedGroup.id);
               setselectedGroup(group);
               setLoading(false);
@@ -268,6 +278,7 @@ const GroupsCategories = (props) => {
 
     setDisplayFormC(false);
     setFormDataC(null);
+    return 1
   };
 
   function onSelectGroup(value) {
