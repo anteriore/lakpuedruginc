@@ -270,12 +270,12 @@ const clientSlice = createSlice({
         ...state,  
         action: 'create', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
       };
     },
     [addClient.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
 
       return {
@@ -312,7 +312,7 @@ const clientSlice = createSlice({
       };
     },
     [updateClient.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
 
       return {
@@ -349,7 +349,7 @@ const clientSlice = createSlice({
       };
     },
     [deleteClient.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
 
       return {
