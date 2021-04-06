@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Typography, Button, message, Skeleton, Modal, Table, Empty, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,18 +33,21 @@ const Clients = (props) => {
   const { list: clients, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.clients);
   const { formDetails } = FormDetails();
   const { handleRequestResponse } = GeneralHelper()
+  const isMounted = useRef(true);
 
   useEffect(() => {
     dispatch(listClient({ company, message })).then(() => {
-      setFormData(null);
-      setLoading(false);
+      if(isMounted.current){
+        setFormData(null);
+        setLoading(false);
+      }
+      else {
+        performCleanup()
+      }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearCluster());
-      dispatch(clearInstitution());
-      dispatch(clearS());
+      isMounted.current = false
     };
   }, [dispatch, company]);
 
@@ -52,24 +55,34 @@ const Clients = (props) => {
     reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
   
-  
+  const performCleanup = () => {
+    dispatch(clearData());
+    dispatch(clearCluster());
+    dispatch(clearInstitution());
+    dispatch(clearS());
+  }
 
   const handleAdd = () => {
     setFormTitle('Add Client');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listCluster({ company, message })).then((response1) => {
+    dispatch(listCluster()).then((response1) => {
       dispatch(listInstitution({ company, message })).then((response2) => {
         dispatch(listS({ company, message })).then((response3) => {
-          const onSuccess = () => {
-              history.push(`${path}/new`);
+          if(isMounted.current){
+            const onSuccess = () => {
+                history.push(`${path}/new`);
+                setLoading(false);
+            }
+            const onFail = () => {
               setLoading(false);
+            }
+            handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
           }
-          const onFail = () => {
-            setLoading(false);
+          else {
+            performCleanup()
           }
-          handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
         });
       });
     });
@@ -87,17 +100,22 @@ const Clients = (props) => {
         clientData.institutionalCode !== null ? clientData.institutionalCode.id : null,
     };
     setFormData(formData);
-    dispatch(listCluster({ company, message })).then((response1) => {
+    dispatch(listCluster()).then((response1) => {
       dispatch(listInstitution({ company, message })).then((response2) => {
         dispatch(listS({ company, message })).then((response3) => {
-          const onSuccess = () => {
-            history.push(`${path}/${data.id}`);
-            setLoading(false);
+          if(isMounted.current){
+            const onSuccess = () => {
+              history.push(`${path}/${data.id}`);
+              setLoading(false);
+            }
+            const onFail = () => {
+              setLoading(false);
+            }
+            handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
           }
-          const onFail = () => {
-            setLoading(false);
+          else {
+            performCleanup()
           }
-          handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
         });
       });
     });

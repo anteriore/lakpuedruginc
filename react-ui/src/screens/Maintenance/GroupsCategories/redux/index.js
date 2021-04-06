@@ -8,7 +8,7 @@ const initialState = {
   groupList: [],
   categoryList: [],
   status: 'loading',
-  statusLevel: 'loading',
+  statusLevel: '',
   responseCode: null,
   statusMessage: '',
   action: '',
