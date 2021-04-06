@@ -49,6 +49,7 @@ const Clients = (props) => {
     return function cleanup() {
       isMounted.current = false
     };
+    // eslint-disable-next-line
   }, [dispatch, company]);
 
   useEffect(() => {

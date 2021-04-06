@@ -196,7 +196,7 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'fetch', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
       };
     },
@@ -239,7 +239,7 @@ const groupCategorySlice = createSlice({
       };
     },
     [createGroup.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Groups', state.action);
 
       return {
@@ -271,12 +271,12 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'update', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
       };
     },
     [updateGroup.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Groups', state.action);
 
       return {
@@ -308,12 +308,12 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'delete', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
       };
     },
     [deleteGroup.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Groups', state.action);
 
       return {
@@ -345,7 +345,7 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'fetch', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
       };
     },
@@ -383,12 +383,12 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'create', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
       };
     },
     [createCategory.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Categories', state.action);
 
       return {
@@ -420,12 +420,12 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'update', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
       };
     },
     [updateCategory.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Categories', state.action);
 
       return {
@@ -457,12 +457,12 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'delete', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
       };
     },
     [deleteCategory.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Categories', state.action);
 
       return {
