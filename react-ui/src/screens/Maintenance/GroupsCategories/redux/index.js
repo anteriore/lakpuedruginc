@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
   groupList: [],
@@ -165,7 +165,7 @@ export const updateCategory = createAsyncThunk('updateCategory', async (payload,
 
 export const deleteCategory = createAsyncThunk('deleteCategory', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-
+  
   try {
     const response = await axiosInstance.post(`rest/category/delete?token=${accessToken}`, payload);
 
