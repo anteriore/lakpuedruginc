@@ -234,7 +234,7 @@ const groupCategorySlice = createSlice({
         ...state,  
         action: 'create', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
       };
     },
