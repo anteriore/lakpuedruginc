@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deptColumns, tableName, areaColumns, formDetailD, formDetailA } from './data';
 import { listD, addD, updateD,deleteD, listA, addA, updateA,deleteA, clearData } from './redux';
 
-import { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 
@@ -23,6 +23,7 @@ const DepartmentArea = (props) => {
   const [formDataD, setFormDataD] = useState(null);
 
   const { company, title, actions } = props;
+  const { handleRequestResponse } = GeneralHelper()
   const dispatch = useDispatch();
   const {
     areaList: areaData, 
@@ -113,7 +114,7 @@ const DepartmentArea = (props) => {
     setFormDataD(null);
   };
 
-  const onSubmitD = (values) => {
+  const onSubmitD = async (values) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -124,12 +125,16 @@ const DepartmentArea = (props) => {
         },
       };
 
-      dispatch(updateD(payload)).then(() => {
-        dispatch(listD({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(updateD(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listD({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     } else if (formMode === 'add') {
       const payload = {
         ...values,
@@ -137,21 +142,27 @@ const DepartmentArea = (props) => {
           id: company,
         },
       };
-      dispatch(addD(payload)).then(() => {
-        dispatch(listD({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(addD(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listD({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     }
 
     setDisplayFormD(false);
     setDisplayFormA(false);
     setFormDataA(null);
     setFormDataD(null);
+
+    return 1
   };
 
-  const onSubmitA = (values) => {
+  const onSubmitA = async (values) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -162,12 +173,16 @@ const DepartmentArea = (props) => {
         },
       };
 
-      dispatch(updateA(payload)).then(() => {
-        dispatch(listA({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(updateA(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listA({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     } else if (formMode === 'add') {
       const payload = {
         ...values,
@@ -175,18 +190,23 @@ const DepartmentArea = (props) => {
           id: company,
         },
       };
-      dispatch(addA(payload)).then(() => {
-        dispatch(listA({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(addA(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listA({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     }
 
     setDisplayFormD(false);
     setDisplayFormA(false);
     setFormDataA(null);
     setFormDataD(null);
+    return 1
   };
 
   return (

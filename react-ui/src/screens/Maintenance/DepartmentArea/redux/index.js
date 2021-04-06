@@ -4,8 +4,8 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
-  deptList: null,
-  areaList: null,
+  deptList: [],
+  areaList: [],
   status: 'loading',
   statusLevel: '',
   responseCode: null,
@@ -26,7 +26,11 @@ export const listD = createAsyncThunk('listD', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -41,7 +45,11 @@ export const addD = createAsyncThunk('addD', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -56,7 +64,11 @@ export const updateD = createAsyncThunk('updateD', async (payload, thunkAPI) => 
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -74,7 +86,11 @@ export const deleteD = createAsyncThunk('deleteD', async (payload, thunkAPI) => 
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -91,7 +107,11 @@ export const listA = createAsyncThunk('listA', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -106,7 +126,11 @@ export const addA = createAsyncThunk('addA', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -121,7 +145,11 @@ export const updateA = createAsyncThunk('updateA', async (payload, thunkAPI) => 
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -136,7 +164,11 @@ export const deleteA = createAsyncThunk('deleteA', async (payload, thunkAPI) => 
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -152,6 +184,7 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for departments`
       }
     },
@@ -194,8 +227,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for departments`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for departments`,
         responseCode: null,
       };
     },
@@ -236,8 +269,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'update',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for departments`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for departments`,
         responseCode: null,
       };
     },
@@ -278,8 +311,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'delete',
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for departments`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for departments`,
         responseCode: null,
       };
     },
@@ -321,6 +354,7 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for areas`
       }
     },
@@ -363,8 +397,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for areas`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for areas`,
         responseCode: null,
       };
     },
@@ -405,8 +439,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'update',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for areas`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for areas`,
         responseCode: null,
       };
     },
@@ -447,8 +481,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         action: 'delete',
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for areas`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for areas`,
         responseCode: null,
       };
     },
