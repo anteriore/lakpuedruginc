@@ -54,7 +54,7 @@ const Vendors = (props) => {
   }, [dispatch])
 
   useEffect(() => {
-    dispatch(listVendor({ company, message })).then((response) => {
+    dispatch(listVendor({ company, message })).then(() => {
       if (isMounted.current){
         setFormData(null);
         setLoading(false);

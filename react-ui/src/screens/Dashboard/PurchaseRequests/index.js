@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Row,
   Col,
@@ -17,7 +17,7 @@ import { PlusOutlined, CheckOutlined, CloseOutlined, QuestionCircleOutlined } fr
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { listPR, cancelPR, addPR, deletePR, approvePR, rejectPR, clearData } from './redux';
+import { listPR, cancelPR, addPR, deletePR, approvePR, rejectPR, clearData, updatePR } from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
 import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 import { DisplayDetails, FormDetails } from './data';
@@ -25,7 +25,7 @@ import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, {reevalutateMessageStatus} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -45,32 +45,40 @@ const PurchaseRequests = (props) => {
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
 
-  const listData = useSelector((state) => state.dashboard.purchaseRequests.list);
+  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.dashboard.purchaseRequests);
 
   const { company, title, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
   const { handleRequestResponse } = GeneralHelper();
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearItem());
+    dispatch(clearDepartment());
+  }, [dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listPR({ company, message })).then(() => {
       dispatch(listD({ company, message })).then(() => {
-        setLoading(false);
-        if (isCancelled) {
-          dispatch(clearData());
+        if(isMounted.current){
+          setLoading(false);
+        }else{
+          performCleanup();
         }
       });
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearItem());
-      dispatch(clearDepartment());
-      isCancelled = true;
+      isMounted.current = false;
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  },[status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Purchase Request');
@@ -80,55 +88,80 @@ const PurchaseRequests = (props) => {
   };
 
   const handleUpdate = (data) => {
-    if (data.status === 'Pending') {
       setFormTitle('Edit Purchase Request');
       setFormMode('edit');
       setLoading(true);
-      const itemData = listData.find((item) => item.id === data.id);
+      const itemData = list.find((item) => item.id === data.id);
       dispatch(listItemSummary({ company, message })).then((response) => {
-        const inputData = loadDataForUpdate(itemData, response.payload.data);
-        setFormData(inputData);
-        history.push(`${path}/${data.id}`);
+        if(isMounted.current){
+          const onSuccess = () => {
+            const inputData = loadDataForUpdate(itemData, response.payload.data);
+            setFormData(inputData);
+            history.push(`${path}/${data.id}`);
+          }
+          const onFail = () => {
+            setLoading(false);
+          }
+          handleRequestResponse([response], onSuccess, onFail, '');
+        }
+        else {
+          performCleanup()
+        }
       });
-    } else {
-      message.error('This action may only be performed on pending purchase requests.');
-    }
   };
 
   const handleDelete = (data) => {
     setLoading(true);
-    dispatch(deletePR(data.id)).then(() => {
-      dispatch(listPR({ company, message })).then((response) => {
-        const onSuccess = () => {
+    dispatch(deletePR(data.id)).then((response) => {
+      const onSuccess = () => {
+        dispatch(listPR({ company, message })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted Purchase Request ${data.number}`);
-        }
+        });
+      }
+      const onFail = () => {
+        setLoading(false);
+      }
 
-        const onFail = () => {
-          setLoading(false);
-          message.error(`Unable to delete Purchase Request`);
-        }
-
-        handleRequestResponse([response], onSuccess, onFail, '');
-      });
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
+
   const handleRetrieve = (data) => {
     setDisplayModal(true);
     setSelectedData(data);
   };
 
   const handleApprove = (data) => {
-    dispatch(approvePR({ id: data.id })).then(() => {
-      closeModal();
-      dispatch(listPR({ company, message })).then(() => {});
+    setLoading(true);
+    dispatch(approvePR({ id: data.id })).then((response) => {
+      const onSuccess = () => {
+        closeModal();
+        dispatch(listPR({ company, message })).then(() => {
+          setLoading(false);
+        });
+      }
+      const onFail = () => {
+        setLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
   const handleReject = (data) => {
-    dispatch(rejectPR({ id: data.id })).then(() => {
-      closeModal();
-      dispatch(listPR({ company, message })).then(() => {});
+    setLoading(true);
+    dispatch(rejectPR({ id: data.id })).then((response) => {
+      const onSuccess = () => {
+        closeModal();
+        dispatch(listPR({ company, message })).then(() => {
+          setLoading(false);
+        });
+      }
+      const onFail = () => {
+        setLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -138,9 +171,18 @@ const PurchaseRequests = (props) => {
   };
 
   const onCancelPR = () => {
-    dispatch(cancelPR({ id: selectedData.id, remarks: remarks })).then(() => {
-      closeModal();
-      dispatch(listPR({ company, message })).then(() => {});
+    dispatch(cancelPR({ id: selectedData.id, remarks: remarks })).then((response) => {
+      const onSuccess = () => {
+        closeModal();
+        dispatch(listPR({ company, message })).then(() => {
+          setLoading(false);
+        });
+      }
+      const onFail = () => {
+        setLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
 
   }
@@ -154,31 +196,36 @@ const PurchaseRequests = (props) => {
 
     if (formMode === 'edit') {
       payload.id = formData.id;
-    }
-
-    await dispatch(addPR(payload)).then((response) => {
-
-      const onSuccess = async () => {
-        message.success(`Successfully saved ${response.payload.data.number}`);
+      await dispatch(updatePR(payload)).then((response) => {
         setLoading(true);
-        history.goBack();
-        dispatch(listPR({ company, message })).then(() => {
-          setLoading(false);
-        });
-      }
-      const onFail = () => {
-        setLoading(false);
-        if (formMode === 'add') {
-          message.error(
-            `Unable to add Purchase Request. Please double check the provided information.`
-          );
-        } else {
-          message.error(`Something went wrong. Unable to update ${data.number}.`);
+        const onSuccess = () => {
+          history.goBack();
+          dispatch(listPR({ company, message })).then(() => {
+            setLoading(false);
+          });
         }
-      }
-
-      handleRequestResponse([response], onSuccess, onFail, '');
-    })
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    }else {
+      await dispatch(addPR(payload)).then((response) => {
+        setLoading(true);
+        const onSuccess = () => {
+          history.goBack();
+          dispatch(listPR({ company, message })).then(() => {
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    }
     return 1
   };
 
@@ -242,7 +289,7 @@ const PurchaseRequests = (props) => {
             <Col span={20}>
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
