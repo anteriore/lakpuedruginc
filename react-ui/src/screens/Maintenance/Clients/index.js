@@ -67,7 +67,7 @@ const Clients = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listCluster({ company, message })).then((response1) => {
+    dispatch(listCluster()).then((response1) => {
       dispatch(listInstitution({ company, message })).then((response2) => {
         dispatch(listS({ company, message })).then((response3) => {
           if(isMounted.current){
@@ -100,7 +100,7 @@ const Clients = (props) => {
         clientData.institutionalCode !== null ? clientData.institutionalCode.id : null,
     };
     setFormData(formData);
-    dispatch(listCluster({ company, message })).then((response1) => {
+    dispatch(listCluster()).then((response1) => {
       dispatch(listInstitution({ company, message })).then((response2) => {
         dispatch(listS({ company, message })).then((response3) => {
           if(isMounted.current){
