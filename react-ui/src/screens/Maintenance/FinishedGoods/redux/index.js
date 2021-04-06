@@ -23,7 +23,11 @@ export const getFGList = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
   }
 );
@@ -40,7 +44,11 @@ export const createFG = createAsyncThunk('createFG', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -54,7 +62,11 @@ export const updateFG = createAsyncThunk('updateFG', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -69,7 +81,11 @@ export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
