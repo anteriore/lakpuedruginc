@@ -2,89 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Button, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { deptColumns, tableName, areaColumns, formDetailD, formDetailA } from './data';
+import { listD, addD, updateD,deleteD, listA, addA, updateA,deleteA, clearData } from './redux';
+
 import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
-import { listD, addD, updateD,deleteD, listA, addA, updateA,deleteA, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 
 const DepartmentArea = (props) => {
+  const [loading, setLoading] = useState(true);
+
   const [displayFormD, setDisplayFormD] = useState(false);
   const [displayFormA, setDisplayFormA] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formDataA, setFormDataA] = useState(null);
   const [formDataD, setFormDataD] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const deptColumns = [
-    {
-      title: 'Dept. Code',
-      dataIndex: 'code',
-      key: 'code',
-      datatype: 'string',
-    },
-    {
-      title: 'Dept. Name',
-      dataIndex: 'name',
-      key: 'name',
-      datatype: 'string',
-    },
-  ];
-
-  const tableName = 'department-areas';
-
-  const areaColumns = [
-    {
-      title: 'Area Code',
-      dataIndex: 'code',
-      key: 'code',
-      datatype: 'string',
-    },
-    {
-      title: 'Area Name',
-      dataIndex: 'name',
-      key: 'name',
-      datatype: 'string',
-    },
-  ];
-
-  const formDetailD = {
-    form_name: 'departments',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid department name' }],
-        placeholder: 'Department name',
-      },
-      {
-        label: 'Code',
-        name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid department code' }],
-        placeholder: 'Department code',
-      },
-    ],
-  };
-
-  const formDetailA = {
-    form_name: 'areas',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid area name' }],
-        placeholder: 'Area name',
-      },
-      {
-        label: 'Code',
-        name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid area code' }],
-        placeholder: 'Area code',
-      },
-    ],
-  };
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
