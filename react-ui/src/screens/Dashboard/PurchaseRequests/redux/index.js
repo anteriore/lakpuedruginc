@@ -388,7 +388,7 @@ const purchaseRequestSlice = createSlice({
         action: 'create', 
         status: 'loading',
         statusLevel: 'loading',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for material issuance` 
       };
     },
     [addPR.fulfilled]: (state, action) => {
