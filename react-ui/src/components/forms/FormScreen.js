@@ -362,6 +362,7 @@ const FormScreen = (props) => {
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={loading} 
               onClick={() => {
                 onCancel();
                 history.goBack();
