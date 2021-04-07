@@ -14,13 +14,14 @@ const initialState = {
   action: '',
 };
 
-export const listG = createAsyncThunk('listG', async (payload, thunkAPI) => {
+export const listGroupByCompany = createAsyncThunk('listGroupByCompany', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
+  try {
     const response = await axiosInstance.get(
       `rest/group/company/${payload.company}?token=${accessToken}`
     );
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -28,15 +29,20 @@ export const listG = createAsyncThunk('listG', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
-export const addG = createAsyncThunk('addG', async (payload, thunkAPI) => {
+export const createGroup = createAsyncThunk('createGroup', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
+  try {
     const response = await axiosInstance.post(`rest/group/?token=${accessToken}`, payload);
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -44,15 +50,20 @@ export const addG = createAsyncThunk('addG', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
-export const updateG = createAsyncThunk('updateG', async (payload, thunkAPI) => {
+export const updateGroup = createAsyncThunk('updateGroup', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
+  try {
     const response = await axiosInstance.post(`rest/group/?token=${accessToken}`, payload);
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -60,14 +71,20 @@ export const updateG = createAsyncThunk('updateG', async (payload, thunkAPI) => 
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
-export const deleteG = createAsyncThunk('deleteG', async (payload, thunkAPI) => {
+export const deleteGroup = createAsyncThunk('deleteGroup', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+
   try {
     const response = await axiosInstance.post(`rest/group/delete?token=${accessToken}`, payload);
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -75,14 +92,20 @@ export const deleteG = createAsyncThunk('deleteG', async (payload, thunkAPI) => 
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
-export const listC = createAsyncThunk('listC', async (payload, thunkAPI, rejectWithValue) => {
+export const listCategory = createAsyncThunk('listCategory', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+
   try {
     const response = await axiosInstance.get(`rest/category/?token=${accessToken}`);
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -90,52 +113,74 @@ export const listC = createAsyncThunk('listC', async (payload, thunkAPI, rejectW
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
-export const addC = createAsyncThunk('addC', async (payload, thunkAPI) => {
+export const createCategory = createAsyncThunk('createCategory', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+
+  try {
     const response = await axiosInstance.post(`rest/category/?token=${accessToken}`, payload);
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
-export const updateC = createAsyncThunk('updateC', async (payload, thunkAPI) => {
+export const updateCategory = createAsyncThunk('updateCategory', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+
+  try {
     const response = await axiosInstance.post(`rest/category/?token=${accessToken}`, payload);
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
-export const deleteC = createAsyncThunk('deleteC', async (payload, thunkAPI) => {
+export const deleteCategory = createAsyncThunk('deleteCategory', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  
   try {
     const response = await axiosInstance.post(`rest/category/delete?token=${accessToken}`, payload);
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    })
   }
 });
 
@@ -146,77 +191,29 @@ const groupCategorySlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listG.pending]: (state) => {
-      return {
-        ...state,
-        action: 'fetch',
+    [listGroupByCompany.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for groups`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
+      };
     },
-    [listG.fulfilled]: (state, action) => {
+    [listGroupByCompany.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Groups',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'Groups', state.action);
 
       return {
         ...state,
         groupList: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
-        statusMessage,
-      };
-    },
-    [listG.rejected]: (state, action) => {
-      const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Groups',
-        state.action
-      );
-
-      return {
-        ...state,
-        groupList: [],
-        status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
-        statusMessage,
-      };
-    },
-    [addG.pending]: (state) => {
-      return {
-        ...state,
-        action: 'create',
-        status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for groups`,
-        statusLevel: '',
-        responseCode: null,
-      };
-    },
-    [addG.fulfilled]: (state, action) => {
-      const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Groups',
-        state.action
-      );
-
-      return {
-        ...state,
-        status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage,
+        statusMessage: message,
       };
     },
-    [addG.rejected]: (state, action) => {
-      const { status } = action.payload;
+    [listGroupByCompany.rejected]: (state, action) => {
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
         'Groups',
@@ -225,39 +222,35 @@ const groupCategorySlice = createSlice({
 
       return {
         ...state,
+        data: [],
         status: 'failed',
         statusLevel: level,
-        responseCode: status,
+        responseCode: null,
         statusMessage,
       };
-    },    
-    [updateG.pending]: (state) => {
-      return {
-        ...state,
-        action: 'update',
+    },
+    [createGroup.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for groups`,
         statusLevel: '',
-        responseCode: null,
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
       };
     },
-    [updateG.fulfilled]: (state, action) => {
+    [createGroup.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Groups',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'Groups', state.action);
 
       return {
         ...state,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage,
+        statusMessage: message,
       };
     },
-    [updateG.rejected]: (state, action) => {
+    [createGroup.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
@@ -273,33 +266,28 @@ const groupCategorySlice = createSlice({
         statusMessage,
       };
     },
-    [deleteG.pending]: (state) => {
-      return {
-        ...state,
-        action: 'delete',
+    [updateGroup.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for groups`,
         statusLevel: '',
-        responseCode: null,
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
       };
     },
-    [deleteG.fulfilled]: (state, action) => {
+    [updateGroup.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Groups',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'Groups', state.action);
 
       return {
         ...state,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage,
+        statusMessage: message,
       };
     },
-    [deleteG.rejected]: (state, action) => {
+    [updateGroup.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
@@ -315,123 +303,107 @@ const groupCategorySlice = createSlice({
         statusMessage,
       };
     },
-
-    [listC.pending]: (state) => {
-      return {
-        ...state,
-        action: 'fetch',
+    [deleteGroup.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for departments`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
+      };
     },
-    [listC.fulfilled]: (state, action) => {
+    [deleteGroup.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Groups', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deleteGroup.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Groups',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listCategory.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
+      };
+    },
+    [listCategory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Category',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'Categories', state.action);
 
       return {
         ...state,
         categoryList: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
-        statusMessage,
-      };
-    },
-    [listC.rejected]: (state, action) => {
-      const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Category',
-        state.action
-      );
-
-      return {
-        ...state,
-        categoryList: [],
-        status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
-        statusMessage,
-      };
-    },
-    [addC.pending]: (state) => {
-      return {
-        ...state,
-        action: 'create',
-        status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for categories`,
-        statusLevel: '',
-        responseCode: null,
-      };
-    },
-    [addC.fulfilled]: (state, action) => {
-      const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Category',
-        state.action
-      );
-
-      return {
-        ...state,
-        status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage,
+        statusMessage: message,
       };
     },
-    [addC.rejected]: (state, action) => {
-      const { status } = action.payload;
+    [listCategory.rejected]: (state, action) => {
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Category',
+        'Categories',
         state.action
       );
 
       return {
         ...state,
+        data: [],
         status: 'failed',
         statusLevel: level,
-        responseCode: status,
+        responseCode: null,
         statusMessage,
       };
-    },    
-    [updateC.pending]: (state) => {
-      return {
-        ...state,
-        action: 'update',
+    },
+    [createCategory.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for categories`,
         statusLevel: '',
-        responseCode: null,
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
       };
     },
-    [updateC.fulfilled]: (state, action) => {
+    [createCategory.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Category',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'Categories', state.action);
 
       return {
         ...state,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage,
+        statusMessage: message,
       };
     },
-    [updateC.rejected]: (state, action) => {
+    [createCategory.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Category',
+        'Categories',
         state.action
       );
 
@@ -443,37 +415,69 @@ const groupCategorySlice = createSlice({
         statusMessage,
       };
     },
-    [deleteC.pending]: (state) => {
-      return {
-        ...state,
-        action: 'delete',
+    [updateCategory.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for categories`,
         statusLevel: '',
-        responseCode: null,
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
       };
     },
-    [deleteC.fulfilled]: (state, action) => {
+    [updateCategory.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Category',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'Categories', state.action);
 
       return {
         ...state,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage,
+        statusMessage: message,
       };
     },
-    [deleteC.rejected]: (state, action) => {
+    [updateCategory.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Category',
+        'Categories',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteCategory.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
+      };
+    },
+    [deleteCategory.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Categories', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deleteCategory.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Categories',
         state.action
       );
 

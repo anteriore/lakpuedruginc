@@ -11,7 +11,7 @@ import { listVoucherByCompany, clearData as clearVouchers } from '../Vouchers/re
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
 import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import moment from 'moment';
 import _ from "lodash";
@@ -84,7 +84,7 @@ const JournalVouchers = (props) => {
 				dispatch(listAccountTitles()).then((dataAC) => { 
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
-							dispatch(listG({company})).then((dataG) => {
+							dispatch(listGroupByCompany({company})).then((dataG) => {
 								const dataList = [dataVoucher,dataVendor, dataAC, dataA, dataD, dataG];
 								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
 							})

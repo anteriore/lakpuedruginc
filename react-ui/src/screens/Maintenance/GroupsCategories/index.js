@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Select, Skeleton, Popconfirm, message } from 'antd';
+import { Row, Col, Typography, Button, Select, Skeleton, Popconfirm } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -8,8 +8,20 @@ import {
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { listG, addG, deleteG, listC, addC, deleteC, clearData } from './redux';
+import { 
+  listGroupByCompany, 
+  createGroup, 
+  updateGroup, 
+  deleteGroup, 
+  listCategory, 
+  createCategory, 
+  updateCategory, 
+  deleteCategory, 
+  clearData 
+} from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import { formDetailC, formDetailG } from './data';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -18,50 +30,32 @@ const GroupsCategories = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayFormG, setDisplayFormG] = useState(false);
   const [displayFormC, setDisplayFormC] = useState(false);
+
   const [selectedCategory, setselectedCategory] = useState(null);
   const [selectedGroup, setselectedGroup] = useState(null);
+
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formDataG, setFormDataG] = useState(null);
   const [formDataC, setFormDataC] = useState(null);
-  const groupData = useSelector((state) => state.maintenance.groupsCategories.groupList);
 
-  const formDetailG = {
-    form_name: 'groups',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid group name' }],
-        placeholder: 'Group name',
-      },
-    ],
-  };
+  const { groupList: groupData, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.groupsCategories);
 
-  const formDetailC = {
-    form_name: 'categories',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid category name' }],
-        placeholder: 'Category name',
-      },
-    ],
-  };
+  const { handleRequestResponse } = GeneralHelper()
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listG({ company, message })).then((response) => {
-      setLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
-      }
+    dispatch(listGroupByCompany({ company })).then(() => {
+      dispatch(listCategory()).then(() => {
+        setLoading(false);
+        if (isCancelled) {
+          dispatch(clearData());
+        }
+      })
     });
-    dispatch(listC({ company, message }));
     return () => {
       setselectedCategory(null);
       setselectedGroup(null);
@@ -76,6 +70,11 @@ const GroupsCategories = (props) => {
       setselectedGroup(group);
     }
   }, [groupData, selectedGroup]);
+
+  
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddG = () => {
     setFormTitle('Add Group');
@@ -95,20 +94,20 @@ const GroupsCategories = (props) => {
 
   const handleDeleteG = (data) => {
     setLoading(true);
-    dispatch(deleteG(data.id)).then((response) => {
-      if (response.payload.status === 200) {
-        message.success(`Successfully deleted Group ${data.name}`);
+    dispatch(deleteGroup(data.id)).then((response) => {
+      const onSuccess = () => {
         setselectedGroup(null);
         setselectedCategory(null);
-        dispatch(listG({ company, message })).then(() => {
-          dispatch(listC({ company, message })).then(() => {
+        dispatch(listGroupByCompany({ company })).then(() => {
+          dispatch(listCategory()).then(() => {
             setLoading(false);
           });
         });
-      } else {
-        message.error(`Unable to delete Group ${data.name}`);
+      }
+      const onFail = () => {
         setLoading(false);
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -116,7 +115,7 @@ const GroupsCategories = (props) => {
     setFormTitle('Add Category');
     setFormMode('add');
     setFormDataC(null);
-    dispatch(listG({ company, message })).then((response) => {
+    dispatch(listGroupByCompany({ company })).then(() => {
       setDisplayFormC(true);
     });
     setDisplayFormG(false);
@@ -132,19 +131,19 @@ const GroupsCategories = (props) => {
 
   const handleDeleteC = (data) => {
     setLoading(true);
-    dispatch(deleteC(data.id)).then((response) => {
-      if (response.payload.status === 200) {
-        message.success(`Successfully deleted Category ${data.name}`);
-        dispatch(listG({ company, message })).then(() => {
-          dispatch(listC({ company, message })).then(() => {
+    dispatch(deleteCategory(data.id)).then((response) => {
+      const onSuccess = () => {
+        dispatch(listGroupByCompany({ company })).then(() => {
+          dispatch(listCategory()).then(() => {
             setLoading(false);
             setselectedCategory(null);
           });
         });
-      } else {
-        message.error(`Unable to delete Category ${data.name}`);
+      }
+      const onFail = () => {
         setLoading(false);
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -155,7 +154,7 @@ const GroupsCategories = (props) => {
     setFormDataC(null);
   };
 
-  const onSubmitG = (data) => {
+  const onSubmitG = async (data) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -167,18 +166,18 @@ const GroupsCategories = (props) => {
         categories: selectedGroup.categories,
       };
 
-      dispatch(addG(payload)).then((response) => {
-        if (response.payload.status === 200) {
-          message.success(`Successfully updated ${data.name}`);
+      await dispatch(updateGroup(payload)).then((response) => {
+        const onSuccess = () => {
           setselectedGroup(null);
-          dispatch(listG({ company, message })).then(() => {
+          dispatch(listGroupByCompany({ company, })).then(() => {
             setselectedCategory(null);
             setLoading(false);
           });
-        } else {
-          message.error(`Unable to update ${data.name}`);
+        }
+        const onFail = () => {
           setLoading(false);
         }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -188,26 +187,27 @@ const GroupsCategories = (props) => {
         },
       };
 
-      dispatch(addG(payload)).then((response) => {
-        if (response.payload.status === 200) {
-          message.success(`Successfully added ${data.name}`);
+      await dispatch(createGroup(payload)).then((response) => {
+        const onSuccess = () => {
           setselectedGroup(null);
-          dispatch(listG({ company, message })).then(() => {
+          dispatch(listGroupByCompany({ company })).then(() => {
             setselectedCategory(null);
             setLoading(false);
           });
-        } else {
-          message.error(`Unable to add ${data.name}`);
+        }
+        const onFail = () => {
           setLoading(false);
         }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayFormG(false);
     setFormDataG(null);
+    return 1
   };
 
-  const onSubmitC = (data) => {
+  const onSubmitC = async (data) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -218,10 +218,9 @@ const GroupsCategories = (props) => {
         },
       };
 
-      dispatch(addC(payload)).then((response) => {
-        if (response.payload.status === 200) {
-          message.success(`Successfully updated ${data.name}`);
-          dispatch(listG({ company, message })).then((response) => {
+      await dispatch(updateCategory(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listGroupByCompany({ company })).then((response) => {
             const group = response.payload.data.find((group) => group.id === selectedGroup.id);
             const category = group.categories.find(
               (category) => category.id === selectedCategory.id
@@ -230,10 +229,11 @@ const GroupsCategories = (props) => {
             setselectedCategory(category);
             setLoading(false);
           });
-        } else {
-          message.error(`Unable to update ${data.name}`);
+        }
+        const onFail = () => {
           setLoading(false);
         }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -242,9 +242,8 @@ const GroupsCategories = (props) => {
           id: company,
         },
       };
-      dispatch(addC(payload)).then((response) => {
-        if (response.payload.status === 200) {
-          message.success(`Successfully added ${data.name}`);
+      await dispatch(createCategory(payload)).then((response) => {
+        const onSuccess = () => {
           setselectedCategory(response.payload.data);
           const categories = selectedGroup.categories.map((i) => ({ ...i }));
           const temp_workaround = {
@@ -252,22 +251,24 @@ const GroupsCategories = (props) => {
             categories,
           };
           temp_workaround.categories.push(response.payload.data);
-          dispatch(addG(temp_workaround)).then(() => {
-            dispatch(listG({ company, message })).then((response) => {
+          dispatch(createGroup(temp_workaround)).then(() => {
+            dispatch(listGroupByCompany({ company })).then((response) => {
               const group = response.payload.data.find((group) => group.id === selectedGroup.id);
               setselectedGroup(group);
               setLoading(false);
             });
           });
-        } else {
-          message.error(`Unable to add ${data.name}`);
+        }
+        const onFail = () => {
           setLoading(false);
         }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayFormC(false);
     setFormDataC(null);
+    return 1
   };
 
   function onSelectGroup(value) {

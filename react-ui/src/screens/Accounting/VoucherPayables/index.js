@@ -16,7 +16,7 @@ import {
 } from './redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux'
 
 import InputForm from './InputForm';
@@ -70,7 +70,7 @@ const VoucherPayables = (props) => {
     dispatch(listAccountTitles({ company, message })).then((response1) => {
       dispatch(listDepartment({ company, message })).then((response2) => {
         dispatch(listArea({ company, message })).then((response3) => {
-          dispatch(listGroup({ company, message })).then((response4) => {
+          dispatch(listGroupByCompany({ company })).then((response4) => {
               dispatch(listVendor({ company, message })).then((response5) => {
                 const onSuccess = () => {
                   history.push(`${path}/new`);

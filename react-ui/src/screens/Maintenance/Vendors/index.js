@@ -8,7 +8,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listVendor, addVendor, getVendor, updateVendor,deleteVendor, clearData } from './redux';
 import { listD, listA, clearData as clearA } from '../DepartmentArea/redux';
-import { listG, clearData as clearG } from '../GroupsCategories/redux';
+import { listGroupByCompany, clearData as clearG } from '../GroupsCategories/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
@@ -99,7 +99,7 @@ const Vendors = (props) => {
     setLoading(true);
     dispatch(listA({ company, message })).then((resp1) => {
       dispatch(listD({ company, message })).then((resp2) => {
-        dispatch(listG({ company, message })).then((resp3) => {
+        dispatch(listGroupByCompany({ company })).then((resp3) => {
           if(isMounted.current){
             const onSuccess = () => {
                 history.push(`${path}/new`);
@@ -131,7 +131,7 @@ const Vendors = (props) => {
     setFormData(formData);
     dispatch(listA({ company, message })).then((resp1) => {
       dispatch(listD({ company, message })).then((resp2) => {
-        dispatch(listG({ company, message })).then((resp3) => {
+        dispatch(listGroupByCompany({ company })).then((resp3) => {
           if(isMounted.current){
             const onSuccess = () => {
                 history.push(`${path}/new`);

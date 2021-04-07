@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
 import { listS, addS, deleteS, clearData } from './redux';
-import { listC, clearData as clearC } from '../GroupsCategories/redux';
+import { listCategory, clearData as clearC } from '../GroupsCategories/redux';
 import { listRegionCode, clearData as clearRegionCode } from '../RegionCodes/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 
@@ -122,7 +122,7 @@ const SalesReps = (props) => {
     setFormTitle('Add Depot');
     setFormMode('add');
     setFormData(null);
-    dispatch(listC({ company, message })).then(() => {
+    dispatch(listCategory()).then(() => {
       dispatch(listRegionCode({ company, message })).then(() => {
         setDisplayForm(true);
       });
@@ -138,7 +138,7 @@ const SalesReps = (props) => {
       regionCode: data.regionCode.id,
     };
     setFormData(formData);
-    dispatch(listC({ company, message })).then(() => {
+    dispatch(listCategory()).then(() => {
       dispatch(listRegionCode({ company, message })).then(() => {
         setDisplayForm(true);
       });
