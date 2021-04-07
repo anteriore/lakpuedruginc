@@ -2,24 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+
+import { tableHeader, formDetails } from './data';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
-import { tableHeader, formDetails } from './data';
 import { listMemo, createMemo, updateMemo, deleteMemo, clearData } from './redux';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const MemoTypes = (props) => {
   const { title, actions } = props;
+  const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
+
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [modalTitle, setModalTitle] = useState('');
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const dispatch = useDispatch();
-  const { memoList, action, statusMessage } = useSelector((state) => state.maintenance.memoTypes);
+  const { list: memoList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.memoTypes);
 
   useEffect(() => {
     let isCancelled = false;
@@ -37,16 +41,8 @@ const MemoTypes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Memo Type');
@@ -70,9 +66,6 @@ const MemoTypes = (props) => {
           setLoading(false);
         });
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -80,26 +73,41 @@ const MemoTypes = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateMemo(newValues)).then(() => {
-        dispatch(listMemo({ message })).then(() => {
+      await dispatch(updateMemo(newValues)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listMemo({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        });
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
-      dispatch(createMemo(values)).then(() => {
-        dispatch(listMemo({ message })).then(() => {
+      await dispatch(createMemo(values)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listMemo({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        });
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (
