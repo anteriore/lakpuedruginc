@@ -122,10 +122,6 @@ const ProductMovements = (props) => {
   const onCreate = async (values) => {
     setContentLoading(true);
     await dispatch(createProductMovement(formatPMPayload(id, company, values))).then((response) => {
-      // dispatch(listProductMovements(company)).then(() => {
-      //   setContentLoading(false);
-      // });
-
       const onSuccess = () => {
         dispatch(listProductMovements(company)).then(() => {
           setContentLoading(false);
