@@ -153,7 +153,7 @@ const clusterCodeSlice = createSlice({
       };
     },
     [createCluster.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Cluster Codes', state.action);
 
       return {
@@ -190,7 +190,7 @@ const clusterCodeSlice = createSlice({
       };
     },
     [updateCluster.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Cluster Codes', state.action);
 
       return {
@@ -227,7 +227,7 @@ const clusterCodeSlice = createSlice({
       };
     },
     [deleteCluster.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
+      const { status } = action.payload;
       const { message, level } = generateStatusMessage(action.payload, 'Cluster Codes', state.action);
 
       return {
