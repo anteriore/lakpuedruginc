@@ -14,22 +14,23 @@ const initialState = {
 
 export const listApprovedReceipts = createAsyncThunk('listApprovedReceipts', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `rest/approved-receipts/company/${payload.company}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.get(
-    `rest/approved-receipts/company/${payload.company}?token=${accessToken}`
-  );
-
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for approved receipts');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
-
-  return response;
 });
 
 export const addApprovedReceipt = createAsyncThunk(
@@ -46,7 +47,11 @@ export const addApprovedReceipt = createAsyncThunk(
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -85,13 +90,19 @@ const approvedReceiptSlice = createSlice({
     [listApprovedReceipts.pending]: (state) => {
       return {
         ...state,
-        action: 'fetch',
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for approved receipts`
       }
     },
     [listApprovedReceipts.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(action.payload, 'Product Movement');
+      const {message: statusMessage, level} = generateStatusMessage(
+        action.payload, 
+        'Approved Receipts',
+        state.action  
+      );
 
       return {
         ...state,
@@ -104,7 +115,11 @@ const approvedReceiptSlice = createSlice({
     },
     [listApprovedReceipts.rejected]: (state, action) => {
       const {status} = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(action.payload, 'Product Movement');
+      const {message: statusMessage, level} = generateStatusMessage(
+        action.payload, 
+        'Approved Receipts',
+        state.action
+      );
 
       return {
         ...state,
@@ -129,7 +144,8 @@ const approvedReceiptSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Approved Receipts'
+        'Approved Receipts',
+        state.action
       );
 
       return {
@@ -144,7 +160,8 @@ const approvedReceiptSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Approved Receipts'
+        'Approved Receipts',
+        state.action
       );
 
       return {
