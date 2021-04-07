@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Row, Col, Layout, Typography, Form, Skeleton, Table, InputNumber, Checkbox, Space, Button, Alert } from 'antd';
-import { InfoCircleFilled, DeleteOutlined } from '@ant-design/icons';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import _ from 'lodash';
 import { useHistory, useRouteMatch } from 'react-router-dom';
