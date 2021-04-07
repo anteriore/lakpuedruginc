@@ -12,7 +12,7 @@ import { formDetails, tableHeader, productModalHeader } from './data';
 import { listProductMovements, clearData, createProductMovement } from './redux';
 import InputForm from './InputForm';
 import statusDialogue from '../../../components/StatusDialogue';
-import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
 import {
   clearData as clearPI,
   tempListProductInventory,
@@ -135,7 +135,7 @@ const ProductMovements = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(tempListDepot(company)).then((dataDepot) => {
+    dispatch(listDepot({company})).then((dataDepot) => {
       dispatch(tempListProductInventory()).then((dataPI) => {
         const promiseList = [dataDepot, dataPI];
         const promiseResult = _.some(promiseList, (o) => {

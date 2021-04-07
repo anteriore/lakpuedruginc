@@ -5,7 +5,7 @@ import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
-  list: null,
+  list: [],
   status: 'loading',
   statusLevel: '',
   responseCode: null,
@@ -13,11 +13,11 @@ const initialState = {
   action: '',
 };
 
-export const tempListDepot = createAsyncThunk('tempListDepot', async (payload, thunkAPI) => {
+export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
   try {
-    const response = await axiosInstance.get(`/rest/depots?token=${accessToken}`);
+    const response = await axiosInstance.get(`rest/depots?token=${accessToken}`);
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -26,51 +26,75 @@ export const tempListDepot = createAsyncThunk('tempListDepot', async (payload, t
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
-  }
-});
-
-export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  let { fnCallback } = payload;
-  if (typeof fnCallback !== 'function') {
-    fnCallback = () => {};
-  }
-  const response = await axiosInstance.get(`rest/depots?token=${accessToken}`);
-
-  if (typeof response !== 'undefined') {
-    const { status } = response;
-    if (status === 200) {
-      if (response.data.length === 0) {
-        response.statusText = `${message.API_200_EMPTY} in depot.`;
-      } else {
-        response.statusText = `${message.API_200_SUCCESS} in depot.`;
-      }
-      fnCallback(response);
-      return response;
-    }
-
-    if (status === 500 || status === 400) {
-      fnCallback(response);
-      return thunkAPI.rejectWithValue(response);
-    }
-  } else {
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
 export const addDepot = createAsyncThunk('addDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/depots/?token=${accessToken}`, payload);
-  return response;
+  try {
+    const response = await axiosInstance.post(`rest/depots/?token=${accessToken}`, payload);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
+});
+
+export const updateDepot = createAsyncThunk('updateDepot', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try {
+    const response = await axiosInstance.post(`rest/depots/?token=${accessToken}`, payload);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const deleteDepot = createAsyncThunk('deleteDepot', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.post(`rest/depots/delete?token=${accessToken}`, payload);
-  return response;
+  try {
+    const response = await axiosInstance.post(`rest/depots/delete?token=${accessToken}`, payload);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 const depotSlice = createSlice({
@@ -80,64 +104,154 @@ const depotSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [tempListDepot.pending]: (state) => {
-      return {
-        ...state,
-        action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for depot`,
-      };
-    },
-    [tempListDepot.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Depot');
-
-      return {
-        ...state,
-        list: data,
-        status: 'succeeded',
-        statusLevel: level,
-        responseCode: status,
-        statusMessage: message,
-      };
-    },
-    [tempListDepot.rejected]: (state, action) => {
-      const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Depot');
-
-      return {
-        ...state,
-        status: 'failed',
-        statusLevel: level,
-        responseCode: status,
-        action: 'fetch',
-        statusMessage: message,
-      };
-    },
+    
     [listDepot.pending]: (state) => {
-      state.status = 'loading';
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: 'loading',
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+      };
     },
     [listDepot.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for depots';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depots', state.action);
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listDepot.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Depots',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
         statusMessage,
       };
     },
-    [listDepot.rejected]: (state) => {
+    [addDepot.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+      };
+    },
+    [addDepot.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depots', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [addDepot.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Depots',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateDepot.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'update', 
+        status: 'loading',
+        statusLevel: 'loading',
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+      };
+    },
+    [updateDepot.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depots', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [updateDepot.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Depots',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteDepot.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
+        status: 'loading',
+        statusLevel: 'loading',
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+      };
+    },
+    [deleteDepot.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Depots', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deleteDepot.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Depots',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },
