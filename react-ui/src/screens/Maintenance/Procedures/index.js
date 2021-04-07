@@ -29,7 +29,7 @@ const Procedures = (props) => {
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  const { productionAreaList } = useSelector((state) => state.maintenance.productionArea);
+  const { list: productionAreaList } = useSelector((state) => state.maintenance.productionArea);
   const { procedureList, action, statusMessage } = useSelector(
     (state) => state.maintenance.procedures
   );
