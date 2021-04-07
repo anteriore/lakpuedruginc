@@ -110,7 +110,7 @@ const depotSlice = createSlice({
         ...state,  
         action: 'fetch', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
       };
     },
@@ -185,7 +185,7 @@ const depotSlice = createSlice({
         ...state,  
         action: 'update', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
       };
     },
@@ -222,7 +222,7 @@ const depotSlice = createSlice({
         ...state,  
         action: 'delete', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
       };
     },
