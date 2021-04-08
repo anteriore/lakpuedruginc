@@ -1,34 +1,52 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 export const listBankAccount = createAsyncThunk(
   'listBankAccount',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(`/rest/bank-accounts?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for bank accounts');
+    try {
+      const response = await axiosInstance.get(`/rest/bank-accounts?token=${accessToken}`);
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
-
-    return response;
-  }
-);
+});
 
 export const createBankAccount = createAsyncThunk(
   'createBankAccount',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
 
-    return response;
+    try {
+      const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -36,9 +54,22 @@ export const updateBankAccount = createAsyncThunk(
   'updateBankAccount',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
+    try {
+      const response = await axiosInstance.post(`/rest/bank-accounts?token=${accessToken}`, payload);
 
-    return response;
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -47,18 +78,33 @@ export const deleteBankAccount = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const { id } = payload;
-    const response = await axiosInstance.post(
-      `/rest/bank-accounts/delete?token=${accessToken}`,
-      id
-    );
+    try {
+      const response = await axiosInstance.post(
+        `/rest/bank-accounts/delete?token=${accessToken}`,
+        id
+      );
 
-    return response;
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
 const initialState = {
   bankAccountList: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -70,110 +116,154 @@ const bankAccountSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
+    
     [listBankAccount.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'fetch', 
         status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
       };
     },
     [listBankAccount.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for bank accounts';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
 
       return {
         ...state,
         bankAccountList: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
     [listBankAccount.rejected]: (state, action) => {
-      const { data } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Bank Accounts',
+        state.action
+      );
+
       return {
         ...state,
-        bankAccountList: data,
+        data: [],
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
       };
     },
     [createBankAccount.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'create', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
       };
     },
-    [createBankAccount.fulfilled]: (state) => {
+    [createBankAccount.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
+
       return {
         ...state,
         status: 'succeeded',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [createBankAccount.rejected]: (state) => {
+    [createBankAccount.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Bank Accounts',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [updateBankAccount.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
       };
     },
-    [updateBankAccount.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
-      };
-    },
-    [updateBankAccount.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
-      };
-    },
-    [deleteBankAccount.pending]: (state) => {
-      return {
-        ...state,
-        status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
-      };
-    },
-    [deleteBankAccount.fulfilled]: (state) => {
+    [updateBankAccount.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
+
       return {
         ...state,
         status: 'succeeded',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [deleteBankAccount.rejected]: (state) => {
+    [updateBankAccount.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Bank Accounts',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteBankAccount.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
+      };
+    },
+    [deleteBankAccount.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deleteBankAccount.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Bank Accounts',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },
