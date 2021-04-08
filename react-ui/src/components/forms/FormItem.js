@@ -5,6 +5,7 @@ import {
   Input,
   InputNumber,
   DatePicker,
+  Switch,
   Select,
   Checkbox,
   Row,
@@ -57,7 +58,6 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
             onClick={() => {
               form.validateFields().catch((errors) => {
                 if(errors.errorFields.length > 0){
-                  console.log(errors)
                   setErrorMessage("Unable to add. Please double check your input.")
                 }
                 else{
@@ -173,6 +173,11 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
       return (
         <DatePicker format={dateFormat} style={styles.datePicker} />
       );
+    }
+    else if(item.type === 'boolean'){
+      return (
+        <Switch/>
+      )
     }
     else if (item.type === 'radioGroup') {
       if (typeof item.render === 'undefined') {
@@ -463,6 +468,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
           hasFeedback={item.hasFeedback}
           tooltip={item.tooltip}
           noStyle={noStyle}
+          valuePropName={item.type === "boolean" ? "checked" : "value"}
         >
           {renderFormItemField()}
         </Item>
