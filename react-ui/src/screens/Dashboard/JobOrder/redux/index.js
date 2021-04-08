@@ -15,7 +15,11 @@ export const listJobOrders = createAsyncThunk('listJobOrders', async (_, thunkAP
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -31,7 +35,11 @@ export const createJobOrder = createAsyncThunk('createJobOrder', async (payload,
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -56,6 +64,7 @@ const jobOrderSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for job orders`,
       };
     },

@@ -15,7 +15,11 @@ export const listEmployees = createAsyncThunk('listEmployees', async (_, thunkAP
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -31,7 +35,11 @@ export const createEmployee = createAsyncThunk('createEmployee', async (payload,
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -50,7 +58,11 @@ export const deleteEmployee = createAsyncThunk('deleteEmployee', async (payload,
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
