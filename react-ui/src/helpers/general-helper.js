@@ -107,18 +107,20 @@ export const reevalDependencyMsgStats = ({
   statusLevel, statusMessage, 
   module}) => {
 
-  if (status !== 'loading' && status !== 'succeeded') {
-    if (action === 'fetch') {
-      statusDialogue(
-        {
-          statusLevel: statusLevel,
-          modalContent: {
-            title: `${_.capitalize(statusLevel)} - ${module}`,
-            content: statusMessage,
+  if (status !== 'loading') {
+    if(statusLevel !== 'success') {
+      if (action === 'fetch') {
+        statusDialogue(
+          {
+            statusLevel: statusLevel,
+            modalContent: {
+              title: `${_.capitalize(statusLevel)} - ${module}`,
+              content: statusMessage,
+            },
           },
-        },
-        'modal'
-      );  
+          'modal'
+        );  
+      }
     }
   }
 }

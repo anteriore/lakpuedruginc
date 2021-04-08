@@ -60,7 +60,7 @@ export const itemColumns = [
 
 const FormDetails = () => {
   const salesReps = useSelector((state) => state.maintenance.salesReps.list);
-  const clusterCodes = useSelector((state) => state.maintenance.clusterCode.clusterList);
+  const clusterCodes = useSelector((state) => state.maintenance.clusterCode.list);
   const institionalCodes = useSelector(
     (state) => state.maintenance.institutionalCodes.institutionList
   );
