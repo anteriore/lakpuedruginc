@@ -4,9 +4,10 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listAC, addAC, deleteAC, clearData } from './redux';
+import { listAC, addAC, updateAC, deleteAC, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 import { columns, formDetail } from './data';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -19,11 +20,13 @@ const AccountCodes = (props) => {
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.accountCodes.list);
+  const { handleRequestResponse } = GeneralHelper()
+
+  const { list: data, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.accountCodes);
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listAC({ company, message })).then(() => {
+    dispatch(listAC()).then(() => {
       setLoading(false);
 
       if (isCancelled) {
@@ -36,6 +39,10 @@ const AccountCodes = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Add Account Code');
@@ -52,13 +59,12 @@ const AccountCodes = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id, code } = val;
+    const { id } = val;
     setLoading(true)
     dispatch(deleteAC(id)).then(() => {
-      dispatch(listAC({ company, message })).then(() => {
+      dispatch(listAC()).then(() => {
         setLoading(false);
       })
-      message.success(`Successfully deleted Account Code ${code}`);
     });
   };
 
@@ -69,7 +75,7 @@ const AccountCodes = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true)
     if (formMode === 'edit') {
       const payload = {
@@ -80,10 +86,19 @@ const AccountCodes = (props) => {
         },
       };
 
-      dispatch(addAC(payload)).then(() => {
-        dispatch(listAC({ company, message })).then(() => {
-          setLoading(false)
-        });
+      await dispatch(updateAC(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listAC()).then(() => {
+            setDisplayForm(false);
+            setFormData(null);
+            setLoading(false)
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -92,15 +107,22 @@ const AccountCodes = (props) => {
           id: company,
         },
       };
-      dispatch(addAC(payload)).then(() => {
-        dispatch(listAC({ company, message })).then(() => {
-          setLoading(false)
-        });
+      await dispatch(addAC(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listAC()).then(() => {
+            setDisplayForm(false);
+            setFormData(null);
+            setLoading(false)
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-
-    setDisplayForm(false);
-    setFormData(null);
+    return 1
   };
 
   return (
