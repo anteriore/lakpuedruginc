@@ -1,24 +1,29 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 export const listProvinceCode = createAsyncThunk(
   'listProvinceCode',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(`/rest/province-codes?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for province codes');
+    try {
+      const response = await axiosInstance.get(`/rest/province-codes?token=${accessToken}`);
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
-
-    return response;
   }
 );
 
@@ -26,9 +31,22 @@ export const createProvinceCode = createAsyncThunk(
   'createProvinceCode',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`/rest/province-codes?token=${accessToken}`, payload);
+    try {
+      const response = await axiosInstance.post(`/rest/province-codes?token=${accessToken}`, payload);  
 
-    return response;
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -36,9 +54,22 @@ export const updateProvinceCode = createAsyncThunk(
   'updateProvinceCode',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(`/rest/province-codes?token=${accessToken}`, payload);
+    try {
+      const response = await axiosInstance.post(`/rest/province-codes?token=${accessToken}`, payload); 
 
-    return response;
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -47,18 +78,33 @@ export const deleteProvinceCode = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const { id } = payload;
-    const response = await axiosInstance.post(
-      `/rest/province-codes/delete?token=${accessToken}`,
-      id
-    );
+    try {
+      const response = await axiosInstance.post(
+        `/rest/province-codes/delete?token=${accessToken}`,
+        id
+      );
 
-    return response;
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
 const initialState = {
   provinceCodeList: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -71,107 +117,152 @@ const provinceCodeSlice = createSlice({
   },
   extraReducers: {
     [listProvinceCode.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'fetch', 
         status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Province Codes` 
       };
     },
     [listProvinceCode.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for province codes';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Province Codes', state.action);
 
       return {
         ...state,
         provinceCodeList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listProvinceCode.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Province Codes',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
         statusMessage,
       };
     },
-    [listProvinceCode.rejected]: (state) => {
+    [createProvinceCode.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Province Codes` 
+      };
+    },
+    [createProvinceCode.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Province Codes', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [createProvinceCode.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Province Codes',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
-      };
-    },
-    [createProvinceCode.pending]: (state) => {
-      return {
-        ...state,
-        status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
-      };
-    },
-    [createProvinceCode.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
-      };
-    },
-    [createProvinceCode.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [updateProvinceCode.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Province Codes` 
       };
     },
-    [updateProvinceCode.fulfilled]: (state) => {
+    [updateProvinceCode.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Province Codes', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [updateProvinceCode.rejected]: (state) => {
+    [updateProvinceCode.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Province Codes',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [deleteProvinceCode.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'delete', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Province Codes` 
       };
     },
-    [deleteProvinceCode.fulfilled]: (state) => {
+    [deleteProvinceCode.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Province Codes', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [deleteProvinceCode.rejected]: (state) => {
+    [deleteProvinceCode.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Province Codes',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },
