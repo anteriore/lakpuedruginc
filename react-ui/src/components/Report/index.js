@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Col, Row, Table, Empty } from 'antd';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import TableHeader from '../TableDisplay/TableHeader';
@@ -8,16 +8,16 @@ const Report = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
 
+  const onFail = useCallback(() => {
+    history.push(`${path.replace(new RegExp('/report'), '')}`);
+    return null;
+  },[history, path])
+
   useEffect(() => {
     if(data === null || typeof data === 'undefined' || data?.length === 0){
       onFail()
     }
-  }, []);
-
-  const onFail = () => {
-    history.push(`${path.replace(new RegExp('/report'), '')}`);
-    return null;
-  };
+  }, [data, onFail]);
 
   return (
     <div>

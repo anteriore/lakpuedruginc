@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Row, Col, Typography, Skeleton, Button, Modal, Space, Select, message } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-
 import TableDisplay from '../../../components/TableDisplay';
 import Report from '../../../components/Report';
-
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 import { columns, reportColumns } from './data';
 import { listProductInventory, listProductInventoryByDepot, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
@@ -14,6 +13,7 @@ import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/red
 const { Title, Text } = Typography;
 
 const ProductInventories = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const [loading, setLoading] = useState(true);
   const [selectedDepot, setSelectedDepot] = useState(null);
   const [displayModal, setDisplayModal] = useState(false);
@@ -22,39 +22,90 @@ const ProductInventories = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const listData = useSelector((state) => state.dashboard.productInventories.list);
-  const depots = useSelector((state) => state.maintenance.depots.list);
+  const { list, status, statusMessage, statusLevel, action } = useSelector((state) => state.dashboard.productInventories);
+  const { 
+    list: depotList, statusMessage: statusMessageDepot,  
+    status: statusDepot, statusLevel: statusLevelDepot,
+    action: actionDepot
+  } = useSelector((state) => state.maintenance.depots);
   const companies = useSelector((state) => state.company.companyList);
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+  },[dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listProductInventory({ company })).then(() => {
-      setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-        dispatch(clearDepot());
+      if (isMounted.current){
+        setLoading(false);
         setSelectedDepot(null);
+      } else {
+        setLoading(false);
+        setSelectedDepot(null);
+        performCleanup();
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      isCancelled = true;
+      isMounted.current = false;
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
-  const handleUpdate = (data) => {};
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
-  const handleDelete = (data) => {};
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: "Depot"
+    });
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
-  const handleRetrieve = (data) => {};
+  const handleUpdate = () => {};
+
+  const handleDelete = () => {};
+
+  const handleRetrieve = () => {};
 
   const handleReport = () => {
-    dispatch(listDepot({ company, message })).then(() => {
-      setDisplayModal(true);
+    dispatch(listDepot({ company, message })).then((response) => {
+      const onSuccess = () => {
+        setDisplayModal(true);
+      };
+
+      handleRequestResponse([response], onSuccess, '','');
     });
   };
+
+  const onGenerateReport = () => {
+    setLoading(true)
+    if (selectedDepot !== null) {
+      dispatch(listProductInventoryByDepot({ depot: selectedDepot.id, 
+      message })).then((response) => {
+          const onSuccess = () => {
+            setLoading(false)
+            history.push(`${path}/report`);  
+          };
+
+          const onFail = () => {
+            setLoading(false);
+          }
+    
+          handleRequestResponse([response], onSuccess, onFail,'');
+        }
+      );
+    } 
+    else {
+      setLoading(false)
+      history.push(`${path}/report`);
+    }
+  }
 
   const renderReportDetails = () => {
     return (
@@ -83,7 +134,7 @@ const ProductInventories = (props) => {
   return (
     <Switch>
       <Route exact path={`${path}/report`}>
-        <Report data={listData} columns={reportColumns} renderReportDetails={renderReportDetails} />
+        <Report data={list} columns={reportColumns} renderReportDetails={renderReportDetails} />
       </Route>
       <Route>
         <Row>
@@ -111,7 +162,7 @@ const ProductInventories = (props) => {
                 </Button>
                 <TableDisplay
                   columns={columns}
-                  data={listData}
+                  data={list}
                   handleRetrieve={handleRetrieve}
                   handleUpdate={handleUpdate}
                   handleDelete={handleDelete}
@@ -133,21 +184,7 @@ const ProductInventories = (props) => {
 
                 //TODO: Cancel dispatch onCancel
               }}
-              onOk={() => {
-                setLoading(true)
-                if (selectedDepot !== null) {
-                  dispatch(listProductInventoryByDepot({ depot: selectedDepot.id, message })).then(
-                    () => {
-                      setLoading(false)
-                      history.push(`${path}/report`);
-                    }
-                  );
-                } 
-                else {
-                  setLoading(false)
-                  history.push(`${path}/report`);
-                }
-              }}
+              onOk={onGenerateReport}
               okButtonProps={{ loading: loading }}
               afterClose={() => {
                 setSelectedDepot(null);
@@ -161,11 +198,11 @@ const ProductInventories = (props) => {
                   optionFilterProp="children"
                   style={{ width: '100%' }}
                   onChange={(e) => {
-                    const depotData = depots.find((item) => item.id === e);
+                    const depotData = depotList.find((item) => item.id === e);
                     setSelectedDepot(depotData);
                   }}
                 >
-                  {depots.map((choice) => (
+                  {depotList.map((choice) => (
                     <Select.Option key={choice.id} value={choice.id}>
                       {`[${choice.code}] ${choice.name}`}
                     </Select.Option>
