@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
-import { listS, addS, deleteS, clearData } from './redux';
+import { listS, addS, updateS, deleteS, clearData } from './redux';
 import { listCategory, clearData as clearC } from '../GroupsCategories/redux';
 import { listRegionCode, clearData as clearRegionCode } from '../RegionCodes/redux';
 import SimpleForm from '../../../components/forms/FormModal';
@@ -20,6 +20,8 @@ const SalesReps = (props) => {
 
   const { company, actions } = props;
   const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
+
   const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.salesReps);
   const categories = useSelector((state) => state.maintenance.groupsCategories.categoryList);
   const regionCodes = useSelector((state) => state.maintenance.regionCodes.regionCodeList);
@@ -41,7 +43,7 @@ const SalesReps = (props) => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      datatype: 'string',
+      datatype: 'boolean',
     },
     {
       title: 'Category',
@@ -76,8 +78,9 @@ const SalesReps = (props) => {
       {
         label: 'Status',
         name: 'status',
+        type: 'boolean',
+        initialValue: true,
         rules: [{ required: true, message: 'Please provide a valid status' }],
-        placeholder: 'Status',
       },
       {
         label: 'Category',
@@ -122,9 +125,15 @@ const SalesReps = (props) => {
     setFormTitle('Add Depot');
     setFormMode('add');
     setFormData(null);
-    dispatch(listCategory()).then(() => {
-      dispatch(listRegionCode({ company, message })).then(() => {
-        setDisplayForm(true);
+    dispatch(listCategory()).then((response1) => {
+      dispatch(listRegionCode({ company, message })).then((response2) => {
+          const onSuccess = () => {
+            setDisplayForm(true);
+          }
+          const onFail = () => {
+            handleCancelButton()
+          }
+          handleRequestResponse([response1, response2], onSuccess, onFail, '');
       });
     });
   };
@@ -134,13 +143,19 @@ const SalesReps = (props) => {
     setFormMode('edit');
     const formData = {
       ...data,
-      productCategory: data.productCategory.id,
-      regionCode: data.regionCode.id,
+      productCategory: data?.productCategory?.id,
+      regionCode: data?.regionCode?.id,
     };
     setFormData(formData);
-    dispatch(listCategory()).then(() => {
-      dispatch(listRegionCode({ company, message })).then(() => {
-        setDisplayForm(true);
+    dispatch(listCategory()).then((response1) => {
+      dispatch(listRegionCode({ company, message })).then((response2) => {
+        const onSuccess = () => {
+          setDisplayForm(true);
+        }
+        const onFail = () => {
+          handleCancelButton()
+        }
+        handleRequestResponse([response1, response2], onSuccess, onFail, '');
       });
     });
   };
@@ -148,15 +163,15 @@ const SalesReps = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteS(data.id)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
-        message.success(`Successfully deleted ${data.name}`);
+      const onSuccess = () => {
         dispatch(listS({ company, message })).then(() => {
           setLoading(false);
         });
-      } else {
-        message.success(`Unable to delete ${data.name}`);
+      }
+      const onFail = () => {
         setLoading(false);
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -167,7 +182,7 @@ const SalesReps = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -184,16 +199,19 @@ const SalesReps = (props) => {
         },
       };
 
-      dispatch(addS(payload)).then((response) => {
-          message.success(`Successfully updated ${data.name}`);
+      await dispatch(updateS(payload)).then((response) => {
+        const onSuccess = () => {
           dispatch(listS({ company, message })).then(() => {
             setLoading(false);
-          }).catch(() => {
-            setLoading(false);
+            setDisplayForm(false);
+            setFormData(null);
           });
-      }).catch(() => {
-        setLoading(false);
-      });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     } else if (formMode === 'add') {
       const payload = {
         ...data,
@@ -207,19 +225,22 @@ const SalesReps = (props) => {
           id: data.regionCode,
         },
       };
-      dispatch(addS(payload)).then((response) => {
-        dispatch(listS({ company })).then(() => {
+      await dispatch(addS(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listS({ company, message })).then(() => {
+            setLoading(false);
+            setDisplayForm(false);
+            setFormData(null);
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        }).catch(() => {
-          setLoading(false);
-        });
-      }).catch(() => {
-        setLoading(false);
-      });
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     }
 
-    setDisplayForm(false);
-    setFormData(null);
+    return 1
   };
 
   return (
