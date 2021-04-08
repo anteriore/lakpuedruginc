@@ -19,7 +19,11 @@ export const listMoInventories = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -44,6 +48,8 @@ const moInventorySlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for Manufacturing Order Inventory`,
       };
     },
@@ -72,6 +78,7 @@ const moInventorySlice = createSlice({
 
       return {
         ...state,
+        listMoInventories: [],
         status: 'failed',
         statusLevel: level,
         responseCode: status,
