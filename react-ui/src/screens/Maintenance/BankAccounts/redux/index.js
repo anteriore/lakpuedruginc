@@ -123,12 +123,12 @@ const bankAccountSlice = createSlice({
         action: 'fetch', 
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
       };
     },
     [listBankAccount.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
 
       return {
         ...state,
@@ -142,7 +142,7 @@ const bankAccountSlice = createSlice({
     [listBankAccount.rejected]: (state, action) => {
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Client',
+        'Bank Accounts',
         state.action
       );
 
@@ -161,12 +161,12 @@ const bankAccountSlice = createSlice({
         action: 'create', 
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
       };
     },
     [createBankAccount.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
 
       return {
         ...state,
@@ -180,7 +180,7 @@ const bankAccountSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Client',
+        'Bank Accounts',
         state.action
       );
 
@@ -198,12 +198,12 @@ const bankAccountSlice = createSlice({
         action: 'update', 
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
       };
     },
     [updateBankAccount.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
 
       return {
         ...state,
@@ -217,7 +217,7 @@ const bankAccountSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Client',
+        'Bank Accounts',
         state.action
       );
 
@@ -235,12 +235,12 @@ const bankAccountSlice = createSlice({
         action: 'delete', 
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Bank Accounts` 
       };
     },
     [deleteBankAccount.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+      const { message, level } = generateStatusMessage(action.payload, 'Bank Accounts', state.action);
 
       return {
         ...state,
@@ -254,7 +254,7 @@ const bankAccountSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Client',
+        'Bank Accounts',
         state.action
       );
 
