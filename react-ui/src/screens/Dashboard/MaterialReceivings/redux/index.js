@@ -6,8 +6,10 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 const initialState = {
   list: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
   statusMessage: '',
+  responseCode: null,
   action: '',
 };
 
@@ -28,7 +30,11 @@ export const listMaterialReceiving = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -38,11 +44,24 @@ export const addMaterialReceiving = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.post(
-      `rest/material-receivings/?token=${accessToken}`,
-      payload
-    );
-    return response;
+    try {
+      const response = await axiosInstance.post(
+        `rest/material-receivings/?token=${accessToken}`,
+        payload
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
+    }
   }
 );
 
@@ -50,12 +69,24 @@ export const deleteMaterialReceiving = createAsyncThunk(
   'deleteMaterialReceiving',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try{
+      const response = await axiosInstance.post(
+        `rest/material-receivings/delete?token=${accessToken}`,
+        payload
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const response = await axiosInstance.post(
-      `rest/material-receivings/delete?token=${accessToken}`,
-      payload
-    );
-    return response;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
+    }
   }
 );
 
@@ -67,26 +98,82 @@ const materialReceivingSlice = createSlice({
   },
   extraReducers: {
     [listMaterialReceiving.pending]: (state, action) => {
-      state.status = 'loading';
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for material receivings` 
+      };
     },
     [listMaterialReceiving.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Material Receiving Slips');
+      const { message, level } = generateStatusMessage(
+        action.payload, 
+        'Material Receiving Slips',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
-        responseCode: status,
+        status: 'succeeded',
         statusLevel: level,
+        responseCode: status,
         statusMessage: message,
       };
     },
     [listMaterialReceiving.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Material Receiving Slips',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
+      };
+    },
+    [addMaterialReceiving.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for material receiving` 
+      };
+    },
+    [addMaterialReceiving.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Material Receiving Slips', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [addMaterialReceiving.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Material Receiving Slips',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

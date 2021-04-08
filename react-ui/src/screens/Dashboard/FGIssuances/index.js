@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, Empty, message } from 'antd';
 import { PlusOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,18 +10,24 @@ import { listFGIssuance, addFGIssuance, cancelFGIssuance, clearData } from './re
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
+import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+
 
 const { Title, Text } = Typography;
 
 const FGIssuances = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const listData = useSelector((state) => state.dashboard.FGIssuances.list);
+  const { list, status, statusLevel, statusMessage, action } = useSelector((state) => state.dashboard.FGIssuances);
+  const { 
+    status: statusDepot, statusLevel: statusLevelDepot, 
+    statusMessage: statusMessageDepot, action: actionDepot
+  } = useSelector((state) => state.maintenance.depots)
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -30,39 +36,64 @@ const FGIssuances = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+  }, [dispatch]);
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listFGIssuance({ company, message })).then(() => {
-      setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-        dispatch(clearDepot());
+      if (isMounted.current){
+        setLoading(false);
+      } else {
+        performCleanup();
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      isCancelled = true;
+      isMounted.current = false
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: "Depot"
+    })
+  }, [
+    actionDepot, statusMessageDepot, 
+    statusDepot, statusLevelDepot
+  ]);
 
   const handleAdd = () => {
     setFormTitle('Create FG Issuance');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
+    dispatch(listDepot({ company, message })).then((response) => {
+        const onSuccess = () => {
+          history.push(`${path}/new`);
+          setLoading(false);
+        }
+
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
-  const handleUpdate = (data) => {};
+  const handleUpdate = () => {};
 
-  const handleDelete = (data) => {};
+  const handleDelete = () => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -70,10 +101,22 @@ const FGIssuances = (props) => {
   };
 
   const handleCancel = (data) => {
-    dispatch(cancelFGIssuance(data)).then(() => {
-      setDisplayModal(false);
-      setSelectedData(null);
-      dispatch(listFGIssuance({ company, message }))
+    setLoading(true);
+    dispatch(cancelFGIssuance(data)).then((response) => {
+      const onSuccess = () => {
+        setDisplayModal(false);
+        setSelectedData(null);
+        dispatch(listFGIssuance({ company, message })).then(() => {
+          setLoading(false);
+        });
+      };
+
+      const onFail = () => {
+        setDisplayModal(false);
+        setSelectedData(null);
+        setLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     })
   };
 
@@ -105,18 +148,17 @@ const FGIssuances = (props) => {
     };
     await dispatch(addFGIssuance(payload)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
-        message.success(`Successfully added ${response.payload.data.pisNo}`);
+      const onSuccess = () => {
         history.goBack();
         dispatch(listFGIssuance({ company, message })).then(() => {
           setLoading(false);
         });
-      } else {
+      };
+
+      const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to create FG Issuance. Please double check the provided information.`
-        );
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
     return 1
@@ -175,7 +217,7 @@ const FGIssuances = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}

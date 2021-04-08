@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Row, Col, Typography, Skeleton, Modal, Descriptions } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import { clearData, listEmployees, createEmployee, deleteEmployee } from './redux';
-import statusDialogue from '../../../components/StatusDialogue';
 import InputForm from './InputForm';
+import GeneralHelper, {reevalutateMessageStatus} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const Employees = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
@@ -26,42 +26,31 @@ const Employees = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [contentLoading, setContentLoading] = useState(false);
+  const isMounted = useRef(true);
 
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+  },[dispatch])
+  
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel});
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    let isCancelled = false;
     setContentLoading(true);
     dispatch(listEmployees(company))
-      .then(unwrapResult)
-      .then(() => {
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      })
-      .catch((rejectedValueOrSeriealizedError) => {
-        console.log(rejectedValueOrSeriealizedError);
-      })
-      .finally(() => {
+    .then(() => {
+      if (isMounted.current){
         setContentLoading(false);
-      })
+      } else {
+        performCleanup();
+      }
+    });
 
     return function cleanup() {
-      dispatch(clearData());
-
-      isCancelled = true;
+      isMounted.current = false
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
     history.push(`${path}/new`);
@@ -69,10 +58,18 @@ const Employees = (props) => {
 
   const handleDeleteButton = (value) => {
     setContentLoading(true);
-    dispatch(deleteEmployee(value)).then(() => {
-      dispatch(listEmployees(company)).then(() => {
-        setContentLoading(false);
-      });
+    dispatch(deleteEmployee(value)).then((response) => {
+      const onSuccess = () => {
+        dispatch(listEmployees(company)).then(() => {
+          setContentLoading(false);
+        });
+      }
+
+      const onFail = () => {
+        setContentLoading(false)
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -83,9 +80,19 @@ const Employees = (props) => {
 
   const onCreate = async (values) => {
     setContentLoading(true);
-    await dispatch(createEmployee(values)).then(() => {
+    await dispatch(createEmployee(values)).then((response) => {
       dispatch(listEmployees(company)).then(() => {
-        setContentLoading(false);
+        const onSuccess = () => {
+          dispatch(listEmployees(company)).then(() => {
+            setContentLoading(false);
+          });
+        }
+  
+        const onFail = () => {
+          setContentLoading(false)
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     });
     return 1

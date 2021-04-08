@@ -23,8 +23,8 @@ const SimpleForm = (props) => {
         form.validateFields().then((formValues) => {
           onSubmit(formValues).then(() => {
             setProcessingData(false)
+            //form.resetFields();
           })
-          form.resetFields();
         });
       }}
       okButtonProps={{ loading: processingData }}

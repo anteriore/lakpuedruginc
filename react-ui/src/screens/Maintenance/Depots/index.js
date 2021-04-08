@@ -4,9 +4,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listDepot, addDepot, deleteDepot, clearData } from './redux';
-import { listA, clearData as clearArea } from '../DepartmentArea/redux';
 import SimpleForm from '../../../components/forms/FormModal';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+
+import { listDepot, addDepot, updateDepot, deleteDepot, clearData } from './redux';
+import { listA, clearData as clearArea } from '../DepartmentArea/redux';
 
 const { Title } = Typography;
 
@@ -18,9 +20,11 @@ const Depots = (props) => {
   const [formData, setFormData] = useState(null);
 
   const { company, actions } = props;
-  const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.depots.list);
+  const { list: data, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.depots);
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
+
+  const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
 
   const columns = [
     {
@@ -85,13 +89,21 @@ const Depots = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
+  
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Add Depot');
     setFormMode('add');
     setFormData(null);
     dispatch(listA({ company })).then((response) => {
-      setDisplayForm(true);
+      const onSuccess = () => {
+        setDisplayForm(true);
+      }
+      const onFail = () => {}
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -104,22 +116,26 @@ const Depots = (props) => {
     };
     setFormData(formData);
     dispatch(listA({ company })).then((response) => {
-      setDisplayForm(true);
+      const onSuccess = () => {
+        setDisplayForm(true);
+      }
+      const onFail = () => {}
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
   const handleDelete = (data) => {
     dispatch(deleteDepot(data.id)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         dispatch(listDepot({ company })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted ${data.name}`);
         });
-      } else {
-        setLoading(false);
-        message.error(`Unable to delete ${data.name}`);
       }
+      const onFail = () => {
+        setLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -130,7 +146,7 @@ const Depots = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (formMode === 'edit') {
       const payload = {
         ...data,
@@ -143,17 +159,17 @@ const Depots = (props) => {
         },
       };
 
-      dispatch(addDepot(payload)).then((response) => {
+      await dispatch(updateDepot(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
+        const onSuccess = () => {
           dispatch(listDepot({ company })).then(() => {
             setLoading(false);
-            message.success(`Successfully updated ${data.name}`);
           });
-        } else {
-          setLoading(false);
-          message.error(`Unable to update ${data.name}`);
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -165,22 +181,23 @@ const Depots = (props) => {
           id: data.area,
         },
       };
-      dispatch(addDepot(payload)).then((response) => {
+      await dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
+        const onSuccess = () => {
           dispatch(listDepot({ company })).then(() => {
             setLoading(false);
-            message.success(`Successfully added ${data.name}`);
           });
-        } else {
-          setLoading(false);
-          message.error(`Unable to add ${data.name}`);
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayForm(false);
     setFormData(null);
+    return 1
   };
 
   return (
