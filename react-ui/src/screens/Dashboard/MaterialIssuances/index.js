@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,18 +15,27 @@ import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/red
 import { listInventory, clearData as clearInventory } from '../Inventory/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const MaterialIssuances = (props) => {
+  const { title } = props;
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const listData = useSelector((state) => state.dashboard.materialIssuances.list);
+  const { list, status, statusLevel, statusMessage, action } = useSelector((state) => state.dashboard.materialIssuances);
+  const {
+    status: statusInventory, action: actionInventory, 
+    statusLevel: statusLevelInventory, statusMessage: statusMessageInventory 
+  } = useSelector(state => state.dashboard.inventory);
+  const { 
+    status: statusDepot, action: actionDepot,  
+    statusLevel: statusLevelDepot, statusMessage: statusMessageDepot
+  } = useSelector(state => state.maintenance.depots);
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -36,26 +45,58 @@ const MaterialIssuances = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const { handleRequestResponse } = GeneralHelper();
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearInventory());
+  }, [dispatch]);
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listMaterialIssuance({ company, message })).then(() => {
-      setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-        dispatch(clearDepot());
-        dispatch(clearInventory());
+      if (isMounted.current){
+        setFormData(null);
+        setLoading(false);
+      } else {
+        performCleanup();
       }
     });
 
-    return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearInventory());
-      isCancelled = true;
+    return function cleanup() { 
+      isMounted.current = false
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusInventory,
+      statusMessage: statusMessageInventory,
+      action: actionInventory, 
+      statusLevel: statusLevelInventory,
+      module: title
+    })
+  }, [
+    actionInventory, statusMessageInventory, 
+    statusInventory, statusLevelInventory, title
+  ]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: title
+    })
+  }, [
+    actionDepot, statusMessageDepot, 
+    statusDepot, statusLevelDepot, title
+  ]);
 
   const handleAdd = () => {
     setFormTitle('Create Material Issuance');
@@ -72,9 +113,9 @@ const MaterialIssuances = (props) => {
     });
   };
 
-  const handleUpdate = (data) => {};
+  const handleUpdate = () => {};
 
-  const handleDelete = (data) => {
+  const handleDelete = () => {
     /*if (data.status === 'Pending') {
       dispatch(deleteMaterialIssuance(data.id)).then((response) => {
         setLoading(true);
@@ -122,7 +163,6 @@ const MaterialIssuances = (props) => {
     await dispatch(addMaterialIssuance(payload)).then((response) => {
       setLoading(true);
       const onSuccess = () => {
-        message.success(`Successfully added ${response.payload.data.misNo}`);
         history.goBack();
         dispatch(listMaterialIssuance({ company, message })).then(() => {
           setLoading(false);
@@ -131,10 +171,6 @@ const MaterialIssuances = (props) => {
 
       const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to create Material Issuance. Please double check the provided information.`
-        );
-
       }
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -172,7 +208,7 @@ const MaterialIssuances = (props) => {
         <Row>
           <Col span={20}>
             <Title level={3} style={{ float: 'left' }}>
-              {props.title}
+              {title}
             </Title>
           </Col>
         </Row>
@@ -195,7 +231,7 @@ const MaterialIssuances = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}

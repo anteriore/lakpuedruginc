@@ -16,6 +16,7 @@ import {
   clearData,
 } from './redux';
 import { formatProcedurePayload } from './helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -28,11 +29,14 @@ const Procedures = (props) => {
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
   const { productionAreaList } = useSelector((state) => state.maintenance.productionArea);
-  const { procedureList, action, statusMessage } = useSelector(
+  const { list: procedureList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.procedures
   );
+
+  
+  const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
 
   useEffect(() => {
     let isCancelled = false;
@@ -51,16 +55,8 @@ const Procedures = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     const newForm = tempFormDetails;
@@ -80,8 +76,12 @@ const Procedures = (props) => {
   const handleAddButton = () => {
     setModalTitle('Add New Procedure');
     setMode('add');
-    dispatch(listProductionArea({ message })).then(() => {
-      setIsOpenForm(!isOpenForm);
+    dispatch(listProductionArea({ message })).then((response) => {
+      const onSuccess = () => {
+        setIsOpenForm(!isOpenForm);
+      }
+      const onFail = () => {}
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -89,12 +89,16 @@ const Procedures = (props) => {
     setCurrentID(row.id);
     setModalTitle('Edit Procedure');
     setMode('edit');
-    dispatch(listProductionArea({ message })).then(() => {
-      setFormValues({
-        ...row,
-        procedureArea: row.procedureArea.id,
-      });
-      setIsOpenForm(!isOpenForm);
+    dispatch(listProductionArea({ message })).then((response) => {
+      const onSuccess = () => {
+        setFormValues({
+          ...row,
+          procedureArea: row.procedureArea.id,
+        });
+        setIsOpenForm(!isOpenForm);
+      }
+      const onFail = () => {}
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -106,9 +110,6 @@ const Procedures = (props) => {
           setLoading(false)
         });
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -116,7 +117,7 @@ const Procedures = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true)
     if (mode === 'edit') {
       const newValues = formatProcedurePayload(values, productionAreaList);
@@ -135,6 +136,7 @@ const Procedures = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (

@@ -37,11 +37,9 @@ const Clients = (props) => {
 
   useEffect(() => {
     dispatch(listClient({ company, message })).then(() => {
-      if(isMounted.current){
-        setFormData(null);
-        setLoading(false);
-      }
-      else {
+      setFormData(null);
+      setLoading(false);
+      if(!isMounted.current){
         performCleanup()
       }
     });

@@ -70,7 +70,7 @@ export const tableHeader = [
 const FormDetails = () => {
   const { moInventoryList } = useSelector((state) => state.rnd.moInventories);
   const { employeeList } = useSelector((state) => state.dashboard.employees);
-  const { procedureList } = useSelector((state) => state.maintenance.procedures);
+  const { list: procedureList } = useSelector((state) => state.maintenance.procedures);
 
   const formDetails = {
     form_name: 'jobOrder',

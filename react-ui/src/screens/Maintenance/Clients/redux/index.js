@@ -7,7 +7,7 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 const initialState = {
   list: [],
   status: 'loading',
-  statusLevel: 'loading',
+  statusLevel: '',
   responseCode: null,
   statusMessage: '',
   action: '',

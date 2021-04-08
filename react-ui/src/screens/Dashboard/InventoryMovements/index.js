@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,18 +10,27 @@ import { listInventoryMovement, addInventoryMovement, clearData } from './redux'
 import { listInventory, clearData as clearInventory } from '../Inventory/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
+import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const InventoryMovements = (props) => {
+  const {title} = props
+  const { handleRequestResponse } = GeneralHelper();
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const listData = useSelector((state) => state.dashboard.inventoryMovements.list);
+  const {
+    list, status, statusLevel, 
+    statusMessage, action
+  } = useSelector((state) => state.dashboard.inventoryMovements);
+  const {
+    status: statusInventory, statusLevel: statusLevelInventory, 
+    statusMessage: statusMessageInventory, action: actionInventory
+  } = useSelector((state) => state.dashboard.inventory)
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -30,38 +39,65 @@ const InventoryMovements = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearInventory());
+  },[dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listInventoryMovement({ company, message })).then(() => {
-      setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
+      if (isMounted.current){
+        setFormData(null);
+        setLoading(false);
+      } else {
+        performCleanup();
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearInventory());
-      isCancelled = true;
+      isMounted.current = false;
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusInventory,
+      statusMessage: statusMessageInventory,
+      action: actionInventory, 
+      statusLevel: statusLevelInventory,
+      module: title
+    })
+  }, [
+    actionInventory, statusMessageInventory, 
+    statusInventory, statusLevelInventory, title
+  ]);
 
   const handleAdd = () => {
     setFormTitle('Create Inventory Movement Slip');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listInventory({ company, message })).then(() => {
-      setLoading(false);
-      history.push(`${path}/new`);
+    dispatch(listInventory({ company, message })).then((response) => {
+      const onSuccess = () => {
+        history.push(`${path}/new`);
+        setLoading(false);
+      }
+
+      const onFail = () => {
+        setLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
-  const handleUpdate = (data) => {};
+  const handleUpdate = () => {};
 
-  const handleDelete = (data) => {};
+  const handleDelete = () => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -93,18 +129,17 @@ const InventoryMovements = (props) => {
     
     await dispatch(addInventoryMovement(payload)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
-        message.success(`Successfully added ${response.payload.data.number}`);
+      const onSuccess = () => {
         history.goBack();
         dispatch(listInventoryMovement({ company, message })).then(() => {
           setLoading(false);
         });
-      } else {
+      };
+
+      const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to create Inventory Movement Slip. Please double check the provided information.`
-        );
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
     return 1
@@ -163,7 +198,7 @@ const InventoryMovements = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}

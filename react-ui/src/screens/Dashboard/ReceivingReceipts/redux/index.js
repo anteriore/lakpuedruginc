@@ -14,22 +14,24 @@ const initialState = {
 
 export const listRR = createAsyncThunk('listRR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try{
+    const response = await axiosInstance.get(
+      `rest/receiving-receipts/company/${payload.company}?token=${accessToken}`
+    );
 
-  const response = await axiosInstance.get(
-    `rest/receiving-receipts/company/${payload.company}?token=${accessToken}`
-  );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for receiving receipts');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
-
-  return response;
 });
 
 export const addRR = createAsyncThunk('addRR', async (payload, thunkAPI) => {
@@ -47,7 +49,11 @@ export const addRR = createAsyncThunk('addRR', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    })
   }
 });
 
@@ -73,47 +79,48 @@ export const getRR = createAsyncThunk('getRR', async (payload, thunkAPI) => {
 
 export const listRRByStatus = createAsyncThunk(
   'listRRByStatus',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-
+    try {
     const response = await axiosInstance.get(
       `rest/receiving-receipts/company/${payload.company}/status/${payload.status}?token=${accessToken}`
     );
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for receiving receipts');
-      }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
     }
-
-    return response;
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    })
   }
-);
+});
 
 export const listRRByPO = createAsyncThunk(
   'listRRByPO',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `rest/receiving-receipts/company/${payload.company}/po/${payload.poID}?token=${accessToken}`
+      );
 
-    const response = await axiosInstance.get(
-      `rest/receiving-receipts/company/${payload.company}/po/${payload.poID}?token=${accessToken}`
-    );
-
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for receiving receipts');
+      const { response: validateResponse, valid } = checkResponseValidity(response);
+      if (valid) {
+        return validateResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validateResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      })
     }
-
-    return response;
   }
 );
 
@@ -131,7 +138,11 @@ export const listRRByNoPV = createAsyncThunk('listRRByNoPV', async (payload, thu
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+   return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      })
   }
 });
 
@@ -146,6 +157,8 @@ const receivingReceiptsSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for receiving receipts`,
       };
     },
@@ -153,7 +166,8 @@ const receivingReceiptsSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Product Movement'
+        'Receiving Receipts',
+        state.action
       );
 
       return {
@@ -169,11 +183,57 @@ const receivingReceiptsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Product Movement'
+        'Receiving Receipts',
+        state.action
       );
 
       return {
         ...state,
+        list: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [listRRByStatus.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for receiving receipts`,
+      };
+    },
+    [listRRByStatus.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Receiving Receipts',
+        state.action
+      );
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [listRRByStatus.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Receiving Receipts',
+        state.action
+      );
+
+      return {
+        ...state,
+        list: [],
         status: 'failed',
         statusLevel: level,
         responseCode: status,
@@ -185,6 +245,8 @@ const receivingReceiptsSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for receiving receipts`,
       };
     },
@@ -192,7 +254,8 @@ const receivingReceiptsSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Receiving Receipts'
+        'Receiving Receipts',
+        state.action
       );
 
       return {
@@ -205,11 +268,11 @@ const receivingReceiptsSlice = createSlice({
       };
     },
     [listRRByNoPV.rejected]: (state, action) => {
-      console.log(action)
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Receiving Receipts'
+        'Receiving Receipts',
+        state.action
       );
 
       return {
@@ -235,7 +298,8 @@ const receivingReceiptsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Receiving Receipt'
+        'Receiving Receipt',
+        state.action
       );
 
       return {
@@ -250,7 +314,8 @@ const receivingReceiptsSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Receiving Receipt'
+        'Receiving Receipt',
+        state.action
       );
 
       return {

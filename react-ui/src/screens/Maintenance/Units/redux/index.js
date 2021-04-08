@@ -1,52 +1,101 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
+
+const initialState = {
+  unitList: [],
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
+  statusMessage: '',
+  action: '',
+};
 
 export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/units?token=${accessToken}`);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for units');
+  try {
+    const response = await axiosInstance.get(`/rest/units?token=${accessToken}`);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
-
-  return response;
 });
 
 export const createUnit = createAsyncThunk('createUnit', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/units?token=${accessToken}`, payload);
 
-  return response;
+  try {
+    const response = await axiosInstance.post(`/rest/units?token=${accessToken}`, payload);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const updateUnit = createAsyncThunk('updateUnit', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/units?token=${accessToken}`, payload);
 
-  return response;
+  try {
+    const response = await axiosInstance.post(`/rest/units?token=${accessToken}`, payload);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const deleteUnit = createAsyncThunk('deleteUnit', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  const response = await axiosInstance.post(`/rest/units/delete?token=${accessToken}`, id);
+  try {
+    const response = await axiosInstance.post(`/rest/units/delete?token=${accessToken}`, id);
 
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
-
-const initialState = {
-  unitList: [],
-  status: '',
-  statusMessage: '',
-  action: '',
-};
 
 const unitsSlice = createSlice({
   name: 'Units',
@@ -56,107 +105,152 @@ const unitsSlice = createSlice({
   },
   extraReducers: {
     [listUnit.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'fetch', 
         status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
       };
     },
     [listUnit.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for units';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Units', state.action);
 
       return {
         ...state,
         unitList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listUnit.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Units',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
         statusMessage,
       };
     },
-    [listUnit.rejected]: (state) => {
+    [createUnit.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
+      };
+    },
+    [createUnit.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Units', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [createUnit.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Units',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
-      };
-    },
-    [createUnit.pending]: (state) => {
-      return {
-        ...state,
-        status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
-      };
-    },
-    [createUnit.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
-      };
-    },
-    [createUnit.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [updateUnit.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
       };
     },
-    [updateUnit.fulfilled]: (state) => {
+    [updateUnit.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Units', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [updateUnit.rejected]: (state) => {
+    [updateUnit.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Units',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [deleteUnit.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'delete', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
       };
     },
-    [deleteUnit.fulfilled]: (state) => {
+    [deleteUnit.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Units', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [deleteUnit.rejected]: (state) => {
+    [deleteUnit.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Units',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

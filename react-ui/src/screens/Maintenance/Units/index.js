@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import GeneralStyles from '../../../data/styles/styles.general';
-import { tableHeader, formDetails } from './data';
-import SimpleForm from '../../../components/forms/FormModal';
+
 import { listUnit, createUnit, updateUnit, deleteUnit, clearData } from './redux';
+import { tableHeader, formDetails } from './data';
 import TableDisplay from '../../../components/TableDisplay';
+import SimpleForm from '../../../components/forms/FormModal';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -19,7 +21,7 @@ const Units = (props) => {
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  const { unitList, action, statusMessage } = useSelector((state) => state.maintenance.units);
+  const { unitList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.units);
 
   useEffect(() => {
     let isCancelled = false;
@@ -37,16 +39,8 @@ const Units = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Unit');
@@ -70,9 +64,6 @@ const Units = (props) => {
           setLoading(false);
         });
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -80,19 +71,19 @@ const Units = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateUnit(newValues)).then(() => {
+      await dispatch(updateUnit(newValues)).then(() => {
         dispatch(listUnit({ message })).then(() => {
           setLoading(false)
         });
       });
     } else if (mode === 'add') {
-      dispatch(createUnit(values)).then(() => {
+      await dispatch(createUnit(values)).then(() => {
         dispatch(listUnit({ message })).then(() => {
           setLoading(false)
         });;
@@ -100,6 +91,7 @@ const Units = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (

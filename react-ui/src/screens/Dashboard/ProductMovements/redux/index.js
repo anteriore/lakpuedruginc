@@ -21,7 +21,11 @@ export const listProductMovements = createAsyncThunk(
 
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -43,7 +47,11 @@ export const createProductMovement = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validateResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -68,6 +76,8 @@ const productMovementSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for product movements`,
       };
     },
@@ -75,7 +85,8 @@ const productMovementSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Product Movement'
+        'Product Movement',
+        state.action
       );
 
       return {
@@ -91,7 +102,8 @@ const productMovementSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Product Movement'
+        'Product Movement',
+        state.action
       );
 
       return {
@@ -117,7 +129,8 @@ const productMovementSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Product Movement'
+        'Product Movement',
+        state.action
       );
 
       return {
@@ -132,7 +145,8 @@ const productMovementSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Product Movement'
+        'Product Movement',
+        state.action
       );
 
       return {

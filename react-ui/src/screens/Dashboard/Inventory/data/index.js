@@ -1,5 +1,3 @@
-import { object } from "prop-types"
-
 export const columns = [
   {
     title: 'Item ID',

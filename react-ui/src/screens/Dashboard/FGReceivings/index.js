@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-
+import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listFGReceiving, addFGReceiving, clearData } from './redux';
@@ -15,14 +15,28 @@ import ItemDescription from '../../../components/ItemDescription';
 const { Title, Text } = Typography;
 
 const FGReceivings = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const listData = useSelector((state) => state.dashboard.FGReceivings.list);
+  const {
+    list, status, statusLevel, 
+    statusMessage, action
+  } = useSelector((state) => state.dashboard.FGReceivings);
+
+  const { 
+    status: statusFGI, statusLevel: statusLevelFGI,  
+    statusMessage: statusMessageFGI, action: actionFGI
+  } = useSelector(state => state.dashboard.FGIssuances);
+
+  const { 
+    status: statusDepot, action: actionDepot,  
+    statusLevel: statusLevelDepot, statusMessage: statusMessageDepot
+  } = useSelector(state => state.maintenance.depots);
+
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -31,42 +45,80 @@ const FGReceivings = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearFGIS());
+  }, [dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listFGReceiving({ company, message })).then(() => {
-      setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-        dispatch(clearDepot());
-        dispatch(clearFGIS());
+      if (isMounted.current){
+        setLoading(false);
+      } else {
+        performCleanup();
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearFGIS());
-      isCancelled = true;
+      isMounted.current = false
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusFGI,
+      statusMessage: statusMessageFGI,
+      action: actionFGI, 
+      statusLevel: statusLevelFGI,
+      module: 'FG Issuance'
+    })
+  }, [
+    actionFGI, statusMessageFGI, 
+    statusFGI, statusLevelFGI
+  ]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: 'Depot'
+    })
+  }, [
+    actionDepot, statusMessageDepot, 
+    statusDepot, statusLevelDepot
+  ]);
 
   const handleAdd = () => {
     setFormTitle('Create FG Receiving Slip');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then(() => {
-      dispatch(clearFGIS());
-      history.push(`${path}/new`);
-      setLoading(false);
+    dispatch(listDepot({ company, message })).then((response) => {
+      const onSuccess = () => {
+        dispatch(clearFGIS());
+        history.push(`${path}/new`);
+        setLoading(false);
+      }
+
+      const onFail = () => {
+        setLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
-  const handleUpdate = (data) => {};
+  const handleUpdate = () => {};
 
-  const handleDelete = (data) => {};
+  const handleDelete = () => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -91,18 +143,17 @@ const FGReceivings = (props) => {
     };
     await dispatch(addFGReceiving(payload)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         history.goBack();
-        message.success(`Successfully added ${response.payload.data.prsNo}`);
         dispatch(listFGReceiving({ company, message })).then(() => {
           setLoading(false);
         });
-      } else {
+      };
+
+      const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to create FG Receiving. Please double check the provided information.`
-        );
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
     return 1
@@ -161,7 +212,7 @@ const FGReceivings = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}

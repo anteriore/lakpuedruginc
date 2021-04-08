@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
@@ -32,6 +32,12 @@ const MaterialReevaluations = (props) => {
     statusLevel,
   } = useSelector((state) => state.dashboard.materialReevaluations);
   const { list: ARList } = useSelector((state) => state.dashboard.approvedReceipts);
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearAR());
+  },[dispatch])
 
   const onSuccess = useCallback(() => {
     history.push(`${path}/new`);
@@ -47,20 +53,18 @@ const MaterialReevaluations = (props) => {
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listMaterialReevaluations(company))
     .then(() => {
-      setContentLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
+      if (isMounted.current) {
+        setContentLoading(false);
+      } else {
+        performCleanup()
       }
     })
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearAR());
-      isCancelled = true;
+      isMounted.current = false
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
     setContentLoading(true)
