@@ -66,7 +66,7 @@ const MaterialIssuances = (props) => {
     return function cleanup() { 
       isMounted.current = false
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
     reevalutateMessageStatus({status, action, statusMessage, statusLevel})
