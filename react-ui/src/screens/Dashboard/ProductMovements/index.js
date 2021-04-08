@@ -1,27 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { unwrapResult } from '@reduxjs/toolkit';
-import _ from 'lodash';
 import moment from 'moment';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { formDetails, tableHeader, productModalHeader } from './data';
 import { listProductMovements, clearData, createProductMovement } from './redux';
 import InputForm from './InputForm';
-import statusDialogue from '../../../components/StatusDialogue';
 import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
 import {
   clearData as clearPI,
   tempListProductInventory,
 } from '../../Maintenance/redux/productInventory';
 import { formatPMPayload } from './helpers';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const ProductMovements = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const { company, title, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
@@ -29,11 +28,18 @@ const ProductMovements = (props) => {
   const [contentLoading, setContentLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [productMovement, setProductMovement] = useState(null);
+  const isMounted = useRef(true);
 
   const { productMovementList, action, statusMessage, status, statusLevel } = useSelector(
     (state) => state.dashboard.productMovements
   );
   const { id } = useSelector((state) => state.auth.user);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearPI());
+  }, [dispatch])
 
   const {
     action: actionDepot,
@@ -49,111 +55,60 @@ const ProductMovements = (props) => {
     statusLevel: statusLevelPI,
   } = useSelector((state) => state.maintenance.productInventory);
 
-  const pushErrorPage = useCallback(
-    (statusCode) => {
-      history.push({
-        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
-        state: {
-          moduleList: '/sales',
-        },
-      });
-    },
-    [history]
-  );
-
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    if (statusPI !== 'loading') {
-      if (actionPI === 'fetch' && statusLevelPI === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelPI,
-            modalContent: {
-              title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
-              content: statusMessagePI,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusPI,
+      statusMessage: statusMessagePI,
+      action: actionPI, 
+      statusLevel: statusLevelPI,
+      module: "Product Inventory"
+    });
   }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
 
   useEffect(() => {
-    if (statusDepot !== 'loading') {
-      if (actionDepot === 'fetch' && statusLevelDepot === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelDepot,
-            modalContent: {
-              title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
-              content: statusMessageDepot,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: "Depot"
+    });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
-    let isCancelled = false;
-    setContentLoading(true);
-    dispatch(listProductMovements(company))
-      .then(unwrapResult)
-      .then(() => {
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      })
-      .catch((rejectedValueOrSerializedError) => {
-        console.log(rejectedValueOrSerializedError);
-      })
-      .finally(() => {
+    dispatch(listProductMovements(company)).then(() => {
+      if (isMounted.current){
         setContentLoading(false);
-      });
+      } else {
+        performCleanup();
+      }
+    })
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearPI());
-
-      isCancelled = true;
+      isMounted.current = false;
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepot({company})).then((dataDepot) => {
-      dispatch(tempListProductInventory()).then((dataPI) => {
-        const promiseList = [dataDepot, dataPI];
-        const promiseResult = _.some(promiseList, (o) => {
-          return o.type.split(/[/?]/g)[1] === 'rejected';
-        });
-
-        if (!promiseResult) {
-          const promiseValues = _.some(promiseList, (o) => {
-            return o.payload.status !== 200 && o.payload.data.length === 0;
-          });
-
-          if (!promiseValues) {
-            history.push(`${path}/new`);
+    dispatch(listDepot(company)).then((response1) => {
+      dispatch(tempListProductInventory()).then((response2) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+              history.push(`${path}/new`);
+              setContentLoading(false);
           }
-          setContentLoading(false);
-        } else {
-          const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
-          pushErrorPage(payload.status);
+          const onFail = () => {
+            setContentLoading(false);
+          }
+          handleRequestResponse([response1, response2], onSuccess, onFail, '');
+        }
+        else {
+          performCleanup()
         }
       });
     });
@@ -166,10 +121,17 @@ const ProductMovements = (props) => {
 
   const onCreate = async (values) => {
     setContentLoading(true);
-    await dispatch(createProductMovement(formatPMPayload(id, company, values))).then(() => {
-      dispatch(listProductMovements(company)).then(() => {
+    await dispatch(createProductMovement(formatPMPayload(id, company, values))).then((response) => {
+      const onSuccess = () => {
+        dispatch(listProductMovements(company)).then(() => {
+          setContentLoading(false);
+        });
+      };
+
+      const onFail = () => {
         setContentLoading(false);
-      });
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     return 1
   };
