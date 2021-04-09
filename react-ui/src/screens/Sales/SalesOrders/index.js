@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import _ from 'lodash';
 import { Row, Typography, Col, Button, Skeleton, Modal, Space, Empty, Table } from 'antd';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import { unwrapResult } from '@reduxjs/toolkit';
-import statusDialogue from '../../../components/StatusDialogue';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails ,{ tableHeader } from './data';
@@ -24,12 +22,13 @@ import {
   clearData as clearPI,
   listProductInventory,
 } from '../../Dashboard/ProductInventories/redux/';
-import { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
 
 const SalesOrders = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const { title, company, actions } = props;
   const dispatch = useDispatch();
   const history = useHistory();
@@ -65,122 +64,83 @@ const SalesOrders = (props) => {
     status: statusPI,
     statusLevel: statusLevelPI,
   } = useSelector((state) => state.maintenance.productInventory);
+  const isMounted =  useRef(true);
 
-  const pushErrorPage = useCallback(
-    (statusCode) => {
-      history.push({
-        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
-        state: {
-          moduleList: '/sales',
-        },
-      });
-    },
-    [history]
-  );
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearClient());
+    dispatch(clearPI());
+  },[dispatch]);
 
   useEffect(() => {
     reevalutateMessageStatus({status, action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    if (statusClient !== 'loading') {
-      if (actionClient === 'fetch' && statusLevelClient === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelClient,
-            modalContent: {
-              title: `${_.capitalize(statusLevelClient)} - (Client)`,
-              content: statusMessageClient,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusClient,
+      statusMessage: statusMessageClient,
+      action: actionClient, 
+      statusLevel: statusLevelClient,
+      module: 'Clients'
+    })
   }, [actionClient, statusMessageClient, statusClient, statusLevelClient]);
 
   useEffect(() => {
-    if (statusPI !== 'loading') {
-      if (actionPI === 'fetch' && statusLevelPI === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelPI,
-            modalContent: {
-              title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
-              content: statusMessagePI,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusPI,
+      statusMessage: statusMessagePI,
+      action: actionPI, 
+      statusLevel: statusLevelPI,
+      module: 'Product Inventories'
+    })
   }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
 
   useEffect(() => {
-    if (statusDepot !== 'loading') {
-      if (actionDepot === 'fetch' && statusLevelDepot === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelDepot,
-            modalContent: {
-              title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
-              content: statusMessageDepot,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: 'Depots'
+    });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
-    let isCancelled = false;
     setContentLoading(true);
     dispatch(listSalesOrder(company))
-      .then(unwrapResult)
       .then(() => {
-        setContentLoading(false)
-        if (isCancelled) {
-          dispatch(clearData());
+        if (isMounted.current) {
+          setContentLoading(false)
+        } else {
+          performCleanup();
         }
-      })
-      .catch(() => {
-        setContentLoading(false)
       });
 
     
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearClient());
-      dispatch(clearPI());
-
-      isCancelled = true;
+      isMounted.current = false;
     };
-  }, [dispatch, company, history]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepot({company})).then((dataDepot) => {
-      dispatch(listClient(company)).then((dataClient) => {
-        dispatch(listProductInventory({company})).then((dataPI) => {
-          const promiseList = [dataDepot, dataPI, dataClient];
-          const promiseResult = _.some(promiseList, (o) => {
-            return o.type.split(/[/?]/g)[1] === 'rejected';
-          });
-
-          if (!promiseResult) {
-            const promiseValues = _.some(promiseList, (o) => {
-              return o.payload.status !== 200 && o.payload.data.length === 0;
-            });
-
-            if (!promiseValues) {
-              history.push(`${path}/new`);
+    dispatch(listDepot({company})).then((resp1) => {
+      dispatch(listClient({company})).then((resp2) => {
+        dispatch(listProductInventory({company})).then((resp3) => {
+          if(isMounted.current){
+            const onSuccess = () => {
+                history.push(`${path}/new`);
+                setContentLoading(false);
             }
-            setContentLoading(false);
-          } else {
-            const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
-            pushErrorPage(payload.status);
+            const onFail = () => {
+              setContentLoading(false);
+            }
+            handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+          }
+          else {
+            performCleanup()
           }
         });
       });
@@ -193,31 +153,57 @@ const SalesOrders = (props) => {
   };
 
   const handleApprove = (data) => {
-    dispatch(approveSalesOrder(data.id)).then(() => {
-      dispatch(listSalesOrder(company)).then(() => {
+    dispatch(approveSalesOrder(data.id)).then((response) => {
+      setContentLoading(true);
+      const onSuccess = () => {
+        dispatch(listSalesOrder(company)).then(() => {
+          setDisplayModal(false);
+          setContentLoading(false);
+        });
+      };
+
+      const onFail = () => {
         setDisplayModal(false);
-      });
+        setContentLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
   const handleReject = (data) => {
-    dispatch(rejectSalesOrder(data.id)).then(() => {
-      dispatch(listSalesOrder(company)).then(() => {
+    dispatch(rejectSalesOrder(data.id)).then((response) => {
+      setContentLoading(true);
+      const onSuccess = () => {
+        dispatch(listSalesOrder(company)).then(() => {
+          setDisplayModal(false);
+          setContentLoading(false);
+        });
+      };
+
+      const onFail = () => {
         setDisplayModal(false);
-      });
+        setContentLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
   const onCreate = async (value) => {
     setContentLoading(true);
-    await dispatch(createSalesOrder(formatPayload(id, company, value))).then(() => {
-      dispatch(listSalesOrder(company)).then(() => {
+    await dispatch(createSalesOrder(formatPayload(id, company, value))).then((response) => {
+      setContentLoading(true);
+      const onSuccess = () => {
+        dispatch(listSalesOrder(company)).then(() => {
+          setDisplayModal(false);
+          setContentLoading(false);
+        });
+      };
+
+      const onFail = () => {
+        setDisplayModal(false);
         setContentLoading(false);
-      }).catch(() => {
-        setContentLoading(false)
-      });
-    }).catch(() => {
-      setContentLoading(false)
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     return 1
   };
