@@ -6,6 +6,7 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import { tableHeader, formDetails } from './data';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import {
   createInstitution,
   deleteInstitution,
@@ -24,8 +25,11 @@ const InstitutionalCodes = (props) => {
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch();
-  const { institutionList, action, statusMessage } = useSelector(
+  const { handleRequestResponse } = GeneralHelper()
+
+  const { institutionList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.institutionalCodes
   );
 
@@ -45,16 +49,8 @@ const InstitutionalCodes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Institution');
@@ -78,9 +74,6 @@ const InstitutionalCodes = (props) => {
           setLoading(false);
         });
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -88,26 +81,43 @@ const InstitutionalCodes = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateInstitution(newValues)).then(() => {
-        dispatch(listInstitution({ message })).then(() => {
+      await dispatch(updateInstitution(newValues)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listInstitution({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        });
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
-      dispatch(createInstitution(values)).then(() => {
-        dispatch(listInstitution({ message })).then(() => {
+      await dispatch(createInstitution(values)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listInstitution({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        });
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (
