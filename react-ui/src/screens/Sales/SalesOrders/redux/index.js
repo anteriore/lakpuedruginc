@@ -114,6 +114,7 @@ const salesOrdersSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales orders`,
       };
     },
@@ -153,9 +154,10 @@ const salesOrdersSlice = createSlice({
     [listSalesOrderByDepot.pending]: (state) => {
       return {
         ...state,
-        status: 'loading',
         action: 'fetch',
-        statusMessage: message.ITEMS_GET_PENDING,
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for sales orders`,
       };
     },
     [listSalesOrderByDepot.fulfilled]: (state, action) => {
