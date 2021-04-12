@@ -137,7 +137,7 @@ const SalesOrders = (props) => {
             const onFail = () => {
               setContentLoading(false);
             }
-            handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+            handleRequestResponse([resp1, resp2,resp3], onSuccess, onFail, '');
           }
           else {
             performCleanup()

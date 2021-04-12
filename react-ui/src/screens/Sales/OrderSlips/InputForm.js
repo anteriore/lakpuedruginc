@@ -51,8 +51,10 @@ const InputForm = (props) => {
       const selectedSalesList = _.filter(salesOrderList, (o) =>  o.depot.id === value )
       .filter((o) =>  _.toLower(o.status) === 'approved' || _.toLower(o.status) === 'incomplete')
       .filter((o) => _.toLower(o.type) === 'os')
-      .filter((o) => _.some(o.products, ['status', 'Pending']) ||
-      _.some(o.products, ['status', 'Incomplete']));
+      .filter((o) => {
+        return  _.some(o.products, ['status', 'Pending']) || 
+        _.some(o.products, ['status', 'Incomplete'])
+      });
 
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
@@ -92,6 +94,7 @@ const InputForm = (props) => {
 
   useEffect(() => {
     const newOrderedProducts = formatOrderedProducts(selectedLot, selectedSales);
+
     setOrderedProducts(newOrderedProducts);
   }, [selectedLot, selectedSales]);
 
