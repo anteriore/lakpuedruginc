@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Row, Col, Typography, Skeleton, message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
@@ -7,6 +7,8 @@ import TableDisplay from '../../../components/TableDisplay';
 
 import { columns } from './data';
 import { listEngineeringInventory, clearData } from './redux';
+import {reevalutateMessageStatus} from '../../../helpers/general-helper';
+
 
 const { Title } = Typography;
 
@@ -15,29 +17,36 @@ const EngineeringInventories = (props) => {
 
   const { company } = props;
   const dispatch = useDispatch();
-  const listData = useSelector((state) => state.dashboard.engineeringInventories.list);
+  const {list, status, statusMessage, statusLevel, action } = useSelector((state) => state.dashboard.engineeringInventories);
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listEngineeringInventory({ company, message })).then(() => {
-      setLoading(false);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel});
+  }, [status, action, statusMessage, statusLevel]);
 
-      if (isCancelled) {
-        dispatch(clearData());
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+  },[dispatch]);
+
+  useEffect(() => {
+    dispatch(listEngineeringInventory({ company, message })).then(() => {
+      if (isMounted.current){
+        setLoading(false);
+      } else {
+        performCleanup();
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      isCancelled = true;
+      isMounted.current = false
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
-  const handleUpdate = (data) => {};
+  const handleUpdate = () => {};
 
-  const handleDelete = (data) => {};
+  const handleDelete = () => {};
 
-  const handleRetrieve = (data) => {};
+  const handleRetrieve = () => {};
 
   return (
     <Switch>
@@ -57,7 +66,7 @@ const EngineeringInventories = (props) => {
               <>
                 <TableDisplay
                   columns={columns}
-                  data={listData}
+                  data={list}
                   handleRetrieve={handleRetrieve}
                   handleUpdate={handleUpdate}
                   handleDelete={handleDelete}
