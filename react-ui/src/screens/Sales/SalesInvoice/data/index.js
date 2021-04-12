@@ -1,5 +1,3 @@
-import { initial } from "lodash";
-
 export const tableHeader = [
   {
     title: 'Date',
@@ -61,7 +59,6 @@ export const formDetails = {
     {
       label: 'Tax Percentage',
       name: 'taxPercentage',
-      type: 'number',
       rules: [{ required: true, message: 'Please provide a proper tax percentage' }],
       min: 0,
       initialValue: 12,
