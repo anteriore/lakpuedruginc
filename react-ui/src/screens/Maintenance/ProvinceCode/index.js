@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import { tableHeader, formDetails } from './data';
 import {
   listProvinceCode,
@@ -24,10 +25,11 @@ const ProvinceCode = (props) => {
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true)
-  const { provinceCodeList, action, statusMessage } = useSelector(
+  const { provinceCodeList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.provinceCodes
   );
   const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
 
   useEffect(() => {
     let isCancelled = false;
@@ -45,16 +47,8 @@ const ProvinceCode = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Province Code');
@@ -78,9 +72,6 @@ const ProvinceCode = (props) => {
           setLoading(false)
         })
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -88,26 +79,43 @@ const ProvinceCode = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true)
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateProvinceCode(newValues)).then(() => {
-        dispatch(listProvinceCode({ message })).then(() => {
+      await dispatch(updateProvinceCode(newValues)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listProvinceCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          })
+        }
+        const onFail = () => {
           setLoading(false);
-        })
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
-      dispatch(createProvinceCode(values)).then(() => {
-        dispatch(listProvinceCode({ message })).then(() => {
+      await dispatch(createProvinceCode(values)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listProvinceCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          })
+        }
+        const onFail = () => {
           setLoading(false);
-        })
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (
