@@ -27,7 +27,11 @@ export const listVendor = createAsyncThunk(
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -42,7 +46,11 @@ export const addVendor = createAsyncThunk('addVendor', async (payload, thunkAPI)
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -57,7 +65,11 @@ export const updateVendor = createAsyncThunk('updateVendor', async (payload, thu
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -73,7 +85,11 @@ export const getVendor = createAsyncThunk('getVendor', async (payload, thunkAPI)
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -88,7 +104,11 @@ export const deleteVendor = createAsyncThunk('deleteVendor', async (payload, thu
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 

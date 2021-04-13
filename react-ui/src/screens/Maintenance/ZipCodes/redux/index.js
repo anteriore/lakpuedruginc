@@ -1,52 +1,95 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listZipCode = createAsyncThunk(
-  'listZipCode',
-  async (payload, thunkAPI, rejectWithValue) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  
+  try {
     const response = await axiosInstance.get(`/rest/zip-codes?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for zip codes');
-      }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
-    }
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
-);
+});
 
 export const createZipCode = createAsyncThunk('createZipCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+  try {
+    const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
 
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const updateZipCode = createAsyncThunk('updateZipCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
+  try {
+    const response = await axiosInstance.post(`/rest/zip-codes?token=${accessToken}`, payload);
 
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const deleteZipCode = createAsyncThunk('deleteZipCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  const response = await axiosInstance.post(`/rest/zip-codes/delete?token=${accessToken}`, id);
+  try {
+    const response = await axiosInstance.post(`/rest/zip-codes/delete?token=${accessToken}`, id);
 
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 const initialState = {
   zipCodeList: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -59,107 +102,152 @@ const zipCodeSlice = createSlice({
   },
   extraReducers: {
     [listZipCode.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'fetch', 
         status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
       };
     },
     [listZipCode.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for zip codes';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Zip Codes', state.action);
 
       return {
         ...state,
         zipCodeList: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listZipCode.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Zip Codes',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
         statusMessage,
       };
     },
-    [listZipCode.rejected]: (state) => {
+    [createZipCode.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
+      };
+    },
+    [createZipCode.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Zip Codes', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [createZipCode.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Zip Codes',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
-      };
-    },
-    [createZipCode.pending]: (state) => {
-      return {
-        ...state,
-        status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
-      };
-    },
-    [createZipCode.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
-      };
-    },
-    [createZipCode.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [updateZipCode.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
       };
     },
-    [updateZipCode.fulfilled]: (state) => {
+    [updateZipCode.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Zip Codes', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [updateZipCode.rejected]: (state) => {
+    [updateZipCode.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Zip Codes',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [deleteZipCode.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'delete', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
       };
     },
-    [deleteZipCode.fulfilled]: (state) => {
+    [deleteZipCode.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Zip Codes', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [deleteZipCode.rejected]: (state) => {
+    [deleteZipCode.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Zip Codes',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

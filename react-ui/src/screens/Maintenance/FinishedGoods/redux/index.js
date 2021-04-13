@@ -23,7 +23,11 @@ export const getFGList = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
   }
 );
@@ -40,7 +44,11 @@ export const createFG = createAsyncThunk('createFG', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -54,7 +62,11 @@ export const updateFG = createAsyncThunk('updateFG', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -69,14 +81,18 @@ export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
 const initialState = {
   list: [],
   status: 'loading',
-  statusLevel: 'loading',
+  statusLevel: '',
   responseCode: null,
   statusMessage: '',
   action: '',
@@ -95,7 +111,7 @@ const finishedGoodsSlice = createSlice({
         ...state,  
         action: 'fetch', 
         status: 'loading',
-        statusLevel: 'loading',
+        statusLevel: '',
         statusMessage: `${ITEMS_GET_PENDING} for finished goods` 
       };
     },
@@ -139,7 +155,7 @@ const finishedGoodsSlice = createSlice({
         action: 'create',
         status: 'loading',
         statusMessage: `${ITEM_ADD_PENDING} for finished goods`,
-        statusLevel: 'loading',
+        statusLevel: '',
         responseCode: null,
       };
     },
@@ -181,7 +197,7 @@ const finishedGoodsSlice = createSlice({
         action: 'update',
         status: 'loading',
         statusMessage: `${ITEM_UPDATE_PENDING} for finished goods`,
-        statusLevel: 'loading',
+        statusLevel: '',
         responseCode: null,
       };
     },
@@ -223,7 +239,7 @@ const finishedGoodsSlice = createSlice({
         action: 'delete',
         status: 'loading',
         statusMessage: `${ITEM_DELETE_PENDING} for finished goods`,
-        statusLevel: 'loading',
+        statusLevel: '',
         responseCode: null,
       };
     },

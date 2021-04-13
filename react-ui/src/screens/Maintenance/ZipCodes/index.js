@@ -11,6 +11,7 @@ import { listProvinceCode, clearData as clearProvinceCode } from '../ProvinceCod
 import { listRegionCode, clearData as clearRegionCode } from '../RegionCodes/redux';
 import { listZipCode, createZipCode, updateZipCode, deleteZipCode, clearData } from './redux';
 import { formatZipPayload } from './helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -25,8 +26,9 @@ const ZipCodes = (props) => {
   const [loading, setLoading] = useState(true);
   const { provinceCodeList } = useSelector((state) => state.maintenance.provinceCodes);
   const { regionCodeList } = useSelector((state) => state.maintenance.regionCodes);
-  const { zipCodeList, action, statusMessage } = useSelector((state) => state.maintenance.zipCodes);
+  const { zipCodeList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.zipCodes);
   const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
 
   useEffect(() => {
     let isCancelled = false;
@@ -46,16 +48,8 @@ const ZipCodes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     const newForm = tempFormDetails;
@@ -82,9 +76,15 @@ const ZipCodes = (props) => {
   const handleAddButton = () => {
     setModalTitle('Add New Zip Code');
     setMode('add');
-    dispatch(listRegionCode({ message })).then(() => {
-      dispatch(listProvinceCode({ message })).then(() => {
-        setIsOpenForm(!isOpenForm);
+    dispatch(listRegionCode({ message })).then((response1) => {
+      dispatch(listProvinceCode({ message })).then((response2) => {
+        const onSuccess = () => {
+          setIsOpenForm(!isOpenForm);
+        }
+        const onFail = () => {
+          handleCancelButton()
+        }
+        handleRequestResponse([response1, response2], onSuccess, onFail, '');
       });
     });
   };
@@ -93,18 +93,21 @@ const ZipCodes = (props) => {
     setCurrentID(row.id);
     setModalTitle('Edit Zip Code');
     setMode('edit');
-    dispatch(listRegionCode({ message })).then(() => {
-      dispatch(listProvinceCode({ message }))
-        .then(() => {
-          setFormValues({
-            ...row,
-            provinceCode: row.provinceCode.id,
-            regionCode: row.regionCode.id,
-          });
-        })
-        .then(() => {
+    setFormValues({
+      ...row,
+      provinceCode: row.provinceCode.id,
+      regionCode: row.regionCode.id,
+    });
+    dispatch(listRegionCode({ message })).then((response1) => {
+      dispatch(listProvinceCode({ message })).then((response2) => {
+        const onSuccess = () => {
           setIsOpenForm(!isOpenForm);
-        });
+        }
+        const onFail = () => {
+          handleCancelButton()
+        }
+        handleRequestResponse([response1, response2], onSuccess, onFail, '');
+      })
     });
   };
 
@@ -116,9 +119,6 @@ const ZipCodes = (props) => {
           setLoading(false);
         })
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -126,27 +126,41 @@ const ZipCodes = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true);
     if (mode === 'edit') {
       const newValues = formatZipPayload(values, provinceCodeList, regionCodeList);
       newValues.id = currentID;
-      dispatch(updateZipCode(newValues)).then(() => {
-        dispatch(listZipCode({ message })).then(() => {
-          setLoading(false)
-        })
-      });
-    } else if (mode === 'add') {
-      dispatch(createZipCode(formatZipPayload(values, provinceCodeList, regionCodeList))).then(
-        () => {
+      await dispatch(updateZipCode(newValues)).then((response) => {
+        const onSuccess = () => {
           dispatch(listZipCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
             setLoading(false)
           })
         }
-      );
+        const onFail = () => {
+          setLoading(false)
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    } else if (mode === 'add') {
+      await dispatch(createZipCode(formatZipPayload(values, provinceCodeList, regionCodeList)))
+      .then((response) => {
+        const onSuccess = () => {
+          dispatch(listZipCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false)
+          })
+        }
+        const onFail = () => {
+          setLoading(false)
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (

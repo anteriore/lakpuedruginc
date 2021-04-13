@@ -6,6 +6,7 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import SimpleForm from '../../../components/forms/FormModal';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import {
   listRegionCode,
   createRegionCode,
@@ -25,7 +26,8 @@ const RegionCodes = (props) => {
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  const { regionCodeList, action, statusMessage } = useSelector(
+  const { handleRequestResponse } = GeneralHelper()
+  const { regionCodeList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.regionCodes
   );
 
@@ -45,16 +47,8 @@ const RegionCodes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Region');
@@ -78,9 +72,6 @@ const RegionCodes = (props) => {
           setLoading(false);
         });
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -88,26 +79,41 @@ const RegionCodes = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateRegionCode(newValues)).then(() => {
-        dispatch(listRegionCode({ message })).then(() => {
-          setLoading(false)
-        });
+      await dispatch(updateRegionCode(newValues)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listRegionCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false)
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
-      dispatch(createRegionCode(values)).then(() => {
-        dispatch(listRegionCode({ message })).then(() => {
+      await dispatch(createRegionCode(values)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listRegionCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false)
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        });
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (

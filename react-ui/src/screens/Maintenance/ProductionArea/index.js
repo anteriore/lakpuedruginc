@@ -13,6 +13,7 @@ import {
   deleteProductionArea,
   clearData,
 } from './redux';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -25,7 +26,7 @@ const ProductionArea = (props) => {
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  const { productionAreaList, action, statusMessage } = useSelector(
+  const { list: productionAreaList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.productionArea
   );
 
@@ -46,16 +47,8 @@ const ProductionArea = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Production Area');
@@ -79,9 +72,6 @@ const ProductionArea = (props) => {
           setLoading(false);
         });
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -89,19 +79,19 @@ const ProductionArea = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateProductionArea(newValues)).then(() => {
+      await dispatch(updateProductionArea(newValues)).then(() => {
         dispatch(listProductionArea({ message })).then(() => {
           setLoading(false)
         });
       });
     } else if (mode === 'add') {
-      dispatch(createProductionArea(values)).then(() => {
+      await dispatch(createProductionArea(values)).then(() => {
         dispatch(listProductionArea({ message })).then(() => {
           setLoading(false);
         });
@@ -109,6 +99,7 @@ const ProductionArea = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (

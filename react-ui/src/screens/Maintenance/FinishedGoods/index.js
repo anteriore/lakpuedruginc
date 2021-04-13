@@ -62,9 +62,6 @@ const FinishedGoods = (props) => {
       .then(() => {
         dispatch(getFGList());
       })
-      .catch((err) => {
-        message.error(`Something went wrong! Error: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -72,24 +69,25 @@ const FinishedGoods = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setContentLoading(true)
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateFG(newValues)).then(() => {
+      await dispatch(updateFG(newValues)).then(() => {
         dispatch(getFGList());
         setContentLoading(false)
       });
     } else if (mode === 'add') {
       const newValues = values;
-      dispatch(createFG(newValues)).then(() => {
+      await dispatch(createFG(newValues)).then(() => {
         dispatch(getFGList());
         setContentLoading(false)
       });
     }
     handleCancelButton()
+    return 1
   };
 
   return (

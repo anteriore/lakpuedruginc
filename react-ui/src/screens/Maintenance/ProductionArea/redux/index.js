@@ -1,24 +1,28 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 export const listProductionArea = createAsyncThunk(
   'listProductionArea',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(`/rest/procedure-areas?token=${accessToken}`);
-
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for production areas');
+    try {
+      const response = await axiosInstance.get(`/rest/procedure-areas?token=${accessToken}`);
+  
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+  
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
-
-    return response;
   }
 );
 
@@ -26,12 +30,26 @@ export const createProductionArea = createAsyncThunk(
   'createProductionArea',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(
-      `/rest/procedure-areas?token=${accessToken}`,
-      payload
-    );
-
-    return response;
+    
+    try {
+      const response = await axiosInstance.post(
+        `/rest/procedure-areas?token=${accessToken}`,
+        payload
+      );
+  
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+  
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -39,12 +57,26 @@ export const updateProductionArea = createAsyncThunk(
   'updateProductionArea',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(
-      `/rest/procedure-areas?token=${accessToken}`,
-      payload
-    );
 
-    return response;
+    try {
+      const response = await axiosInstance.post(
+        `/rest/procedure-areas?token=${accessToken}`,
+        payload
+      );
+  
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+  
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -53,18 +85,33 @@ export const deleteProductionArea = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const { id } = payload;
-    const response = await axiosInstance.post(
-      `/rest/procedure-areas/delete?token=${accessToken}`,
-      id
-    );
-
-    return response;
+    try {
+      const response = await axiosInstance.post(
+        `/rest/procedure-areas/delete?token=${accessToken}`,
+        id
+      );
+  
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+  
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
 const initialState = {
-  productionAreaList: [],
-  status: '',
+  list: [],
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -77,107 +124,152 @@ const productionAreaSlice = createSlice({
   },
   extraReducers: {
     [listProductionArea.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'fetch', 
         status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for production areas` 
       };
     },
     [listProductionArea.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for production areas';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
 
       return {
         ...state,
-        productionAreaList: data,
+        list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listProductionArea.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
         statusMessage,
       };
     },
-    [listProductionArea.rejected]: (state) => {
+    [createProductionArea.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas` 
+      };
+    },
+    [createProductionArea.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [createProductionArea.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
-      };
-    },
-    [createProductionArea.pending]: (state) => {
-      return {
-        ...state,
-        status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
-      };
-    },
-    [createProductionArea.fulfilled]: (state) => {
-      return {
-        ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
-      };
-    },
-    [createProductionArea.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [updateProductionArea.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas` 
       };
     },
-    [updateProductionArea.fulfilled]: (state) => {
+    [updateProductionArea.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [updateProductionArea.rejected]: (state) => {
+    [updateProductionArea.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [deleteProductionArea.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'delete', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas` 
       };
     },
-    [deleteProductionArea.fulfilled]: (state) => {
+    [deleteProductionArea.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [deleteProductionArea.rejected]: (state) => {
+    [deleteProductionArea.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },
