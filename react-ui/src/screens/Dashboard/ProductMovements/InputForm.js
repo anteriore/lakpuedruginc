@@ -10,6 +10,7 @@ import { EditableCell, EditableRow } from '../../../components/TableRowInput';
 import FormItem from '../../../components/forms/FormItem';
 import { formDetails, tableProduct, tableProductInventory } from './data';
 import { updateList } from '../../../helpers/general-helper';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 const { Title } = Typography;
 
@@ -219,7 +220,7 @@ const InputForm = (props) => {
           width={1000}
         >
           <Table
-            columns={renderProductItemColumns(tableProductInventory)}
+            columns={TableHeader({ columns: renderProductItemColumns(tableProductInventory), hasSorter: true, hasFilter: true })}
             rowKey={(record) => record.uid}
             dataSource={productInv}
             pagination={{ simple:true }}

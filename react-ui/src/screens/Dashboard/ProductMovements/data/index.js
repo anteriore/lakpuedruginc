@@ -19,6 +19,7 @@ export const tableHeader = [
     dataIndex: 'type',
     key: 'type',
     align: 'center',
+    datatype: 'string'
   },
   {
     title: 'Depot',
@@ -62,27 +63,36 @@ export const tableProductInventory = [
   {
     title: 'Lot #',
     dataIndex: 'product',
-    render: (object) => object.lotNumber,
-  },
+    key: 'product',
+    datatype: 'object',
+    dataToString: (product) => product?.lotNumber ?? ''
+  }, 
   {
     title: 'FG Code',
     dataIndex: 'product',
-    render: (object) => object.finishedGood.code,
+    key: 'product',
+    datatype: 'object',
+    dataToString: (product) => product?.finishedGood?.code ?? ''
   },
   {
     title: 'Finished Good',
     dataIndex: 'product',
-    render: (object) => object.finishedGood.name,
+    key: 'product',
+    datatype: 'object',
+    dataToString: (product) => product?.finishedGood?.name ?? ''
   },
   {
     title: 'Expiration',
-    dataIndex: ['product', 'expiration'],
-    key: 'expiration',
-    //render: (object) => moment(new Date(object)).format('DD/MM/YYYY')
+    dataIndex: 'product',
+    key: 'product',
+    datatype: 'object',
+    dataToString: (product) => product.expiration.toString() ?? ''
+
   },
   {
     title: 'Stock on Hand',
     dataIndex: 'quantity',
+    key: 'quantity',
   },
 ];
 
