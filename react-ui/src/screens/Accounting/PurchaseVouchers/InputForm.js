@@ -174,7 +174,8 @@ const InputForm = (props) => {
         setFormButtonLoading(false)
       });
     } catch (errorInfo) {
-      console.log(errorInfo)
+      setFormButtonLoading(false)
+      message.error("An error has occurred. Please double check the information you've provided.");
     }
   }
 
