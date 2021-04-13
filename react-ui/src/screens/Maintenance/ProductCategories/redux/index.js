@@ -44,7 +44,11 @@ export const addPC = createAsyncThunk('addPC', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -62,7 +66,11 @@ export const updatePC = createAsyncThunk('updatePC', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -79,7 +87,11 @@ export const deletePC = createAsyncThunk('deletePC', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -95,6 +107,7 @@ const productCategorySlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for product categories`
       }
     },
@@ -137,8 +150,8 @@ const productCategorySlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for product categories`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for product categories`,
         responseCode: null,
       };
     },
@@ -179,8 +192,8 @@ const productCategorySlice = createSlice({
         ...state,
         action: 'update',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for product categories`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for product categories`,
         responseCode: null,
       };
     },
@@ -221,8 +234,8 @@ const productCategorySlice = createSlice({
         ...state,
         action: 'delete',
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for product categories`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for product categories`,
         responseCode: null,
       };
     },
