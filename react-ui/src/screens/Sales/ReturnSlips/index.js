@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Row,
   Col,
@@ -27,10 +27,12 @@ import { listClient, clearData as clearClient } from '../../Maintenance/Clients/
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
 import { clearData as clearSI } from '../SalesInvoice/redux';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const ReturnSlips = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -39,46 +41,101 @@ const ReturnSlips = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const listData = useSelector((state) => state.sales.returnSlips.list);
+  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.sales.returnSlips);
+  const {
+    action: actionDepot,
+    statusMessage: statusMessageDepot,
+    status: statusDepot,
+    statusLevel: statusLevelDepot,
+  } = useSelector((state) => state.maintenance.depots);
+
+  const {
+    action: actionClient,
+    statusMessage: statusMessageClient,
+    status: statusClient,
+    statusLevel: statusLevelClient,
+  } = useSelector((state) => state.maintenance.clients);
+
   const companies = useSelector((state) => state.company.companyList);
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearClient());
+    dispatch(clearDepot());
+    dispatch(clearOS());
+    dispatch(clearSI());
+  },[dispatch])
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: 'Depots'
+    });
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusClient,
+      statusMessage: statusMessageClient,
+      action: actionClient, 
+      statusLevel: statusLevelClient,
+      module: 'Clients'
+    })
+  }, [actionClient, statusMessageClient, statusClient, statusLevelClient]);
 
   useEffect(() => {
     dispatch(listReturnSlip({ company, message })).then(() => {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false)
+      } else {
+        performCleanup();
+      }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearClient());
-      dispatch(clearDepot());
-      dispatch(clearOS());
-      dispatch(clearSI());
+    
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAdd = () => {
     setFormTitle('Create Return Slip');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(clearOS());
-    dispatch(listClient({ company, message })).then(() => {
-      dispatch(listDepot({ company, message })).then(() => {
-        history.push(`${path}/new`);
-        setLoading(false);
+    dispatch(listClient({ company, message })).then((resp1) => {
+        dispatch(listDepot({ company, message })).then((resp2) => {
+          if(isMounted.current){
+            const onSuccess = () => {
+                history.push(`${path}/new`);
+                setLoading(false);
+            }
+            const onFail = () => {
+              setLoading(false);
+            }
+            handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+          }
+          else {
+            performCleanup()
+          }
       });
-    });
-  };
+    })
+  }
 
   const handleUpdate = (data) => {
     setFormTitle('Update Return Slip');
-    setFormMode('edit');
-    const itemData = listData.find((item) => item.id === data.id);
+    const itemData = list.find((item) => item.id === data.id);
     const formData = {
       ...itemData,
       date: moment(new Date(data.date)) || moment(),
@@ -121,8 +178,7 @@ const ReturnSlips = (props) => {
 
   const handleReport = () => {
     setFormTitle('Return Slip Summary Report');
-    setFormMode('report');
-    setFormData(listData);
+    setFormData(list);
     console.log(formData);
     setLoading(true);
     history.push(`${path}/report`);
@@ -180,16 +236,17 @@ const ReturnSlips = (props) => {
     };
     await dispatch(addReturnSlip(payload)).then((response) => {
       setLoading(true);
-      history.goBack();
-      if (response.payload.status === 200) {
-        message.success(`Successfully added ${response.payload.data.number}`);
+      const onSuccess = () => {
+        history.goBack();
         dispatch(listReturnSlip({ company, message })).then(() => {
           setLoading(false);
         });
-      } else {
+      };
+
+      const onFail = () => {
         setLoading(false);
-        message.error(`Unable to add Return Slip. Please double check the provided information.`);
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
     return 1
@@ -277,7 +334,7 @@ const ReturnSlips = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
