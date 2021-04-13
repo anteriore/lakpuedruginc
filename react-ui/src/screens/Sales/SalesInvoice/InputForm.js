@@ -52,9 +52,11 @@ const InputForm = (props) => {
       setSelectedSales(null);
       setSelectedLot([]);
       
-      const selectedSalesList = _.filter(salesOrderList, (o) => {
-        return o?.depot?.id === value && _.toLower(o?.status) !== 'pending';
-      }).filter((o) => _.toLower(o?.type) === 'dr_si');
+      const selectedSalesList = _.filter(salesOrderList, (o) => o?.depot?.id === value)
+        .filter((o) => _.toLower(o?.status) === 'approved' || _.toLower(o?.status) === 'incomplete')
+        .filter((o) => _.toLower(o?.type) === 'dr_si')
+        .filter((o) => _.some(o.products, ['status', 'Pending']) ||
+        _.some(o.products, ['status', 'Incomplete']));
 
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
@@ -140,7 +142,7 @@ const InputForm = (props) => {
   const onFinish = (value) => {
     setProcessingData(true)
     onSubmit(value, selectedSales, salesInvoiceProducts).then(() => {
-      setProcessingData(false)
+      setProcessingData(false);
       history.goBack();
     })
   };
@@ -199,7 +201,10 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit">
+                    <Button  
+                    loading={processingData}
+                    disabled={ salesInvoiceProducts.length !== 0 && selectedSales !== null ? false : true }  
+                    type="primary" htmlType="submit">
                       Submit
                     </Button>
                   </Space>
