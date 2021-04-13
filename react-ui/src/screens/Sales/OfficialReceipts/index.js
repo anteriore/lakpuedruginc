@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,10 +11,12 @@ import InputForm from './InputForm';
 
 import { listOReceipt, addOReceipt, deleteOReceipt, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const OfficialReceipts = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -23,33 +25,71 @@ const OfficialReceipts = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedAR, setSelectedAR] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const listData = useSelector((state) => state.sales.officialReceipts.list);
+  const {list, status, statusLevel, statusMessage, action } = useSelector((state) => state.sales.officialReceipts);
+  const {
+    action: actionDepot,
+    statusMessage: statusMessageDepot,
+    status: statusDepot,
+    statusLevel: statusLevelDepot,
+  } = useSelector((state) => state.maintenance.depots);
   const user = useSelector((state) => state.auth.user);
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+  },[dispatch]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: 'Depots'
+    });
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
     dispatch(listOReceipt({ company, message })).then(() => {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false)
+      } else {
+        performCleanup();
+      }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
+      isMounted.current = false;
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAdd = () => {
     setFormTitle('Create Official Receipt');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
+    dispatch(listDepot({ company, message })).then((resp1) => {
+      if(isMounted.current){
+        const onSuccess = () => {
+            history.push(`${path}/new`);
+            setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([resp1], onSuccess, onFail, '');
+      }
+      else {
+        performCleanup()
+      }
     });
   };
 
@@ -57,7 +97,6 @@ const OfficialReceipts = (props) => {
     message.error('Unable to perform action.');
     /*
     setFormTitle('Edit Official Receipt');
-    setFormMode('edit');
     setLoading(true);
     const itemData = listData.find((item) => item.id === data.id);
     const formData = {
@@ -76,15 +115,16 @@ const OfficialReceipts = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteOReceipt(data.id)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         dispatch(listOReceipt({ company, message })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted ${data.number}`);
         });
-      } else {
+      };
+
+      const onFail = () => {
         setLoading(false);
-        message.error(`Unable to delete ${data.number}`);
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -112,18 +152,17 @@ const OfficialReceipts = (props) => {
     
     await dispatch(addOReceipt(payload)).then((response) => {
       setLoading(true);
-      history.goBack();
-      if (response.payload.status === 200) {
-        message.success(`Successfully added ${response.payload.data.number}`);
+      const onSuccess = () => {
+        history.goBack();
         dispatch(listOReceipt({ company, message })).then(() => {
           setLoading(false);
         });
-      } else {
+      };
+
+      const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to add Official Receipt. Please double check the provided information.`
-        );
       }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
   };
@@ -181,7 +220,7 @@ const OfficialReceipts = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
