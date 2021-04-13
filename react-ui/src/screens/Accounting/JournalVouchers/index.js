@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
@@ -33,6 +33,7 @@ const JournalVouchers = (props) => {
   const [contentLoading, setContentLoading] = useState(false);
   const [journalVoucher, setJournalVoucher] = useState(null);
   const [displayModal, setDisplayModal] = useState(false)
+  const isMounted = useRef(true);
 
   const { id: userId } = useSelector(state => state.auth.user)
   const {list, status, action, statusMessage, statusLevel} = useSelector((state) => state.accounting.journalVouchers);
@@ -42,40 +43,21 @@ const JournalVouchers = (props) => {
 	}, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    let isCancelled = false;
     setContentLoading(true);
-
     dispatch(listJournalVouchers({company})).then(() => {
       setContentLoading(false);
-      if(isCancelled){
-        dispatch(clearData());
-      }
     });
 
-    return function clearUp() {
+    return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
       dispatch(clearVouchers());
       dispatch(clearAC());
 			dispatch(clearDeptArea());
 			dispatch(clearGroupCat());
 			dispatch(clearVendor());
-      
-      isCancelled = true;
     }
   }, [company, dispatch]);
-
-  const onSuccess = useCallback((method) => {
-		if ( method === "add" ){
-			history.push(`${path}/new`);
-		} 
-
-		setContentLoading(false);
-	},[history, path])
-
-	const onFail = useCallback(() => {
-		history.goBack();
-		setContentLoading(false);
-	},[history])
 
   const handleAddButton = () => {
     setContentLoading(true);
@@ -85,8 +67,17 @@ const JournalVouchers = (props) => {
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
 							dispatch(listGroupByCompany({company})).then((dataG) => {
-								const dataList = [dataVoucher,dataVendor, dataAC, dataA, dataD, dataG];
-								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+                if(isMounted.current){
+                  const dataList = [dataVoucher,dataVendor, dataAC, dataA, dataD, dataG];
+                  const onSuccess = () => {
+                    history.push(`${path}/new`);
+                    setContentLoading(false);
+                  }
+                  const onFail = () => {
+                    setContentLoading(false);
+                  }
+                  handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+                }
 							})
 						})
 					})
@@ -95,21 +86,23 @@ const JournalVouchers = (props) => {
     })
   }
 
-  const handleRangedChanged = () => {
-
-  }
+  const handleRangedChanged = () => {}
 
   const handleApproveJV = () => {
+    setContentLoading(true);
     dispatch(approveJournalVouchers({jvId: journalVoucher.id, user: userId})).then(() => {
       dispatch(listJournalVouchers({company}));
       setDisplayModal(false);
+      setContentLoading(false);
     })
   }
 
   const handleRejectJV = () => {
+    setContentLoading(true);
     dispatch(rejectJournalVouchers({jvId: journalVoucher.id, user: userId})).then(() => {
       dispatch(listJournalVouchers({company}));
       setDisplayModal(false);
+      setContentLoading(false);
     })
   }
 
@@ -123,23 +116,24 @@ const JournalVouchers = (props) => {
 		setJournalVoucher(null);
 	}
 
-  const onCreate = async (payload) => {
+  const onCreate = async (data) => {
     setContentLoading(true)
-    await dispatch(createJournalVouchers(formatJVPaload(payload.values, 
-      payload.addedAccounts, userId, company))).then((dataCreateJV) => {
-      if (dataCreateJV.type.split('/')[1] === 'rejected') {
-        message.warning(dataCreateJV?.payload?.data?.message ?? "Please double check your input data")
-      } else{
-        dispatch(listJournalVouchers({company})).then(() => {
-					setContentLoading(false);
-				}).catch(() => {
-					setContentLoading(false);
-				});
-				payload.redirect();
-			}
-		}).catch(() => {
-			setContentLoading(false);
-    });
+    const payload = formatJVPaload(data.values, data.addedAccounts, userId, company)
+    await dispatch(createJournalVouchers(payload)).then((dataCreateJV) => {
+      if(isMounted.current){
+        const onSuccess = () => {
+          history.goBack()
+          dispatch(listJournalVouchers({company})).then(() => {
+            setContentLoading(false);
+          })
+        }
+        const onFail = () => {
+          setContentLoading(false);
+        }
+        handleRequestResponse([dataCreateJV], onSuccess, onFail, '');
+      }
+		})
+    return 1
   }
 
   return (
@@ -237,6 +231,7 @@ const JournalVouchers = (props) => {
                       <Button
                         style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
                         icon={<CheckOutlined />}
+                        loading={contentLoading}
                         onClick={handleApproveJV}
                         type="primary"
                       >
@@ -245,6 +240,7 @@ const JournalVouchers = (props) => {
                       <Button
                         style={{ marginRight: '1%' }}
                         icon={<CloseOutlined />}
+                        loading={contentLoading}
                         onClick={handleRejectJV}
                         type="primary"
                         danger
