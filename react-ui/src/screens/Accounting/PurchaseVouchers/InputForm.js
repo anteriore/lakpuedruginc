@@ -310,7 +310,7 @@ const InputForm = (props) => {
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
-                    <Button htmlType="button" onClick={() => history.goBack()}>
+                    <Button htmlType="button" disabled={formButtonLoading} onClick={() => history.goBack()}>
                       Cancel
                     </Button>
                     <Button loading={formButtonLoading} disabled={addedAccounts.length === 0 ? true : false} type="primary" onClick={onFinish}>
