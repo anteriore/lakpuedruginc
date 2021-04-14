@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Typography, Button, Skeleton, Space, Modal, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +7,7 @@ import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import ItemDescription from '../../../components/ItemDescription';
 
 import { listCashReceiptVoucher, addCashReceiptVoucher, clearData } from './redux';
@@ -31,10 +31,11 @@ const CashReceiptVouchers = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
+  const isMounted = useRef(true);
 
   const { handleRequestResponse } = GeneralHelper();
 
-  const data = useSelector((state) => state.accounting.cashReceiptVouchers.list);
+  const { list: data, statusMessage, action, status, statusLevel } = useSelector((state) => state.accounting.cashReceiptVouchers);
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const CashReceiptVouchers = (props) => {
     });
 
     return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
       dispatch(clearBankAccount());
       dispatch(clearAccountTitles());
@@ -52,19 +54,30 @@ const CashReceiptVouchers = (props) => {
     };
   }, [dispatch, company]);
 
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
   const handleAdd = () => {
     setFormTitle('Create Cash Receipt Voucher');
     setFormData(null);
+    setLoading(true);
     dispatch(listBankAccount({message})).then((response1) => {
       dispatch(listAccountTitles({ company, message })).then((response2) => {
         dispatch(listDepartment({ company, message })).then((response3) => {
           dispatch(listArea({ company, message })).then((response4) => {
             dispatch(listGroupByCompany({ company })).then((response5) => {
               dispatch(listVoucherByCompanyAndStatus({ company, status: 'Completed' })).then((response6) => {
-                const onSuccess = () => {
-                  history.push(`${path}/new`);
-                };
-                handleRequestResponse([response1, response2, response3, response4, response5, response6], onSuccess, null, '');
+                if(isMounted.current){
+                  const onSuccess = () => {
+                    history.push(`${path}/new`);
+                    setLoading(false);
+                  }
+                  const onFail = () => {
+                    setLoading(false);
+                  }
+                  handleRequestResponse([response1, response2, response3, response4, response5, response6], onSuccess, onFail, '');
+                }
               })
             })
           })
@@ -121,24 +134,21 @@ const CashReceiptVouchers = (props) => {
     const payload = processSubmitPayload(data)
     await dispatch(addCashReceiptVoucher(payload)).then((response) => {
       setLoading(true);
+      history.goBack();
       const onSuccess = () => {
         dispatch(listCashReceiptVoucher()).then(() => {
           setLoading(false);
-          history.goBack();
-          message.success(`Successfully added Cash Receipt Voucher for ${response.payload.data.number}`);
         });
       };
 
       const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to add Cash Receipt Voucher. Please double check the provided information.`
-        );
       }
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
+    return 1
   };
 
   //for data display
@@ -146,20 +156,20 @@ const CashReceiptVouchers = (props) => {
     const columns = [];
     fields.forEach((field) => {
       if (typeof field.render === 'undefined' || field.render === null) {
-        field.render = (object) => {console.log(object); return object[field.name]};
+        field.render = (object) => object[field.name];
       }
       if(field.name !== 'credit' && field.name !== 'debit'){
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => {console.log(object); return field.render(object[field.name])},
+          render: (object) => field.render(object[field.name]),
         });
       }
       else {
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => {console.log('amount', object); console.log(field); return field.render({[object.accountTitle.type.toLowerCase()]: object['amount']})},
+          render: (object) => field.render({[object.accountTitle.type.toLowerCase()]: object['amount']}),
         });
       }
     });
