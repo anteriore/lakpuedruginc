@@ -18,7 +18,11 @@ export const listPurchaseVouchers = createAsyncThunk('listPurchaseVouchers', asy
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -37,7 +41,11 @@ export const listPurchaseVouchersByVendorWithoutAdjustent = createAsyncThunk('li
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -56,7 +64,11 @@ export const createPurchaseVouchers = createAsyncThunk('createPurchaseVouchers',
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 })
 
@@ -75,7 +87,11 @@ export const updatePurchaseVouchers = createAsyncThunk('updatePurchaseVouchers',
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 })
 
@@ -92,7 +108,11 @@ export const approvePurchaseVoucher = createAsyncThunk('approvePurchaseVoucher',
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 })
 
@@ -111,7 +131,11 @@ export const rejectPurchaseVoucher = createAsyncThunk('rejectPurchaseVoucher', a
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 })
 
@@ -136,6 +160,7 @@ const purchaseVouchersSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for purchase vouchers`,
       };
     },
@@ -177,6 +202,7 @@ const purchaseVouchersSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for purchase vouchers`,
       };
     },
@@ -219,8 +245,8 @@ const purchaseVouchersSlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for purchase vouchers`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for purchase vouchers`,
         responseCode: null,
       };
     },
@@ -261,8 +287,8 @@ const purchaseVouchersSlice = createSlice({
         ...state,
         action: 'update',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for purchase vouchers`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for purchase vouchers`,
         responseCode: null,
       };
     },
@@ -303,8 +329,8 @@ const purchaseVouchersSlice = createSlice({
         ...state,
         action: 'approve',
         status: 'loading',
-        statusMessage: `Approving selected purchase voucher`,
         statusLevel: '',
+        statusMessage: `Approving selected purchase voucher`,
         responseCode: null,
       };
     },
@@ -343,10 +369,10 @@ const purchaseVouchersSlice = createSlice({
     [rejectPurchaseVoucher.pending]: (state) => {
       return {
         ...state,
-        action: 'create',
+        action: 'reject',
         status: 'loading',
-        statusMessage: `Rejecting selected purchase voucher`,
         statusLevel: '',
+        statusMessage: `Rejecting selected purchase voucher`,
         responseCode: null,
       };
     },

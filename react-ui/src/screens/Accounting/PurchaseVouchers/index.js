@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
@@ -13,7 +13,6 @@ import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/Depa
 import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
-import statusDialogue from '../../../components/StatusDialogue';
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import moment from 'moment'
 import _ from 'lodash';
@@ -34,6 +33,7 @@ const PurchaseVouchers = (props) => {
 	const [contentLoading, setContentLoading] = useState(false);
 	const [displayModal, setDisplayModal] = useState(false);
 	const [purchaseVoucher, setPurchaseVoucher] = useState(null);
+	const isMounted = useRef(true);
 
 	const { id: userId } = useSelector(state => state.auth.user)
 	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers);
@@ -43,41 +43,35 @@ const PurchaseVouchers = (props) => {
 	}, [status, action, statusMessage, statusLevel]);
 
 	useEffect(() => {
-		let isCancelled = false;
 		setContentLoading(true);
 
 		dispatch(listPurchaseVouchers({company})).then((data) => {
 			setContentLoading(false);
-			if(isCancelled) {
-				dispatch(clearData());
-			}
 		})
 
-		return function clearUp() {
-			dispatch(clearData());
-			dispatch(clearAC());
-			dispatch(clearDeptArea());
-			dispatch(clearRR());
-			dispatch(clearGroupCat());
-			dispatch(clearVendor());
-			isCancelled = true
+		return function cleanup() {
+			isMounted.current = false
+			performCleanup()
 		}
 	}, [company, dispatch]);
+
+	const performCleanup = () => {
+		dispatch(clearData());
+		dispatch(clearAC());
+		dispatch(clearDeptArea());
+		dispatch(clearRR());
+		dispatch(clearGroupCat());
+		dispatch(clearVendor());
+	}
 
 	const onSuccess = useCallback((method) => {
 		if ( method === "add" ){
 			history.push(`${path}/new`);
-		} 
-
-		if ( method === 'edit' ) {
-
 		}
-
 		setContentLoading(false);
 	},[history, path])
 
 	const onFail = useCallback(() => {
-		console.log("Failing")
 		history.goBack();
 		setContentLoading(false);
 	},[history])
@@ -90,8 +84,10 @@ const PurchaseVouchers = (props) => {
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
 							dispatch(listGroupByCompany({company})).then((dataG) => {
-								const dataList = [dataVendor, dataAC, dataA, dataD, dataG];
-								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+								if(isMounted.current){
+									const dataList = [dataVendor, dataAC, dataA, dataD, dataG];
+									handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+								}
 							})
 						})
 					})
@@ -110,15 +106,19 @@ const PurchaseVouchers = (props) => {
 	}
 
 	const handleApprovePV = () => {
+		setContentLoading(true);
 		dispatch(approvePurchaseVoucher({ pvId: purchaseVoucher.id, user: userId })).then(() => {
 			dispatch(listPurchaseVouchers({company}));
+			setContentLoading(false);
 			setDisplayModal(false);
 		})
 	}
 
 	const handleRejectPV = () => {
+		setContentLoading(true);
 		dispatch(rejectPurchaseVoucher({ pvId: purchaseVoucher.id, user: userId })).then(() => {
 			dispatch(listPurchaseVouchers({company}));
+			setContentLoading(false);
 			setDisplayModal(false);
 		})
 	}
@@ -128,23 +128,23 @@ const PurchaseVouchers = (props) => {
 		setPurchaseVoucher(null);
 	}
 
-	const onCreate = async (payload) => {
+	const onCreate = async (data) => {
 		setContentLoading(true);
-		await dispatch(createPurchaseVouchers(formatPVPayload(payload.values, 
-			payload.addedAccounts, userId, company))).then((dataCreatePV) => {
-			if (dataCreatePV.type.split('/')[1] === 'rejected'){
-				message.warning(dataCreatePV?.payload?.data?.message ?? "Please double check your input data")
-			}else{
-				dispatch(listPurchaseVouchers({company})).then(() => {
-					setContentLoading(false);
-				}).catch(() => {
-					setContentLoading(false);
-				});
-				payload.redirect();
+		const payload = formatPVPayload(data.values, data.addedAccounts, userId, company)
+		await dispatch(createPurchaseVouchers(payload)).then((response) => {
+			const onSuccess = () => {
+			  history.goBack();
+			  dispatch(listPurchaseVouchers({company})).then(() => {
+				setContentLoading(false);
+			  });
 			}
-		}).catch(() => {
-			setContentLoading(false);
-		})
+			const onFail = () => {
+				setContentLoading(false);
+			}
+	  
+			handleRequestResponse([response], onSuccess, onFail, '');
+		});
+		return 1
 	}
 
 	return (
@@ -240,6 +240,7 @@ const PurchaseVouchers = (props) => {
 												style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
 												icon={<CheckOutlined />}
 												onClick={handleApprovePV}
+												loading={contentLoading}
 												type="primary"
 											>
 												Approve
@@ -248,6 +249,7 @@ const PurchaseVouchers = (props) => {
 												style={{ marginRight: '1%' }}
 												icon={<CloseOutlined />}
 												onClick={handleRejectPV}
+												loading={contentLoading}
 												type="primary"
 												danger
 											>
