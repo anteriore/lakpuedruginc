@@ -69,51 +69,62 @@ const PDCDisbursements = (props) => {
   };
 
   const handleUpdate = (data) => {
-    setFormTitle('Edit PDC Disbursement');
-    setFormMode('edit');
-    setLoading(true);
-    const pdcData = pdcDisbursements.find((pdc) => pdc.id === data.id);
-    const cheques = [];
-    pdcData.cheques.forEach((cheque) => {
-      cheques.push({
-        ...cheque,
-        date: moment(new Date(cheque.date)) || moment(),
+    if(data.status === "Pending"){
+      setFormTitle('Edit PDC Disbursement');
+      setFormMode('edit');
+      setLoading(true);
+      const pdcData = pdcDisbursements.find((pdc) => pdc.id === data.id);
+      const cheques = [];
+      pdcData.cheques.forEach((cheque) => {
+        cheques.push({
+          ...cheque,
+          date: moment(new Date(cheque.date)) || moment(),
+        });
       });
-    });
-    const formData = {
-      ...pdcData,
-      date: moment(new Date(data.date)) || moment(),
-      payee: pdcData.payee !== null ? pdcData.payee.id : null,
-      cheques,
-    };
-    setFormData(formData);
-    dispatch(listVendor({ company, message })).then((response) => {
-      if(isMounted.current){
+      const formData = {
+        ...pdcData,
+        date: moment(new Date(data.date)) || moment(),
+        payee: pdcData.payee !== null ? pdcData.payee.id : null,
+        cheques,
+      };
+      setFormData(formData);
+      dispatch(listVendor({ company, message })).then((response) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+            setLoading(false);
+            history.push(`${path}/${data.id}`);
+          }
+          const onFail = () => {
+            setLoading(false);
+          }
+          handleRequestResponse([response], onSuccess, onFail, '');
+        }
+      });
+    }
+    else {
+      message.error("This action could only be performed on pending PDC disbursements")
+    }
+  };
+
+  const handleDelete = (data) => {
+    if(data.status === "Pending"){
+      dispatch(deletePDCDisbursement(data.id)).then((response) => {
+        setLoading(true);
         const onSuccess = () => {
-          setLoading(false);
-          history.push(`${path}/${data.id}`);
+          dispatch(listPDCDisbursement({ company, message })).then(() => {
+            setLoading(false);
+          });
         }
         const onFail = () => {
           setLoading(false);
         }
         handleRequestResponse([response], onSuccess, onFail, '');
-      }
-    });
-  };
-
-  const handleDelete = (data) => {
-    dispatch(deletePDCDisbursement(data.id)).then((response) => {
-      setLoading(true);
-      const onSuccess = () => {
-        dispatch(listPDCDisbursement({ company, message })).then(() => {
-          setLoading(false);
-        });
-      }
-      const onFail = () => {
-        setLoading(false);
-      }
-      handleRequestResponse([response], onSuccess, onFail, '');
-    });
+      });
+    }
+    else {
+      message.error("This action could only be performed on pending PDC disbursements")
+    }
+    
   };
 
   const handleRetrieve = (data) => {
