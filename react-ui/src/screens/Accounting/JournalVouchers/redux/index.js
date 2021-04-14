@@ -18,7 +18,11 @@ export const listJournalVouchers = createAsyncThunk('listJournalVouchers', async
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -37,7 +41,11 @@ export const listJournalVouchersByVendorWithoutAdjustent = createAsyncThunk('lis
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -56,7 +64,11 @@ export const createJournalVouchers = createAsyncThunk('createJournalVouchers', a
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 })
 
@@ -74,7 +86,11 @@ export const approveJournalVouchers = createAsyncThunk('approveJournalVouchers',
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -92,7 +108,11 @@ export const rejectJournalVouchers = createAsyncThunk('rejectJournalVouchers', a
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -117,6 +137,7 @@ const journalVouchersSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
       };
     },
@@ -159,6 +180,7 @@ const journalVouchersSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
       };
     },
@@ -200,8 +222,8 @@ const journalVouchersSlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for journal vouchers`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for journal vouchers`,
         responseCode: null,
       };
     },
@@ -242,8 +264,8 @@ const journalVouchersSlice = createSlice({
         ...state,
         action: 'approving',
         status: 'loading',
-        statusMessage: `Approving selected journal voucher`,
         statusLevel: '',
+        statusMessage: `Approving selected journal voucher`,
         responseCode: null,
       };
     },
@@ -284,8 +306,8 @@ const journalVouchersSlice = createSlice({
         ...state,
         action: 'rejecting',
         status: 'loading',
-        statusMessage: `Reject selected journal voucher`,
         statusLevel: '',
+        statusMessage: `Reject selected journal voucher`,
         responseCode: null,
       };
     },
