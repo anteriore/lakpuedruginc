@@ -317,11 +317,13 @@ const FormDetails = () => {
         title: 'Type',
         dataIndex: 'type',
         key: 'type',
+        datatype: 'string'
       },
       {
         title: 'Number',
         dataIndex: 'number',
         key: 'number',
+        datatype: 'string'
       },
       {
         title: 'Total Amount',
