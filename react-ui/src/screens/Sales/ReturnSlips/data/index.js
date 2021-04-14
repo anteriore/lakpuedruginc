@@ -293,26 +293,22 @@ const FormDetails = () => {
         title: 'Lot Number',
         dataIndex: 'product',
         key: 'product',
-        render: (product) => {
-          return product.lotNumber;
-        },
+        datatype: 'object',
+        dataToString: (product) => product?.lotNumber ?? ''
       },
       {
         title: 'FG Code',
         dataIndex: 'product',
         key: 'product',
-        render: (object) => {
-          return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
-        },
+        datatype: 'object',
+        dataToString: (product) => product?.finishedGood?.code ?? ''
       },
       {
         title: 'Expiration',
         dataIndex: 'product',
         key: 'product',
-        render: (object) => object.expiration
-        /*render: (object) => {
-          return moment(new Date(object.expiration)).format('DD/MM/YYYY');
-        },*/
+        datatype: 'object',
+        dataToString: (product) => product.expiration.toString() ?? ''
       },
       {
         title: 'Stock',
