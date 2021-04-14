@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,8 +8,9 @@ import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormScreen from '../../../components/forms/FormScreen';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
-import { listPDCDisbursement, addPDCDisbursement, deletePDCDisbursement, clearData } from './redux';
+import { listPDCDisbursement, addPDCDisbursement, updatePDCDisbursement, deletePDCDisbursement, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 
 const { Title, Text } = Typography;
@@ -19,6 +20,7 @@ const PDCDisbursements = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const { company, title, actions } = props;
+  const { handleRequestResponse } = GeneralHelper()
 
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -27,8 +29,9 @@ const PDCDisbursements = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedPDC, setSelectedPDC] = useState(null);
   const { formDetails } = FormDetails();
+  const isMounted = useRef(true);
 
-  const pdcDisbursements = useSelector((state) => state.accounting.PDCDisbursements.list);
+  const {list: pdcDisbursements, statusMessage, action, status, statusLevel } = useSelector((state) => state.accounting.PDCDisbursements);
 
   useEffect(() => {
     dispatch(listPDCDisbursement({ company, message })).then(() => {
@@ -36,19 +39,32 @@ const PDCDisbursements = (props) => {
     });
 
     return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
       dispatch(clearVendor());
     };
   }, [dispatch, company]);
+  
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create PDC Disbursement');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listVendor({ company, message })).then(() => {
-      setLoading(false);
-      history.push(`${path}/new`);
+    dispatch(listVendor({ company, message })).then((response) => {
+      if(isMounted.current){
+        const onSuccess = () => {
+          setLoading(false);
+          history.push(`${path}/new`);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      }
     });
   };
 
@@ -71,24 +87,32 @@ const PDCDisbursements = (props) => {
       cheques,
     };
     setFormData(formData);
-    dispatch(listVendor({ company, message })).then(() => {
-      setLoading(false);
-      history.push(`${path}/${data.id}`);
+    dispatch(listVendor({ company, message })).then((response) => {
+      if(isMounted.current){
+        const onSuccess = () => {
+          setLoading(false);
+          history.push(`${path}/${data.id}`);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      }
     });
   };
 
   const handleDelete = (data) => {
     dispatch(deletePDCDisbursement(data.id)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         dispatch(listPDCDisbursement({ company, message })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted ${data.number}`);
         });
-      } else {
-        setLoading(false);
-        message.error(`Unable to delete ${data.number}`);
       }
+      const onFail = () => {
+        setLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -97,7 +121,7 @@ const PDCDisbursements = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = {
       ...data,
       company: {
@@ -107,41 +131,40 @@ const PDCDisbursements = (props) => {
         id: data.payee,
       },
     };
-    console.log(payload);
 
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addPDCDisbursement(payload)).then((response) => {
+      await dispatch(updatePDCDisbursement(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listPDCDisbursement({ company, message })).then(() => {
+        history.goBack();
+        const onSuccess = () => {
+          dispatch(listPDCDisbursement({ company })).then(() => {
             setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
           });
-        } else {
-          setLoading(false);
-          message.error(`Unable to update ${data.number}`);
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
-    } else if (formMode === 'add') {
-      dispatch(addPDCDisbursement(payload)).then((response) => {
+    } 
+    else if (formMode === 'add') {
+      await dispatch(addPDCDisbursement(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listPDCDisbursement({ company, message })).then(() => {
+        history.goBack();
+        const onSuccess = () => {
+          dispatch(listPDCDisbursement({ company })).then(() => {
             setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
           });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to add PDC Disbursement. Please double check the provided information.`
-          );
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
     setFormData(null);
+    return 1
   };
 
   return (
