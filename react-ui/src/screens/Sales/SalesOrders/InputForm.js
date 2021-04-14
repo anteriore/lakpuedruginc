@@ -9,6 +9,7 @@ import FormDetails from './data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
 import { formatProduct, calcRqstdQtyPerProduct } from './helpers';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 const { Title } = Typography;
 
@@ -255,7 +256,9 @@ const InputForm = (props) => {
         >
           <Table
             rowKey={record => record.uid}
-            columns={renderProductItemColumns(tableProductInventory)}
+            columns={TableHeader({ 
+              columns: renderProductItemColumns(tableProductInventory), 
+              hasSorter: true, hasFilter: true })}
             dataSource={productInv}
             pagination={{simple: true}}
           />
