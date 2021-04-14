@@ -12,7 +12,7 @@ import InputForm from './InputForm';
 import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
 import {
   clearData as clearPI,
-  tempListProductInventory,
+  listProductInventory,
 } from '../../Maintenance/redux/productInventory';
 import { formatPMPayload } from './helpers';
 import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
@@ -96,7 +96,7 @@ const ProductMovements = (props) => {
   const handleAddButton = () => {
     setContentLoading(true);
     dispatch(listDepot(company)).then((response1) => {
-      dispatch(tempListProductInventory()).then((response2) => {
+      dispatch(listProductInventory({company})).then((response2) => {
         if(isMounted.current){
           const onSuccess = () => {
               history.push(`${path}/new`);
