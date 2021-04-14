@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, Popconfirm, message } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,7 +17,7 @@ import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/
 import { listBankAccount, clearData as clearBankAccount } from '../../Maintenance/BankAccounts/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -27,8 +27,9 @@ const ChequePrintings = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
+  const isMounted = useRef(true);
 
-  const listData = useSelector((state) => state.accounting.chequePrintings.list);
+  const {list: listData, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.chequePrintings);
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -40,22 +41,21 @@ const ChequePrintings = (props) => {
   const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listChequePrinting({ company, message })).then(() => {
       setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-      }
     });
 
     return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
       dispatch(clearVendor());
       dispatch(clearBankAccount());
-      isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Cheque Voucher');
@@ -63,11 +63,16 @@ const ChequePrintings = (props) => {
     setLoading(true);
     dispatch(listVendor({ company, message })).then((response) => {
       dispatch(listBankAccount({ company, message })).then((response1) => {
-        const onSuccess = () => {
-          history.push(`${path}/new`);
-          setLoading(false);
+        if(isMounted.current){
+          const onSuccess = () => {
+            history.push(`${path}/new`);
+            setLoading(false);
+          }
+          const onFail = () => {
+            setLoading(false);
+          }
+          handleRequestResponse([response, response1], onSuccess, onFail, '');
         }
-        handleRequestResponse([response, response1], onSuccess, null, '');
       })
     });
   };
@@ -106,7 +111,7 @@ const ChequePrintings = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = {
       ...data,
       vendor: {
@@ -119,27 +124,23 @@ const ChequePrintings = (props) => {
         id: company
       },
     }
-    dispatch(addChequePrinting(payload)).then((response) => {
+    await dispatch(addChequePrinting(payload)).then((response) => {
       setLoading(true);
-      
+      history.goBack();
+
       const onSuccess = () => {
         dispatch(listChequePrinting({ company, message })).then(() => {
           setLoading(false);
-          history.goBack();
-          message.success(`Successfully added ${response.payload.data.number}`);
         });
       };
 
       const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to create Cheque Voucher. Please double check the provided information.`
-        );
-
       }
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
+    return 1
   };
 
   return (
@@ -252,6 +253,7 @@ const ChequePrintings = (props) => {
                         <Button
                           style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
                           icon={<CheckOutlined />}
+                          loading={loading}
                           type="primary"
                         >
                           Approve
@@ -272,6 +274,7 @@ const ChequePrintings = (props) => {
                         <Button
                           style={{ marginRight: '1%' }}
                           icon={<CloseOutlined />}
+                          loading={loading}
                           type="primary"
                           danger
                         >

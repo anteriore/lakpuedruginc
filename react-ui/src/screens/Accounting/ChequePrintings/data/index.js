@@ -113,6 +113,7 @@ const FormDetails = () => {
     key: 'payables',
     rules: [{ required: true }],
     isVisible: voucherPayables.length > 0,
+    emptyText: "Please select a payee with an approved Voucher Payable.",
     fields: [
       {
         label: 'Number',
@@ -121,12 +122,12 @@ const FormDetails = () => {
       {
         label: 'Date',
         name: 'date',
-        render: (data) => `${moment(new Date(data)).format('DD/MM/YYYY')}`
+        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`
       },
       {
         label: 'Payee',
         name: 'vendor',
-        render: (data) => `[${data.code}] ${data.name}`
+        render: (data) => `[${data.vendor.code}] ${data.vendor.name}`
       },
       {
         label: 'Remarks',
@@ -180,12 +181,12 @@ const FormDetails = () => {
       const columns = [];
       fields.forEach((field) => {
         if (typeof field.render === 'undefined' || field.render === null) {
-          field.render = (object) => object;
+          field.render = (object) => object[field.name];
         }
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => field.render(object[field.name]),
+          render: (object) => field.render(object),
         });
       });
 
