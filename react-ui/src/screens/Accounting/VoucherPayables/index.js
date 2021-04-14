@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, message } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,6 +31,7 @@ const VoucherPayables = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
+  const isMounted = useRef(true);
 
   const listData = useSelector((state) => state.accounting.voucherPayables.list);
   const user = useSelector((state) => state.auth.user);
@@ -44,22 +45,17 @@ const VoucherPayables = (props) => {
   const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
       setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-      }
     });
 
     return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
       dispatch(clearAccountTitles());
       dispatch(clearDeptArea());
       dispatch(clearGroupCat());
       dispatch(clearVendor());
-      isCancelled = true;
     };
   }, [dispatch, company]);
 
@@ -72,11 +68,16 @@ const VoucherPayables = (props) => {
         dispatch(listArea({ company, message })).then((response3) => {
           dispatch(listGroupByCompany({ company })).then((response4) => {
               dispatch(listVendor({ company, message })).then((response5) => {
-                const onSuccess = () => {
-                  history.push(`${path}/new`);
-                  setLoading(false);
-                };
-                handleRequestResponse([response1, response2, response3, response4], onSuccess, null, '');
+                if(isMounted.current){
+                  const onSuccess = () => {
+                    history.push(`${path}/new`);
+                    setLoading(false);
+                  }
+                  const onFail = () => {
+                    setLoading(false);
+                  }
+                  handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, onFail, '');
+                }
             })
           })
         })
@@ -174,20 +175,17 @@ const VoucherPayables = (props) => {
         dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
           setLoading(false);
           history.goBack();
-          message.success(`Successfully added Voucher Payable ${response.payload.data.number}`);
         });
       };
 
       const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to add Voucher Payable. Please double check the provided information.`
-        );
       }
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
+    return 1
   };
 
   
@@ -319,6 +317,7 @@ const VoucherPayables = (props) => {
                         <Button
                           style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
                           icon={<CheckOutlined />}
+                          loading={loading}
                           type="primary"
                         >
                           Approve
@@ -339,6 +338,7 @@ const VoucherPayables = (props) => {
                         <Button
                           style={{ marginRight: '1%' }}
                           icon={<CloseOutlined />}
+                          loading={loading}
                           type="primary"
                           danger
                         >

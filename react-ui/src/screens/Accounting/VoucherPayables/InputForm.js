@@ -370,6 +370,7 @@ const InputForm = (props) => {
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={formButtonLoading}
               onClick={() => {
                 onCancel();
                 history.goBack();
