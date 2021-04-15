@@ -258,25 +258,29 @@ export const FormDetails = () => {
         title: 'Item Name',
         dataIndex: 'name',
         key: 'name',
+        datatype: 'string',
         //render: (object) => object.name,
       },
       {
         title: 'Code',
         dataIndex: 'code',
         key: 'code',
+        datatype: 'string'
         //render: (object) => object.code,
       },
       {
         title: 'Type',
         dataIndex: 'type',
         key: 'type',
-        render: (object) => object.name,
+        datatype: 'object',
+        dataToString: (type) => type?.name ?? ''
       },
       {
         title: 'Unit of Measurement',
         dataIndex: 'unit',
         key: 'unit',
-        render: (object) => object.name,
+        datatype: 'object',
+        dataToString: (unit) => unit?.name ?? ''
       },
       {
         title: 'Current Stocks',

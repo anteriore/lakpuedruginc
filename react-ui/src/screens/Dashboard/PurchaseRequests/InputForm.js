@@ -17,6 +17,7 @@ import {
 import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 const { Title, Text } = Typography;
 
@@ -296,7 +297,7 @@ const InputForm = (props) => {
               onOk={() => setDisplayModal(false)}
               onCancel={() => setDisplayModal(false)}
               cancelButtonProps={{ style: { display: 'none' } }}
-              width={1000}
+              width={1200}
             >
               <Table
                 rowSelection={{
@@ -306,7 +307,7 @@ const InputForm = (props) => {
                   //preserveSelectedRowKeys: false,
                   selectedRowKeys: tableSelectedKeys
                 }}
-                columns={formTable.selectFields}
+                columns={TableHeader({ columns: formTable.selectFields, hasSorter: true, hasFilter: true })}
                 dataSource={formTable.selectData}
                 rowKey={formTable.selectedKey}
                 pagination={{simple: true}}
