@@ -234,7 +234,7 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
-{displayVoucherFields && hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+            {displayVoucherFields && hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
                 {(fields, { errors }) => (
                   <Col span={20} offset={1}>
@@ -262,8 +262,6 @@ const InputForm = (props) => {
             )}
 
             <FormItem item={formDetails.account_titles} onFail={onFail} formInstance={form} />
-
-            
           </Form>
 
           <div style={styles.tailLayout}>
@@ -272,6 +270,7 @@ const InputForm = (props) => {
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={formButtonLoading}
               onClick={() => {
                 onCancel();
                 history.goBack();
