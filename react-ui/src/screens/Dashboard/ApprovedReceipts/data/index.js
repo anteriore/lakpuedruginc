@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export const DisplayDetails = () => {
@@ -61,62 +62,14 @@ export const DisplayDetails = () => {
         },
     ];
 
-    const itemColumns = [
-        {
-            title: 'Received',
-            dataIndex: 'receivedQuantity',
-            key: 'receivedQuantity',
-        },
-        {
-            title: 'Approved',
-            dataIndex: 'approvedQuantity',
-            key: 'approvedQuantity',
-        },
-        {
-            title: 'Rejected',
-            dataIndex: 'rejectedQuantity',
-            key: 'rejectedQuantity',
-        },
-        {
-            title: 'QC Samples',
-            dataIndex: 'qcSamples',
-            key: 'qcSamples',
-        },
-        {
-            title: 'Total',
-            dataIndex: 'totalQuantity',
-            key: 'totalQuantity',
-        },
-        {
-            label: 'Expiration',
-            dataIndex: 'expiration',
-            key: 'expiration',
-        },
-        {
-            label: 'Best Before',
-            dataIndex: 'bestBefore',
-            key: 'bestBefore',
-        },
-        {
-            label: 'Re-eval',
-            dataIndex: 'reevaluation',
-            key: 'reevaluation',
-        },
-        {
-            label: 'Re-test',
-            dataIndex: 'retest',
-            key: 'retest',
-        },
-    ];
-
-  return { columns, itemColumns };
+  return { columns };
 };
 
 export const FormDetails = () => {
 
+    const [displayModal, setDisplayModal] = useState(false);
     const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
     const itemList = useSelector((state) => state.maintenance.items.list);
-    //const itemList = []; 
 
     const formDetails = {
         form_name: 'approvedReceipts',
@@ -133,12 +86,8 @@ export const FormDetails = () => {
                 type: 'selectSearch',
                 selectName: 'name',
                 choices: rrList,
-                render: (object) => 
-                object.number,
+                render: (object) => object.number,
                 rules: [{ required: true }],
-                /*onChange: (object) => {
-                    itemList = object.receivingReceipts
-                },*/
             },
             {
                 label: 'Date',
@@ -188,50 +137,103 @@ export const FormDetails = () => {
                 type: 'date',
                 rules: [{ required: true, message: 'Please select a date' }],
             },
-            {
-                label: 'Remarks',
-                name: 'remarks',
-                rules: [{}],
-                placeholder: 'Remarks (optional)',
-                type: 'textArea',
-            },
-        ]
-    };
+        ],
 
-    const processSelectData = (data) => {
-        const processedData = []
-        data.forEach((item) => {
-          const processedItem = {
-            ...item,
-            ...item.item,
-            itemID: item.item.id,
-          }
-          delete processedItem.item;
-          delete processedItem.id;
-          processedData.push(processedItem)
-        })
-        return processedData
-    }
+        /*rr_details: [
+            {
+                label: 'Receiving Receipt',
+                name: 'receivingReceipt',
+                type: 'selectTable',
+                rules: [{ required: true }],
+                allowEmpty: true,
+                placeholder: 'Select Receiving Receipt',
+                displayModal,
+                setDisplayModal,
+                dataSource: rrList,
+                columns: [
+                    {
+                        label: 'RR ID',
+                        name: 'id',
+                        type: 'hidden',
+                    },
+                    {
+                        label: 'R.R. Num',
+                        dataIndex: 'number',
+                        key: 'number',
+                    },
+                    {
+                        label: 'Date',
+                        dataIndex: 'date',
+                        key: 'date',
+                    },
+                    {
+                        title: 'Status',
+                        dataIndex: 'status',
+                        key: 'status',
+                    },
+                ],
+                rowKey: 'id',
+                getValueProps: (value) => {
+                    if (typeof value !== 'undefined') {
+                        return { value };
+                    }
+                },
+            },
+        ],*/
 
-    const tableDetails = {
-        label: 'Received Item',
-        name: 'receivedItems',
-        key: 'receivedItems',
-        rules: [{ required: true }],
-        fields: [
+        rr_item: [
             {
-                label: 'Item ID',
-                name: 'itemID',
-                type: 'hidden',
+                label: 'R.R. Item',
+                name: 'item',
+                type: 'selectTable',
+                rules: [{ required: true }],
+                allowEmpty: true,
+                placeholder: 'Select R.R. Item',
+                displayModal,
+                setDisplayModal,
+                dataSource: itemList,
+                columns: [
+                    {
+                        label: 'RR Item ID',
+                        name: 'id',
+                        type: 'hidden',
+                    },
+                    {
+                        title: 'Item',
+                        dataIndex: 'item',
+                        key: 'item',
+                        render: (object) => `[${object.code}] ${object.name}`,
+                    },
+                    {
+                        title: 'Material Type',
+                        dataIndex: 'item',
+                        key: 'type',
+                        render: (object) => `[${object.type.code}] ${object.type.name}`,
+                    },
+                    /*{
+                        title: 'Quantity',
+                        dataIndex: 'quantity',
+                        key: 'quantity',
+                    },*/
+                    {
+                        title: 'Unit',
+                        dataIndex: 'item',
+                        key: 'unit',
+                        render: (object) => object.unit.code,
+                    },
+                ],
+                rowKey: 'id',
+                getValueProps: (value) => {
+                    if (typeof value !== 'undefined') {
+                        return { value };
+                    }
+                },
+                emptyText:
+                  'No data retrieved for R.R. items in the selected Receiving Receipt. Please select another Receiving Receipt.',
             },
-            {
-                label: 'Code',
-                name: 'code',
-            },
-            {
-                label: 'Item Name',
-                name: 'name',
-            },
+        ],
+
+        item_details: [
             {
                 label: 'Received Quantity',
                 type: 'number',
@@ -291,40 +293,29 @@ export const FormDetails = () => {
                 type: 'date',
                 rules: [{ required: true, message: 'Please select a retest date' }],
             },
-        ],
-        
-        foreignKey: 'itemID',
-        selectedKey: 'itemID',
-        selectData: processSelectData(itemList),
-        selectFields: [
             {
-            title: 'Item Code',
-            dataIndex: 'code',
-            key: 'code',
-            },
-            {
-            title: 'Item Name',
-            dataIndex: 'name',
-            key: 'name',
-            },
-            {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type',
-            render: (object) => 
-                object.name,
-            },
-            {
-            title: 'Unit',
-            dataIndex: 'unit',
-            key: 'unit',
-            render: (object) => 
-                object.code,
+                label: 'Remarks',
+                name: 'remarks',
+                rules: [{}],
+                placeholder: 'Remarks (optional)',
+                type: 'textArea',
             },
         ],
+
         processData: (data) => {
-          return data
+        const processedData = [];
+    
+        data.receivedItems.forEach((rrItem) => {
+            processedData.push({
+            id: rrItem.id,
+            item: rrItem.item.id,
+            quantity: rrItem.quantity,
+            unit: rrItem.unit.id,   
+            });
+        });
+    
+        return processedData;
         },
     };
-  return { formDetails, tableDetails };
+  return { formDetails };
 };

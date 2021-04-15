@@ -4,16 +4,17 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
+
 import TableDisplay from '../../../components/TableDisplay';
 import { DisplayDetails, FormDetails } from './data';
-import { formatPayload } from './helpers';
 import InputForm from './InputForm';
-//import FormScreen from '../../../components/forms/FormScreen';
-import { listApprovedReceipts, addApprovedReceipt, clearData,} from './redux';
+
+import { listApprovedReceipts, addApprovedReceipt, clearData, getApprovedReceipt,} from './redux';
 import { listRR, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
 import { listItemSummary, clearData as clearItem} from '../../Maintenance/Items/redux';
-// import { addInventory } from '../../Dashboard/Inventory/redux';
+
 import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import { formatPayload } from './helpers';
 
 const { Title } = Typography;
 
@@ -30,7 +31,6 @@ const ApprovedReceipts = (props) => {
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
-  //const [formData, setFormData] = useState(null);
 
   const { columns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
@@ -42,29 +42,31 @@ const ApprovedReceipts = (props) => {
   } = useSelector(state => state.maintenance.items);
   const isMounted = useRef(true);
 
-  const performCleanup = useCallback(() => {
-    dispatch(clearData());
-    dispatch(clearItem());
-    dispatch(clearRR());
-  }, [dispatch]);
-
   useEffect(() => {
     dispatch(listApprovedReceipts({ company, message })).then(() => {
-      if (isMounted.current){
-        setLoading(false);
-      } else {
-        performCleanup();
+      setSelectedData(null);
+      setLoading(false);
+      if(!isMounted.current){
+        performCleanup()
       }
     });
 
     return function cleanup() {
-      isMounted.current = false;
+      isMounted.current = false
+      performCleanup();
     };
-  }, [dispatch, company, performCleanup]);
+    // eslint-disable-next-line
+  }, [dispatch, company]);
 
   useEffect(() => {
     reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
+
+  const performCleanup = () => {
+    dispatch(clearData());
+    dispatch(clearItem());
+    dispatch(clearRR());
+  }
 
   useEffect(() => {
     reevalDependencyMsgStats({
@@ -93,22 +95,29 @@ const ApprovedReceipts = (props) => {
           }
           handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
         }
-        else {
-          performCleanup()
-        }
       });
     });
   };
 
   const handleRetrieve = (data) => {
-    setDisplayModal(true);
-    setSelectedData(data);
+    setLoading(true);
+    dispatch(getApprovedReceipt({ id: data.id })).then((response) => {
+      const onSuccess = () => {
+        setDisplayModal(true);
+        setSelectedData(response.payload.data);
+        setLoading(false);
+      }
+      const onFail = () => {
+        setDisplayModal(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
   };
 
   const onSubmit = async (data) => {
     const payload = formatPayload(id, company, data);
     //const invPayload = inventoryPayload(company, data);
-    
 
     if (formMode === 'edit') {
       payload.id = selectedData.id;
@@ -124,9 +133,7 @@ const ApprovedReceipts = (props) => {
       }
       const onFail = () => {
         setLoading(false);
-        
       }
-
       handleRequestResponse([response], onSuccess, onFail, '');
     });
 
@@ -147,7 +154,7 @@ const ApprovedReceipts = (props) => {
           values={selectedData}
           onCancel={handleCancelButton}
           formDetails={formDetails}
-          formTable={tableDetails}
+          //formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -157,7 +164,7 @@ const ApprovedReceipts = (props) => {
           values={selectedData}
           onCancel={handleCancelButton}
           formDetails={formDetails}
-          formTable={tableDetails}
+          //formTable={tableDetails}
         />
       </Route>
       <Route path={path}>
