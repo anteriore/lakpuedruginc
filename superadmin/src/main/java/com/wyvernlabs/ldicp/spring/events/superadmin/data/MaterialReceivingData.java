@@ -25,6 +25,7 @@ public class MaterialReceivingData {
 	private CompanyRepository companyRepository;
 
 	public void init() {
+		/*
 		MaterialReceiving mr = new MaterialReceiving();
 		User receivedBy = userRepository.getOne(1L);
 		MaterialIssuance mis = materialIssuanceRepository.getOne(1L);
@@ -35,6 +36,6 @@ public class MaterialReceivingData {
 		mr.setRemarks("Remarks");
 		mr.setCompany(companyRepository.getOne(1L));
 		materialReceivingService.saveMaterialReceiving(mr);
-
+		*/
 	}
 }

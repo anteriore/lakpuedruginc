@@ -34,6 +34,8 @@ public class MaterialIssuanceData {
 
 	@Transactional
 	public void init() {
+
+		/*
 		MaterialIssuance mis = new MaterialIssuance();
 		Company company = companyRepository.getOne(1L);
 		User user = userRepository.getOne(1L);
@@ -53,5 +55,7 @@ public class MaterialIssuanceData {
 		mis.setRemarks("Remarks 1");
 		mis.setRequestedBy(user);
 		materialIssuanceService.saveMaterialIssuance(mis);
+
+		*/
 	}
 }

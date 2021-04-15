@@ -39,6 +39,7 @@ public class DeliveryReceiptData {
 
 	@Transactional
 	public void init() {
+		/*
 		SalesOrder salesOrder = salesOrderRepository.getOne(1L);
 		Company company = companyRepository.getOne(1L);
 		User user = userRepository.getOne(1L);
@@ -68,5 +69,6 @@ public class DeliveryReceiptData {
 		deliveryReceipt.setSalesOrder(salesOrder);
 
 		// deliveryReceiptService.saveDeliveryReceipt(deliveryReceipt);
+		*/
 	}
 }

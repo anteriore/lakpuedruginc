@@ -39,6 +39,7 @@ public class OrderSlipData {
 
 	@Transactional
 	public void init() {
+		/*
 		SalesOrder salesOrder = salesOrderRepository.getOne(1L);
 		Company company = companyRepository.getOne(1L);
 		User user = userRepository.getOne(1L);
@@ -66,5 +67,6 @@ public class OrderSlipData {
 		orderSlip.setSalesOrder(salesOrder);
 
 		// orderSlipService.saveOrderSlip(orderSlip);
+		*/
 	}
 }

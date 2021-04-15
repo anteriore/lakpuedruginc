@@ -33,9 +33,9 @@ public class ItemData {
 
 	@Autowired
 	private InventoryRepository inventoryRepository;
-
-	private CompanyRepository companyRepository;
 	@Autowired
+	private CompanyRepository companyRepository;
+	
 
 	public void init() {
 		ItemType rawMaterial = itemTypeRepository.getOne(1L);
@@ -156,6 +156,7 @@ public class ItemData {
 
 
 					Inventory tempInventory= new Inventory();
+					//tempInventory.setCompany(company);
 					tempInventory.setCompany(companyRepository.getOne( Long.parseLong(  data[1].replace("\"", "") )  ));
 					tempInventory.setItem(tempItem);
 					inventoryRepository.save(tempInventory);

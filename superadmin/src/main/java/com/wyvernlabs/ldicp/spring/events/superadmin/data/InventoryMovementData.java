@@ -36,6 +36,7 @@ public class InventoryMovementData {
 
 	@Transactional
 	public void init() {
+		/*
 		InventoryMovement inventoryMovement = new InventoryMovement();
 		Company company = companyRepository.getOne(1L);
 		User user = userRepository.getOne(1L);
@@ -54,5 +55,6 @@ public class InventoryMovementData {
 		inventoryMovement.setInventory(inventoryList);
 
 		inventoryMovementService.saveInventoryMovement(inventoryMovement);
+		*/
 	}
 }
