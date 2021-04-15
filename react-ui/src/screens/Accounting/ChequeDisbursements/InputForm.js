@@ -49,7 +49,6 @@ const InputForm = (props) => {
       }
     });
 
-    
     onSubmit(data).then(() => {
       setFormButtonLoading(false);
     });
@@ -147,11 +146,12 @@ const InputForm = (props) => {
             <FormItem item={formDetails.account_titles} onFail={onFail} onTableSelect={onTableSelect} formInstance={form} />
 
             <div style={styles.tailLayout}>
-              <Button type="primary" onClick={() => form.submit()}>
+              <Button type="primary" loading={formButtonLoading} onClick={() => form.submit()}>
                 Submit
               </Button>
               <Button
                 style={{ marginRight: '2%' }}
+                disabled={formButtonLoading}
                 onClick={() => {
                   onCancel();
                   history.goBack();
