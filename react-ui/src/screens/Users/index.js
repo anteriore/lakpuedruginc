@@ -102,8 +102,7 @@ const Users = () => {
 
     return function cleanup() {
       isMounted.current = false
-    };
-    // eslint-disable-next-line
+    }
   }, [dispatch]);
 
   useEffect(() => {
