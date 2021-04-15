@@ -282,6 +282,7 @@ const InputForm = (props) => {
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={processingData}
               onClick={() => {
                 onCancel();
                 history.goBack();
