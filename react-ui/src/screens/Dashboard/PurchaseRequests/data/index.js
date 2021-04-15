@@ -66,7 +66,7 @@ export const DisplayDetails = () => {
       title: 'Unit',
       dataIndex: 'item',
       key: 'item',
-      render: (object) => object.unit.name,
+      render: (object) => (object?.unit?.name ?? ""),
     },
     {
       title: 'Quantity Requested',
