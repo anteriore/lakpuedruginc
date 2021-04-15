@@ -38,6 +38,7 @@ public class SalesOrderData {
 	private DepotRepository depotRepository;
 
 	public void init() {
+		/*
 		Company company = companyRepository.getOne(1L);
 		User user = userRepository.getOne(1L);
 		Client client = clientRepository.getOne(1L);
@@ -66,6 +67,6 @@ public class SalesOrderData {
 		salesOrder.setDepot(depot);
 		salesOrderService.saveSalesOrder(salesOrder);
 
-		
+		*/
 	}
 }
