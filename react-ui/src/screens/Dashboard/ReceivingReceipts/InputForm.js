@@ -335,7 +335,7 @@ const InputForm = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   expandable={{ expandedRowRender }}
                   rowKey={formTable.foreignKey}
                 />
@@ -343,7 +343,7 @@ const InputForm = (props) => {
                 <Table
                   dataSource={formTable.selectData}
                   columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
+                  pagination={{simple: true}}
                   rowKey={formTable.foreignKey}
                 />
               )}
