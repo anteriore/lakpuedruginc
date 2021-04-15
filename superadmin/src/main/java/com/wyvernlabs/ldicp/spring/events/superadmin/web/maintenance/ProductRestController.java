@@ -55,7 +55,7 @@ public class ProductRestController {
         return productService.saveProduct(Product);
     }
 
-    @PostMapping('/update')
+    @PostMapping("/update")
     public Product updateProduct(@RequestBody Product Product) {
         return productRepository.save(Product);
     }
