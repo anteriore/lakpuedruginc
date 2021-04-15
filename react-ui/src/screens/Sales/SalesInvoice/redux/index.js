@@ -54,14 +54,15 @@ export const listSalesInvoiceByDepotAndBalance = createAsyncThunk(
   'listSalesInvoiceByDepotAndBalance',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    const { depot, hasBalance } = payload
     try {
       const response = await axiosInstance.get(
-        `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+        `/rest/sales-invoices/depot/${depot}?token=${accessToken}`
       );
 
       const processedResponse = {
         ...response,
-        data: filterSIByBalance(response.data, payload.hasBalance),
+        data: filterSIByBalance(response.data, hasBalance),
       };
 
       const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
@@ -84,14 +85,15 @@ export const listSalesInvoiceByDepotAndStatus = createAsyncThunk(
   'listSalesInvoiceByDepotAndStatus',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    const { depot, statuses } = payload
     try {
       const response = await axiosInstance.get(
-        `/rest/sales-invoices/depot/${payload.depot}?token=${accessToken}`
+        `/rest/sales-invoices/depot/${depot}?token=${accessToken}`
       );
 
       const processedResponse = {
         ...response,
-        data: filterSIByStatus(response.data, payload.statuses),
+        data: filterSIByStatus(response.data, statuses),
       };
 
       const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
