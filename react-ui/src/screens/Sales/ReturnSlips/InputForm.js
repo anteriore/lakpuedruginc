@@ -18,6 +18,7 @@ import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 const { Title } = Typography;
 
@@ -381,7 +382,9 @@ const InputForm = (props) => {
                 preserveSelectedRowKeys: false,
                 selectedRowKeys: tableSelectedKeys
               }}
-              columns={formTable.selectFields}
+              columns={TableHeader({ 
+                columns: formTable.selectFields, 
+                hasSorter: true, hasFilter: true })}
               dataSource={orderedProducts}
               rowKey={formTable.selectedKey}
               pagination={{simple: true}}
