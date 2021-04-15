@@ -44,7 +44,7 @@ export const createProduct = createAsyncThunk('createProduct', async (payload, t
 export const updateProduct = createAsyncThunk('updateProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
-    const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
+    const response = await axiosInstance.post(`/rest/products/update?token=${accessToken}`, payload);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
