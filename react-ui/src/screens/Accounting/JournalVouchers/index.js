@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, Popconfirm } from 'antd';
+import { PlusOutlined, CheckOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
-import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
 import { useDispatch, useSelector } from 'react-redux';
@@ -228,25 +229,44 @@ const JournalVouchers = (props) => {
                 <Space style={{ marginTop: '2%' }} size="middle">
                   {_.toLower(journalVoucher.status) === 'pending' && (
                     <>
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={handleApproveJV}
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
+                      >
                       <Button
                         style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
                         icon={<CheckOutlined />}
                         loading={contentLoading}
-                        onClick={handleApproveJV}
                         type="primary"
                       >
                         Approve
                       </Button>
+                      </Popconfirm>
+                      
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={handleRejectJV}
+                        onCancel={(e) => {
+                        }}
+                        okText="Yes"
+                        cancelText="No"
+                      >
                       <Button
                         style={{ marginRight: '1%' }}
                         icon={<CloseOutlined />}
                         loading={contentLoading}
-                        onClick={handleRejectJV}
                         type="primary"
                         danger
                       >
                         Reject
                       </Button>
+                      </Popconfirm>
                     </>
                   )}
                 </Space>
