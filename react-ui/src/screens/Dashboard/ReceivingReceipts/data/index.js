@@ -159,7 +159,7 @@ export const FormDetails = () => {
             placeholder: 'Remarks (optional)',
             type: 'textArea',
         },
-        {
+        /*{
             label: 'Status',
             name: 'status',
             type: 'select',
@@ -169,7 +169,7 @@ export const FormDetails = () => {
                 { id: 'Completed', name: 'Completed' },
                 { id: 'Incomplete', name: 'Incomplete' },
             ],
-        },
+        },*/
       ]
   };
 
@@ -207,7 +207,7 @@ export const FormDetails = () => {
       {
         label: 'Unit',
         name: 'unit',
-        render: (object) => object.unit.code,
+        render: (object) => object?.unit?.code,
       },
     ],
 
@@ -217,21 +217,25 @@ export const FormDetails = () => {
     selectFields: [
       {
         title: 'Item',
-        dataIndex: 'item',
-        key: 'item',
-        render: (object) => `[${object?.code}] ${object?.name}`,
+        dataIndex: 'name',
+        key: 'name',
+        datatype: 'string',
       },
       {
         title: 'Type',
-        dataIndex: 'item',
-        key: 'item',
-        render: (object) => object?.type?.name,
+        dataIndex: 'type',
+        key: 'type',
+        datatype: 'object',
+        dataToString: (object) => object?.name,
+        render: (object) => object?.name,
       },
       {
         title: 'Unit',
-        dataIndex: 'item',
-        key: 'item',
-        render: (object) => object?.unit?.code,
+        dataIndex: 'unit',
+        key: 'unit',
+        datatype: 'object',
+        dataToString: (object) => object?.name,
+        render: (object) => object?.name,
       },
     ],
 
