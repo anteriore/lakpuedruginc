@@ -57,20 +57,21 @@ const MaterialReevaluations = (props) => {
     .then(() => {
       if (isMounted.current) {
         setContentLoading(false);
-      } else {
-        performCleanup()
       }
     })
     return function cleanup() {
       isMounted.current = false
+      performCleanup()
     };
   }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
     setContentLoading(true)
     dispatch(listApprovedReceipts({company})).then((dataAR) => {
-      handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
-      setContentLoading(false);
+      if(isMounted.current){
+        handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
+        setContentLoading(false);
+      }
     }).catch(() => {
       setContentLoading(false);
     });

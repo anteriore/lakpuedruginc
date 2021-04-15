@@ -40,14 +40,14 @@ const Product = (props) => {
 
   useEffect(() => {
     dispatch(listProduct({ company, message })).then(() => {
-      setContentLoading(false);
-      if(!isMounted.current){
-        performCleanup()
+      if(isMounted.current){
+        setContentLoading(false);
       }
     });
 
     return function cleanup() {
       isMounted.current = false
+      performCleanup()
     };
   }, [dispatch, company]);
 
@@ -71,9 +71,6 @@ const Product = (props) => {
         history.push(`${path}/${id}/edit`);
       }
       setContentLoading(false);
-    }
-    else {
-      performCleanup()
     }
 	},[history, path]);
 

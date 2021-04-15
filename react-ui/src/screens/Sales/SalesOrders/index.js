@@ -113,14 +113,13 @@ const SalesOrders = (props) => {
       .then(() => {
         if (isMounted.current) {
           setContentLoading(false)
-        } else {
-          performCleanup();
         }
       });
 
     
     return function cleanup() {
       isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
@@ -138,9 +137,6 @@ const SalesOrders = (props) => {
               setContentLoading(false);
             }
             handleRequestResponse([resp1, resp2,resp3], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
           }
         });
       });

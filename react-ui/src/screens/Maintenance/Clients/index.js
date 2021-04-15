@@ -37,15 +37,15 @@ const Clients = (props) => {
 
   useEffect(() => {
     dispatch(listClient({ company, message })).then(() => {
-      setFormData(null);
-      setLoading(false);
-      if(!isMounted.current){
-        performCleanup()
+      if(isMounted.current){
+        setFormData(null);
+        setLoading(false);
       }
     });
 
     return function cleanup() {
       isMounted.current = false
+      performCleanup()
     };
     // eslint-disable-next-line
   }, [dispatch, company]);
@@ -79,9 +79,6 @@ const Clients = (props) => {
             }
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
           }
-          else {
-            performCleanup()
-          }
         });
       });
     });
@@ -111,9 +108,6 @@ const Clients = (props) => {
               setLoading(false);
             }
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
           }
         });
       });

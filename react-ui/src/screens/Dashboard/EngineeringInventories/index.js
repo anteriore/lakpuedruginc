@@ -32,13 +32,12 @@ const EngineeringInventories = (props) => {
     dispatch(listEngineeringInventory({ company, message })).then(() => {
       if (isMounted.current){
         setLoading(false);
-      } else {
-        performCleanup();
       }
     });
 
     return function cleanup() {
       isMounted.current = false
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
