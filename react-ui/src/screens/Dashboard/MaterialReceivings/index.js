@@ -61,13 +61,12 @@ const MaterialReceivings = (props) => {
       if (isMounted.current){
         setFormData(null);
         setLoading(false);
-      } else {
-        performCleanup();
       }
     });
 
     return function cleanup() {
       isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
@@ -93,15 +92,17 @@ const MaterialReceivings = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(listMaterialIssuanceByStatus({ status: 'Pending', message })).then((response) => {
-      const onSuccess = () => {
-        history.push(`${path}/new`);
-        setLoading(false);
-      }
+      if (isMounted.current){
+        const onSuccess = () => {
+          history.push(`${path}/new`);
+          setLoading(false);
+        }
 
-      const onFailed = () => {
-        setLoading(false);
+        const onFailed = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFailed, '');
       }
-      handleRequestResponse([response], onSuccess, onFailed, '');
     });
   };
 

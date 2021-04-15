@@ -65,14 +65,13 @@ const PurchaseRequests = (props) => {
       dispatch(listD({ company, message })).then(() => {
         if(isMounted.current){
           setLoading(false);
-        }else{
-          performCleanup();
         }
       });
     });
 
     return function cleanup() {
       isMounted.current = false;
+      performCleanup()
     };
   }, [dispatch, company, performCleanup]);
 
@@ -103,9 +102,6 @@ const PurchaseRequests = (props) => {
             setLoading(false);
           }
           handleRequestResponse([response], onSuccess, onFail, '');
-        }
-        else {
-          performCleanup()
         }
       });
   };

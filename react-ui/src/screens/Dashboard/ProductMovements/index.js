@@ -83,13 +83,12 @@ const ProductMovements = (props) => {
     dispatch(listProductMovements(company)).then(() => {
       if (isMounted.current){
         setContentLoading(false);
-      } else {
-        performCleanup();
       }
     })
 
     return function cleanup() {
       isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
@@ -106,9 +105,6 @@ const ProductMovements = (props) => {
             setContentLoading(false);
           }
           handleRequestResponse([response1, response2], onSuccess, onFail, '');
-        }
-        else {
-          performCleanup()
         }
       });
     });

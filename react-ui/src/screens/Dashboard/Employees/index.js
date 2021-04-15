@@ -42,13 +42,12 @@ const Employees = (props) => {
     .then(() => {
       if (isMounted.current){
         setContentLoading(false);
-      } else {
-        performCleanup();
       }
     });
 
     return function cleanup() {
       isMounted.current = false
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 

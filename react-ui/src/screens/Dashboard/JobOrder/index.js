@@ -82,18 +82,15 @@ const JobOrder = (props) => {
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    let isCancelled = false;
     setContentLoading(true);
     dispatch(listJobOrders())
     .then(() => {
-      if (isCancelled) {
-        dispatch(clearData());
-      }
       setContentLoading(false);
     });
 
     return function cleanup() {
       isMounted.current = false;
+      performCleanup()
     };
   }, [dispatch, performCleanup]);
 
@@ -102,16 +99,18 @@ const JobOrder = (props) => {
     dispatch(listEmployees()).then((resp1) => {
       dispatch(listMoInventories(company)).then((resp2) => {
         dispatch(listProcedure()).then((resp3) => {
-          const onSuccess = () => {
-            history.push(`${path}/new`);
-            setContentLoading(false);
+          if(isMounted.current){
+            const onSuccess = () => {
+              history.push(`${path}/new`);
+              setContentLoading(false);
+            }
+      
+            const onFail = () => {
+              setContentLoading(false);
+            }
+      
+            handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
-    
-          const onFail = () => {
-            setContentLoading(false);
-          }
-    
-          handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
         });
       });
     });

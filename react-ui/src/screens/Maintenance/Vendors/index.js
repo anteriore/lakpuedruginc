@@ -58,13 +58,12 @@ const Vendors = (props) => {
       if (isMounted.current){
         setFormData(null);
         setLoading(false);
-      } else {
-        performCleanup();
       }
     });
 
     return function cleanup() {
       isMounted.current = false
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
@@ -110,9 +109,6 @@ const Vendors = (props) => {
             }
             handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
-          else {
-            performCleanup()
-          }
         });
       });
     });
@@ -141,9 +137,6 @@ const Vendors = (props) => {
               setLoading(false);
             }
             handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
           }
         });
       });

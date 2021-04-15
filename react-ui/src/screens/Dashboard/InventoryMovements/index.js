@@ -51,13 +51,12 @@ const InventoryMovements = (props) => {
       if (isMounted.current){
         setFormData(null);
         setLoading(false);
-      } else {
-        performCleanup();
       }
     });
 
     return function cleanup() {
       isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
