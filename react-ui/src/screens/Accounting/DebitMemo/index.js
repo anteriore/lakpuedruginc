@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Descriptions, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,15 +7,15 @@ import moment from 'moment';
 
 import TableDisplay from '../../../components/TableDisplay';
 import { FormDetails, DisplayDetails } from './data';
-//import FormScreen from '../../../components/forms/FormScreen';
 import InputForm from './InputForm';
 
-import { listDM, addDM, deleteDM, clearData } from './redux';
-//import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { listDM, addDM, deleteDM, updateDM, getDM, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listMemo, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
+
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -32,42 +32,61 @@ const DebitMemo = (props) => {
   const [formData, setFormData] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
-  const dmList = useSelector((state) => state.accounting.debitMemo.list);
+  const {list: dmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.debitMemo.list);
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
-
+ 
+  const { handleRequestResponse } = GeneralHelper()
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listDM({ company, message })).then(() => {
+      setFormData(null);
       setLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
+      if(!isMounted.current){
+        performCleanup()
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearMemo());
-      dispatch(clearOS());
-      dispatch(clearSI());
-      isCancelled = true;
+      isMounted.current = false
+      performCleanup();
     };
+    // eslint-disable-next-line
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+  
+  const performCleanup = () => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearMemo());
+    dispatch(clearOS());
+    dispatch(clearSI());
+  }
 
   const handleAdd = () => {
     setFormTitle('Create Debit Memo');
     setFormMode('add');
     setFormData(null);
-    setLoading(true)
     setSelectedData(null);
+    setLoading(true);
     dispatch(clearOS());
     dispatch(clearSI());
-    dispatch(listDepot({ company, message })).then(() => {
-      dispatch(listMemo({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
+    dispatch(listDepot({ company, message })).then((response1) => {
+      dispatch(listMemo({ company, message })).then((response2) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+              history.push(`${path}/new`);
+              setLoading(false);
+          }
+          const onFail = () => {
+            setLoading(false);
+          }
+          handleRequestResponse([response1, response2], onSuccess, onFail, '');
+        }
       });
     });
   };
@@ -75,15 +94,16 @@ const DebitMemo = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteDM(data.id)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         dispatch(listDM({ company, message })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted ${data.number}`);
         });
-      } else {
-        setLoading(false);
-        message.error(`Unable to delete ${data.number}`);
       }
+      const onFail = () => {
+        setLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -92,8 +112,23 @@ const DebitMemo = (props) => {
   };
 
   const handleRetrieve = (data) => {
-    setSelectedData(data);
-    setDisplayModal(true);
+    setLoading(true);
+    dispatch(getDM({ id: data.id })).then((response) => {
+      const onSuccess = () => {
+        setDisplayModal(true);
+        setSelectedData(response.payload.data);
+        setLoading(false);
+      }
+      const onFail = () => {
+        setDisplayModal(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
+  };
+
+  const handleCancelButton = () => {
+    setFormData(null);
   };
 
   const onSubmit = async (data) => {
@@ -105,30 +140,41 @@ const DebitMemo = (props) => {
     }
 
     if (formMode === 'edit') {
-      payload.id = selectedData.id;
-    }
+      payload.id = formData.id
 
-    await dispatch(addDM(payload)).then((response) => {
-      setLoading(true);
-      if (response.payload.status === 200) {
-        message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listDM({ company, message })).then(() => {          
-          setLoading(false);
-        });
-        history.goBack();
-      } else {
-        setLoading(false);
-        if (formMode === 'add') {
-          message.error(
-            `Unable to add Debit Memo. Please double check the provided information.`
-          );
-        } else {
-          message.error(`Something went wrong. Unable to update ${data.number}.`);
+      await dispatch(updateDM(payload)).then((response) => {
+        setLoading(true);
+        const onSuccess = () => {
+          history.goBack();
+          dispatch(listDM({ company, message })).then(() => {
+            setLoading(false);
+          });
         }
-      }
-    });
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    } else if (formMode === 'add') {
+      await dispatch(addDM(payload)).then((response) => {
+        setLoading(true);
+        const onSuccess = () => {
+          history.goBack();
+          dispatch(listDM({ company, message })).then(() => {
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    }
     
     setFormData(null);
+    return 1;
   };
 
   return (
@@ -138,9 +184,8 @@ const DebitMemo = (props) => {
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
-          onCancel={() => { setFormData(null); }}
+          onCancel={handleCancelButton}
           formDetails={formDetails}
-          //formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -148,9 +193,8 @@ const DebitMemo = (props) => {
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
-          onCancel={() => { setFormData(null); }}
+          onCancel={handleCancelButton}
           formDetails={formDetails}
-          //formTable={tableDetails}
         />
       </Route>
       <Route>

@@ -71,7 +71,6 @@ export const DisplayDetails = () => {
 export const FormDetails = () => {
     const dispatch = useDispatch();
     const depots = useSelector((state) => state.maintenance.depots.list);
-    //const clients = useSelector((state) => state.maintenance.clients.list);
     const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
     const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
     const memoTypes = useSelector((state) => state.maintenance.memoTypes.memoList);
@@ -119,16 +118,6 @@ export const FormDetails = () => {
                 render: (object) => `[${object.code}] ${object.name}`,
                 rules: [{ required: true }],
             },
-            /*{
-                label: 'Client',
-                name: 'client',
-                type: 'selectSearch',
-                selectName: 'name',
-                readOnly: true,
-                choices: clients,
-                render: (object) => `[${object.code}] ${object.name}`,
-                rules: [{ required: true }],
-            },*/
             {
                 label: 'Amount Paid',
                 name: 'amount',
