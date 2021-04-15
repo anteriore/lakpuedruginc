@@ -87,6 +87,7 @@ const PurchaseRequests = (props) => {
   };
 
   const handleUpdate = (data) => {
+    if(data.status === 'Pending'){
       setFormTitle('Edit Purchase Request');
       setFormMode('edit');
       setLoading(true);
@@ -104,6 +105,10 @@ const PurchaseRequests = (props) => {
           handleRequestResponse([response], onSuccess, onFail, '');
         }
       });
+    }
+    else {
+      message.error("This action is only available for pending purchase requests")
+    }
   };
 
   const handleDelete = (data) => {
@@ -290,7 +295,8 @@ const PurchaseRequests = (props) => {
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
                 updateEnabled={actions.includes('update')}
-                deleteEnabled={actions.includes('delete')}
+                deleteEnabled={false}
+                //deleteEnabled={actions.includes('delete')}
               />
             </Col>
           )}
