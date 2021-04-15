@@ -6,7 +6,9 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 const initialState = {
   list: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -25,7 +27,11 @@ export const listPDCVoucher = createAsyncThunk('listPDCVoucher', async (payload,
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
@@ -45,7 +51,11 @@ export const addPDCVoucher = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
 });
 
@@ -65,7 +75,11 @@ export const deletePDCVoucher = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
 });
 
@@ -76,27 +90,116 @@ const PDCVoucherSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listPDCVoucher.pending]: (state, action) => {
-      state.status = 'loading';
+    [listPDCVoucher.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers` 
+      };
     },
     [listPDCVoucher.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Vouchers');
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Vouchers', state.action);
 
       return {
         ...state,
         list: data,
-        responseCode: status,
+        status: 'succeeded',
         statusLevel: level,
+        responseCode: status,
         statusMessage: message,
       };
     },
     [listPDCVoucher.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Vouchers',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
+      };
+    },
+    [addPDCVoucher.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers` 
+      };
+    },
+    [addPDCVoucher.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Vouchers', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [addPDCVoucher.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Vouchers',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deletePDCVoucher.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers` 
+      };
+    },
+    [deletePDCVoucher.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Vouchers', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deletePDCVoucher.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Vouchers',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },
