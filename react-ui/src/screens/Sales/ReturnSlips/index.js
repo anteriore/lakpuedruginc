@@ -100,12 +100,12 @@ const ReturnSlips = (props) => {
       if (isMounted.current) {
         setLoading(false)
       } else {
-        performCleanup();
       }
     });
 
     return function cleanup() {
-    
+      isMounted.current = false
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
@@ -125,9 +125,6 @@ const ReturnSlips = (props) => {
               setLoading(false);
             }
             handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
           }
       });
     })

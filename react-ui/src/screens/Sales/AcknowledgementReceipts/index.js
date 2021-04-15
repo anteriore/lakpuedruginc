@@ -80,13 +80,12 @@ const AcknowledgementReceipts = (props) => {
     dispatch(listAReceipt({ company, message })).then(() => {
       if (isMounted.current) {
         setLoading(false)
-      } else {
-        performCleanup();
       }
     });
 
     return function cleanup() {
       isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
@@ -107,9 +106,6 @@ const AcknowledgementReceipts = (props) => {
             setLoading(false);
           }
           handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
-        }
-        else {
-          performCleanup()
         }
       });
     })
