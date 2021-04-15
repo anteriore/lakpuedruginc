@@ -14,24 +14,24 @@ export const DisplayDetails = () => {
       dataIndex: 'number',
       key: 'number',
       align: 'center',
+      datatype: 'string',
       defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.number.length - b.number.length,
     },
     {
       title: 'DR',
       dataIndex: 'drNumber',
       key: 'drNumber',
       align: 'center',
+      datatype: 'string',
       defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.number.length - b.number.length,
     },
     {
       title: 'SI',
       dataIndex: 'siNumber',
       key: 'siNumber',
       align: 'center',
+      datatype: 'string',
       defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.number.length - b.number.length,
     },
     {
       title: 'Received By',
@@ -39,19 +39,16 @@ export const DisplayDetails = () => {
       key: 'receivedBy',
       align: 'center',
       defaultSortOrder: 'ascend',
-      render: (object) => object.firstName.concat(` ${object.lastName}`),
-      sorter: (a, b) =>
-        a.receivedBy.firstName
-          .concat(` ${a.receivedBy.lastName}`)
-          .localeCompare(b.receivedBy.firstName.concat(` ${b.receivedBy.lastName}`)),
+      datatype: 'object',
+      dataToString: (object) => object.firstName.concat(` ${object.lastName}`),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       align: 'center',
+      datatype: 'string',
       defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.number.length - b.number.length,
     },
   ];
 
