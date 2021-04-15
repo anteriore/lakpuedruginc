@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Typography, Form, Skeleton, Table, Checkbox, Space, Button } from 'antd';
+import { Row, Col, Typography, Form, Skeleton, Table, Checkbox, Space, Button, Alert } from 'antd';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import Layout from 'antd/lib/layout/layout';
@@ -9,6 +10,7 @@ import FormDetails from '../OrderSlips/data';
 import FormItem from '../../../components/forms/FormItem';
 import { updateList } from '../../../helpers/general-helper';
 import { formatLotProducts, formatOrderedProducts } from '../OrderSlips/helpers';
+import { formDetails } from './data';
 
 const { Title } = Typography;
 
@@ -17,22 +19,25 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [form] = useForm();
-  const { formDetails, salesInfoHeader, salesOrderHeader } = FormDetails();
+  const { salesInfoHeader, salesOrderHeader } = FormDetails();
 
   const [contentLoading, setContentLoading] = useState(true);
+  const [processingData, setProcessingData] = useState(false);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [selectedSales, setSelectedSales] = useState(null);
   const [showSalesSection, setShowSalesSection] = useState(false);
   const [selectedLot, setSelectedLot] = useState([]);
   const [salesInvoiceProducts, setSalesInvoiceProducts] = useState([]);
 
-  const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
+  const { list: productInvList } = useSelector((state) => state.dashboard.productInventories);
   const { list: depotList } = useSelector((state) => state.maintenance.depots);
   const { salesOrderList } = useSelector((state) => state.sales.salesOrders);
   const { user } = useSelector((state) => state.auth);
 
   const handleSalesChange = useCallback(
     (value) => {
+      setSelectedLot([]);
+      setSelectedSales(null);
       const salesOrder = _.find(salesOrderList, (o) => {
         return o.id === value;
       });
@@ -45,9 +50,13 @@ const InputForm = (props) => {
     (value) => {
       form.setFieldsValue({ salesOrder: '' });
       setSelectedSales(null);
-      const selectedSalesList = _.filter(salesOrderList, (o) => {
-        return o?.depot?.id === value && _.toLower(o?.status) !== 'pending';
-      }).filter((o) => _.toLower(o?.type) === 'dr_si');
+      setSelectedLot([]);
+      
+      const selectedSalesList = _.filter(salesOrderList, (o) => o?.depot?.id === value)
+        .filter((o) => _.toLower(o?.status) === 'approved' || _.toLower(o?.status) === 'incomplete')
+        .filter((o) => _.toLower(o?.type) === 'dr_si')
+        .filter((o) => _.some(o.products, ['status', 'Pending']) ||
+        _.some(o.products, ['status', 'Incomplete']));
 
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
@@ -131,8 +140,11 @@ const InputForm = (props) => {
   };
 
   const onFinish = (value) => {
-    onSubmit(value, selectedSales, salesInvoiceProducts);
-    history.goBack();
+    setProcessingData(true)
+    onSubmit(value, selectedSales, salesInvoiceProducts).then(() => {
+      setProcessingData(false);
+      history.goBack();
+    })
   };
 
   return (
@@ -155,7 +167,7 @@ const InputForm = (props) => {
                       <FormItem onFail={onFail} key={item.name} item={item} />
                     ))
                   : ''}
-                {showSalesSection ? (
+                { selectedSales !== null ? (
                   <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
                     <Form.Item>
                       <Table
@@ -173,7 +185,15 @@ const InputForm = (props) => {
                     </Form.Item>
                   </Form.Item>
                 ) : (
-                  ''
+                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                    <Alert
+                      message="Please salect a depot and then select an existing sales order."
+                      type="warning"
+                      showIcon
+                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                    />
+                  </Form.Item>
                 )}
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
@@ -181,7 +201,10 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit">
+                    <Button  
+                    loading={processingData}
+                    disabled={ salesInvoiceProducts.length !== 0 && selectedSales !== null ? false : true }  
+                    type="primary" htmlType="submit">
                       Submit
                     </Button>
                   </Space>

@@ -40,7 +40,7 @@ const InputForm = (props) => {
 
   const [tableData, setTableData] = useState();
   const [loadingTable, setLoadingTable] = useState(false);
-
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [mode, setMode] = useState(null);
 
   const [loadingModal, setLoadingModal] = useState(true);
@@ -78,6 +78,7 @@ const InputForm = (props) => {
   }, [mode, purchaseVouchers, journalVouchers, vouchers, formDetails])
 
   const onFinish = (data) => {
+    setFormButtonLoading(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -90,7 +91,9 @@ const InputForm = (props) => {
       }
     });
 
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setFormButtonLoading(false)
+    });
   };
 
   const onFinishFailed = () => {
@@ -362,11 +365,12 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button loading={formButtonLoading} type="primary" onClick={() => form.submit()}>
               Submit
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={formButtonLoading}
               onClick={() => {
                 onCancel();
                 history.goBack();
@@ -398,7 +402,7 @@ const InputForm = (props) => {
                 }}
                 columns={formTable.selectFields}
                 dataSource={formTable.selectData}
-                rowKey={formTable.foreignKey}
+                rowKey={formTable.selectedKey}
                 pagination={{ size: 'small' }}
               />
             </Modal>

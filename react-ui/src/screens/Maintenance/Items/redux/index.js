@@ -8,7 +8,7 @@ const initialState = {
   list: [],
   report: null,
   status: 'loading',
-  statusLevel: 'loading',
+  statusLevel: '',
   responseCode: null,
   statusMessage: '',
   action: '',
@@ -71,82 +71,74 @@ export const listItemByType = createAsyncThunk('listItemByType', async (payload,
   const accessToken = thunkAPI.getState().auth.token;
   const { type } = payload;
 
-  const response = await axiosInstance.get(`rest/items/type/${type}?token=${accessToken}`);
+  try {
+    const response = await axiosInstance.get(`rest/items/type/${type}?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for items');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const listItemSummary = createAsyncThunk('listItemSummary', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { company } = payload;
 
-  const response = await axiosInstance.get(
-    `rest/items/company/${company}/summary/?token=${accessToken}`
-  );
+  try {
+    const response = await axiosInstance.get(
+      `rest/items/company/${company}/summary/?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for items');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const listItemSummaryNonEngineering = createAsyncThunk('listItemSummaryNonEngineering', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { company } = payload;
 
-  const response = await axiosInstance.get(
-    `rest/items/company/${company}/summary/non-eng?token=${accessToken}`
-  );
+  try {
+    const response = await axiosInstance.get(
+      `rest/items/company/${company}/summary/non-eng?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for items');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const listItemSummaryEngineering = createAsyncThunk('listItemSummaryEngineering', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { company } = payload;
 
-  const response = await axiosInstance.get(
-    `rest/items/company/${company}/summary/eng?token=${accessToken}`
-  );
+  try {
+    const response = await axiosInstance.get(
+      `rest/items/company/${company}/summary/eng?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for items');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-
-  return response;
 });
 
 export const addI = createAsyncThunk('addI', async (payload, thunkAPI) => {
@@ -207,6 +199,7 @@ const itemSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: message.ITEMS_GET_PENDING
       };
     },
@@ -248,8 +241,8 @@ const itemSlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for items`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for items`,
         responseCode: null,
       };
     },
@@ -290,8 +283,8 @@ const itemSlice = createSlice({
         ...state,
         action: 'update',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for items`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for items`,
         responseCode: null,
       };
     },
@@ -332,8 +325,8 @@ const itemSlice = createSlice({
         ...state,
         action: 'delete',
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for items`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for items`,
         responseCode: null,
       };
     },
@@ -374,6 +367,7 @@ const itemSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: message.ITEMS_GET_PENDING
       };
     },
@@ -410,141 +404,174 @@ const itemSlice = createSlice({
         statusMessage,
       };
     },
-    [listItemByType.pending]: (state, action) => {
-      state.status = 'loading';
+    [listItemByType.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: message.ITEMS_GET_PENDING
+      };
     },
     [listItemByType.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for items';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level, 
+        responseCode: status, 
         statusMessage,
       };
     },
     [listItemByType.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [listItemSummary.pending]: (state, action) => {
-      state.status = 'loading';
+    [listItemSummary.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: message.ITEMS_GET_PENDING
+      };
     },
     [listItemSummary.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for items';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level, 
+        responseCode: status, 
         statusMessage,
       };
     },
     [listItemSummary.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [listItemSummaryEngineering.pending]: (state, action) => {
-      state.status = 'loading';
+    [listItemSummaryEngineering.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: message.ITEMS_GET_PENDING
+      };
     },
     [listItemSummaryEngineering.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for items';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level, 
+        responseCode: status, 
         statusMessage,
       };
     },
     [listItemSummaryEngineering.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
-    [listItemSummaryNonEngineering.pending]: (state, action) => {
-      state.status = 'loading';
+    [listItemSummaryNonEngineering.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: message.ITEMS_GET_PENDING
+      };
     },
     [listItemSummaryNonEngineering.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for items';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level, 
+        responseCode: status, 
         statusMessage,
       };
     },
     [listItemSummaryNonEngineering.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Items',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
-      };
-    },
-    /* [listItemReportSummaryByProduct.pending]: (state, action) => {
-      state.status = 'loading';
-    },
-    [listItemReportSummaryByProduct.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for items';
-      }
-
-      return {
-        ...state,
-        report: data,
-        status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
-    [listItemReportSummaryByProduct.rejected]: (state, action) => {
-      return {
-        ...state,
-        status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
-      };
-    }, */
   },
 });
 

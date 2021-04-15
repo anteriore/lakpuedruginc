@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
@@ -11,9 +11,8 @@ import { listVoucherByCompany, clearData as clearVouchers } from '../Vouchers/re
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
 import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
-import statusDialogue from '../../../components/StatusDialogue';
-import GeneralHelper from '../../../helpers/general-helper';
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import moment from 'moment';
 import _ from "lodash";
 import InputForm from './InputForm';
@@ -24,7 +23,7 @@ const { Title } = Typography;
 const { RangePicker } = DatePicker
 
 const JournalVouchers = (props) => {
-  const {title, company} = props;
+  const { title, company, actions } = props;
   const {path} = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -34,57 +33,31 @@ const JournalVouchers = (props) => {
   const [contentLoading, setContentLoading] = useState(false);
   const [journalVoucher, setJournalVoucher] = useState(null);
   const [displayModal, setDisplayModal] = useState(false)
+  const isMounted = useRef(true);
 
   const { id: userId } = useSelector(state => state.auth.user)
   const {list, status, action, statusMessage, statusLevel} = useSelector((state) => state.accounting.journalVouchers);
 
   useEffect(() => {
-		if (status !== 'loading') {
-			if (action === 'fetch' && statusLevel !== 'success') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-
-			if (action !== 'fetch') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-		}
+		reevalutateMessageStatus({status, action,statusMessage, statusLevel})
 	}, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    let isCancelled = false;
     setContentLoading(true);
-
     dispatch(listJournalVouchers({company})).then(() => {
       setContentLoading(false);
-      if(isCancelled){
-        dispatch(clearData());
-      }
     });
 
-    return function clearUp() {
+    return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
       dispatch(clearVouchers());
       dispatch(clearAC());
 			dispatch(clearDeptArea());
 			dispatch(clearGroupCat());
 			dispatch(clearVendor());
-      
-      isCancelled = true;
     }
   }, [company, dispatch]);
-
-  const onSuccess = useCallback((method) => {
-		if ( method === "add" ){
-			history.push(`${path}/new`);
-		} 
-
-		setContentLoading(false);
-	},[history, path])
-
-	const onFail = useCallback(() => {
-		history.goBack();
-		setContentLoading(false);
-	},[history])
 
   const handleAddButton = () => {
     setContentLoading(true);
@@ -93,9 +66,18 @@ const JournalVouchers = (props) => {
 				dispatch(listAccountTitles()).then((dataAC) => { 
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
-							dispatch(listG({company})).then((dataG) => {
-								const dataList = [dataVoucher,dataVendor, dataAC, dataA, dataD, dataG];
-								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+							dispatch(listGroupByCompany({company})).then((dataG) => {
+                if(isMounted.current){
+                  const dataList = [dataVoucher,dataVendor, dataAC, dataA, dataD, dataG];
+                  const onSuccess = () => {
+                    history.push(`${path}/new`);
+                    setContentLoading(false);
+                  }
+                  const onFail = () => {
+                    setContentLoading(false);
+                  }
+                  handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+                }
 							})
 						})
 					})
@@ -104,21 +86,23 @@ const JournalVouchers = (props) => {
     })
   }
 
-  const handleRangedChanged = () => {
-
-  }
+  const handleRangedChanged = () => {}
 
   const handleApproveJV = () => {
+    setContentLoading(true);
     dispatch(approveJournalVouchers({jvId: journalVoucher.id, user: userId})).then(() => {
       dispatch(listJournalVouchers({company}));
       setDisplayModal(false);
+      setContentLoading(false);
     })
   }
 
   const handleRejectJV = () => {
+    setContentLoading(true);
     dispatch(rejectJournalVouchers({jvId: journalVoucher.id, user: userId})).then(() => {
       dispatch(listJournalVouchers({company}));
       setDisplayModal(false);
+      setContentLoading(false);
     })
   }
 
@@ -132,17 +116,24 @@ const JournalVouchers = (props) => {
 		setJournalVoucher(null);
 	}
 
-  const onCreate = (payload) => {
-    dispatch(createJournalVouchers(formatJVPaload(payload.values, 
-      payload.addedAccounts, userId, company))).then((dataCreateJV) => {
-      if (dataCreateJV.type.split('/')[1] === 'rejected') {
-        message.warning("Debit and Credit should be same")
-      } else{
-        dispatch(listJournalVouchers({company}))
-        payload.redirect();
+  const onCreate = async (data) => {
+    setContentLoading(true)
+    const payload = formatJVPaload(data.values, data.addedAccounts, userId, company)
+    await dispatch(createJournalVouchers(payload)).then((dataCreateJV) => {
+      if(isMounted.current){
+        const onSuccess = () => {
+          history.goBack()
+          dispatch(listJournalVouchers({company})).then(() => {
+            setContentLoading(false);
+          })
+        }
+        const onFail = () => {
+          setContentLoading(false);
+        }
+        handleRequestResponse([dataCreateJV], onSuccess, onFail, '');
       }
-    })
-    
+		})
+    return 1
   }
 
   return (
@@ -156,13 +147,15 @@ const JournalVouchers = (props) => {
             <Title>
               {title}
             </Title>
-            <Button
-            icon={<PlusOutlined/>}
-            loading={contentLoading}
-            onClick={handleAddButton}
-          >
-            Add
-          </Button>
+            {actions.includes('create') && (
+              <Button
+                icon={<PlusOutlined/>}
+                loading={contentLoading}
+                onClick={handleAddButton}
+              >
+                Add
+              </Button>
+            )}
           </Col>
           <Col style={GeneralStyles.reportsArea} span={20}>
 						{contentLoading ? <Skeleton/> : (
@@ -238,6 +231,7 @@ const JournalVouchers = (props) => {
                       <Button
                         style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
                         icon={<CheckOutlined />}
+                        loading={contentLoading}
                         onClick={handleApproveJV}
                         type="primary"
                       >
@@ -246,6 +240,7 @@ const JournalVouchers = (props) => {
                       <Button
                         style={{ marginRight: '1%' }}
                         icon={<CloseOutlined />}
+                        loading={contentLoading}
                         onClick={handleRejectJV}
                         type="primary"
                         danger

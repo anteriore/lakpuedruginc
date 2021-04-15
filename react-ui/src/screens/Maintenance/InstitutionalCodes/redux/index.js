@@ -2,24 +2,29 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 export const listInstitution = createAsyncThunk(
   'listInstitution',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for institutional codes');
+    try {
+      const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
-
-    return response;
   }
 );
 
@@ -40,12 +45,26 @@ export const updateInstitution = createAsyncThunk(
   'updateInstitution',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.post(
-      `/rest/institutional-codes?token=${accessToken}`,
-      payload
-    );
+    
+    try {
+      const response = await axiosInstance.post(
+        `/rest/institutional-codes?token=${accessToken}`,
+        payload
+      );
 
-    return response;
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -54,17 +73,32 @@ export const deleteInstitution = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const { id } = payload;
-    const response = await axiosInstance.post(
-      `/rest/institutional-codes/delete?token=${accessToken}`,
-      id
-    );
+    try {
+      const response = await axiosInstance.post(
+        `/rest/institutional-codes/delete?token=${accessToken}`,
+        id
+      );
 
-    return response;
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 const initialState = {
   institutionList: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -76,109 +110,152 @@ const institutionalCodesSlice = createSlice({
   },
   extraReducers: {
     [listInstitution.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'fetch', 
         status: 'loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
       };
     },
     [listInstitution.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for institutional codes';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
 
       return {
         ...state,
         institutionList: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
     [listInstitution.rejected]: (state, action) => {
-      const { data } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
+
       return {
         ...state,
-        institutionList: data,
+        data: [],
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
       };
     },
     [createInstitution.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'create', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_ADD_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
       };
     },
-    [createInstitution.fulfilled]: (state) => {
+    [createInstitution.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
+
       return {
         ...state,
-        status: 'Fulfilled',
-        action: 'post',
-        statusMessage: message.ITEM_ADD_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [createInstitution.rejected]: (state) => {
+    [createInstitution.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_ADD_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [updateInstitution.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'update', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_UPDATE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
       };
     },
-    [updateInstitution.fulfilled]: (state) => {
+    [updateInstitution.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
+
       return {
         ...state,
         status: 'succeeded',
-        action: 'post',
-        statusMessage: message.ITEM_UPDATE_FULFILLED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [updateInstitution.rejected]: (state) => {
+    [updateInstitution.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_UPDATE_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [deleteInstitution.pending]: (state) => {
-      return {
-        ...state,
+      return { 
+        ...state,  
+        action: 'delete', 
         status: 'loading',
-        action: 'pending',
-        statusMessage: message.ITEM_DELETE_PENDING,
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
       };
     },
-    [deleteInstitution.fulfilled]: (state) => {
+    [deleteInstitution.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
+
       return {
         ...state,
         status: 'succeeded',
-        action: 'post',
-        statusMessage: message.ITEM_DELETE_FULFILLED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [deleteInstitution.rejected]: (state) => {
+    [deleteInstitution.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'error',
-        statusMessage: message.ITEM_DELETE_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

@@ -143,7 +143,7 @@ const Items = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setContentLoading(true);
     const payload = {
       ...values,
@@ -160,12 +160,12 @@ const Items = (props) => {
     if (formMode === 'edit') {
       payload.id = formData.id;
 
-      dispatch(updateI(payload)).then(() => {
+      await dispatch(updateI(payload)).then(() => {
         dispatch(listItemWithoutEng({ company, message }));
         setContentLoading(false);
       });
     } else if (formMode === 'add') {
-      dispatch(addI(payload)).then(() => {
+      await dispatch(addI(payload)).then(() => {
         dispatch(listItemWithoutEng({ company, message }));
         setContentLoading(false);
       });
@@ -173,6 +173,7 @@ const Items = (props) => {
 
     setDisplayForm(false);
     setFormData(null);
+    return 1
   };
 
   return (

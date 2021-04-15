@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table } from 'antd';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
@@ -10,11 +10,10 @@ import { listRRByNoPV, clearData as clearRR } from '../../Dashboard/ReceivingRec
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 import { listAccountTitles, clearData as clearAC } from '../AccountTitles/redux';
 import { listD, listA, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import { useDispatch, useSelector } from 'react-redux';
 import InputForm from './InputForm';
-import statusDialogue from '../../../components/StatusDialogue';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import moment from 'moment'
 import _ from 'lodash';
 import PVHelper from './helper';
@@ -24,7 +23,7 @@ const { Title } = Typography;
 const { RangePicker } = DatePicker
 
 const PurchaseVouchers = (props) => {
-	const { title, company } = props;
+	const { title, company, actions } = props;
 	const { path } = useRouteMatch();
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -34,58 +33,45 @@ const PurchaseVouchers = (props) => {
 	const [contentLoading, setContentLoading] = useState(false);
 	const [displayModal, setDisplayModal] = useState(false);
 	const [purchaseVoucher, setPurchaseVoucher] = useState(null);
+	const isMounted = useRef(true);
 
 	const { id: userId } = useSelector(state => state.auth.user)
 	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers);
 
 	useEffect(() => {
-		if (status !== 'loading') {
-			if (action === 'fetch' && statusLevel !== 'success') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-
-			if (action !== 'fetch') {
-				statusDialogue({ statusMessage, statusLevel }, 'message');
-			}
-		}
+		reevalutateMessageStatus({status, action,statusMessage, statusLevel})
 	}, [status, action, statusMessage, statusLevel]);
 
 	useEffect(() => {
-		let isCancelled = false;
 		setContentLoading(true);
 
 		dispatch(listPurchaseVouchers({company})).then((data) => {
 			setContentLoading(false);
-			if(isCancelled) {
-				dispatch(clearData());
-			}
 		})
 
-		return function clearUp() {
-			dispatch(clearData());
-			dispatch(clearAC());
-			dispatch(clearDeptArea());
-			dispatch(clearRR());
-			dispatch(clearGroupCat());
-			dispatch(clearVendor());
-			isCancelled = true
+		return function cleanup() {
+			isMounted.current = false
+			performCleanup()
 		}
 	}, [company, dispatch]);
+
+	const performCleanup = () => {
+		dispatch(clearData());
+		dispatch(clearAC());
+		dispatch(clearDeptArea());
+		dispatch(clearRR());
+		dispatch(clearGroupCat());
+		dispatch(clearVendor());
+	}
 
 	const onSuccess = useCallback((method) => {
 		if ( method === "add" ){
 			history.push(`${path}/new`);
-		} 
-
-		if ( method === 'edit' ) {
-
 		}
-
 		setContentLoading(false);
 	},[history, path])
 
 	const onFail = useCallback(() => {
-		console.log("Failing")
 		history.goBack();
 		setContentLoading(false);
 	},[history])
@@ -97,9 +83,11 @@ const PurchaseVouchers = (props) => {
 				dispatch(listAccountTitles()).then((dataAC) => { 
 					dispatch(listA({company})).then((dataA) => {
 						dispatch(listD({company})).then((dataD) => {
-							dispatch(listG({company})).then((dataG) => {
-								const dataList = [dataVendor, dataAC, dataA, dataD, dataG];
-								handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+							dispatch(listGroupByCompany({company})).then((dataG) => {
+								if(isMounted.current){
+									const dataList = [dataVendor, dataAC, dataA, dataD, dataG];
+									handleRequestResponse(dataList, () => onSuccess('add'), onFail, '/accounting')
+								}
 							})
 						})
 					})
@@ -109,7 +97,7 @@ const PurchaseVouchers = (props) => {
 	}
 
 	const handleRangedChanged = (value) => {
-		console.log(value)
+		console.log("Report feature is still not included in this system version")
 	}
 
 	const handleRetrieve = (value) => {
@@ -118,15 +106,19 @@ const PurchaseVouchers = (props) => {
 	}
 
 	const handleApprovePV = () => {
+		setContentLoading(true);
 		dispatch(approvePurchaseVoucher({ pvId: purchaseVoucher.id, user: userId })).then(() => {
 			dispatch(listPurchaseVouchers({company}));
+			setContentLoading(false);
 			setDisplayModal(false);
 		})
 	}
 
 	const handleRejectPV = () => {
+		setContentLoading(true);
 		dispatch(rejectPurchaseVoucher({ pvId: purchaseVoucher.id, user: userId })).then(() => {
 			dispatch(listPurchaseVouchers({company}));
+			setContentLoading(false);
 			setDisplayModal(false);
 		})
 	}
@@ -136,10 +128,23 @@ const PurchaseVouchers = (props) => {
 		setPurchaseVoucher(null);
 	}
 
-	const onCreate = (payload) => {
-		dispatch(createPurchaseVouchers(formatPVPayload(payload.values, payload.addedAccounts, userId, company))).then(() => {
-			dispatch(listPurchaseVouchers({company}));
-		})
+	const onCreate = async (data) => {
+		setContentLoading(true);
+		const payload = formatPVPayload(data.values, data.addedAccounts, userId, company)
+		await dispatch(createPurchaseVouchers(payload)).then((response) => {
+			const onSuccess = () => {
+			  history.goBack();
+			  dispatch(listPurchaseVouchers({company})).then(() => {
+				setContentLoading(false);
+			  });
+			}
+			const onFail = () => {
+				setContentLoading(false);
+			}
+	  
+			handleRequestResponse([response], onSuccess, onFail, '');
+		});
+		return 1
 	}
 
 	return (
@@ -153,13 +158,15 @@ const PurchaseVouchers = (props) => {
 						<Title>
 							{title}
 						</Title>
-						<Button
-							icon={<PlusOutlined/>}
-							loading={contentLoading}
-							onClick={handleAddButton}
-						>
-							Add
-						</Button>
+						{actions.includes('create') && (
+							<Button
+								icon={<PlusOutlined/>}
+								loading={contentLoading}
+								onClick={handleAddButton}
+							>
+								Add
+							</Button>
+						)}
 					</Col>
 					<Col style={GeneralStyles.reportsArea} span={20}>
 						{contentLoading ? <Skeleton/> : (
@@ -233,6 +240,7 @@ const PurchaseVouchers = (props) => {
 												style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
 												icon={<CheckOutlined />}
 												onClick={handleApprovePV}
+												loading={contentLoading}
 												type="primary"
 											>
 												Approve
@@ -241,6 +249,7 @@ const PurchaseVouchers = (props) => {
 												style={{ marginRight: '1%' }}
 												icon={<CloseOutlined />}
 												onClick={handleRejectPV}
+												loading={contentLoading}
 												type="primary"
 												danger
 											>

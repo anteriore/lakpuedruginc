@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
-import { listItemByType, addI, deleteI, clearData } from '../../Maintenance/Items/redux';
+import { listItemByType, addI, updateI,deleteI, clearData } from '../../Maintenance/Items/redux';
 import { listIT, clearData as clearIT } from '../../Maintenance/ItemTypes/redux';
 import { listUnit } from '../../Maintenance/Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
+import GeneralHelper ,{reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const EngineeringItems = (props) => {
+  const { handleRequestResponse } = GeneralHelper();
   const [displayForm, setDisplayForm] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
@@ -22,30 +25,81 @@ const EngineeringItems = (props) => {
 
   const { company, actions } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.items.list);
+  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.maintenance.items);
+  const { 
+    status: statusUnit, statusLevel: statusLevelUnit, 
+    statusMessage: statusMessageUnit, action: actionUnit 
+  } = useSelector(state => state.maintenance.units);
+  const { 
+    status: statusIT, statusLevel: statusLevelIT, 
+    statusMessage: statusMessageIT, action: actionIT 
+  } = useSelector(state => state.maintenance.itemTypes);
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearIT());
+  }, [dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listItemByType({ type: 'ENG', message })).then(() => {
-      if (isCancelled) {
-        dispatch(clearData());
+      if(isMounted.current) {
+        setLoading(false);
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearIT());
-      isCancelled = true;
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusUnit,
+      statusMessage: statusMessageUnit,
+      action: actionUnit, 
+      statusLevel: statusLevelUnit,
+      module: 'Units'
+    })
+  }, [
+    actionUnit, statusMessageUnit, 
+    statusUnit, statusLevelUnit
+  ]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusIT,
+      statusMessage: statusMessageIT,
+      action: actionIT, 
+      statusLevel: statusLevelIT,
+      module: 'Item Types'
+    })
+  }, [
+    actionIT, statusMessageIT, 
+    statusIT, statusLevelIT
+  ]);
 
   const handleAdd = () => {
     setFormTitle('Add Item');
     setFormMode('add');
     setFormData(null);
-    dispatch(listIT({ company, message })).then((response) => {
-      dispatch(listUnit({ message })).then((response) => {
-        setDisplayForm(true);
+    setLoading(true)
+    dispatch(listIT({ company, message })).then((resp1) => {
+      dispatch(listUnit({ message })).then((resp2) => {
+        const onSuccess = () => {
+          setDisplayForm(true);
+          setLoading(false)
+        }
+  
+        const onFailed = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([resp1, resp2], onSuccess, onFailed, '');
       });
     });
   };
@@ -59,17 +113,35 @@ const EngineeringItems = (props) => {
       type: data.type.id,
     };
     setFormData(formData);
-    dispatch(listIT({ company, message })).then((response) => {
-      dispatch(listUnit({ message })).then((response) => {
-        setDisplayForm(true);
+    setLoading(true)
+    dispatch(listIT({ company, message })).then((resp1) => {
+      dispatch(listUnit({ message })).then((resp2) => {
+        const onSuccess = () => {
+          setDisplayForm(true);
+          setLoading(false)
+        }
+  
+        const onFailed = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([resp1, resp2], onSuccess, onFailed, '');
       });
     });
   };
 
   const handleDelete = (data) => {
+    setLoading(true)
     dispatch(deleteI(data.id)).then((response) => {
-      dispatch(listItemByType({ type: 'ENG', message }));
-      message.success(`Successfully deleted Item ${data.name}`);
+      const onSuccess = () => {
+        dispatch(listItemByType({ type: 'ENG', message })).then(() => {
+          setLoading(false)
+        });
+      }
+
+      const onFailed = () => {
+        setLoading(false)
+      }
+      handleRequestResponse([response], onSuccess, onFailed, '');
     });
   };
 
@@ -80,7 +152,7 @@ const EngineeringItems = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     const payload = {
       ...values,
       company: {
@@ -96,17 +168,37 @@ const EngineeringItems = (props) => {
     if (formMode === 'edit') {
       payload.id = formData.id;
 
-      dispatch(addI(payload)).then(() => {
-        dispatch(listItemByType({ type: 'ENG', message }));
+      await dispatch(updateI(payload)).then((response) => {
+        setLoading(true);
+        const onSuccess = () => {
+          dispatch(listItemByType({ type: 'ENG', message })).then(() => {
+            setLoading(false);
+          });
+        };
+  
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
-      dispatch(addI(payload)).then(() => {
-        dispatch(listItemByType({ type: 'ENG', message }));
+      await dispatch(addI(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listItemByType({ type: 'ENG', message })).then(() => {
+            setLoading(false);
+          });
+        };
+  
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayForm(false);
     setFormData(null);
+    return 1
   };
 
   return (
@@ -124,6 +216,7 @@ const EngineeringItems = (props) => {
             <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
+              loading={loading}
               onClick={(e) => {
                 handleAdd();
               }}
@@ -131,15 +224,21 @@ const EngineeringItems = (props) => {
               Add
             </Button>
           )}
-          <TableDisplay
-            columns={columns}
-            data={data}
-            handleRetrieve={handleRetrieve}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
-          />
+          { loading ? (
+            <Skeleton/>
+          ) : (
+            <TableDisplay
+              columns={columns}
+              data={list}
+              handleRetrieve={handleRetrieve}
+              handleUpdate={handleUpdate}
+              handleDelete={handleDelete}
+              updateEnabled={actions.includes('update')}
+              deleteEnabled={actions.includes('delete')}
+            />  
+          )
+            
+          }
         </Col>
         {displayForm && (
           <SimpleForm

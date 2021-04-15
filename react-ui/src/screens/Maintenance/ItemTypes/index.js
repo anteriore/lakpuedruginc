@@ -103,7 +103,7 @@ const ItemTypes = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setContentLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -114,7 +114,7 @@ const ItemTypes = (props) => {
         },
       };
 
-      dispatch(updateIT(payload)).then(() => {
+      await dispatch(updateIT(payload)).then(() => {
         dispatch(listIT({ company, message }));
         setContentLoading(false);
       });
@@ -125,13 +125,14 @@ const ItemTypes = (props) => {
           id: company,
         },
       };
-      dispatch(addIT(payload)).then(() => {
+      await dispatch(addIT(payload)).then(() => {
         dispatch(listIT({ company, message }));
         setContentLoading(false);
       });
     }
 
     handleCancelButton();
+    return 1
   };
 
   return (

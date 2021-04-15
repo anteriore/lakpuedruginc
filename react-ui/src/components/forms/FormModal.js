@@ -1,14 +1,28 @@
-import React, { useEffect } from 'react';
-import { Form, Modal } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Modal, message } from 'antd';
 import FormItem from './FormItem';
 
 const SimpleForm = (props) => {
   const { visible, title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
+  const [processingData, setProcessingData] = useState(false);
 
   useEffect(() => {
     form.setFieldsValue(values);
-  }, [values, form, formDetails]);
+    // eslint-disable-next-line
+  }, [values]);
+
+  const onFinish = (data) => {
+    setProcessingData(true)
+    onSubmit(data).then(() => {
+      setProcessingData(false)
+    });
+
+  }
+
+  const onFinishFailed = () => {
+    message.error("An error has occurred. Please double check the information you've provided.");
+  };
 
   return (
     <Modal
@@ -18,16 +32,21 @@ const SimpleForm = (props) => {
       title={title}
       onCancel={onCancel}
       onOk={() => {
-        form.validateFields().then((formValues) => {
-          onSubmit(formValues);
-          form.resetFields();
-        });
+        form.submit()
       }}
+      okButtonProps={{ loading: processingData }}
+      cancelButtonProps={{ disabled: processingData }}
       afterClose={() => {
         form.resetFields();
       }}
     >
-      <Form form={form} layout="vertical" name={formDetails.form_name}>
+      <Form 
+        form={form} 
+        layout="vertical" 
+        name={formDetails.form_name}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+      >
         {formDetails.form_items.map((item) => (
           <FormItem item={item} onFail={onCancel} formMode={formMode} />
         ))}

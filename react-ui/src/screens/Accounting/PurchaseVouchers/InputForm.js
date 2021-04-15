@@ -37,6 +37,7 @@ const InputForm = (props) => {
   const [addedAccounts, setAddedAccounts] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [subContentLoading, setSubContentLoading] = useState(true);
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [formType, setFormType] = useState(_.find(formDetails.form_items, {name: 'manual'}).initialValue);
   const [form] = useForm();
 
@@ -158,16 +159,23 @@ const InputForm = (props) => {
   }
 
   const onFinish = async () => {
+    setFormButtonLoading(true);
     try {
       const values = await form.validateFields([
         'rrNumber', 'date', 'rrDate', 
         'vendor', 'siNumber', 'drNumber', 
         'poNumber', 'manual', 'remarks'
       ]);
-      onSubmit({values, addedAccounts})
-      history.goBack();
+      onSubmit({
+        values, 
+        addedAccounts,
+        redirect: () => history.goBack()
+      }).then(() => {
+        setFormButtonLoading(false)
+      });
     } catch (errorInfo) {
-      console.log(errorInfo)
+      setFormButtonLoading(false)
+      message.error("An error has occurred. Please double check the information you've provided.");
     }
   }
 
@@ -303,10 +311,10 @@ const InputForm = (props) => {
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
-                    <Button htmlType="button" onClick={() => history.goBack()}>
+                    <Button htmlType="button" disabled={formButtonLoading} onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" onClick={onFinish}>
+                    <Button loading={formButtonLoading} disabled={addedAccounts.length === 0 ? true : false} type="primary" onClick={onFinish}>
                       Submit
                     </Button>
                   </Space>

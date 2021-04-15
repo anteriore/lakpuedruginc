@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,10 +14,10 @@ import {
 import { listChequePrintingByCompanyAndStatus, clearData as clearChequePrinting } from '../ChequePrintings/redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
 import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listG as listGroup, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -27,10 +27,11 @@ const ChequeDisbursements = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
+  const isMounted = useRef(true);
 
-  const listData = useSelector((state) => state.accounting.chequeDisbursements.list);
+  const {list: listData, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.chequeDisbursements);
 
-  const { company } = props;
+  const { company, actions } = props;
   const { formDetails } = FormDetails();
 
   const dispatch = useDispatch();
@@ -39,24 +40,23 @@ const ChequeDisbursements = (props) => {
   const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listChequeDisbursement({ company, message })).then(() => {
       setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-      }
     });
 
     return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
       dispatch(clearDeptArea());
       dispatch(clearGroupCat());
       dispatch(clearChequePrinting());
       dispatch(clearAccountTitles());
-      isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Cheque Disbursement Voucher');
@@ -66,12 +66,17 @@ const ChequeDisbursements = (props) => {
       dispatch(listAccountTitles({ company, message })).then((response2) => {
         dispatch(listDepartment({ company, message })).then((response3) => {
           dispatch(listArea({ company, message })).then((response4) => {
-            dispatch(listGroup({ company, message })).then((response5) => {
-              const onSuccess = () => {
-                history.push(`${path}/new`);
-                setLoading(false);
-              };
-              handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, null, '');
+            dispatch(listGroupByCompany({ company })).then((response5) => {
+              if(isMounted.current){
+                const onSuccess = () => {
+                  history.push(`${path}/new`);
+                  setLoading(false);
+                }
+                const onFail = () => {
+                  setLoading(false);
+                }
+                handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, onFail, '');
+              }
             })
           })
         })
@@ -81,8 +86,7 @@ const ChequeDisbursements = (props) => {
 
   const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -113,30 +117,26 @@ const ChequeDisbursements = (props) => {
     }
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = processSubmitPayload(data)
-    console.log(payload)
-    dispatch(addChequeDisbursement(payload)).then((response) => {
+    
+    await dispatch(addChequeDisbursement(payload)).then((response) => {
       setLoading(true);
-      
+      history.goBack();
       const onSuccess = () => {
         dispatch(listChequeDisbursement({ company, message })).then(() => {
           setLoading(false);
-          history.goBack();
-          message.success(`Successfully added Cheque disbursement for ${response.payload.data.chequePrinting.number}`);
         });
       };
 
       const onFail = () => {
         setLoading(false);
-        message.error(
-          `Unable to add Cheque disbursement. Please double check the provided information.`
-        );
       }
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
+    return 1
   };
 
   //for data display
@@ -144,20 +144,20 @@ const ChequeDisbursements = (props) => {
     const columns = [];
     fields.forEach((field) => {
       if (typeof field.render === 'undefined' || field.render === null) {
-        field.render = (object) => {console.log(object); return object[field.name]};
+        field.render = (object) => object[field.name];
       }
       if(field.name !== 'credit' && field.name !== 'debit'){
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => {console.log(object); return field.render(object[field.name])},
+          render: (object) => field.render(object[field.name]),
         });
       }
       else {
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => {console.log('amount', object); console.log(field); return field.render({[object.accountTitle.type.toLowerCase()]: object['amount']})},
+          render: (object) => field.render({[object.accountTitle.type.toLowerCase()]: object['amount']}),
         });
       }
     });
@@ -200,16 +200,18 @@ const ChequeDisbursements = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-              loading={loading}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAdd();
+                }}
+                loading={loading}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (

@@ -55,6 +55,11 @@ public class ProductRestController {
         return productService.saveProduct(Product);
     }
 
+    @PostMapping('/update')
+    public Product update(@RequestBody Product Product) {
+        return productRepository.save(Product);
+    }
+
     @GetMapping("/company/{id}")
     public List<Product> listByCompany(@PathVariable Long id) {
         Company company = companyRepository.getOne(id);

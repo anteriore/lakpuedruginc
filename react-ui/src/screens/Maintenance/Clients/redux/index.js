@@ -5,7 +5,7 @@ import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
-  list: null,
+  list: [],
   status: 'loading',
   statusLevel: '',
   responseCode: null,
@@ -13,13 +13,12 @@ const initialState = {
   action: '',
 };
 
-export const tempListClient = createAsyncThunk('tempListClient', async (payload, thunkAPI) => {
+export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  let { company } = payload;
 
   try {
-    const response = await axiosInstance.get(
-      `/rest/clients/company/${payload}?token=${accessToken}`
-    );
+    const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -28,52 +27,20 @@ export const tempListClient = createAsyncThunk('tempListClient', async (payload,
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
-  }
-});
-
-export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  let { company, fnCallback } = payload;
-  if (typeof fnCallback === 'undefined') {
-    fnCallback = () => {};
-  }
-  const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
-
-  if (typeof response !== 'undefined') {
-    const { status } = response;
-    if (status === 200) {
-      if (response.data.length === 0) {
-        response.statusText = `${message.API_200_EMPTY} in clients`;
-      } else {
-        response.statusText = `${message.API_200_SUCCESS} in clients`;
-      }
-      fnCallback(response);
-      return response;
-    }
-
-    if (status === 500 || status === 400) {
-      fnCallback(response);
-      return thunkAPI.rejectWithValue(response);
-    }
-  } else {
-    const newReponse = {
-      status: 500,
-      statusText: message.API_UNDEFINED,
-    };
-    fnCallback(newReponse);
-    return thunkAPI.rejectWithValue(response);
+    //client side error
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
 export const listClientBySalesRep = createAsyncThunk(
-  'listClientBySalesRepAndDateAndDepot',
+  'listClientBySalesRep',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    let { company, salesRep, fnCallback } = payload;
-    if (typeof fnCallback === 'undefined') {
-      fnCallback = () => {};
-    }
+    let { company, salesRep } = payload;
 
     try {
       const response = await axiosInstance.get(
@@ -87,30 +54,94 @@ export const listClientBySalesRep = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
   }
 );
 
 export const addClient = createAsyncThunk('addClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/clients/?token=${accessToken}`, payload);
 
-  const response = await axiosInstance.post(`rest/clients/?token=${accessToken}`, payload);
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
+});
+
+export const updateClient = createAsyncThunk('updateClient', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/clients/?token=${accessToken}`, payload);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const deleteClient = createAsyncThunk('deleteClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/clients/delete?token=${accessToken}`, payload);
 
-  const response = await axiosInstance.post(`rest/clients/delete?token=${accessToken}`, payload);
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const getClient = createAsyncThunk('getClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  const { id } = payload
+  try {
+    const response = await axiosInstance.get(`rest/clients/${id}?token=${accessToken}`);
 
-  const response = await axiosInstance.get(`rest/clients/${payload.id}?token=${accessToken}`);
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 const clientSlice = createSlice({
@@ -120,76 +151,56 @@ const clientSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [tempListClient.pending]: (state) => {
-      return {
-        ...state,
-        action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for depot`,
+    [listClient.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
       };
-    },
-    [tempListClient.fulfilled]: (state, action) => {
-      const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Depot');
-
-      return {
-        ...state,
-        list: data,
-        status: 'succeeded',
-        statusLevel: level,
-        responseCode: status,
-        statusMessage: message,
-      };
-    },
-    [tempListClient.rejected]: (state, action) => {
-      const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Depot');
-
-      return {
-        ...state,
-        status: 'failed',
-        statusLevel: level,
-        responseCode: status,
-        action: 'fetch',
-        statusMessage: message,
-      };
-    },
-    [listClient.pending]: (state, action) => {
-      state.status = 'loading';
     },
     [listClient.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for clients';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
     [listClient.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Client',
+        state.action
+      );
+
       return {
         ...state,
+        data: [],
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
       };
     },
     [listClientBySalesRep.pending]: (state) => {
-      return {
-        ...state,
-        action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for depot`,
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
       };
     },
     [listClientBySalesRep.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Depot');
+      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
 
       return {
         ...state,
@@ -202,15 +213,167 @@ const clientSlice = createSlice({
     },
     [listClientBySalesRep.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Depot');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Client',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [getClient.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+      };
+    },
+    [getClient.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [getClient.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Client',
+        state.action
+      );
 
       return {
         ...state,
         status: 'failed',
         statusLevel: level,
         responseCode: status,
-        action: 'fetch',
+        statusMessage,
+      };
+    },
+    [addClient.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+      };
+    },
+    [addClient.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
         statusMessage: message,
+      };
+    },
+    [addClient.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Client',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateClient.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'update', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+      };
+    },
+    [updateClient.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [updateClient.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Client',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteClient.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+      };
+    },
+    [deleteClient.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Client', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deleteClient.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Client',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

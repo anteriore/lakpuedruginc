@@ -5,7 +5,9 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 const initialState = {
   list: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -13,60 +15,103 @@ const initialState = {
 export const listDM = createAsyncThunk('listDM', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(
-    `rest/debit-memos?token=${accessToken}`
-  );
+  try {
+    const response = await axiosInstance.get(`rest/debit-memos?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for demit memos');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    //client side error
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
-
-  return response;
 });
 
 export const addDM = createAsyncThunk('addDM', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-
+  
   try {
-    const response = await axiosInstance.post(
-      `/rest/debit-memos?token=${accessToken}`,
-      payload
-    );
+    const response = await axiosInstance.post(`rest/debit-memos?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
-      return validateResponse;
+      return validatedResponse;
     }
-    return thunkAPI.rejectWithValue(validateResponse);
+    return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
+});
+
+export const updateDM = createAsyncThunk('updateDM', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/debit-memos?token=${accessToken}`, payload);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
   }
 });
 
 export const deleteDM = createAsyncThunk('deleteDM', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/debit-memos/delete?token=${accessToken}`, payload);
 
-  const response = await axiosInstance.post(
-    `/rest/debit-memos/delete?token=${accessToken}`,
-    payload
-  );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 export const getDM = createAsyncThunk('getDM', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  const { id } = payload
+  try {
+    const response = await axiosInstance.get(`rest/debit-memos/${id}?token=${accessToken}`);
 
-  const response = await axiosInstance.get(
-    `rest/debit-memos/${payload.id}?token=${accessToken}`
-  );
-  return response;
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
 });
 
 const debitMemoSlice = createSlice({
@@ -79,15 +124,18 @@ const debitMemoSlice = createSlice({
     [listDM.pending]: (state) => {
       return {
         ...state,
-        action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for debit memos`,
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Debit Memos`,
       };
     },
     [listDM.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Debit Memos'
+        'Debit Memo',
+        state.action
       );
 
       return {
@@ -100,10 +148,48 @@ const debitMemoSlice = createSlice({
       };
     },
     [listDM.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Debit Memo',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
+      };
+    },
+    [getDM.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Debit Memos` 
+      };
+    },
+    [getDM.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Debit Memo', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [getDM.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Debit Memos'
+        'Debit Memo',
+        state.action
       );
 
       return {
@@ -111,40 +197,110 @@ const debitMemoSlice = createSlice({
         status: 'failed',
         statusLevel: level,
         responseCode: status,
-        action: 'fetch',
         statusMessage,
       };
     },
     [addDM.pending]: (state) => {
-      return {
-        ...state,
-        action: 'create',
+      return { 
+        ...state,  
+        action: 'create', 
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for debit memos`,
         statusLevel: '',
-        responseCode: null,
+        statusMessage: `${message.ITEMS_GET_PENDING} for Debit Memos` 
       };
     },
     [addDM.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Debit Memo'
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'Debit Memo', state.action);
 
       return {
         ...state,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage,
+        statusMessage: message,
       };
     },
     [addDM.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Debit Memo'
+        'Debit Memos',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updateDM.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'update', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Debit Memos` 
+      };
+    },
+    [updateDM.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Debit Memo', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [updateDM.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Debit Memo',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deleteDM.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Debit Memos` 
+      };
+    },
+    [deleteDM.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Debit Memo', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deleteDM.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Debit Memo',
+        state.action
       );
 
       return {

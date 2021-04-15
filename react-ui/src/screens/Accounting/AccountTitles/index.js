@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,8 +6,9 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listAccountTitles, listAccountTitlesByType, addAccountTitle, clearData } from './redux';
+import { listAccountTitles, listAccountTitlesByType, createAccountTitle, updateAccountTitle, clearData } from './redux';
 import FormScreen from '../../../components/forms/FormScreen';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -17,39 +18,38 @@ const AccountTitles = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const { formDetails } = FormDetails();
+  const isMounted = useRef(true);
 
-  const listData = useSelector((state) => state.accounting.accountTitles.list);
+  const {list: listData, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.accountTitles);
 
-  const { company } = props;
+  const { company, actions } = props;
 
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
+  const { handleRequestResponse } = GeneralHelper()
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listAccountTitles({ company, message })).then(() => {
       setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-      }
     });
 
     return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
-      isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Account Title');
     setFormMode('add');
     setFormData(null);
-    //setLoading(true);
     dispatch(clearData())
     history.push(`${path}/new`);
-    //setLoading(false);
   };
 
   const handleUpdate = (data) => {
@@ -61,9 +61,17 @@ const AccountTitles = (props) => {
     });
     setLoading(true);
     dispatch(clearData())
-    dispatch(listAccountTitlesByType({ type: data.type})).then(() => {
-      history.push(`${path}/${data.id}`);
-      setLoading(false);
+    dispatch(listAccountTitlesByType({ type: data.type})).then((response) => {
+      if(isMounted){
+        const onSuccess = () => {
+          history.push(`${path}/${data.id}`);
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      }
     })
   };
 
@@ -71,9 +79,8 @@ const AccountTitles = (props) => {
 
   const handleRetrieve = (data) => {};
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const parent = listData.find((item) => item.id === data.parent)
-    console.log(parent)
     const payload = {
       ...data,
       parent: parent ?? null,
@@ -81,37 +88,37 @@ const AccountTitles = (props) => {
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
-      dispatch(addAccountTitle(payload)).then((response) => {
+      await dispatch(updateAccountTitle(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
+        history.goBack();
+        const onSuccess = () => {
           dispatch(listAccountTitles({ company, message })).then(() => {
             setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.title}`);
           });
-        } else {
-          setLoading(false);
-          message.error(`Unable to update ${data.number}`);
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
-    } else if (formMode === 'add') {
-      dispatch(addAccountTitle(payload)).then((response) => {
+    } 
+    else if (formMode === 'add') {
+      await dispatch(createAccountTitle(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
+        history.goBack();
+        const onSuccess = () => {
           dispatch(listAccountTitles({ company, message })).then(() => {
             setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.title}`);
           });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to create Account Title. Please double check the provided information.`
-          );
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
     setFormData(null);
+    return 1
   };
 
   return (
@@ -156,16 +163,18 @@ const AccountTitles = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-              loading={loading}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAdd();
+                }}
+                loading={loading}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (
@@ -175,6 +184,7 @@ const AccountTitles = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
+                updateEnabled={actions.includes('update')}
                 deleteEnabled={false}
               />
             )}

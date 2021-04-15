@@ -27,6 +27,7 @@ const InputForm = (props) => {
   const [cheques, setCheques] = useState([]);
   const [selectedPDC, setSelectedPDC] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
+  const [proccessingData, setProccessingData] = useState(false);
 
   const pdcDisbursements = useSelector((state) => state.accounting.PDCDisbursements.list);
 
@@ -46,6 +47,7 @@ const InputForm = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setProccessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -61,15 +63,16 @@ const InputForm = (props) => {
     if (hasTable) {
       if (tableData !== null) {
         data[formTable.name] = tableData;
-        onSubmit(data);
-      } else {
+      } 
+      else {
         onFinishFailed(
           `Unable to submit. Please provide the necessary information on ${formTable.label}`
         );
       }
-    } else {
-      onSubmit(data);
-    }
+    } 
+    onSubmit(data).then(() => {
+      setProccessingData(false)
+    })
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -177,7 +180,11 @@ const InputForm = (props) => {
               </Form.List>
             )}
             <div style={styles.tailLayout}>
-              <Button type="primary" onClick={() => form.submit()}>
+              <Button 
+                type="primary" 
+                onClick={() => form.submit()}
+                loading={proccessingData}
+              >
                 Submit
               </Button>
               <Button
@@ -186,6 +193,7 @@ const InputForm = (props) => {
                   onCancel();
                   history.goBack();
                 }}
+                disabled={proccessingData}
               >
                 Cancel
               </Button>
@@ -222,6 +230,7 @@ const styles = {
     marginBottom: '2%',
   },
   tailLayout: {
+    marginTop: '2%',
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',

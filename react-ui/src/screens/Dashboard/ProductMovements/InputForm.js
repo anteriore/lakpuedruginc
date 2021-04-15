@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Col, Layout, Typography, Form, Skeleton, Table, Checkbox, Space, Button } from 'antd';
+import { Row, Col, Layout, Typography, Form, Skeleton, Table, InputNumber, Checkbox, Space, Button, Alert } from 'antd';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import _ from 'lodash';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -9,6 +10,7 @@ import { EditableCell, EditableRow } from '../../../components/TableRowInput';
 import FormItem from '../../../components/forms/FormItem';
 import { formDetails, tableProduct, tableProductInventory } from './data';
 import { updateList } from '../../../helpers/general-helper';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 const { Title } = Typography;
 
@@ -21,6 +23,7 @@ const InputForm = (props) => {
   const { list: productInvList } = useSelector((state) => state.maintenance.productInventory);
   const [tempFormDetails, setTempFormDetails] = useState(_.clone(formDetails));
   const [contentLoading, setContentLoading] = useState(true);
+  const [processingData, setProcessingData] = useState(false);
   const [productModal, setProductModal] = useState(false);
   const [productInv, setProductInv] = useState([]);
   const [requestedProductList, setRequestedProductList] = useState([]);
@@ -56,15 +59,27 @@ const InputForm = (props) => {
     setContentLoading(false);
   }, [depotList, tempFormDetails, handleDepotChange]);
 
+  const handleChange = (value, index, name) => {
+    setRequestedProductList((prevData) => {
+      const newData = [...prevData];
+      const newItem = {...newData[index]};
+      newItem[name] = value;
+      newData[index] = newItem;
+      form.setFieldsValue({ product: newData });
+      return newData;
+    })
+  }
+
   const onItemSelect = (data, isSelected) => {
     if (isSelected) {
       const newData = _.clone(data);
-
       if (requestedProductList.length !== 0) {
         const { key } = _.last(requestedProductList);
         newData.key = key + 1;
+        newData.requestedQuantity = 1;
       } else {
         newData.key = 1;
+        newData.requestedQuantity = 1;
       }
 
       setRequestedProductList(requestedProductList.concat(newData));
@@ -101,44 +116,32 @@ const InputForm = (props) => {
     return filteredColumn;
   };
 
-  const modProductColumn = tableProduct.map((col) => {
-    if (!col.editable) {
-      return col;
+  const modProductColumn = (table) => table.map((col) => {
+    if(col.editable) { 
+      return {
+        ...col, 
+        render: ( _value, _, index) => <InputNumber 
+          min={1}
+          defaultValue={1}
+          precision={0}
+          onChange={(val) => handleChange(val, index, col.dataIndex)}
+        />
+      }
     }
-    return {
-      ...col,
-      onCell: (record) => {
-        return {
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          limit: col.limit,
-          title: col.title,
-          maxLimit: 1000,
-          minLimit: 0,
-          precisionEnabled: col.precisionEnabled,
-          precision: col.precision,
-          handleSave: (row) => {
-            const newData = [...requestedProductList];
-            const index = _.findIndex(newData, (o) => o.key === row.key);
-            const item = newData[index];
 
-            newData.splice(index, 1, { ...item, ...row });
-            form.setFieldsValue({ product: newData });
-            setRequestedProductList(newData);
-          },
-        };
-      },
-    };
-  });
+    return col;
+  })
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 
   const onFinish = () => {
-    onSubmit(form.getFieldsValue());
-    history.goBack();
+    setProcessingData(true)
+    onSubmit(form.getFieldsValue()).then(() => {
+      setProcessingData(false)
+      history.goBack();
+    })
   };
 
   return (
@@ -157,23 +160,6 @@ const InputForm = (props) => {
                   <FormItem onFail={onFail} key={item.name} item={item} />
                 ))}
                 {productInv.length !== 0 ? (
-                  <Form.Item
-                    wrapperCol={{ span: 15, offset: 4 }}
-                    name="product"
-                    rules={[{ required: true, message: 'Please select a product' }]}
-                  >
-                    <Table
-                      components={component}
-                      columns={modProductColumn}
-                      rowClassName={() => styles.editableRow}
-                      dataSource={requestedProductList}
-                      pagination={false}
-                    />
-                  </Form.Item>
-                ) : (
-                  ''
-                )}
-                {productInv.length !== 0 ? (
                   <Form.Item wrapperCol={{ offset: 8, span: 11 }}>
                     <Button
                       onClick={() => setProductModal(true)}
@@ -185,13 +171,38 @@ const InputForm = (props) => {
                 ) : (
                   ''
                 )}
+                {productInv.length !== 0 ? (
+                  <Form.Item
+                    wrapperCol={{ span: 15, offset: 4 }}
+                    name="product"
+                    rules={[{ required: true, message: 'Please select a product' }]}
+                  >
+                    <Table
+                      components={component}
+                      columns={modProductColumn(tableProduct)}
+                      rowClassName={() => styles.editableRow}
+                      dataSource={requestedProductList}
+                      pagination={false}
+                    />
+                  </Form.Item>
+                ) : (
+                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                    <Alert
+                      message="Please select depot with assigned product inventories on it"
+                      type="warning"
+                      showIcon
+                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
+                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                    />
+                  </Form.Item>
+                )}
                 <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
                 <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                   <Space size={16}>
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit">
+                    <Button disabled={requestedProductList.length === 0} type="primary" htmlType="submit" loading={processingData}>
                       Submit
                     </Button>
                   </Space>
@@ -207,10 +218,9 @@ const InputForm = (props) => {
           onOk={() => setProductModal(false)}
           cancelButtonProps={{ style: { display: 'none' } }}
           width={1000}
-          footer={null}
         >
           <Table
-            columns={renderProductItemColumns(tableProductInventory)}
+            columns={TableHeader({ columns: renderProductItemColumns(tableProductInventory), hasSorter: true, hasFilter: true })}
             rowKey={(record) => record.uid}
             dataSource={productInv}
             pagination={{ simple:true }}

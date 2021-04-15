@@ -6,8 +6,10 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 const initialState = {
   list: [],
-  status: '',
+  status: 'loading',
+  statusLevel: '',
   statusMessage: '',
+  responseCode: null,
   action: '',
 };
 
@@ -28,7 +30,11 @@ export const listInventoryMovement = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -37,12 +43,24 @@ export const addInventoryMovement = createAsyncThunk(
   'addInventoryMovement',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `rest/inventory-movements/?token=${accessToken}`,
+        payload
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const response = await axiosInstance.post(
-      `rest/inventory-movements/?token=${accessToken}`,
-      payload
-    );
-    return response;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
+    }
   }
 );
 
@@ -50,12 +68,24 @@ export const deleteInventoryMovement = createAsyncThunk(
   'deleteInventoryMovement',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `rest/inventory-movements/delete?token=${accessToken}`,
+        payload
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const response = await axiosInstance.post(
-      `rest/inventory-movements/delete?token=${accessToken}`,
-      payload
-    );
-    return response;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
+    }
   }
 );
 
@@ -66,27 +96,83 @@ const inventoryMovementSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listInventoryMovement.pending]: (state, action) => {
-      state.status = 'loading';
+    [listInventoryMovement.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for inventory movement slips` 
+      };
     },
     [listInventoryMovement.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Inventory Movement Slips');
+      const { message, level } = generateStatusMessage(
+        action.payload, 
+        'Inventory Movement Slips',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
-        responseCode: status,
+        status: 'succeeded',
         statusLevel: level,
+        responseCode: status,
         statusMessage: message,
       };
     },
     [listInventoryMovement.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Inventory Movement Slips',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
+      };
+    },
+    [addInventoryMovement.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for inventory movement` 
+      };
+    },
+    [addInventoryMovement.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Inventory Movement Slips', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [addInventoryMovement.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Inventory Movement Slips',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

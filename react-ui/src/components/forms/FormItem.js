@@ -5,6 +5,7 @@ import {
   Input,
   InputNumber,
   DatePicker,
+  Switch,
   Select,
   Checkbox,
   Row,
@@ -57,7 +58,6 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
             onClick={() => {
               form.validateFields().catch((errors) => {
                 if(errors.errorFields.length > 0){
-                  console.log(errors)
                   setErrorMessage("Unable to add. Please double check your input.")
                 }
                 else{
@@ -112,7 +112,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
     
   }
 
-  if(item?.isVisible ?? true){  
+  const renderFormItemField = () =>{
     if (item.type === 'select' || item.type === 'selectSearch') {
       if (typeof item.render === 'undefined') {
         if (typeof item.selectName === 'undefined') {
@@ -136,96 +136,50 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
       }
 
       return (
-        <Form.Item
-          label={disableLabel ? null : item.label}
-          name={item.name}
-          rules={item.rules}
-          initialValue={item.initialValue}
-          noStyle={noStyle}
+        <Select
+          showSearch={item.type === 'selectSearch'}
+          onChange={item.onChange}
+          placeholder={item.placeholder}
+          optionFilterProp="children"
+          disabled={item.type === 'readOnly' || item.readOnly || (item?.loading ?? false)}
+          loading={item?.loading ?? false}
+          notFoundContent={item?.notFoundContent ?? "Not Found"}
+          style={{width: item.width ?? '100%', minWidth: 100}}
         >
-          <Select
-            showSearch={item.type === 'selectSearch'}
-            onChange={item.onChange}
-            placeholder={item.placeholder}
-            optionFilterProp="children"
-            disabled={item.type === 'readOnly' || item.readOnly || (item?.loading ?? false)}
-            loading={item?.loading ?? false}
-            notFoundContent={item?.notFoundContent ?? "Not Found"}
-            style={{width: item.width ?? '100%', minWidth: 100}}
-          >
-            {item.choices.map((choice) => (
-              <Select.Option key={choice.id} value={choice.id}>
-                {item.render(choice)}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+          {item.choices.map((choice) => (
+            <Select.Option key={choice.id} value={choice.id}>
+              {item.render(choice)}
+            </Select.Option>
+          ))}
+        </Select>
       );
     }
-    if (item.type === 'textArea') {
+    else if (item.type === 'textArea') {
       return (
-        <Form.Item
-          label={disableLabel ? null : item.label}
-          name={item.name}
-          rules={item.rules}
-          initialValue={item.initialValue}
-          noStyle={noStyle}
-        >
-          <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
-        </Form.Item>
+        <TextArea rows={3} maxLength={200} placeholder={item.placeholder} />
       );
     }
-    if (item.type === 'number') {
+    else if (item.type === 'number') {
       return (
-        <Form.Item
-          label={disableLabel ? null : item.label}
-          name={item.name}
-          rules={item.rules}
-          initialValue={item.initialValue}
-          hasFeedback={item.hasFeedback}
-          noStyle={noStyle}
-        >
-          <InputNumber
-            style={styles.inputNumber}
-            min={item.min}
-            max={item.max}
-            readOnly={item.readOnly}
-          />
-        </Form.Item>
+        <InputNumber
+          style={styles.inputNumber}
+          min={item.min}
+          max={item.max}
+          readOnly={item.readOnly}
+        />
       );
     }
-    if (item.type === 'date') {
+    else if (item.type === 'date') {
       return (
-        <Form.Item
-          label={disableLabel ? null : item.label}
-          name={item.name}
-          rules={item.rules}
-          initialValue={item.initialValue}
-          noStyle={noStyle}
-        >
-          <DatePicker format={dateFormat} style={styles.datePicker} />
-        </Form.Item>
+        <DatePicker format={dateFormat} style={styles.datePicker} />
       );
     }
-    if (item.type === 'password') {
-      if (formMode === 'add') {
-        return (
-          <Form.Item
-            label={disableLabel ? null : item.label}
-            name={item.name}
-            rules={item.rules}
-            dependencies={item.dependencies}
-            noStyle={noStyle}
-            hasFeedback
-          >
-            <Input.Password />
-          </Form.Item>
-        );
-      }
-
-      return null;
+    else if(item.type === 'boolean'){
+      return (
+        <Switch/>
+      )
     }
-    if (item.type === 'radioGroup') {
+    else if (item.type === 'radioGroup') {
       if (typeof item.render === 'undefined') {
         if (typeof item.selectName === 'undefined') {
           item.selectName = 'name';
@@ -244,46 +198,61 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
       }
 
       return (
-        <Form.Item
-          label={disableLabel ? null : item.label}
-          name={item.name}
-          rules={item.rules}
-          initialValue={item.initialValue}
-          noStyle={noStyle}
-        >
-          <Radio.Group style={{ float: 'left' }} onChange={item.onChange}>
-            {item.choices.map((choice) => (
-              <Radio.Button value={choice.id}>{item.render(choice)}</Radio.Button>
-            ))}
-          </Radio.Group>
-        </Form.Item>
+        <Radio.Group style={{ float: 'left' }} onChange={item.onChange}>
+          {item.choices.map((choice) => (
+            <Radio.Button value={choice.id}>{item.render(choice)}</Radio.Button>
+          ))}
+        </Radio.Group>
       );
     }
-    if (item.type === 'checkList') {
+    else if (item.type === 'checkList') {
       if (item.choices === null || item.choices.length === 0) {
         onFail();
         return null;
       }
 
       return (
-        <Form.Item
-          label={disableLabel ? null : item.label}
-          name={item.name}
-          rules={item.rules}
-          initialValue={item.initialValue}
-          noStyle={noStyle}
-        >
-          <Checkbox.Group style={styles.inputCheckList}>
-            {item.choices.map((choice) => (
-              <Row>
-                <Checkbox value={choice.id}>{item.render(choice)}</Checkbox>
-              </Row>
-            ))}
-          </Checkbox.Group>
-        </Form.Item>
+        <Checkbox.Group style={styles.inputCheckList}>
+          {item.choices.map((choice) => (
+            <Row>
+              <Checkbox value={choice.id}>{item.render(choice)}</Checkbox>
+            </Row>
+          ))}
+        </Checkbox.Group>
       );
     }
-    if (item.type === 'list' || item.type === 'listForm') {
+    else {
+      return (
+        <Input
+          disabled={item.type === 'readOnly' || item.readOnly}
+          placeholder={item.placeholder}
+          suffix={item.suffix}
+        />
+      )
+    }
+  }
+
+  if(item?.isVisible ?? true){
+    if (item.type === 'password') {
+      if (formMode === 'add') {
+        return (
+          <Form.Item
+            label={disableLabel ? null : item.label}
+            name={item.name}
+            rules={item.rules}
+            dependencies={item.dependencies}
+            noStyle={noStyle}
+            hasFeedback
+          >
+            <Input.Password />
+          </Form.Item>
+        );
+      }
+      else {
+        return null;
+      }
+    }
+    else if (item.type === 'list' || item.type === 'listForm') {
       return (
         <div style={styles.formList}>
           <Form.List label={disableLabel ? null : item.label} name={item.name} rules={item.rules}>
@@ -382,7 +351,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
         </div>
       );
     }
-    if (item.type === 'selectTable') {
+    else if (item.type === 'selectTable') {
       if (
         (item.dataSource === null ||
           typeof item.dataSource === 'undefined' ||
@@ -409,6 +378,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
                     item.setDisplayModal(true);
                   }}
                   icon={<SelectOutlined />}
+                  loading={item?.loading ?? false}
                 >
                   Select
                 </Button>
@@ -445,7 +415,7 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
         </>
       );
     }
-    if (item.type === 'custom' || item.type === 'customList') {
+    else if (item.type === 'custom' || item.type === 'customList') {
       return null;
     }
     else if(item.type === 'listTable'){
@@ -488,22 +458,23 @@ const FormItem = ({ item, onFail, formMode, onTableSelect, disableLabel, noStyle
         </Space>
       )
     }
-
-    return (
-      <Item
-        label={item.label}
-        name={item.name}
-        rules={item.rules}
-        initialValue={item.initialValue}
-        hasFeedback={item.hasFeedback}
-      >
-        <Input
-          disabled={item.type === 'readOnly' || item.readOnly}
-          placeholder={item.placeholder}
-          suffix={item.suffix}
-        />
-      </Item>
-    );
+    else {
+      return (
+        <Item
+          label={item.label}
+          name={item.name}
+          rules={item.rules}
+          initialValue={item.initialValue}
+          hasFeedback={item.hasFeedback}
+          tooltip={item.tooltip}
+          noStyle={noStyle}
+          valuePropName={item.type === "boolean" ? "checked" : "value"}
+        >
+          {renderFormItemField()}
+        </Item>
+      );
+    }
+    
   }
   else {
     //not visible

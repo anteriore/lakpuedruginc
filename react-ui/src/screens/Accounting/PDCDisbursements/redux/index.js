@@ -2,54 +2,63 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
-  list: null,
-  status: '',
+  list: [],
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
 
 export const listPDCDisbursement = createAsyncThunk(
   'listPDCDisbursement',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.get(`rest/pdc-disbursements?token=${accessToken}`);
+    try {
+      const response = await axiosInstance.get(`rest/pdc-disbursements?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for PDC disbursements');
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
-
-    return response;
   }
 );
 
 export const listPDCDisbursementByStatus = createAsyncThunk(
   'listPDCDisbursementByStatus',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     const { status } = payload;
 
-    const response = await axiosInstance.get(`rest/pdc-disbursements/status/${status}?token=${accessToken}`);
+    try {
+      const response = await axiosInstance.get(`rest/pdc-disbursements/status/${status}?token=${accessToken}`);
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for PDC disbursements');
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
       }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return rejectWithValue(response);
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
     }
-
-    return response;
   }
 );
 
@@ -58,11 +67,52 @@ export const addPDCDisbursement = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.post(
-      `rest/pdc-disbursements/?token=${accessToken}`,
-      payload
-    );
-    return response;
+    try {
+      const response = await axiosInstance.post(
+        `rest/pdc-disbursements/?token=${accessToken}`,
+        payload
+      );
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
+  }
+);
+
+export const updatePDCDisbursement = createAsyncThunk(
+  'updatePDCDisbursement',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+
+    try {
+      const response = await axiosInstance.post(
+        `rest/pdc-disbursements/?token=${accessToken}`,
+        payload
+      );
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -71,11 +121,24 @@ export const deletePDCDisbursement = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.post(
+    try {const response = await axiosInstance.post(
       `rest/pdc-disbursements/delete?token=${accessToken}`,
       payload
     );
-    return response;
+
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred'
+      });
+    }
   }
 );
 
@@ -87,57 +150,190 @@ const PDCDisbursementSlice = createSlice({
   },
   extraReducers: {
     [listPDCDisbursement.pending]: (state) => {
-      state.status = 'loading';
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+      };
     },
     [listPDCDisbursement.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for PDC Disbursements';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [listPDCDisbursement.rejected]: (state) => {
+    [listPDCDisbursement.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
+
       return {
         ...state,
+        data: [],
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
       };
     },
     [listPDCDisbursementByStatus.pending]: (state) => {
-      state.status = 'loading';
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+      };
     },
     [listPDCDisbursementByStatus.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for PDC Disbursements';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listPDCDisbursementByStatus.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
         statusMessage,
       };
     },
-    [listPDCDisbursementByStatus.rejected]: (state) => {
+    [addPDCDisbursement.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+      };
+    },
+    [addPDCDisbursement.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [addPDCDisbursement.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updatePDCDisbursement.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'update', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+      };
+    },
+    [updatePDCDisbursement.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [updatePDCDisbursement.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deletePDCDisbursement.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'delete', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+      };
+    },
+    [deletePDCDisbursement.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [deletePDCDisbursement.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

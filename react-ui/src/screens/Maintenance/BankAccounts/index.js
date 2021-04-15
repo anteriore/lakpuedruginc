@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Typography, Col, Button, message } from 'antd';
+import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import { tableHeader, formDetails } from './data';
 import {
   listBankAccount,
@@ -23,14 +24,17 @@ const BankAccounts = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
+  const [loading, setLoading] = useState(true)
   const dispatch = useDispatch();
-  const { bankAccountList, action, statusMessage } = useSelector(
+  const { bankAccountList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.bankAccount
   );
+  const { handleRequestResponse } = GeneralHelper()
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listBankAccount({ message })).then(() => {
+      setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -43,16 +47,8 @@ const BankAccounts = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Bank Account');
@@ -69,13 +65,13 @@ const BankAccounts = (props) => {
   };
 
   const handleDeleteButton = (row) => {
+    setLoading(true)
     dispatch(deleteBankAccount(row))
       .then(() => {
-        dispatch(listBankAccount({ message }));
+        dispatch(listBankAccount({ message })).then(() => {
+          setLoading(false);
+        });
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -83,21 +79,41 @@ const BankAccounts = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
+    setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateBankAccount(newValues)).then(() => {
-        dispatch(listBankAccount({ message }));
+      await dispatch(updateBankAccount(newValues)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listBankAccount({ message })).then(() => {
+            setLoading(false)
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
-      dispatch(createBankAccount(values)).then(() => {
-        dispatch(listBankAccount({ message }));
+      await dispatch(createBankAccount(values)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listBankAccount({ message })).then(() => {
+            setLoading(false)
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (
@@ -105,20 +121,22 @@ const BankAccounts = (props) => {
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+          <Button loading={loading} icon={<PlusOutlined />} onClick={() => handleAddButton()}>
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        <TableDisplay
-          columns={tableHeader}
-          data={bankAccountList}
-          handleUpdate={handleEditButton}
-          handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes('update')}
-          deleteEnabled={actions.includes('delete')}
-        />
+        { loading ? <Skeleton/> : 
+          <TableDisplay
+            columns={tableHeader}
+            data={bankAccountList}
+            handleUpdate={handleEditButton}
+            handleDelete={handleDeleteButton}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          />
+        }
       </Col>
       <SimpleForm
         visible={isOpenForm}

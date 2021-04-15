@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Row, Col, Typography, Button, Skeleton, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
@@ -28,6 +28,8 @@ const Product = (props) => {
   const [contentLoading, setContentLoading] = useState(true);
   const [formTitle, setFormTitle] = useState('');
   const [formData, setFormData] = useState(null);
+  const isMounted = useRef(true);
+
   const history = useHistory();
   const dispatch = useDispatch();
   const { productList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.products);
@@ -37,35 +39,39 @@ const Product = (props) => {
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listProduct({ company, message })).then(() => {
-      setContentLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
+      if(isMounted.current){
+        setContentLoading(false);
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepots());
-      dispatch(clearClassification());
-      dispatch(clearCategories());
-      dispatch(clearDivisions());
-      dispatch(clearUnits());
-      dispatch(clearFinishedGoods());
-      isCancelled = true;
+      isMounted.current = false
+      performCleanup()
     };
   }, [dispatch, company]);
 
-  const onSuccess = useCallback((method, id) => {
-		if ( method === "add" ){
-			history.push(`${path}/new`);
-		} 
+  const performCleanup = () => {
+    dispatch(clearData());
+    dispatch(clearDepots());
+    dispatch(clearClassification());
+    dispatch(clearCategories());
+    dispatch(clearDivisions());
+    dispatch(clearUnits());
+    dispatch(clearFinishedGoods());
+  }
 
-    if (method === 'edit'){
-      history.push(`${path}/${id}/edit`);
+  const onSuccess = useCallback((method, id) => {
+    if(isMounted.current){
+      if ( method === "add" ){
+        history.push(`${path}/new`);
+      } 
+
+      if (method === 'edit'){
+        history.push(`${path}/${id}/edit`);
+      }
+      setContentLoading(false);
     }
-		setContentLoading(false);
 	},[history, path]);
 
   const handleAddButton = () => {
@@ -111,33 +117,51 @@ const Product = (props) => {
     })
   };
 
-  const handleDelete = (row) => {
+  /*const handleDelete = (row) => {
     setContentLoading(true)
     dispatch(deleteProduct(row)).then(() => {
       dispatch(listProduct({ company, message }));
     })
     setContentLoading(false);
-  };
+  };*/
 
-  const onCreate = (values) => {
+  const onCreate = async (values) => {
     values.company = { id: company };
     setContentLoading(true)
-    dispatch(createProduct(formatPayload(values))).then(() => {
-      dispatch(listProduct({ company, message }));
-      history.goBack();
+    await dispatch(createProduct(formatPayload(values))).then((response) => {
+      const onSuccess = () => {
+        history.goBack();
+        dispatch(listProduct({ company, message })).then(() => {
+          setContentLoading(false);
+        });
+      }
+      const onFail = () => {
+        setContentLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
-    setContentLoading(false);
+    return 1
   };
 
-  const onUpdate = (values) => {
+  const onUpdate = async (values) => {
     values.company = { id: company };
     values.id = formData.id;
     setContentLoading(true);
-    dispatch(updateProduct(formatPayload(values))).then(() => {
-      dispatch(listProduct({ company, message }));
-      history.goBack();
+    await dispatch(updateProduct(formatPayload(values))).then((response) => {
+      const onSuccess = () => {
+        history.goBack();
+        dispatch(listProduct({ company, message })).then(() => {
+          setContentLoading(false);
+        });
+      }
+      const onFail = () => {
+        setContentLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
-    setContentLoading(false);
+    return 1
   };
 
   return (
@@ -180,9 +204,8 @@ const Product = (props) => {
                 columns={tableHeader}
                 data={productList}
                 handleUpdate={handleUpdate}
-                handleDelete={handleDelete}
                 updateEnabled={actions.includes('update')}
-                deleteEnabled={actions.includes('delete')}
+                deleteEnabled={false}
               />
             }
           </Col>

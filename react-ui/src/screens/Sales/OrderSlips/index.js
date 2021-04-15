@@ -1,18 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Row, Typography, Col, Button, Skeleton, Modal, Table, Empty } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { unwrapResult } from '@reduxjs/toolkit';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails ,{ tableHeader } from './data';
 import InputForm from './InputForm';
 import { formatDescItems, formatPayload } from './helpers';
 import { listOrderSlips, createOrderSlips, clearData } from './redux';
-import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
-import { tempListProductInventory } from '../../Maintenance/redux/productInventory';
+import { listProductInventory } from '../../Dashboard/ProductInventories/redux';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper, { reevalDependencyMsgStats, reevalutateMessageStatus } from '../../../helpers/general-helper';
 
@@ -32,6 +31,15 @@ const OrderSlips = (props) => {
   const [selectedOS, setSelectedOS] = useState(null);
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth.user);
+  const isMounted =  useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearSO());
+  },[dispatch]);
+
+
 
   const {
     action: actionPI,
@@ -90,41 +98,34 @@ const OrderSlips = (props) => {
 
   useEffect(() => {
     setContentLoading(true);
-    let isCancelled = false;
     dispatch(listOrderSlips(company))
-      .then(unwrapResult)
-      .then(() => {
-        if (isCancelled) {
-          dispatch(clearData());
-        }
+    .then(() => {
+      if (isMounted.current){
         setContentLoading(false);
-      })
+      }
+    })
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearSO());
-      isCancelled = true;
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
-
-  const onSuccess = useCallback(() => {
-    history.push(`${path}/new`);
-	},[history, path])
-
-	const onFail = useCallback(() => {
-		history.goBack();
-		setContentLoading(false);
-	},[history])
+  }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(tempListDepot(company)).then((dataDepot) => {
-      dispatch(tempListProductInventory()).then((dataPI) => {
-        dispatch(listSalesOrder(company)).then((dataSO) => {
-          const dataList = [dataDepot, dataPI, dataSO];
-          handleRequestResponse(dataList, onSuccess, onFail, '/sales')
-          setContentLoading(false);
+    dispatch(listDepot({company})).then((resp1) => {
+      dispatch(listProductInventory({company})).then((resp2) => {
+        dispatch(listSalesOrder(company)).then((resp3) => {
+          if(isMounted.current){
+            const onSuccess = () => {
+                history.push(`${path}/new`);
+                setContentLoading(false);
+            }
+            const onFail = () => {
+              setContentLoading(false);
+            }
+            handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
+          }
         });
       });
     });
@@ -135,12 +136,23 @@ const OrderSlips = (props) => {
     setSelectedOS(data);
   };
 
-  const onCreate = (value, salesOrder, orderedProducts) => {
+  const onCreate = async (value, salesOrder, orderedProducts) => {
+    setContentLoading(true);
     const payload = formatPayload(id, company, value, salesOrder, orderedProducts);
 
-    dispatch(createOrderSlips(payload)).then(() => {
-      dispatch(listOrderSlips(company));
-    });
+    await dispatch(createOrderSlips(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listOrderSlips(company)).then(() => {
+            setContentLoading(false);
+          });
+        }
+        const onFail = () => {
+          setContentLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
+    })
+    return 1
   };
 
   return (

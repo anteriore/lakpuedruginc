@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Descriptions, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,22 +7,22 @@ import moment from 'moment';
 
 import TableDisplay from '../../../components/TableDisplay';
 import { FormDetails, DisplayDetails } from './data';
-//import FormScreen from '../../../components/forms/FormScreen';
 import InputForm from './InputForm';
 
-import { listCM, addCM, deleteCM, clearData } from './redux';
-//import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
+import { listCM, addCM, deleteCM, updateCM, getCM, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listMemo, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
 
-const { Title, Text } = Typography;
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+
+const { Title } = Typography;
 
 const CreditMemo = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { company } = props;
+  const { company, actions } = props;
   const { path } = useRouteMatch();
 
   const [loading, setLoading] = useState(true);
@@ -32,41 +32,61 @@ const CreditMemo = (props) => {
   const [formData, setFormData] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
-  const cmList = useSelector((state) => state.accounting.creditMemo.list);
+  const {list: cmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.creditMemo.list);
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
-
+ 
+  const { handleRequestResponse } = GeneralHelper()
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listCM({ company, message })).then(() => {
+      setFormData(null);
       setLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
+      if(!isMounted.current){
+        performCleanup()
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearMemo());
-      dispatch(clearOS());
-      dispatch(clearSI());
-      isCancelled = true;
+      isMounted.current = false
+      performCleanup();
     };
+    // eslint-disable-next-line
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+  
+  const performCleanup = () => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearMemo());
+    dispatch(clearOS());
+    dispatch(clearSI());
+  }
 
   const handleAdd = () => {
     setFormTitle('Create Credit Memo');
     setFormMode('add');
     setFormData(null);
     setSelectedData(null);
+    setLoading(true);
     dispatch(clearOS());
     dispatch(clearSI());
-    dispatch(listDepot({ company, message })).then(() => {
-      dispatch(listMemo({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
+    dispatch(listDepot({ company, message })).then((response1) => {
+      dispatch(listMemo({ company, message })).then((response2) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+              history.push(`${path}/new`);
+              setLoading(false);
+          }
+          const onFail = () => {
+            setLoading(false);
+          }
+          handleRequestResponse([response1, response2], onSuccess, onFail, '');
+        }
       });
     });
   };
@@ -74,15 +94,16 @@ const CreditMemo = (props) => {
   const handleDelete = (data) => {
     dispatch(deleteCM(data.id)).then((response) => {
       setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         dispatch(listCM({ company, message })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted ${data.number}`);
         });
-      } else {
-        setLoading(false);
-        message.error(`Unable to delete ${data.number}`);
       }
+      const onFail = () => {
+        setLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -91,13 +112,26 @@ const CreditMemo = (props) => {
   };
 
   const handleRetrieve = (data) => {
-    setSelectedData(data);
-    setDisplayModal(true);
+    setLoading(true);
+    dispatch(getCM({ id: data.id })).then((response) => {
+      const onSuccess = () => {
+        setDisplayModal(true);
+        setSelectedData(response.payload.data);
+        setLoading(false);
+      }
+      const onFail = () => {
+        setDisplayModal(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const handleCancelButton = () => {
+    setFormData(null);
+  };
 
+  const onSubmit = async (data) => {
     const payload = {
         ...data,
         memoSlipType: 'CM',
@@ -105,33 +139,42 @@ const CreditMemo = (props) => {
         type: {id: data.type},
     }
 
-    console.log(data.reference.salesType);
-
     if (formMode === 'edit') {
-      payload.id = selectedData.id;
-    }
+      payload.id = formData.id
 
-    dispatch(addCM(payload)).then((response) => {
-      setLoading(true);
-      if (response.payload.status === 200) {
-        message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listCM({ company, message })).then(() => {
+      await dispatch(updateCM(payload)).then((response) => {
+        setLoading(true);
+        const onSuccess = () => {
           history.goBack();
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-        if (formMode === 'add') {
-          message.error(
-            `Unable to add Credit Memo. Please double check the provided information.`
-          );
-        } else {
-          message.error(`Something went wrong. Unable to update ${data.number}.`);
+          dispatch(listCM({ company, message })).then(() => {
+            setLoading(false);
+          });
         }
-      }
-    });
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    } else if (formMode === 'add') {
+      await dispatch(addCM(payload)).then((response) => {
+        setLoading(true);
+        const onSuccess = () => {
+          history.goBack();
+          dispatch(listCM({ company, message })).then(() => {
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    }
     
     setFormData(null);
+    return 1;
   };
 
   return (
@@ -141,9 +184,8 @@ const CreditMemo = (props) => {
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
-          onCancel={() => { setFormData(null); }}
+          onCancel={handleCancelButton}
           formDetails={formDetails}
-          //formTable={tableDetails}
         />
       </Route>
       <Route path={`${path}/:id`}>
@@ -151,9 +193,8 @@ const CreditMemo = (props) => {
           title={formTitle}
           onSubmit={onSubmit}
           values={formData}
-          onCancel={() => { setFormData(null); }}
+          onCancel={handleCancelButton}
           formDetails={formDetails}
-          //formTable={tableDetails}
         />
       </Route>
       <Route>
@@ -166,16 +207,18 @@ const CreditMemo = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-              loading={loading}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAdd();
+                }}
+                loading={loading}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (

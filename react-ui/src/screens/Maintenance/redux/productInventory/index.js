@@ -4,12 +4,12 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const tempListProductInventory = createAsyncThunk(
-  'tempListProductInventory',
+export const listProductInventory = createAsyncThunk(
+  'listProductInventory',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     try {
-      const response = await axiosInstance.get(`rest/product-inventory?token=${accessToken}`);
+      const response = await axiosInstance.get(`rest/product-inventory/company/${payload.company}?token=${accessToken}`);
 
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -18,44 +18,11 @@ export const tempListProductInventory = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
-    }
-  }
-);
-
-export const listProductInventory = createAsyncThunk(
-  'listProductInventory',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    let { fnCallback } = payload;
-    if (typeof fnCallback === 'undefined') {
-      fnCallback = () => {};
-    }
-    const response = await axiosInstance.get(`rest/product-inventory?token=${accessToken}`);
-
-    if (typeof response !== 'undefined') {
-      const { status } = response;
-      if (status === 200) {
-        if (response.data.length === 0) {
-          response.statusText = `${message.API_200_EMPTY} in clients`;
-        } else {
-          response.statusText = `${message.API_200_SUCCESS} in clients`;
-        }
-        fnCallback(response);
-        return response;
-      }
-
-      if (status === 500 || status === 400) {
-        fnCallback(response);
-        return thunkAPI.rejectWithValue(response);
-      }
-    } else {
-      const newReponse = {
-        status: 500,
-        statusText: message.API_UNDEFINED,
-      };
-      fnCallback(newReponse);
-      return thunkAPI.rejectWithValue(response);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -64,11 +31,23 @@ export const listProductInventoryByDepot = createAsyncThunk(
   'listProductInventoryByDepot',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const response = await axiosInstance.get(
-      `/rest/product-inventory/depot/${payload}?token=${accessToken}`
-    );
+    try {
+      const response = await axiosInstance.get(
+        `/rest/product-inventory/depot/${payload}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    return response;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
+    }
   }
 );
 
@@ -88,16 +67,22 @@ const productInventorySlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [tempListProductInventory.pending]: (state) => {
+    [listProductInventory.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for product inventory`,
       };
     },
-    [tempListProductInventory.fulfilled]: (state, action) => {
+    [listProductInventory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Product Inventory');
+      const { message, level } = generateStatusMessage(
+        action.payload, 
+        'Product Inventory',
+        state.action
+      );
 
       return {
         ...state,
@@ -108,61 +93,62 @@ const productInventorySlice = createSlice({
         statusMessage: message,
       };
     },
-    [tempListProductInventory.rejected]: (state, action) => {
-      const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'ProductInventory');
+    [listProductInventory.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Product Inventory',
+        state.action
+      );
 
       return {
         ...state,
+        data: [],
         status: 'failed',
         statusLevel: level,
-        responseCode: status,
-        action: 'fetch',
-        statusMessage: message,
+        responseCode: null,
+        statusMessage,
       };
     },
     [listProductInventory.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for product inventory`,
       };
     },
     [listProductInventory.fulfilled]: (state, action) => {
-      if (typeof action.payload !== 'undefined' && action.payload.status === 200) {
-        const { data } = action.payload;
-        let statusMessage = message.ITEMS_GET_FULFILLED;
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(
+        action.payload, 
+        'Product Inventory',
+        state.action
+      );
 
-        if (data.length === 0) {
-          statusMessage = 'No data retrieved for product inventory';
-          Message.warning(statusMessage);
-        }
-
-        return {
-          ...state,
-          list: data,
-          status: 'succeeded',
-          action: 'get',
-          statusMessage,
-        };
-      }
-
-      Message.error(message.ITEMS_GET_REJECTED);
       return {
         ...state,
-        status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
-    [listProductInventory.rejected]: (state) => {
+    [listProductInventory.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Product Inventory',
+        state.action
+      );
+
       return {
         ...state,
-        list: [],
-        status: 'Error',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
       };
     },
   },

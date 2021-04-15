@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message } from 'antd';
+import { Row, Col, Typography, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listPD, addPD, deletePD, clearData } from './redux';
+import { listPD, addPD, updatePD, deletePD, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -14,6 +15,7 @@ const ProductDivisions = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true)
 
   const columns = [
     {
@@ -62,11 +64,13 @@ const ProductDivisions = (props) => {
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.maintenance.productDivisions.list);
+  const { handleRequestResponse } = GeneralHelper()
+  const { list: data, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.productDivisions);
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listPD({ company, message })).then(() => {
+      setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -77,6 +81,10 @@ const ProductDivisions = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Add Product Division');
@@ -93,10 +101,12 @@ const ProductDivisions = (props) => {
   };
 
   const handleDelete = (val) => {
-    const { id, code } = val;
+    const { id } = val;
+    setLoading(true);
     dispatch(deletePD(id)).then(() => {
-      dispatch(listPD({ company, message }));
-      message.success(`Successfully deleted Product Division ${code}`);
+      dispatch(listPD({ company, message })).then(() => {
+        setLoading(false);
+      });
     });
   };
 
@@ -107,7 +117,8 @@ const ProductDivisions = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
+    setLoading(true)
     if (formMode === 'edit') {
       const payload = {
         ...values,
@@ -117,8 +128,18 @@ const ProductDivisions = (props) => {
         },
       };
 
-      dispatch(addPD(payload)).then(() => {
-        dispatch(listPD({ company, message }));
+      await dispatch(updatePD(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listPD({ company, message })).then(() => {
+            setDisplayForm(false);
+            setFormData(null);
+            setLoading(false)
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -127,13 +148,21 @@ const ProductDivisions = (props) => {
           id: company,
         },
       };
-      dispatch(addPD(payload)).then(() => {
-        dispatch(listPD({ company, message }));
+      await dispatch(addPD(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listPD({ company, message })).then(() => {
+            setDisplayForm(false);
+            setFormData(null);
+            setLoading(false)
+          });
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-
-    setDisplayForm(false);
-    setFormData(null);
+    return 1
   };
 
   return (
@@ -149,6 +178,7 @@ const ProductDivisions = (props) => {
         <Col span={20}>
           {actions.includes('create') && (
             <Button
+              loading={loading}
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<PlusOutlined />}
               onClick={() => {
@@ -158,15 +188,17 @@ const ProductDivisions = (props) => {
               Add
             </Button>
           )}
-          <TableDisplay
-            columns={columns}
-            data={data}
-            handleRetrieve={handleRetrieve}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
-          />
+          { loading ? <Skeleton/> : 
+            <TableDisplay
+              columns={columns}
+              data={data}
+              handleRetrieve={handleRetrieve}
+              handleUpdate={handleUpdate}
+              handleDelete={handleDelete}
+              updateEnabled={actions.includes('update')}
+              deleteEnabled={actions.includes('delete')}
+            />
+          }
         </Col>
         <SimpleForm
           visible={displayForm}

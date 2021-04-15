@@ -7,7 +7,7 @@ export const tableHeader = [
     key: 'number',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string'
   },
   {
     title: 'RR No',
@@ -15,16 +15,15 @@ export const tableHeader = [
     key: 'rrNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string'
   },
   {
     title: 'Vendor',
     dataIndex: 'vendor',
     key: 'vendor',
     align: 'center',
-    defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
-    render: (object) => object?.fullName ?? ""
+    datatype: 'object',
+    dataToString: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`
   },
   {
     title: 'DR No',
@@ -32,7 +31,7 @@ export const tableHeader = [
     key: 'drNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string'
   },
   {
     title: 'SI No',
@@ -40,7 +39,7 @@ export const tableHeader = [
     key: 'siNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string'
   },
   {
     title: 'PO No',
@@ -48,7 +47,7 @@ export const tableHeader = [
     key: 'poNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.number.length - b.number.length,
+    datatype: 'string'
   },
   {
     title: 'Total AMount',
@@ -56,7 +55,7 @@ export const tableHeader = [
     key: 'totalAmount',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a - b,
+    datatype: 'number'
   },
   {
     title: 'Status',
@@ -64,7 +63,7 @@ export const tableHeader = [
     key: 'status',
     align: 'center',
     defaultSortOrder: 'ascend',
-    sorter: (a, b) => a.status.length - b.status.length,
+    datatype: 'string'
   },
 ];
 
@@ -172,7 +171,7 @@ const FormDetails = () => {
         name: 'accountTitles',
         rules: [{ required: true, message: 'Please select account title' }],
         placeholder: 'Select Account Title',
-        render: (object) => object?.title ?? "",
+        render: (object) => `[${object?.type ?? ""}] ${object?.title ?? ""}`,
         type: 'selectSearch',
         width: 150,
         choices: [],

@@ -15,7 +15,11 @@ export const listEmployees = createAsyncThunk('listEmployees', async (_, thunkAP
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -31,7 +35,11 @@ export const createEmployee = createAsyncThunk('createEmployee', async (payload,
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -50,7 +58,11 @@ export const deleteEmployee = createAsyncThunk('deleteEmployee', async (payload,
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -74,12 +86,17 @@ const employeesSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for employees`,
       };
     },
     [listEmployees.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employees');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Employees',
+        state.action
+      );
 
       return {
         ...state,
@@ -92,7 +109,11 @@ const employeesSlice = createSlice({
     },
     [listEmployees.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employees');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Employees',
+        state.action
+      );
 
       return {
         ...state,
@@ -115,7 +136,11 @@ const employeesSlice = createSlice({
     },
     [createEmployee.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Employee',
+        state.action  
+      );
 
       return {
         ...state,
@@ -127,7 +152,11 @@ const employeesSlice = createSlice({
     },
     [createEmployee.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Employee',
+        state.action  
+      );
 
       return {
         ...state,
@@ -140,7 +169,7 @@ const employeesSlice = createSlice({
     [deleteEmployee.pending]: (state) => {
       return {
         ...state,
-        action: 'create',
+        action: 'delete',
         status: 'loading',
         statusMessage: `${message.ITEM_ADD_PENDING} for employee`,
         statusLevel: '',
@@ -149,7 +178,11 @@ const employeesSlice = createSlice({
     },
     [deleteEmployee.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Employee',
+        state.action
+      );
 
       return {
         ...state,
@@ -161,7 +194,11 @@ const employeesSlice = createSlice({
     },
     [deleteEmployee.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Employee');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Employee',
+        state.action  
+      );
 
       return {
         ...state,

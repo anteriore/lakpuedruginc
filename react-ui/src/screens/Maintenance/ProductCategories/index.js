@@ -7,7 +7,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import { listPC, addPC, updatePC,deletePC, clearData } from './redux';
 import { listPD, clearData as clearPD } from '../ProductDivisions/redux';
 import SimpleForm from '../../../components/forms/FormModal';
-import { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -20,6 +20,7 @@ const Depots = (props) => {
 
   const { company, actions } = props;
   const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
   const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.productCategories);
   const divisions = useSelector((state) => state.maintenance.productDivisions.list);
 
@@ -111,7 +112,13 @@ const Depots = (props) => {
     setFormMode('add');
     setFormData(null);
     dispatch(listPD({ company, message })).then((response) => {
-      setDisplayForm(true);
+      const onSuccess = () => {
+        setDisplayForm(true);
+      }
+      const onFail = () => {
+        handleCancelButton()
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -124,7 +131,13 @@ const Depots = (props) => {
     };
     setFormData(formData);
     dispatch(listPD({ company, message })).then((response) => {
-      setDisplayForm(true);
+      const onSuccess = () => {
+        setDisplayForm(true);
+      }
+      const onFail = () => {
+        handleCancelButton()
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -144,7 +157,7 @@ const Depots = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -158,10 +171,18 @@ const Depots = (props) => {
         },
       };
 
-      dispatch(updatePC(payload)).then(() => {
-        dispatch(listPC({ company, message })).then(() => {
+      await dispatch(updatePC(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listPC({ company, message })).then(() => {
+            setDisplayForm(false);
+            setFormData(null);
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        });
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -173,15 +194,22 @@ const Depots = (props) => {
           id: values.division,
         },
       };
-      dispatch(addPC(payload)).then(() => {
-        dispatch(listPC({ company, message })).then(() => {
+      await dispatch(addPC(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listPC({ company, message })).then(() => {
+            setDisplayForm(false);
+            setFormData(null);
+            setLoading(false);
+          });
+        }
+        const onFail = () => {
           setLoading(false);
-        });
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
-    setDisplayForm(false);
-    setFormData(null);
+    return 1
   };
 
   return (

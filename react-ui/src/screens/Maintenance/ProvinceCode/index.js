@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Typography, Col, Button, message } from 'antd';
+import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import { tableHeader, formDetails } from './data';
 import {
   listProvinceCode,
@@ -23,14 +24,17 @@ const ProvinceCode = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const { provinceCodeList, action, statusMessage } = useSelector(
+  const [loading, setLoading] = useState(true)
+  const { provinceCodeList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.provinceCodes
   );
   const dispatch = useDispatch();
+  const { handleRequestResponse } = GeneralHelper()
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listProvinceCode({ company, message })).then(() => {
+      setLoading(false);
       if (isCancelled) {
         dispatch(clearData());
       }
@@ -43,16 +47,8 @@ const ProvinceCode = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    if (action !== 'get' && action !== '') {
-      if (action === 'pending') {
-        message.info(statusMessage);
-      } else if (action === 'error') {
-        message.error(statusMessage);
-      } else {
-        message.success(statusMessage);
-      }
-    }
-  }, [statusMessage, action]);
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
     setModalTitle('Add New Province Code');
@@ -69,13 +65,13 @@ const ProvinceCode = (props) => {
   };
 
   const handleDeleteButton = (row) => {
+    setLoading(true);
     dispatch(deleteProvinceCode(row))
       .then(() => {
-        dispatch(listProvinceCode({ message }));
+        dispatch(listProvinceCode({ message })).then(() => {
+          setLoading(false)
+        })
       })
-      .catch((err) => {
-        message.error(`Something went wrong! details: ${err}`);
-      });
   };
 
   const handleCancelButton = () => {
@@ -83,21 +79,43 @@ const ProvinceCode = (props) => {
     setFormValues('');
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
+    setLoading(true)
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
-      dispatch(updateProvinceCode(newValues)).then(() => {
-        dispatch(listProvinceCode({ message }));
+      await dispatch(updateProvinceCode(newValues)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listProvinceCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          })
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
-      dispatch(createProvinceCode(values)).then(() => {
-        dispatch(listProvinceCode({ message }));
+      await dispatch(createProvinceCode(values)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listProvinceCode({ message })).then(() => {
+            setFormValues('');
+            setIsOpenForm(!isOpenForm);
+            setLoading(false);
+          })
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    setFormValues('');
-    setIsOpenForm(!isOpenForm);
+    return 1
   };
 
   return (
@@ -105,20 +123,22 @@ const ProvinceCode = (props) => {
       <Col style={GeneralStyles.headerPage} span={20}>
         <Title>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} onClick={() => handleAddButton()}>
+          <Button loading={loading} icon={<PlusOutlined />} onClick={() => handleAddButton()}>
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        <TableDisplay
-          columns={tableHeader}
-          data={provinceCodeList}
-          handleUpdate={handleEditButton}
-          handleDelete={handleDeleteButton}
-          updateEnabled={actions.includes('update')}
-          deleteEnabled={actions.includes('delete')}
-        />
+        { loading ? <Skeleton/> :
+          <TableDisplay
+            columns={tableHeader}
+            data={provinceCodeList}
+            handleUpdate={handleEditButton}
+            handleDelete={handleDeleteButton}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          /> 
+        }
       </Col>
       <SimpleForm
         visible={isOpenForm}

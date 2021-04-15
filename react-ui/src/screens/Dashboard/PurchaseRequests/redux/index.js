@@ -7,26 +7,32 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 const initialState = {
   list: [],
+  status: 'loading',
+  statusLevel: 'loading',
+  responseCode: null, 
+  statusMessage: '',
+  action: '',
 };
 
 export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `rest/purchase-requests/company/${payload.company}?token=${accessToken}`
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.get(
-    `rest/purchase-requests/company/${payload.company}?token=${accessToken}`
-  );
-
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for purchase requests');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
-
-  return response;
 });
 
 export const listPRByStatus = createAsyncThunk('listPRByStatus', async (payload, thunkAPI) => {
@@ -44,7 +50,11 @@ export const listPRByStatus = createAsyncThunk('listPRByStatus', async (payload,
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -65,7 +75,11 @@ export const listPRByCompanyAndStatusAndDepartment = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -76,21 +90,24 @@ export const getRequestedQuantityByItem = createAsyncThunk(
     const accessToken = thunkAPI.getState().auth.token;
     const { company, item } = payload;
 
+    try {
     const response = await axiosInstance.get(
       `rest/purchase-requests/company/${company}/stock/${item}?token=${accessToken}`
     );
 
-    if (typeof response !== 'undefined' && response.status === 200) {
-      const { data } = response;
-      if (data.length === 0) {
-        payload.message.warning('No data retrieved for requested items');
-      }
-    } else {
-      payload.message.error(message.ITEMS_GET_REJECTED);
-      return thunkAPI.rejectWithValue(response);
-    }
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    return response;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
+    }
   }
 );
 
@@ -109,7 +126,34 @@ export const addPR = createAsyncThunk('addPR', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
+  }
+});
+
+export const updatePR = createAsyncThunk('updatePR', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-requests/?token=${accessToken}`,
+      payload
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -127,7 +171,11 @@ export const approvePR = createAsyncThunk('approvePR', async (payload, thunkAPI)
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -145,7 +193,11 @@ export const rejectPR = createAsyncThunk('rejectPR', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -164,7 +216,11 @@ export const cancelPR = createAsyncThunk('cancelPR', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -183,7 +239,11 @@ export const deletePR = createAsyncThunk('deletePR', async (payload, thunkAPI) =
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 
 });
@@ -195,44 +255,64 @@ const purchaseRequestSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    [listPR.pending]: (state, action) => {
-      state.status = 'loading';
+    [listPR.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests` 
+      };
     },
     [listPR.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for sales orders';
-      }
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(
+        action.payload, 
+        'Purchase Requests', 
+        state.action
+      );
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
-        statusMessage,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
       };
     },
     [listPR.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Request',
+        state.action
+      );
+
       return {
         ...state,
+        data: [],
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
       };
     },
-
     [listPRByStatus.pending]: (state) => {
-      return {
-        ...state,
-        action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase request` 
       };
     },
     [listPRByStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+      const { message, level } = generateStatusMessage(
+        action.payload, 
+        'Purchase Requests', 
+        state.action
+      );
 
       return {
         ...state,
@@ -244,29 +324,38 @@ const purchaseRequestSlice = createSlice({
       };
     },
     [listPRByStatus.rejected]: (state, action) => {
-      const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Request',
+        state.action
+      );
 
       return {
         ...state,
+        data: [],
         status: 'failed',
         statusLevel: level,
-        responseCode: status,
-        action: 'fetch',
-        statusMessage: message,
+        responseCode: null,
+        statusMessage,
       };
     },
 
     [listPRByCompanyAndStatusAndDepartment.pending]: (state) => {
-      return {
-        ...state,
-        action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase request` 
       };
     },
     [listPRByCompanyAndStatusAndDepartment.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+      const { message, level } = generateStatusMessage(
+        action.payload, 
+        'Purchase Requests', 
+        state.action
+      );
 
       return {
         ...state,
@@ -278,16 +367,140 @@ const purchaseRequestSlice = createSlice({
       };
     },
     [listPRByCompanyAndStatusAndDepartment.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Request',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
+      };
+    },
+    [addPR.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'create', 
+        status: 'loading',
+        statusLevel: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for material issuance` 
+      };
+    },
+    [addPR.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'purchase requests');
+      const { message, level } = generateStatusMessage(action.payload, 'Purchase Request', state.action);
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [addPR.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Request',
+        state.action
+      );
 
       return {
         ...state,
         status: 'failed',
         statusLevel: level,
         responseCode: status,
-        action: 'fetch',
-        statusMessage: message,
+        statusMessage,
+      };
+    },
+    [updatePR.pending]: (state) => {
+      return {
+        ...state,
+        action: 'update',
+        status: 'loading',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for purchase request`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [updatePR.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purschase Request',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [updatePR.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purschase Request',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deletePR.pending]: (state) => {
+      return {
+        ...state,
+        action: 'delete',
+        status: 'loading',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for purchase request`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [deletePR.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Request',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [deletePR.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Request',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

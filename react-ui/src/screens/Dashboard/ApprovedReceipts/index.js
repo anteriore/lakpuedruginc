@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Row, Col, Typography, Button, Modal, Skeleton, Descriptions, Space, message, } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,19 +6,21 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import TableDisplay from '../../../components/TableDisplay';
 import { DisplayDetails, FormDetails } from './data';
-import { formatPayload, inventoryPayload } from './helpers';
+import { formatPayload } from './helpers';
 import InputForm from './InputForm';
 //import FormScreen from '../../../components/forms/FormScreen';
 import { listApprovedReceipts, addApprovedReceipt, clearData,} from './redux';
 import { listRR, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
 import { listItemSummary, clearData as clearItem} from '../../Maintenance/Items/redux';
-import { addInventory } from '../../Dashboard/Inventory/redux';
+// import { addInventory } from '../../Dashboard/Inventory/redux';
+import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const ApprovedReceipts = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { handleRequestResponse } = GeneralHelper();
   const { title, company, actions } = props;
   const { id } = useSelector((state) => state.auth.user);
   const { path } = useRouteMatch();
@@ -33,35 +35,63 @@ const ApprovedReceipts = (props) => {
   const { columns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
   const [selectedData, setSelectedData] = useState(null);
-  const arList = useSelector((state) => state.dashboard.approvedReceipts.list);
+  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.dashboard.approvedReceipts);
+  const { 
+    status: statusItems, statusLevel: statusLevelItems,
+    statusMessage: statusMessageItems, action: actionItems
+  } = useSelector(state => state.maintenance.items);
+  const isMounted = useRef(true);
 
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearItem());
+    dispatch(clearRR());
+  }, [dispatch]);
 
   useEffect(() => {
-    let isCancelled = false;
-    
     dispatch(listApprovedReceipts({ company, message })).then(() => {
-      setLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
+      if (isMounted.current){
+        setLoading(false);
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearRR());
-      dispatch(clearItem());
-      isCancelled = true;
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusItems,
+      statusMessage: statusMessageItems,
+      action: actionItems, 
+      statusLevel: statusLevelItems,
+      module: title
+    })
+  }, [actionItems, statusMessageItems, statusItems, statusLevelItems, title]);
 
   const handleAdd = () => {
     setFormTitle('Create Approved Receipt');
     setFormMode('add');
-    //setFormData(null);
     setSelectedData(null);
-    dispatch(listRR({ company, message })).then(() => {
-      dispatch(listItemSummary({ company, message })).then(() => {
-        history.push(`${path}/new`);
+    setLoading(true);
+    dispatch(listRR({ company, message })).then((resp1) => {
+      dispatch(listItemSummary({ company, message })).then((resp2) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+              history.push(`${path}/new`);
+              setLoading(false);
+          }
+          const onFail = () => {
+            setLoading(false);
+          }
+          handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+        }
       });
     });
   };
@@ -71,41 +101,32 @@ const ApprovedReceipts = (props) => {
     setSelectedData(data);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = formatPayload(id, company, data);
-    const invPayload = inventoryPayload(company, data);
+    //const invPayload = inventoryPayload(company, data);
     
-    console.log(payload)
 
     if (formMode === 'edit') {
       payload.id = selectedData.id;
     }
 
-    dispatch(addApprovedReceipt(payload)).then((response) => {
-      if (response.payload.status === 200) {
-        dispatch(addInventory(invPayload)).then((response) => {
-          if (response.payload.status === 200) {
-            message.success(`Successfully saved ${response.payload.data.number}`);
-            dispatch(listApprovedReceipts({ company, message })).then(() => {
-              history.goBack();
-              setLoading(false);
-            });
-          } else {
-            setLoading(false);
-            message.error(`Something went wrong. Unable to add Inventory.`);
-          }
+    await dispatch(addApprovedReceipt(payload)).then((response) => {
+      setLoading(true);
+      const onSuccess = () => {
+        history.goBack();
+        dispatch(listApprovedReceipts({ company, message })).then(() => {
+          setLoading(false);
         });
-      } else {
-        setLoading(false);
-        if (formMode === 'add') {
-          message.error(
-            `Unable to add Approved Receipt. Please double check the provided information.`
-          );
-        } else {
-          message.error(`Something went wrong. Unable to update ${data.number}.`);
-        }
       }
+      const onFail = () => {
+        setLoading(false);
+        
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
+
+    return 1
   };
 
   const handleCancelButton = () => {
@@ -145,6 +166,7 @@ const ApprovedReceipts = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={(e) => {
                   handleAdd();
                 }}
@@ -161,7 +183,7 @@ const ApprovedReceipts = (props) => {
             <Col span={20}>
               <TableDisplay
                 columns={columns}
-                data={arList}
+                data={list}
                 updateEnabled={false}
                 deleteEnabled={false}
                 handleRetrieve={handleRetrieve}

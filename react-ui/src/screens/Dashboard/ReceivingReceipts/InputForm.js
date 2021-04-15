@@ -31,6 +31,7 @@ const InputForm = (props) => {
   const [tableData, setTableData] = useState();
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
+  const [processingData, setProcessingData] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
 
@@ -47,6 +48,7 @@ const InputForm = (props) => {
   }, [user, form]);
 
   const onFinish = (data) => {
+    setProcessingData(true)
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -59,10 +61,9 @@ const InputForm = (props) => {
       }
     });
 
-    console.log(data);
-    console.log(tableData);
-
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setProcessingData(false)
+    })
   };
 
   const onFinishFailed = () => {
@@ -303,7 +304,11 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button 
+              type="primary" 
+              onClick={() => form.submit()}
+              loading={processingData}
+            >
               Submit
             </Button>
             <Button

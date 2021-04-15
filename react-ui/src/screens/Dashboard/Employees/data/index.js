@@ -3,39 +3,63 @@ export const tableHeader = [
     title: 'Emp No',
     dataIndex: 'number',
     key: 'number',
-    sorter: (a, b) => a.length - b.length,
+    datatype: 'string'
   },
-  {
+  /*{
     title: 'Name',
     align: 'center',
     key: 'name',
-    datatype: 'string',
-    render: (object) =>
-      `${object?.firstName ?? ''} ${object?.middleName ?? ''} ${object?.lastName ?? ''}`,
+    datatype: 'object',
+    dataToString: (object) =>
+      {console.log(`${object?.firstName ?? ''} ${object?.middleName ?? ''} ${object?.lastName ?? ''}`); return `${object?.firstName ?? ''} ${object?.middleName ?? ''} ${object?.lastName ?? ''}`},
     sorter: (a, b) => {
-      const left = `${a.employee?.firstName ?? ''} ${a.employee?.middleName ?? ''} ${
-        a.employee?.lastName ?? ''
+      const left = `${a?.firstName ?? ''} ${a?.middleName ?? ''} ${
+        a?.lastName ?? ''
       }`;
-      const right = `${b.employee?.firstName ?? ''} ${b.employee?.middleName ?? ''} ${
-        b.employee?.lastName ?? ''
+      const right = `${b?.firstName ?? ''} ${b?.middleName ?? ''} ${
+        b?.lastName ?? ''
       }`;
-      return left.length - right.length;
+      return left.localeCompare(right);
     },
+  },*/
+
+  {
+    title: 'First Name',
+    dataIndex: 'firstName',
+    key: 'firstName',
+    align: 'center',
+    datatype: 'string'
   },
+
+  {
+    title: 'Last Name',
+    dataIndex: 'lastName',
+    key: 'lastName',
+    align: 'center',
+    datatype: 'string'
+  },
+
+  {
+    title: 'Middle Name',
+    dataIndex: 'middleName',
+    key: 'middleName',
+    align: 'center',
+    datatype: 'string'
+  },
+
   {
     title: 'Given Name',
     dataIndex: 'givenName',
     key: 'givenName',
     align: 'center',
-    sorter: (a, b) => {
-      return a.givenName.length - b.givenName.length;
-    },
+    datatype: 'string'
   },
   {
     title: 'Gender',
     dataIndex: 'gender',
     key: 'gender',
     align: 'center',
+    datatype: 'string',
     sorter: (a, b) => {
       return a.gender.length - b.gender.length;
     },
@@ -45,7 +69,8 @@ export const tableHeader = [
     dataIndex: 'monthlySalary',
     key: 'monthlySalary',
     align: 'center',
-    sorter: (a, b) => a.mothlySalary - b.mothlySalary,
+    datatype:'number'
+    //sorter: (a, b) => a.mothlySalary - b.mothlySalary,
   },
   {
     title: 'Hourly Rate',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Row,
   Col,
@@ -23,12 +23,14 @@ import InputForm from './InputForm';
 import { listRR, addRR, clearData } from './redux';
 import { clearData as clearPO, listPO } from '../../Purchasing/redux';
 import { clearData as clearItem, listItemSummary } from '../../Maintenance/Items/redux';
+import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const ReceivingReceipts = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { handleRequestResponse } = GeneralHelper();
   const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const { id } = useSelector((state) => state.auth.user);
@@ -42,32 +44,67 @@ const ReceivingReceipts = (props) => {
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
   const [receivingReceipt, setReceivingReceipt] = useState(null);
-  const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
+  const {
+    list, status, statusLevel, statusMessage, action
+  } = useSelector((state) => state.dashboard.receivingReceipts);
+  const { 
+    status: statusItems,
+    statusLevel: statusLevelItems,
+    statusMessage: statusMessageItems,
+    action: actionItems
+  } = useSelector((state) => state.maintenance.items)
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearPO());
+    dispatch(clearItem());
+  }, [dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listRR({ company, message })).then(() => {
+      if(isMounted.current){
         setLoading(false);
-        if (isCancelled) {
-          dispatch(clearData());
-        }
+      }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearPO());
-      dispatch(clearItem());
-      isCancelled = true;
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  },[status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusItems,
+      statusMessage: statusMessageItems,
+      action: actionItems, 
+      statusLevel: statusLevelItems,
+      module: title
+    })
+  }, [actionItems, statusMessageItems, statusItems, statusLevelItems, title]);
 
   const handleAdd = () => {
     setFormTitle('Create Receiving Receipt');
     setFormMode('add');
     setReceivingReceipt(null);
-    dispatch(listPO({ company, message })).then(() => {
-      dispatch(listItemSummary({ company, message })).then(() => {
-        history.push(`${path}/new`);
+    setLoading(true)
+    dispatch(listPO({ company, message })).then((resp1) => {
+      dispatch(listItemSummary({ company, message })).then((resp2) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+              history.push(`${path}/new`);
+              setLoading(false);
+          }
+          const onFail = () => {
+            setLoading(false);
+          }
+          handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+        }
       });
     });
   };
@@ -77,31 +114,28 @@ const ReceivingReceipts = (props) => {
     setReceivingReceipt(data);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = formatPayload(id, company, data);
 
     if (formMode === 'edit') {
       payload.id = receivingReceipt.id;
     }
 
-    dispatch(addRR(payload)).then((response) => {
-      if (response.payload.status === 200) {
-        message.success(`Successfully saved ${response.payload.data.number}`);
-        dispatch(listRR({ company, message })).then(() => {
+    await dispatch(addRR(payload)).then((response) => {
+        setLoading(true);
+        const onSuccess = () => {
           history.goBack();
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-        if (formMode === 'add') {
-          message.error(
-            `Unable to add Receiving Receipt. Please double check the provided information.`
-          );
-        } else {
-          message.error(`Something went wrong. Unable to update ${data.number}.`);
+          dispatch(listRR({ company, message })).then(() => {
+            setLoading(false);
+          });
         }
-      }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
     });
+    return 1
   };
 
   const handleCancelButton = () => {
@@ -141,6 +175,7 @@ const ReceivingReceipts = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={(e) => {
                   handleAdd();
                 }}
@@ -157,7 +192,7 @@ const ReceivingReceipts = (props) => {
             <Col span={20}>
               <TableDisplay
                 columns={columns}
-                data={rrList}
+                data={list}
                 updateEnabled={false}
                 deleteEnabled={false}
                 handleRetrieve={handleRetrieve}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Row, Col, Tabs, Typography, Skeleton, Button, Modal, Empty, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -10,9 +10,9 @@ import TableDisplay from '../../components/TableDisplay';
 import FormScreen from '../../components/forms/FormScreen';
 import FormDetails, { columns } from './data';
 import ItemDescription from '../../components/ItemDescription';
-import GeneralHelper from '../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../helpers/general-helper';
 
-import { listPO, addPO, deletePO, clearData } from './redux';
+import { listPO, addPO, updatePO, deletePO, clearData } from './redux';
 import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
 import {
   listD as listDepartment,
@@ -20,7 +20,7 @@ import {
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
 import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
-import { listPRByStatus, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
+import { listPRByCompanyAndStatusAndDepartment, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -37,8 +37,9 @@ const Purchasing = () => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
+  const isMounted = useRef(true);
 
-  const purchaseOrders = useSelector((state) => state.purchaseOrders.list);
+  const {list: purchaseOrders, statusMessage, action, status, statusLevel} = useSelector((state) => state.purchaseOrders);
   const companies = useSelector((state) => state.company.companyList);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
@@ -68,17 +69,21 @@ const Purchasing = () => {
     setActions(actionsList);
   }, [permissions]);
 
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearVendor());
+    dispatch(clearDA());
+    dispatch(clearPR());
+    dispatch(clearUnit());
+  }, [dispatch])
+
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
       if (actions.includes('read')) {
         dispatch(listPO({ company: selectedCompany, message })).then(() => {
           setLoading(false);
           setSelectedPO(null);
-          if (isCancelled) {
-            dispatch(clearData());
-          }
         });
       } else {
         setLoading(false);
@@ -86,20 +91,20 @@ const Purchasing = () => {
       }
     });
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearVendor());
-      dispatch(clearDA());
-      dispatch(clearPR());
-      dispatch(clearUnit());
-      isCancelled = true;
+      isMounted.current = false
+      performCleanup()
     };
-  }, [actions, dispatch, selectedCompany]);
+  }, [dispatch, selectedCompany, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));
     setLoading(true);
     if (actions.includes('read')) {
-      dispatch(listPO({ company: id, message })).then(() => {
+      dispatch(listPO({ company: id })).then(() => {
         setLoading(false);
       });
     } else {
@@ -111,13 +116,21 @@ const Purchasing = () => {
     setFormTitle('Create Purchase Order');
     setFormMode('add');
     setFormData(null);
-    setLoadingCompany(true);
-    dispatch(listVendor({ company: selectedCompany, message })).then(() => {
-      dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
-        dispatch(listArea({ company: selectedCompany, message })).then(() => {
-          dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            history.push(`${path}/new`);
-            setLoadingCompany(false);
+    setLoading(true);
+    dispatch(listVendor({ company: selectedCompany })).then((response1) => {
+      dispatch(listDepartment({ company: selectedCompany })).then((response2) => {
+        dispatch(listArea({ company: selectedCompany })).then((response3) => {
+          dispatch(listUnit({ company: selectedCompany })).then((response4) => {
+            if(isMounted.current){
+              const onSuccess = () => {
+                history.push(`${path}/new`);
+                setLoading(false);
+              }
+              const onFail = () => {
+                setLoading(false);
+              }
+              handleRequestResponse([response1, response2, response3, response4], onSuccess, onFail, '');
+            }
           });
         });
       });
@@ -147,12 +160,22 @@ const Purchasing = () => {
     };
     setFormData(formData);
     setLoadingCompany(true);
-    dispatch(listVendor({ company: selectedCompany, message })).then(() => {
-      dispatch(listDepartment({ company: selectedCompany, message })).then(() => {
-        dispatch(listArea({ company: selectedCompany, message })).then(() => {
-          dispatch(listUnit({ company: selectedCompany, message })).then(() => {
-            history.push(`${path}/${data.id}`);
-            setLoadingCompany(false);
+    dispatch(listVendor({ company: selectedCompany })).then((response1) => {
+      dispatch(listDepartment({ company: selectedCompany })).then((response2) => {
+        dispatch(listArea({ company: selectedCompany })).then((response3) => {
+          dispatch(listUnit({ company: selectedCompany })).then(() => {
+            dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: poData.department.id, status: 'Approved' })).then((response4) => {
+              if(isMounted.current){
+                const onSuccess = () => {
+                  history.push(`${path}/${data.id}`);
+                  setLoadingCompany(false);
+                }
+                const onFail = () => {
+                  setLoadingCompany(false);
+                }
+                handleRequestResponse([response1, response2, response3, response4], onSuccess, onFail, '');
+              }
+            });
           });
         });
       });
@@ -165,15 +188,11 @@ const Purchasing = () => {
       const onSuccess = () => {
         dispatch(listPO({ company: selectedCompany, message })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted ${data.number}`);
         });
-      } 
-      
+      }
       const onFail = () => {
         setLoading(false);
-        message.error(`Unable to delete ${data.number}`);
       }
-      
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -187,7 +206,7 @@ const Purchasing = () => {
     setFormData(null);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const orderedItems = [];
     let totalAmount = 0;
     data.orderedItems.forEach((item) => {
@@ -222,32 +241,39 @@ const Purchasing = () => {
     if (formMode === 'edit') {
       payload.id = formData.id;
       payload.number = formData.number;
-    }
 
-    dispatch(addPO(payload)).then((response) => {
-      setLoading(true);
-      const onSuccess = () => {
-        dispatch(listPO({ company: selectedCompany, message })).then(() => {
+      await dispatch(updatePO(payload)).then((response) => {
+        setLoading(true);
+        history.goBack();
+        const onSuccess = () => {
+          dispatch(listPO({ company: selectedCompany, message })).then(() => {
+            setLoading(false);
+          });
+        } 
+        const onFail = () => {
           setLoading(false);
-          history.goBack();
-          if (formMode === 'edit') {
-            message.success(`Successfully updated ${formData.number}`);
-          } else {
-            message.success(`Successfully added purchase order "${response.payload.data.number}"`);
-          }
-        });
-      } 
-      const onFail = () => {
-        setLoading(false);
-        if (formMode === 'edit') {
-          message.error(`Unable to update ${formData.number}`);
-        } else {
-          message.error(`Unable to add purchase order`);
         }
-        
-      }
-      handleRequestResponse([response], onSuccess, onFail, '');
-    });
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+
+    }
+    else {
+      await dispatch(addPO(payload)).then((response) => {
+        setLoading(true);
+        history.goBack();
+        const onSuccess = () => {
+          dispatch(listPO({ company: selectedCompany, message })).then(() => {
+            setLoading(false);
+          });
+        } 
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      });
+    }
+    setFormData(null);
+    return 1
   };
 
   return (
@@ -264,13 +290,14 @@ const Purchasing = () => {
               <Col span={20}>
                 <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
                   {companies.map((val) => (
-                    <TabPane tab={val.name} key={val.id} />
+                    <TabPane tab={val.name} key={val.id}  disabled={loading} />
                   ))}
                 </Tabs>
                 {actions.includes('create') && (
                   <Button
                     style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                     icon={<PlusOutlined />}
+                    loading={loading}
                     onClick={(e) => {
                       handleAdd();
                     }}

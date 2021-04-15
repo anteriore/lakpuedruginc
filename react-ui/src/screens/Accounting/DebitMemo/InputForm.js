@@ -14,12 +14,13 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [tableData, setTableData] = useState(null);
   const [selectedSaleSlip, setSelectedSaleSlip] = useState([]);
   const [toggleValue, setToggleValue] = useState(null);
 
-  const [loadingModal, setLoadingModal] = useState(true);
-  const [displayModal, setDisplayModal] = useState(false);
+  const [_loadingModal, setLoadingModal] = useState(true);
+  const [_displayModal, setDisplayModal] = useState(false);
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
@@ -40,6 +41,7 @@ const InputForm = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setFormButtonLoading(false);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -55,14 +57,14 @@ const InputForm = (props) => {
     if (hasTable) {
       if (tableData !== null) {
         data[formTable.name] = tableData;
-        onSubmit(data);
+        onSubmit(data).then(() => setFormButtonLoading(false));
       } else {
         onFinishFailed(
           `Unable to submit. Please provide the necessary information on ${formTable.label}`
         );
       }
     } else {
-      onSubmit(data);
+      onSubmit(data).then(() => setFormButtonLoading(false));
     }
   };
 
@@ -271,7 +273,7 @@ const InputForm = (props) => {
               </Form.List>
             )}
             <div style={styles.tailLayout}>
-              <Button type="primary" onClick={() => form.submit()}>
+              <Button loading={formButtonLoading} type="primary" onClick={() => form.submit()}>
                 Submit
               </Button>
               <Button

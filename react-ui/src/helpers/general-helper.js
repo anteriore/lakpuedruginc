@@ -61,39 +61,21 @@ export const setConnectionEffect = (response, noDataFoundError, serverError, def
 };
 
 export const checkResponseValidity = (response) => {
-  switch (response.status) {
-    case 200:
-      if (response.data.length === 0) {
-        response.statusText = 'list is empty';
-        return { response, valid: true };
-      }
-      response.statusText = 'succesful';
+  if(response.status >= 300){
+    response.statusText = 'failed. An error has occurred';
+    return { response, valid: false };
+  }
+  else if(response.status >= 200){
+    if (response.data.length === 0) {
+      response.statusText = 'successful. No data retrieved.';
       return { response, valid: true };
-
-    case 404:
-    case 400:
-      response.statusText = 'process from client failed';
-      return { response, valid: false };
-    case 500:
-      response.statusText = 'process from server failed';
-      return { response, valid: false };
-    default:
-      if(response.status >= 300){
-        response.statusText = 'an error has occured';
-        return { response, valid: false };
-      }
-      else if(response.status > 200){
-        if (response.data.length === 0) {
-          response.statusText = 'list is empty';
-          return { response, valid: true };
-        }
-        response.statusText = 'succesful';
-        return { response, valid: true };
-      }
-      else {
-        response.statusText = 'an error has occured';
-        return { response, valid: false };
-      }
+    }
+    response.statusText = 'successful';
+    return { response, valid: true };
+  }
+  else {
+    response.statusText = 'failed. An error has occured';
+    return { response, valid: false };
   }
 };
 
@@ -125,18 +107,20 @@ export const reevalDependencyMsgStats = ({
   statusLevel, statusMessage, 
   module}) => {
 
-  if (status !== 'loading' && status !== 'succeeded') {
-    if (action === 'fetch') {
-      statusDialogue(
-        {
-          statusLevel: statusLevel,
-          modalContent: {
-            title: `${_.capitalize(statusLevel)} - ${module}`,
-            content: statusMessage,
+  if (status !== 'loading') {
+    if(statusLevel !== 'success') {
+      if (action === 'fetch') {
+        statusDialogue(
+          {
+            statusLevel: statusLevel,
+            modalContent: {
+              title: `${_.capitalize(statusLevel)} - ${module}`,
+              content: statusMessage,
+            },
           },
-        },
-        'modal'
-      );  
+          'modal'
+        );  
+      }
     }
   }
 }

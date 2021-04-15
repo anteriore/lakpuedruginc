@@ -160,22 +160,37 @@ const FormDetails = () => {
   const tableProductInventory = [
     {
       title: 'Lot #',
-      dataindex: 'product',
-      render: (object) => object.product.lotNumber,
-    },
+      dataIndex: 'product',
+      key: 'product',
+      datatype: 'object',
+      dataToString: (product) => product?.lotNumber ?? ''
+    }, 
     {
       title: 'FG Code',
       dataIndex: 'product',
-      render: (object) => object.finishedGood.code,
+      key: 'product',
+      datatype: 'object',
+      dataToString: (product) => product?.finishedGood?.code ?? ''
     },
     {
       title: 'Finished Good',
       dataIndex: 'product',
-      render: (object) => object.finishedGood.name,
+      key: 'product',
+      datatype: 'object',
+      dataToString: (product) => product?.finishedGood?.name ?? ''
+    },
+    {
+      title: 'Expiration',
+      dataIndex: 'product',
+      key: 'product',
+      datatype: 'object',
+      dataToString: (product) => product.expiration.toString() ?? ''
+  
     },
     {
       title: 'Stock on Hand',
       dataIndex: 'quantity',
+      key: 'quantity',
     },
   ];
 
@@ -184,7 +199,7 @@ const FormDetails = () => {
     name: 'salesOrderProducts',
     key: 'id',
     rules: [{required: true, message: "Please select items to be requested"}],
-    emptyText: "Please select a department for the items to be requested",
+    emptyText: "Please select a depot for the items to be requested",
     fields: [
       {
         title: 'FG ID',

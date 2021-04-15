@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Row, Col, Typography, Form, Space, Button } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import Layout from 'antd/lib/layout/layout';
@@ -13,13 +13,17 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [form] = useForm();
+  const [processingData, setProcessingData] = useState(false)
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 
   const onFinish = () => {
-    onSubmit(form.getFieldsValue());
+    setProcessingData(true)
+    onSubmit(form.getFieldsValue()).then(() => {
+      setProcessingData(false)
+    })
     history.goBack();
   };
 
@@ -37,7 +41,7 @@ const InputForm = (props) => {
               ))}
               <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                 <Space size={16}>
-                  <Button htmlType="button" onClick={() => history.goBack()}>
+                  <Button htmlType="button" onClick={() => history.goBack()} loading={processingData}>
                     Cancel
                   </Button>
                   <Button type="primary" htmlType="submit">

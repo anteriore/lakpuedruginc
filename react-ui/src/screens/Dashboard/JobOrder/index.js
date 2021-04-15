@@ -1,26 +1,25 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { Button, Row, Col, Typography, Skeleton, Modal, Descriptions } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 import moment from 'moment';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { tableHeader } from './data';
 import { listJobOrders, clearData, createJobOrder } from './redux';
-import statusDialogue from '../../../components/StatusDialogue';
 import { listEmployees, clearData as clearDataEmployees } from '../Employees/redux';
 import { listMoInventories, clearData as clearDataMO } from '../../RND/MOInventory/redux';
 import { listProcedure, clearData as clearDataProcedure } from '../../Maintenance/Procedures/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import { formatEmployeePayload } from './helpers';
+import  GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const JobOrder = (props) => {
-  const { title, company } = props;
+  const { handleRequestResponse } = GeneralHelper();
+  const { title, company, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -30,6 +29,16 @@ const JobOrder = (props) => {
   const { jobOrderList, action, statusMessage, status, statusLevel } = useSelector(
     (state) => state.dashboard.jobOrders
   );
+  const moList = useSelector(
+    (state) => state.rnd.moInventories.moInventoryList
+  );
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDataEmployees());
+    dispatch(clearDataMO());
+    dispatch(clearDataProcedure());
+  }, [dispatch])
 
   const {
     action: actionMO,
@@ -46,109 +55,61 @@ const JobOrder = (props) => {
   } = useSelector((state) => state.dashboard.employees);
 
   const [contentLoading, setContentLoading] = useState(false);
-
-  const pushErrorPage = useCallback(
-    (statusCode) => {
-      history.push({
-        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
-        state: {
-          moduleList: '/dashboard',
-        },
-      });
-    },
-    [history]
-  );
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    if (statusMO !== 'loading') {
-      if (actionMO === 'fetch' && statusLevelMO === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelMO,
-            modalContent: {
-              title: `${_.capitalize(statusLevelMO)} - (MO Inventories)`,
-              content: statusMessageMO,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusMO,
+      statusMessage: statusMessageMO,
+      action: actionMO, 
+      statusLevel: statusLevelMO,
+      module: 'MO'
+    })
   }, [actionMO, statusMessageMO, statusMO, statusLevelMO]);
 
   useEffect(() => {
-    if (statusEmployee !== 'loading') {
-      if (actionEmployee === 'fetch' && statusLevelEmployee === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelEmployee,
-            modalContent: {
-              title: `${_.capitalize(statusLevelEmployee)} - (Employees)`,
-              content: statusMessageEmployee,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusEmployee,
+      statusMessage: statusMessageEmployee,
+      action: actionEmployee, 
+      statusLevel: statusLevelEmployee,
+      module: 'Employee'
+    })
   }, [actionEmployee, statusMessageEmployee, statusEmployee, statusLevelEmployee]);
 
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    let isCancelled = false;
+    setContentLoading(true);
     dispatch(listJobOrders())
-      .then(unwrapResult)
-      .then(() => {
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      })
-      .catch((rejectedValueOrSerializedError) => {
-        console.log(rejectedValueOrSerializedError);
-      });
+    .then(() => {
+      setContentLoading(false);
+    });
 
-    setContentLoading(false);
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDataEmployees());
-      dispatch(clearDataMO());
-      dispatch(clearDataProcedure());
-      isCancelled = true;
+      isMounted.current = false;
+      performCleanup()
     };
-  }, [dispatch]);
+  }, [dispatch, performCleanup]);
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listEmployees()).then((dataEmployee) => {
-      dispatch(listMoInventories(company)).then((dataMO) => {
-        dispatch(listProcedure()).then((dataProcedure) => {
-          const promiseList = [dataEmployee, dataMO, dataProcedure];
-          const promiseResult = _.some(promiseList, (o) => {
-            return o.type.split(/[/?]/g)[1] === 'rejected';
-          });
-
-          if (!promiseResult) {
-            const promiseValues = _.some(promiseList, (o) => {
-              return o.payload.status !== 200 && o.payload.data.length === 0;
-            });
-            if (!promiseValues) {
+    dispatch(listEmployees()).then((resp1) => {
+      dispatch(listMoInventories(company)).then((resp2) => {
+        dispatch(listProcedure()).then((resp3) => {
+          if(isMounted.current){
+            const onSuccess = () => {
               history.push(`${path}/new`);
+              setContentLoading(false);
             }
-            setContentLoading(false);
-          } else {
-            const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
-            pushErrorPage(payload.status);
+      
+            const onFail = () => {
+              setContentLoading(false);
+            }
+      
+            handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
         });
       });
@@ -160,14 +121,24 @@ const JobOrder = (props) => {
     setModalDisplay(true);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setContentLoading(true);
-    dispatch(createJobOrder(formatEmployeePayload(values))).then(() => {
-      dispatch(listJobOrders()).then(() => {
-        setContentLoading(false);
+    values.moType = moList.find((item) => item.id === values.moNumber)?.type
+    await dispatch(createJobOrder(formatEmployeePayload(values))).then((response) => {
+      const onSuccess = () => {
         history.goBack();
-      });
+        dispatch(listJobOrders()).then(() => {
+          setContentLoading(false);
+        });
+      };
+
+      const onFail = () => {
+        history.goBack();
+        setContentLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
+    return 1
   };
 
   return (
@@ -176,6 +147,7 @@ const JobOrder = (props) => {
         <FormScreen
           title="Create Job Order"
           onSubmit={onSubmit}
+          onCancel={() => history.goBack()}
           values={null}
           formDetails={formDetails}
           formTable={tableDetails}
@@ -185,13 +157,15 @@ const JobOrder = (props) => {
         <Row gutter={[8, 24]}>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            <Button
-              loading={contentLoading}
-              icon={<PlusOutlined />}
-              onClick={() => handleAddButton()}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                loading={contentLoading}
+                icon={<PlusOutlined />}
+                onClick={() => handleAddButton()}
+              >
+                Add
+              </Button>
+            )}
           </Col>
           <Col span={20}>
             {contentLoading ? (

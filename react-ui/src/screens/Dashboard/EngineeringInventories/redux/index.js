@@ -7,6 +7,8 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 const initialState = {
   list: [],
   status: '',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -28,7 +30,11 @@ export const listEngineeringInventory = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -37,12 +43,20 @@ export const addEngineeringInventory = createAsyncThunk(
   'addEngineeringInventory',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `rest/engineering-inventory/?token=${accessToken}`,
+        payload
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const response = await axiosInstance.post(
-      `rest/engineering-inventory/?token=${accessToken}`,
-      payload
-    );
-    return response;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
 );
 
@@ -50,12 +64,21 @@ export const deleteEngineeringInventory = createAsyncThunk(
   'deleteEngineeringInventory',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {  
+      const response = await axiosInstance.post(
+        `rest/engineering-inventory/delete?token=${accessToken}`,
+        payload
+      );
+      
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    const response = await axiosInstance.post(
-      `rest/engineering-inventory/delete?token=${accessToken}`,
-      payload
-    );
-    return response;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
 );
 
@@ -67,26 +90,45 @@ const engineeringInventorySlice = createSlice({
   },
   extraReducers: {
     [listEngineeringInventory.pending]: (state, action) => {
-      state.status = 'loading';
+      return {
+        ...state,
+        action: 'fetch',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for engineering inventory`,
+      };
     },
     [listEngineeringInventory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Engineering Inventory');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Engineering Inventory',
+        state.action
+      );
 
       return {
         ...state,
-        list: data,
-        responseCode: status,
+        employeeList: data,
+        status: 'succeeded',
         statusLevel: level,
-        statusMessage: message,
+        responseCode: status,
+        statusMessage,
       };
     },
     [listEngineeringInventory.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Engineering Inventory',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
       };
     },
   },

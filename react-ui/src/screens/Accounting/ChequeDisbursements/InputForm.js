@@ -21,6 +21,7 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
 
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [tableData, setTableData] = useState([]);
 
@@ -35,6 +36,7 @@ const InputForm = (props) => {
   }, [values, form]);
 
   const onFinish = (data) => {
+    setFormButtonLoading(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -47,8 +49,9 @@ const InputForm = (props) => {
       }
     });
 
-    
-    onSubmit(data);
+    onSubmit(data).then(() => {
+      setFormButtonLoading(false);
+    });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -143,11 +146,12 @@ const InputForm = (props) => {
             <FormItem item={formDetails.account_titles} onFail={onFail} onTableSelect={onTableSelect} formInstance={form} />
 
             <div style={styles.tailLayout}>
-              <Button type="primary" onClick={() => form.submit()}>
+              <Button type="primary" loading={formButtonLoading} onClick={() => form.submit()}>
                 Submit
               </Button>
               <Button
                 style={{ marginRight: '2%' }}
+                disabled={formButtonLoading}
                 onClick={() => {
                   onCancel();
                   history.goBack();

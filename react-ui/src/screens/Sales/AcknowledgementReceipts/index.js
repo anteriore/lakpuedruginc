@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,10 +14,12 @@ import { listClient, clearData as clearClient } from '../../Maintenance/Clients/
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearOrderSlips } from '../OrderSlips/redux';
 import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const AcknowledgementReceipts = (props) => {
+  const {  handleRequestResponse } = GeneralHelper();
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -26,72 +28,91 @@ const AcknowledgementReceipts = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedAR, setSelectedAR] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const listData = useSelector((state) => state.sales.acknowledgementReceipts.list);
+  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.sales.acknowledgementReceipts);
+  const { 
+    status: statusDepot, statusLevel: statusLevelDepot, 
+    statusMessage: statusMessageDepot, action: actionDepot
+  } = useSelector(state => state.maintenance.depots);
+  const { 
+    status: statusClient, statusLevel: statusLevelClient, 
+    statusMessage: statusMessageClient, action: actionClient 
+  } = useSelector(state => state.maintenance.clients);
   const user = useSelector((state) => state.auth.user);
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearClient());
+    dispatch(clearDepot());
+    dispatch(clearOrderSlips());
+    dispatch(clearSalesInvoice());
+  }, [dispatch])
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusClient,
+      statusMessage: statusMessageClient,
+      action: actionClient, 
+      statusLevel: statusLevelClient,
+      module: 'Clients'
+    })
+  }, [actionClient, statusMessageClient, statusClient, statusLevelClient]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: 'Depots'
+    });
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
     dispatch(listAReceipt({ company, message })).then(() => {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false)
+      }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearClient());
-      dispatch(clearDepot());
-      dispatch(clearOrderSlips());
-      dispatch(clearSalesInvoice());
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAdd = () => {
     setFormTitle('Create Acknowledgement Receipt');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(clearOrderSlips());
     dispatch(clearSalesInvoice());
-    dispatch(listClient({ company, message }))
-      .then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
-        });
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
-
-  const handleUpdate = (data) => {
-    message.error('Unable to perform action.');
-    /*
-    setFormTitle('Edit Acknowledgement Receipt');
-    setFormMode('edit');
-    setLoading(true);
-    const itemData = listData.find((item) => item.id === data.id);
-    const formData = {
-      ...itemData,
-      date: moment(new Date(data.date)) || moment(),
-      chequeDate: data.cutOffDate !== null ? moment(new Date(data.chequeDate)) : null,
-      cutOffDate: data.cutOffDate !== null ? moment(new Date(data.cutOffDate)) : null,
-      client: itemData.client !== null ? itemData.client.id : null,
-      depot: itemData.depot !== null ? itemData.depot.id : null,
-    };
-    setFormData(formData);
-    dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
-          dispatch(listOrderSlips({ company, message })).then(() => {
-            history.push(`${path}/${data.id}`);
+    dispatch(listClient({ company, message })).then((resp1) => {
+      dispatch(listDepot({ company, message })).then((resp2) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+              history.push(`${path}/new`);
+              setLoading(false);
+          }
+          const onFail = () => {
             setLoading(false);
-          })
-        })
-    });
-    */
+          }
+          handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+        }
+      });
+    })
+  }
+
+  const handleUpdate = () => {
+    message.error('Unable to perform action.');
   };
 
   const handleDelete = (data) => {
@@ -114,7 +135,7 @@ const AcknowledgementReceipts = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payments = [];
     let totalSI = 0
     let totalOS = 0;
@@ -151,39 +172,22 @@ const AcknowledgementReceipts = (props) => {
       osAmount: totalOS,
       siAmount: totalSI,
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addAReceipt(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    await dispatch(addAReceipt(payload)).then((response) => {
+      setLoading(true);
+      const onSuccess = () => {
+        history.goBack();
+        dispatch(listAReceipt({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addAReceipt(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listAReceipt({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to add Acknowledgement Receipt. Please double check the provided information.`
-          );
-        }
-      });
-    }
+        });
+      };
+
+      const onFail = () => {
+        setLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
     setFormData(null);
+    return 1
   };
 
   const renderTableColumns = (item) => {
@@ -244,10 +248,10 @@ const AcknowledgementReceipts = (props) => {
               <Button
                 style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
                 icon={<PlusOutlined />}
+                loading={loading}
                 onClick={() => {
                   handleAdd();
                 }}
-                loading={loading}
               >
                 Add
               </Button>
@@ -257,7 +261,7 @@ const AcknowledgementReceipts = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={listData}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}

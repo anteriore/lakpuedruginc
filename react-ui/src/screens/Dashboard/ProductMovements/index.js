@@ -1,39 +1,45 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal } from 'antd';
+import { Row, Col, Typography, Button, Skeleton, Descriptions, Modal, Table, Empty } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { unwrapResult } from '@reduxjs/toolkit';
-import _ from 'lodash';
 import moment from 'moment';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { formDetails, tableHeader } from './data';
+import { formDetails, tableHeader, productModalHeader } from './data';
 import { listProductMovements, clearData, createProductMovement } from './redux';
 import InputForm from './InputForm';
-import statusDialogue from '../../../components/StatusDialogue';
-import { clearData as clearDepot, tempListDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
 import {
   clearData as clearPI,
-  tempListProductInventory,
+  listProductInventory,
 } from '../../Maintenance/redux/productInventory';
 import { formatPMPayload } from './helpers';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const ProductMovements = (props) => {
-  const { company, title } = props;
+  const { handleRequestResponse } = GeneralHelper();
+  const { company, title, actions } = props;
   const { path } = useRouteMatch();
   const history = useHistory();
   const dispatch = useDispatch();
   const [contentLoading, setContentLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [productMovement, setProductMovement] = useState(null);
+  const isMounted = useRef(true);
 
   const { productMovementList, action, statusMessage, status, statusLevel } = useSelector(
     (state) => state.dashboard.productMovements
   );
   const { id } = useSelector((state) => state.auth.user);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearDepot());
+    dispatch(clearPI());
+  }, [dispatch])
 
   const {
     action: actionDepot,
@@ -49,109 +55,56 @@ const ProductMovements = (props) => {
     statusLevel: statusLevelPI,
   } = useSelector((state) => state.maintenance.productInventory);
 
-  const pushErrorPage = useCallback(
-    (statusCode) => {
-      history.push({
-        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
-        state: {
-          moduleList: '/sales',
-        },
-      });
-    },
-    [history]
-  );
-
   useEffect(() => {
-    if (status !== 'loading') {
-      if (action === 'fetch' && statusLevel !== 'success') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-
-      if (action !== 'fetch') {
-        statusDialogue({ statusMessage, statusLevel }, 'message');
-      }
-    }
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    if (statusPI !== 'loading') {
-      if (actionPI === 'fetch' && statusLevelPI === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelPI,
-            modalContent: {
-              title: `${_.capitalize(statusLevelPI)} - (Product Inventory)`,
-              content: statusMessagePI,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusPI,
+      statusMessage: statusMessagePI,
+      action: actionPI, 
+      statusLevel: statusLevelPI,
+      module: "Product Inventory"
+    });
   }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
 
   useEffect(() => {
-    if (statusDepot !== 'loading') {
-      if (actionDepot === 'fetch' && statusLevelDepot === 'warning') {
-        statusDialogue(
-          {
-            statusLevel: statusLevelDepot,
-            modalContent: {
-              title: `${_.capitalize(statusLevelDepot)} - (Depot)`,
-              content: statusMessageDepot,
-            },
-          },
-          'modal'
-        );
-      }
-    }
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: "Depot"
+    });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
-    let isCancelled = false;
-    setContentLoading(true);
-    dispatch(listProductMovements(company))
-      .then(unwrapResult)
-      .then(() => {
-        if (isCancelled) {
-          dispatch(clearData());
-        }
-      })
-      .catch((rejectedValueOrSerializedError) => {
-        console.log(rejectedValueOrSerializedError);
-      });
+    dispatch(listProductMovements(company)).then(() => {
+      if (isMounted.current){
+        setContentLoading(false);
+      }
+    })
 
-    setContentLoading(false);
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearDepot());
-      dispatch(clearPI());
-
-      isCancelled = true;
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(tempListDepot(company)).then((dataDepot) => {
-      dispatch(tempListProductInventory()).then((dataPI) => {
-        const promiseList = [dataDepot, dataPI];
-        const promiseResult = _.some(promiseList, (o) => {
-          return o.type.split(/[/?]/g)[1] === 'rejected';
-        });
-
-        if (!promiseResult) {
-          const promiseValues = _.some(promiseList, (o) => {
-            return o.payload.status !== 200 && o.payload.data.length === 0;
-          });
-
-          if (!promiseValues) {
-            history.push(`${path}/new`);
+    dispatch(listDepot(company)).then((response1) => {
+      dispatch(listProductInventory({company})).then((response2) => {
+        if(isMounted.current){
+          const onSuccess = () => {
+              history.push(`${path}/new`);
+              setContentLoading(false);
           }
-          setContentLoading(false);
-        } else {
-          const { payload } = _.find(promiseList, (o) => o.type.split(/[/?]/g)[1] === 'rejected');
-          pushErrorPage(payload.status);
+          const onFail = () => {
+            setContentLoading(false);
+          }
+          handleRequestResponse([response1, response2], onSuccess, onFail, '');
         }
       });
     });
@@ -162,13 +115,21 @@ const ProductMovements = (props) => {
     setProductMovement(data);
   };
 
-  const onCreate = (values) => {
+  const onCreate = async (values) => {
     setContentLoading(true);
-    dispatch(createProductMovement(formatPMPayload(id, company, values))).then(() => {
-      dispatch(listProductMovements(company)).then(() => {
+    await dispatch(createProductMovement(formatPMPayload(id, company, values))).then((response) => {
+      const onSuccess = () => {
+        dispatch(listProductMovements(company)).then(() => {
+          setContentLoading(false);
+        });
+      };
+
+      const onFail = () => {
         setContentLoading(false);
-      });
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
+    return 1
   };
 
   return (
@@ -180,14 +141,16 @@ const ProductMovements = (props) => {
         <Row>
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
-            <Button
-              loading={contentLoading}
-              onClick={() => handleAddButton()}
-              icon={<PlusOutlined />}
-              primary
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                loading={contentLoading}
+                onClick={() => handleAddButton()}
+                icon={<PlusOutlined />}
+                primary
+              >
+                Add
+              </Button>
+            )}
           </Col>
           <Col span={20}>
             {contentLoading ? (
@@ -258,15 +221,12 @@ const ProductMovements = (props) => {
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Product Movement Items:
               </Title>
-              {productMovement.products.map((item) => {
-                return (
-                  <Descriptions title={`[${item.product.finishedGood.name}]`} size="default">
-                    <Descriptions.Item label="ID">{item.id}</Descriptions.Item>
-                    <Descriptions.Item label="Quantity">{item.quantity}</Descriptions.Item>
-                    <Descriptions.Item label="Lot #">{item.product.lotNumber}</Descriptions.Item>
-                  </Descriptions>
-                );
-              })}
+              <Table
+                dataSource={productMovement.products}
+                columns={productModalHeader}
+                pagination={false}
+                locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+              />
             </>
           )}
         </Modal>

@@ -44,7 +44,7 @@ export const createProduct = createAsyncThunk('createProduct', async (payload, t
 export const updateProduct = createAsyncThunk('updateProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
-    const response = await axiosInstance.post(`/rest/products?token=${accessToken}`, payload);
+    const response = await axiosInstance.post(`/rest/products/update?token=${accessToken}`, payload);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -92,8 +92,9 @@ const productSlice = createSlice({
       return {
         ...state,
         status: 'loading',
+        statusLevel: '',
         action: 'fetch',
-        statusMessage: `${message.ITEMS_GET_PENDING} for journal vouchers`,
+        statusMessage: `${message.ITEMS_GET_PENDING} for products`,
       };
     },
     [listProduct.fulfilled]: (state, action) => {
@@ -136,8 +137,8 @@ const productSlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for products`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for products`,
         responseCode: null,
       };
     },
@@ -178,8 +179,8 @@ const productSlice = createSlice({
         ...state,
         action: 'update',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for products`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for products`,
         responseCode: null,
       };
     },
@@ -220,8 +221,8 @@ const productSlice = createSlice({
         ...state,
         action: 'delete',
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for products`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for products`,
         responseCode: null,
       };
     },
@@ -241,14 +242,20 @@ const productSlice = createSlice({
         statusMessage,
       };
     },
-    [deleteProduct.rejected]: (state) => {
+    [deleteProduct.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Products',
+        state.action
+      );
 
       return {
         ...state,
         status: 'failed',
-        statusLevel: 'error',
-        responseCode: 500,
-        statusMessage: "Products: Delete process from server failed",
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

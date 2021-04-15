@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 
 const initialState = {
   list: null,
-  status: '',
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -13,36 +15,62 @@ const initialState = {
 export const listOReceipt = createAsyncThunk('listOReceipt', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/order-receipts?token=${accessToken}`);
+  try{
+    const response = await axiosInstance.get(`rest/order-receipts?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  if (typeof response !== 'undefined' && response.status === 200) {
-    const { data } = response;
-    if (data.length === 0) {
-      payload.message.warning('No data retrieved for official receipts');
+    if (valid) {
+      return validatedResponse;
     }
-  } else {
-    payload.message.error(message.ITEMS_GET_REJECTED);
-    return thunkAPI.rejectWithValue(response);
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
-
-  return response;
 });
 
 export const addOReceipt = createAsyncThunk('addOReceipt', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/order-receipts/?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(`rest/order-receipts/?token=${accessToken}`, payload);
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
+  }
 });
 
 export const deleteOReceipt = createAsyncThunk('deleteOReceipt', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(
+      `rest/order-receipts/delete?token=${accessToken}`,
+      payload
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post(
-    `rest/order-receipts/delete?token=${accessToken}`,
-    payload
-  );
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
+  }
 });
 
 const officialReceiptSlice = createSlice({
@@ -53,30 +81,89 @@ const officialReceiptSlice = createSlice({
   },
   extraReducers: {
     [listOReceipt.pending]: (state) => {
-      state.status = 'loading';
+      return {
+        ...state,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for official receipts`,
+      };
     },
     [listOReceipt.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      let statusMessage = message.ITEMS_GET_FULFILLED;
-
-      if (data.length === 0) {
-        statusMessage = 'No data retrieved for official receipts';
-      }
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Official Receipts',
+        state.action
+      );
 
       return {
         ...state,
         list: data,
         status: 'succeeded',
-        action: 'get',
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
-    [listOReceipt.rejected]: (state) => {
+    [listOReceipt.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Official Receipts',
+        state.action
+      );
+
+      return {
+        ...state,
+        list: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+
+    [addOReceipt.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusMessage: `${message.ITEM_ADD_PENDING} for official receipt`,
+        statusLevel: '',
+        responseCode: null,
+      };
+    },
+    [addOReceipt.fulfilled]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Official Reciepts',
+        state.action
+      );
+
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [addOReceipt.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Official Reciepts',
+        state.action
+      );
+
       return {
         ...state,
         status: 'failed',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

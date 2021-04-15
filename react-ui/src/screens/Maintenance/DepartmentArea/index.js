@@ -2,91 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Button, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { reevalutateMessageStatus } from '../../../helpers/general-helper';
-import TableDisplay from '../../../components/TableDisplay';
+
+import { deptColumns, tableName, areaColumns, formDetailD, formDetailA } from './data';
 import { listD, addD, updateD,deleteD, listA, addA, updateA,deleteA, clearData } from './redux';
+
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 
 const { Title } = Typography;
 
 const DepartmentArea = (props) => {
+  const [loading, setLoading] = useState(true);
+
   const [displayFormD, setDisplayFormD] = useState(false);
   const [displayFormA, setDisplayFormA] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formDataA, setFormDataA] = useState(null);
   const [formDataD, setFormDataD] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const deptColumns = [
-    {
-      title: 'Dept. Code',
-      dataIndex: 'code',
-      key: 'code',
-      datatype: 'string',
-    },
-    {
-      title: 'Dept. Name',
-      dataIndex: 'name',
-      key: 'name',
-      datatype: 'string',
-    },
-  ];
-
-  const tableName = 'department-areas';
-
-  const areaColumns = [
-    {
-      title: 'Area Code',
-      dataIndex: 'code',
-      key: 'code',
-      datatype: 'string',
-    },
-    {
-      title: 'Area Name',
-      dataIndex: 'name',
-      key: 'name',
-      datatype: 'string',
-    },
-  ];
-
-  const formDetailD = {
-    form_name: 'departments',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid department name' }],
-        placeholder: 'Department name',
-      },
-      {
-        label: 'Code',
-        name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid department code' }],
-        placeholder: 'Department code',
-      },
-    ],
-  };
-
-  const formDetailA = {
-    form_name: 'areas',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid area name' }],
-        placeholder: 'Area name',
-      },
-      {
-        label: 'Code',
-        name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid area code' }],
-        placeholder: 'Area code',
-      },
-    ],
-  };
 
   const { company, title, actions } = props;
+  const { handleRequestResponse } = GeneralHelper()
   const dispatch = useDispatch();
   const {
     areaList: areaData, 
@@ -177,7 +114,7 @@ const DepartmentArea = (props) => {
     setFormDataD(null);
   };
 
-  const onSubmitD = (values) => {
+  const onSubmitD = async (values) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -188,12 +125,16 @@ const DepartmentArea = (props) => {
         },
       };
 
-      dispatch(updateD(payload)).then(() => {
-        dispatch(listD({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(updateD(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listD({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     } else if (formMode === 'add') {
       const payload = {
         ...values,
@@ -201,21 +142,27 @@ const DepartmentArea = (props) => {
           id: company,
         },
       };
-      dispatch(addD(payload)).then(() => {
-        dispatch(listD({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(addD(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listD({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     }
 
     setDisplayFormD(false);
     setDisplayFormA(false);
     setFormDataA(null);
     setFormDataD(null);
+
+    return 1
   };
 
-  const onSubmitA = (values) => {
+  const onSubmitA = async (values) => {
     setLoading(true);
     if (formMode === 'edit') {
       const payload = {
@@ -226,12 +173,16 @@ const DepartmentArea = (props) => {
         },
       };
 
-      dispatch(updateA(payload)).then(() => {
-        dispatch(listA({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(updateA(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listA({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     } else if (formMode === 'add') {
       const payload = {
         ...values,
@@ -239,18 +190,23 @@ const DepartmentArea = (props) => {
           id: company,
         },
       };
-      dispatch(addA(payload)).then(() => {
-        dispatch(listA({ company }));
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
+      await dispatch(addA(payload)).then((response) => {
+        const onSuccess = () => {
+          dispatch(listA({ company }));
+          setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      })
     }
 
     setDisplayFormD(false);
     setDisplayFormA(false);
     setFormDataA(null);
     setFormDataD(null);
+    return 1
   };
 
   return (
@@ -297,16 +253,18 @@ const DepartmentArea = (props) => {
           <Title level={5} style={{ float: 'left' }}>
             Areas
           </Title>
-          <Button
-            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-            icon={<PlusOutlined />}
-            loading={loading}
-            onClick={() => {
-              handleAddA();
-            }}
-          >
-            Add
-          </Button>
+          {actions.includes('create') && (
+            <Button
+              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+              icon={<PlusOutlined />}
+              loading={loading}
+              onClick={() => {
+                handleAddA();
+              }}
+            >
+              Add
+            </Button>
+          )}
           {loading ? <Skeleton/> : 
             <TableDisplay
               name={tableName}

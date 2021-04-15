@@ -15,7 +15,11 @@ export const listJobOrders = createAsyncThunk('listJobOrders', async (_, thunkAP
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -31,7 +35,11 @@ export const createJobOrder = createAsyncThunk('createJobOrder', async (payload,
     }
     return thunkAPI.rejectWithValue(validateResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -55,12 +63,14 @@ const jobOrderSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for job orders`,
       };
     },
     [listJobOrders.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders', state.action);
 
       return {
         ...state,
@@ -73,7 +83,7 @@ const jobOrderSlice = createSlice({
     },
     [listJobOrders.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Orders', state.action);
 
       return {
         ...state,
@@ -96,7 +106,7 @@ const jobOrderSlice = createSlice({
     },
     [createJobOrder.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order', state.action);
 
       return {
         ...state,
@@ -108,7 +118,7 @@ const jobOrderSlice = createSlice({
     },
     [createJobOrder.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order');
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Job Order', state.action);
 
       return {
         ...state,

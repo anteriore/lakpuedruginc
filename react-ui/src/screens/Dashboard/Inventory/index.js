@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, message, Skeleton, Modal, Descriptions, Space } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Row, Col, Typography, message, Skeleton, Modal, Descriptions, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -16,6 +15,7 @@ import {
   updateInventory,
 } from './redux';
 import FormScreen from '../../../components/forms/FormScreen';
+import {reevalutateMessageStatus} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -33,39 +33,45 @@ const Inventory = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const inventory = useSelector((state) => state.dashboard.inventory.list);
+  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.dashboard.inventory);
   const { formDetails } = FormDetails();
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+  }, [dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listInventory({ company, message })).then(() => {
-      setFormData(null);
-      setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
+      if(isMounted.current) {
+        setLoading(false);
+        setFormData(null);
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      isCancelled = true;
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
-  const handleAdd = () => {
-    setFormTitle('Add Inventory');
-    setFormMode('add');
-    setFormData(null);
-    // dispatch(listInventory({ company, message })).then(() => {
-    history.push(`${path}/new`);
-    // });
-  };
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  },[status, action, statusMessage, statusLevel]);
+
+  // const handleAdd = () => {
+  //   setFormTitle('Add Inventory');
+  //   setFormMode('add');
+  //   setFormData(null);
+  //   // dispatch(listInventory({ company, message })).then(() => {
+  //   history.push(`${path}/new`);
+  //   // });
+  // };
 
   const handleUpdate = (data) => {
     setFormTitle('Edit Inventory');
     setFormMode('edit');
-    const inventoryData = inventory.find((inventory) => inventory.id === data.id);
+    const inventoryData = list.find((inventory) => inventory.id === data.id);
     const formData = {
       ...inventoryData,
       item: inventoryData.item !== null ? inventoryData.item.id : null,
@@ -197,7 +203,7 @@ const Inventory = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={inventory}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}

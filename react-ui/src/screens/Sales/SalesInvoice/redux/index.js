@@ -9,7 +9,6 @@ export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payl
     const response = await axiosInstance.get(
       `/rest/sales-invoices/company/${payload}?token=${accessToken}`
     );
-    console.log('Response: ', response);
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -18,7 +17,11 @@ export const listSalesInvoice = createAsyncThunk('listSalesInvoice', async (payl
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
   }
 });
 
@@ -38,7 +41,11 @@ export const listSalesInvoiceByDepot = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -64,7 +71,11 @@ export const listSalesInvoiceByDepotAndBalance = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -90,7 +101,11 @@ export const listSalesInvoiceByDepotAndStatus = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validatedResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -112,7 +127,11 @@ export const createSalesInvoice = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(validateResponse);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED
+      });
     }
   }
 );
@@ -162,6 +181,8 @@ const salesInvoiceSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales invoice`,
       };
     },
@@ -169,7 +190,8 @@ const salesInvoiceSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice'
+        'Sales Invoice',
+        state.action
       );
 
       return {
@@ -183,10 +205,10 @@ const salesInvoiceSlice = createSlice({
     },
     [listSalesInvoice.rejected]: (state, action) => {
       const { status } = action?.payload ?? { status: 400 };
-      console.log(status);
       const { message: statusMessage, level } = generateStatusMessage(
         action?.payload ?? { status: 400 },
-        'Sales Invoice'
+        'Sales Invoice',
+        state.action
       );
 
       return {
@@ -202,6 +224,8 @@ const salesInvoiceSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales invoice`,
       };
     },
@@ -209,7 +233,8 @@ const salesInvoiceSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice'
+        'Sales Invoice',
+        state.action
       );
 
       return {
@@ -225,7 +250,8 @@ const salesInvoiceSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice in the selected Depot'
+        'Sales Invoice',
+        state.action
       );
 
       return {
@@ -241,6 +267,8 @@ const salesInvoiceSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales invoice`,
       };
     },
@@ -248,7 +276,8 @@ const salesInvoiceSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice'
+        'Sales Invoice',
+        state.action
       );
 
       return {
@@ -264,7 +293,8 @@ const salesInvoiceSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice in the selected Depot'
+        'Sales Invoice in the selected Depot',
+        state.action
       );
 
       return {
@@ -280,6 +310,8 @@ const salesInvoiceSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for sales invoice`,
       };
     },
@@ -287,7 +319,8 @@ const salesInvoiceSlice = createSlice({
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice'
+        'Sales Invoice',
+        state.action
       );
 
       return {
@@ -303,7 +336,8 @@ const salesInvoiceSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice in the selected Depot'
+        'Sales Invoice in the selected Depot',
+        state.action
       );
 
       return {
@@ -322,14 +356,15 @@ const salesInvoiceSlice = createSlice({
         status: 'loading',
         statusMessage: `${message.ITEM_ADD_PENDING} for sales invoice`,
         statusLevel: '',
-        responseCode: null,
+        responseCode: null
       };
     },
     [createSalesInvoice.fulfilled]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice'
+        'Sales Invoice',
+        state.action
       );
 
       return {
@@ -344,7 +379,8 @@ const salesInvoiceSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Sales Invoice'
+        'Sales Invoice',
+        state.action
       );
 
       return {

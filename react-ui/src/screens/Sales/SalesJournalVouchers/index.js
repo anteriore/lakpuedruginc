@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Row, Col, Typography, Tabs, Skeleton } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { columns } from './data';
@@ -7,39 +7,61 @@ import TableDisplay from '../../../components/TableDisplay';
 
 import { listOrderSlips, clearData as clearOrderSlips } from '../OrderSlips/redux';
 import { listSalesInvoice, clearData as clearSalesInvoice } from '../SalesInvoice/redux';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
-const AcknowledgementReceipts = (props) => {
+const SalesJournalVouchers = (props) => {
   const dispatch = useDispatch();
   const { company, title } = props;
 
   const [loading, setLoading] = useState(true);
 
-  const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
-  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
+  const {
+    orderSlipsList, 
+    status, 
+    statusLevel, 
+    statusMessage, 
+    action 
+  } = useSelector((state) => state.sales.orderSlips);
+  
+  const {
+    salesInvoiceList
+  } = useSelector((state) => state.sales.salesInvoice);
+  
   let salesSlips = [];
-  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
+  salesSlips = salesSlips.concat(orderSlipsList).concat(salesInvoiceList);
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearOrderSlips());
+    dispatch(clearSalesInvoice());
+  },[dispatch])
 
   useEffect(() => {
-    dispatch(listSalesInvoice(company)).then(() => {
-      dispatch(listOrderSlips(company)).then(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    dispatch(listSalesInvoice(company))
+    dispatch(listOrderSlips(company)).then(() => {
+      if (isMounted.current){
         setLoading(false);
-      });
-    });
+      }
+    })
 
     return function cleanup() {
-      dispatch(clearOrderSlips());
-      dispatch(clearSalesInvoice());
+      isMounted.current = false;
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
 
-  const handleUpdate = (data) => {};
+  const handleUpdate = () => {};
 
-  const handleDelete = (data) => {};
+  const handleDelete = () => {};
 
-  const handleRetrieve = (data) => {};
+  const handleRetrieve = () => {};
 
   return (
     <>
@@ -70,7 +92,7 @@ const AcknowledgementReceipts = (props) => {
               <TabPane tab="For BIR" key="2">
                 <TableDisplay
                   columns={columns.siOnly}
-                  data={salesInvoices}
+                  data={salesInvoiceList}
                   handleRetrieve={handleRetrieve}
                   handleUpdate={handleUpdate}
                   handleDelete={handleDelete}
@@ -86,4 +108,4 @@ const AcknowledgementReceipts = (props) => {
   );
 };
 
-export default AcknowledgementReceipts;
+export default SalesJournalVouchers;

@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Row, Col, Typography, Button, message, Skeleton, Descriptions, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { columns } from './data';
-import { listVendor, addVendor, getVendor, deleteVendor, clearData } from './redux';
+import FormDetails, { columns } from './data';
+import { listVendor, addVendor, getVendor, updateVendor,deleteVendor, clearData } from './redux';
 import { listD, listA, clearData as clearA } from '../DepartmentArea/redux';
-import { listG, clearData as clearG } from '../GroupsCategories/redux';
+import { listGroupByCompany, clearData as clearG } from '../GroupsCategories/redux';
 import FormScreen from '../../../components/forms/FormScreen';
+import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const Vendors = (props) => {
+  const {formDetails} = FormDetails();
+  const { handleRequestResponse } = GeneralHelper();
+
   const [loading, setLoading] = useState(true);
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -26,124 +30,85 @@ const Vendors = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const vendors = useSelector((state) => state.maintenance.vendors.list);
-  const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
-  const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
-  const groups = useSelector((state) => state.maintenance.groupsCategories.groupList);
+  const {status, action, statusMessage, statusLevel, list} = useSelector((state) => state.maintenance.vendors);
+  const {
+    status: statusDA, 
+    action: actionDA,
+    statusMessage: statusMessageDA,
+    statusLevel: statusLevelDA
+  } = useSelector((state) => state.maintenance.departmentArea);
 
-  const formDetails = {
-    form_name: 'vendor',
-    form_items: [
-      {
-        label: 'Name',
-        name: 'name',
-        rules: [{ required: true, message: 'Please provide a valid name' }],
-        placeholder: 'Name',
-      },
-      {
-        label: 'Code',
-        name: 'code',
-        rules: [{ required: true, message: 'Please provide a valid code' }],
-        placeholder: 'Code',
-      },
-      {
-        label: 'Full Name',
-        name: 'fullName',
-        rules: [{ required: true, message: 'Please provide a valid full name' }],
-        placeholder: 'Full Name',
-      },
-      {
-        label: 'Address',
-        name: 'address',
-        rules: [{ required: true, message: 'Please provide a valid address' }],
-        placeholder: 'Address',
-      },
-      {
-        label: 'Contact Person',
-        name: 'contactPerson',
-        rules: [{ required: true, message: 'Please provide a valid contact person' }],
-        placeholder: 'Contact Person',
-      },
-      {
-        label: 'Phone Number',
-        name: 'phoneNumber',
-        rules: [{ required: true, message: 'Please provide a valid phone number' }],
-        placeholder: 'Phone Number',
-      },
-      {
-        label: 'Terms',
-        name: 'terms',
-        type: 'number',
-        rules: [{ required: true, message: 'Please provide valid Terms' }],
-        placeholder: 'Terms',
-      },
-      {
-        label: 'TIN',
-        name: 'tin',
-        rules: [{ required: true, message: 'Please provide a valid TIN' }],
-        placeholder: 'TIN',
-      },
-      {
-        label: 'VAT',
-        name: 'vat',
-        rules: [{ required: true, message: 'Please provide a valid VAT' }],
-        placeholder: 'VAT',
-      },
-      {
-        label: 'Area',
-        name: 'area',
-        type: 'select',
-        selectName: 'name',
-        choices: areas,
-        rules: [{ required: true, message: 'Please select an Area' }],
-      },
-      {
-        label: 'Department',
-        name: 'department',
-        type: 'select',
-        selectName: 'name',
-        choices: departments,
-        rules: [{ required: true, message: 'Please select a Department' }],
-      },
-      {
-        label: 'Group',
-        name: 'group',
-        type: 'select',
-        selectName: 'name',
-        choices: groups,
-        rules: [{ required: true, message: 'Please select a Group' }],
-      },
-    ],
-  };
+  const { 
+    status: statusGC, 
+    action: actionGC,
+    statusMessage: statusMessageGC,
+    statusLevel: statusLevelGC
+  } = useSelector((state) => state.maintenance.groupsCategories);
+
+  const isMounted = useRef(true);
+
+  const performCleanup = useCallback(() => {
+    dispatch(clearData());
+    dispatch(clearA());
+    dispatch(clearG());
+  }, [dispatch])
 
   useEffect(() => {
-    let isCancelled = false;
-    dispatch(listVendor({ company, message })).then((response) => {
-      setFormData(null);
-      setLoading(false);
-      if (isCancelled) {
-        dispatch(clearData());
+    dispatch(listVendor({ company, message })).then(() => {
+      if (isMounted.current){
+        setFormData(null);
+        setLoading(false);
       }
     });
 
     return function cleanup() {
-      dispatch(clearData());
-      dispatch(clearA());
-      dispatch(clearG());
-      isCancelled = true;
+      isMounted.current = false
+      performCleanup();
     };
-  }, [dispatch, company]);
+  }, [dispatch, company, performCleanup]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDA,
+      statusMessage: statusMessageDA,
+      action: actionDA, 
+      statusLevel: statusLevelDA,
+      module: title
+    })
+  }, [actionDA, statusMessageDA, statusDA, statusLevelDA, title]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusGC,
+      statusMessage: statusMessageGC,
+      action: actionGC, 
+      statusLevel: statusLevelGC,
+      module: title
+    })
+  }, [actionGC, statusMessageGC, statusGC, statusLevelGC, title]);
 
   const handleAdd = () => {
     setFormTitle('Add Vendor');
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listA({ company, message })).then(() => {
-      dispatch(listD({ company, message })).then(() => {
-        dispatch(listG({ company, message })).then(() => {
-          history.push(`${path}/new`);
-          setLoading(false);
+    dispatch(listA({ company, message })).then((resp1) => {
+      dispatch(listD({ company, message })).then((resp2) => {
+        dispatch(listGroupByCompany({ company })).then((resp3) => {
+          if(isMounted.current){
+            const onSuccess = () => {
+                history.push(`${path}/new`);
+                setLoading(false);
+            }
+            const onFail = () => {
+              setLoading(false);
+            }
+            handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
+          }
         });
       });
     });
@@ -152,36 +117,45 @@ const Vendors = (props) => {
   const handleUpdate = (data) => {
     setFormTitle('Edit Vendor');
     setFormMode('edit');
-    const vendorData = vendors.find((vendor) => vendor.id === data.id);
+    const vendorData = list.find((vendor) => vendor.id === data.id);
     const formData = {
       ...vendorData,
       department: vendorData.department !== null ? vendorData.department.id : null,
       area: vendorData.area !== null ? vendorData.area.id : null,
       group: vendorData.group !== null ? vendorData.group.id : null,
     };
-    console.log(formData);
     setFormData(formData);
-    dispatch(listA({ company, message })).then(() => {
-      dispatch(listD({ company, message })).then(() => {
-        dispatch(listG({ company, message })).then(() => {
-          history.push(`${path}/${data.id}`);
+    dispatch(listA({ company, message })).then((resp1) => {
+      dispatch(listD({ company, message })).then((resp2) => {
+        dispatch(listGroupByCompany({ company })).then((resp3) => {
+          if(isMounted.current){
+            const onSuccess = () => {
+                history.push(`${path}/new`);
+                setLoading(false);
+            }
+            const onFail = () => {
+              setLoading(false);
+            }
+            handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
+          }
         });
       });
     });
   };
 
   const handleDelete = (data) => {
+    setLoading(true);
     dispatch(deleteVendor(data.id)).then((response) => {
-      setLoading(true);
-      if (response.payload.status === 200) {
+      const onSuccess = () => {
         dispatch(listVendor({ company, message })).then(() => {
           setLoading(false);
-          message.success(`Successfully deleted ${data.name}`);
         });
-      } else {
-        setLoading(false);
-        message.error(`Unable to delete ${data.name}`);
       }
+      const onFail = () => {
+        setLoading(false);
+      }
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -204,7 +178,7 @@ const Vendors = (props) => {
     setFormData(null);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (formMode === 'edit') {
       const payload = {
         ...data,
@@ -223,18 +197,19 @@ const Vendors = (props) => {
         },
       };
 
-      dispatch(addVendor(payload)).then((response) => {
+      await dispatch(updateVendor(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
+        const onSuccess = () => {
+          history.goBack();
           dispatch(listVendor({ company, message })).then(() => {
             setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.name}`);
           });
-        } else {
-          setLoading(false);
-          message.error(`Unable to update ${data.name}`);
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
       const payload = {
@@ -252,18 +227,19 @@ const Vendors = (props) => {
           id: data.group,
         },
       };
-      dispatch(addVendor(payload)).then((response) => {
+      await dispatch(addVendor(payload)).then((response) => {
         setLoading(true);
-        if (response.payload.status === 200) {
+        const onSuccess = () => {
+          history.goBack();
           dispatch(listVendor({ company, message })).then(() => {
             setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${data.name}`);
           });
-        } else {
-          setLoading(false);
-          message.error(`Unable to add ${data.name}`);
         }
+        const onFail = () => {
+          setLoading(false);
+        }
+  
+        handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
@@ -317,7 +293,7 @@ const Vendors = (props) => {
             ) : (
               <TableDisplay
                 columns={columns}
-                data={vendors}
+                data={list}
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}

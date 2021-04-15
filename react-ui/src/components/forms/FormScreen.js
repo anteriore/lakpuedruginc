@@ -31,6 +31,7 @@ const FormScreen = (props) => {
 
   const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
+  const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [loadingModal, setLoadingModal] = useState(true);
@@ -42,6 +43,24 @@ const FormScreen = (props) => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
+      let selectedKeys = []
+      if(values !== null && values[formTable.name] !== null){
+        values[formTable.name].forEach((item) => {
+          selectedKeys.push(item[formTable.foreignKey])
+        })
+      }
+      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
+      setTableSelectedKeys(selectedKeys)
+
+      if(typeof formTable.isVisible === 'undefined'){
+        formTable.isVisible = formTable.selectData.length > 0
+      }
+
+      if(!formTable.isVisible && formTable.preloadedData){
+        //selected data was pre-loaded but is empty
+        onFail()
+      }
+
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
@@ -98,6 +117,7 @@ const FormScreen = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
+                  wrapperCol={{ span: 24, offset: 0 }}
                   initialValue={field.initialValue}
                 >
                   <Input placeholder={field.placeholder ?? ''} />
@@ -117,6 +137,7 @@ const FormScreen = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
+                  wrapperCol={{ span: 24, offset: 0 }}
                   initialValue={field.initialValue}
                 >
                   <InputNumber min={field.min} max={field.max} />
@@ -138,6 +159,7 @@ const FormScreen = (props) => {
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                   initialValue={field.initialValue}
+                  wrapperCol={{ span: 24, offset: 0 }}
                 >
                   <TimePicker use12Hours format="h:mm a" />
                 </Form.Item>
@@ -175,6 +197,7 @@ const FormScreen = (props) => {
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                   initialValue={field.initialValue}
+                  wrapperCol={{ span: 24, offset: 0 }}
                 >
                   <Select
                     showSearch={field.type === 'selectSearch'}
@@ -205,66 +228,29 @@ const FormScreen = (props) => {
     return columns;
   };
 
-  // for selecting selecting a new row in a table
-  const onModalSelect = (data, isSelected) => {
-    let selectedItems = [];
-    if (hasTable) {
-      if (isSelected) {
-        // add existing data
-        if (tableData !== null && typeof tableData !== 'undefined') {
-          selectedItems = selectedItems.concat(tableData);
-        }
-
-        // process the new data before adding if necessary
-        let processedData = data;
-        if (typeof formTable.processData === 'function') {
-          processedData = formTable.processData(data);
-        }
-        selectedItems = selectedItems.concat(processedData);
-      } else if (tableData !== null && typeof tableData !== 'undefined') {
-        selectedItems = tableData;
-
-        // key for the selected item
-        if (typeof formTable.selectedKey === 'undefined') {
-          formTable.selectedKey = 'id';
-        }
-        // foreign key that corresponds to the selected item
-        if (typeof formTable.foreignKey === 'undefined') {
-          formTable.foreignKey = 'id';
-        }
-        selectedItems = selectedItems.filter(
-          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
-        );
-      }
-      const fieldsValue = {};
-      fieldsValue[formTable.name] = selectedItems;
-      setTableData(selectedItems);
-      form.setFieldsValue(fieldsValue);
+  const onTableSelect = (selectedRowKeys, selectedRows) => {
+    setTableSelectedKeys(selectedRowKeys)
+    let prevSelectData = []
+    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
+      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
     }
-  };
 
-  // for rendering the columns inside the row selection modal
-  const renderModalColumns = (columns) => {
-    let modalColumns = [
-      {
-        key: 'select',
-        render: (row) => {
-          return (
-            <Checkbox
-              onChange={(e) => {
-                onModalSelect(row, e.target.checked);
-              }}
-              defaultChecked={formTable.checkSelected(tableData, row)}
-            />
-          );
-        },
-      },
-    ];
+    let processedData = []
+    selectedRows.forEach((rowData) => {
+      const index = prevSelectData.findIndex((item) => item[formTable.selectedKey] === rowData[formTable.selectedKey])
+      if(index !== -1){
+        processedData.push(prevSelectData[index])
+      }
+      else {
+        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData])
+      }
+    })
 
-    modalColumns = modalColumns.concat(columns);
-
-    return modalColumns;
-  };
+    const fieldsValue = {};
+    fieldsValue[formTable.name] = processedData;
+    setTableData(processedData);
+    form.setFieldsValue(fieldsValue);
+  }
 
   const expandedRowRender = (row) => {
     if (formTable.hasOwnProperty('nestedData')) {
@@ -278,6 +264,9 @@ const FormScreen = (props) => {
           />
         </>
       );
+    }
+    else {
+      return null
     }
   };
 
@@ -373,6 +362,7 @@ const FormScreen = (props) => {
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={loading} 
               onClick={() => {
                 onCancel();
                 history.goBack();
@@ -390,23 +380,20 @@ const FormScreen = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
-                // for nested tables
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={{simple: true}}
-                  expandable={{ expandedRowRender }}
-                  rowKey={formTable.foreignKey}
-                />
-              ) : (
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={{simple: true}}
-                  rowKey={formTable.foreignKey}
-                />
-              )}
+              <Table
+                rowSelection={{
+                  type: 'checkbox',
+                  //selectedRowKeys: item.selectedData,
+                  onChange: onTableSelect,
+                  preserveSelectedRowKeys: false,
+                  selectedRowKeys: tableSelectedKeys
+                }}
+                columns={formTable.selectFields}
+                dataSource={formTable.selectData}
+                rowKey={formTable.selectedKey}
+                pagination={{simple: true}}
+                expandable={{ expandedRowRender: formTable.hasOwnProperty('nestedData') ? expandedRowRender : null }}
+              />
             </Modal>
           )}
         </Col>

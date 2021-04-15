@@ -38,3 +38,5 @@ export const NO_DATA_FOUND = 'No Data Found!';
 // Description
 export const NO_DATA_FOUND_DESC = (tableName) =>
   `Sorry, it appears that we can't retrieve any data from ${tableName} because the table is currently empty. Please go to ${tableName} page to create some data.`;
+
+export const ERROR_OCCURED = 'failed. An error has occurred';

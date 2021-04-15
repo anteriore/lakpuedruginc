@@ -85,6 +85,7 @@ const itemTypeSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
+        statusLevel: '',
         statusMessage: message.ITEMS_GET_PENDING
       };
     },
@@ -126,8 +127,8 @@ const itemTypeSlice = createSlice({
         ...state,
         action: 'create',
         status: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for item types`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_ADD_PENDING} for item types`,
         responseCode: null,
       };
     },
@@ -168,8 +169,8 @@ const itemTypeSlice = createSlice({
         ...state,
         action: 'update',
         status: 'loading',
-        statusMessage: `${message.ITEM_UPDATE_PENDING} for item types`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_UPDATE_PENDING} for item types`,
         responseCode: null,
       };
     },
@@ -210,8 +211,8 @@ const itemTypeSlice = createSlice({
         ...state,
         action: 'delete',
         status: 'loading',
-        statusMessage: `${message.ITEM_DELETE_PENDING} for item types`,
         statusLevel: '',
+        statusMessage: `${message.ITEM_DELETE_PENDING} for item types`,
         responseCode: null,
       };
     },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import { listPDCVoucher, addPDCVoucher, clearData } from './redux';
 import InputForm from './InputForm';
 import { listPDCDisbursementByStatus } from '../PDCDisbursements/redux';
 import ItemDescription from '../../../components/ItemDescription';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -20,29 +21,27 @@ const PDCVouchers = (props) => {
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
+  const isMounted = useRef(true);
+
   const { formDetails, tableDetails } = FormDetails();
+  const { handleRequestResponse } = GeneralHelper()
 
   const listData = useSelector((state) => state.accounting.PDCVouchers.list);
 
-  const { company } = props;
+  const { company, actions } = props;
 
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
 
   useEffect(() => {
-    let isCancelled = false;
     dispatch(listPDCVoucher({ company, message })).then(() => {
       setLoading(false);
-
-      if (isCancelled) {
-        dispatch(clearData());
-      }
     });
 
     return function cleanup() {
+      isMounted.current = false
       dispatch(clearData());
-      isCancelled = true;
     };
   }, [dispatch, company]);
 
@@ -51,9 +50,17 @@ const PDCVouchers = (props) => {
     setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listPDCDisbursementByStatus({ status: "Pending", message })).then(() => {
-      history.push(`${path}/new`);
-      setLoading(false);
+    dispatch(listPDCDisbursementByStatus({ status: "Pending", message })).then((response) => {
+      if(isMounted.current){
+        const onSuccess = () => {
+            history.push(`${path}/new`);
+            setLoading(false);
+        }
+        const onFail = () => {
+          setLoading(false);
+        }
+        handleRequestResponse([response], onSuccess, onFail, '');
+      }
     })
   };
 
@@ -66,46 +73,28 @@ const PDCVouchers = (props) => {
     setDisplayModal(true);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const payload = {
       ...data,
       company: {
         id: company,
       },
     };
-    if (formMode === 'edit') {
-      payload.id = formData.id;
-      dispatch(addPDCVoucher(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listPDCVoucher({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully updated ${data.number}`);
-          });
-        } else {
+    await dispatch(addPDCVoucher(payload)).then((response) => {
+      setLoading(true);
+      history.goBack();
+      const onSuccess = () => {
+        dispatch(listPDCVoucher({ company, message })).then(() => {
           setLoading(false);
-          message.error(`Unable to update ${data.number}`);
-        }
-      });
-    } else if (formMode === 'add') {
-      dispatch(addPDCVoucher(payload)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listPDCVoucher({ company, message })).then(() => {
-            setLoading(false);
-            history.goBack();
-            message.success(`Successfully added ${response.payload.data.number}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(
-            `Unable to create PDC Voucher. Please double check the provided information.`
-          );
-        }
-      });
-    }
+        });
+      }
+      const onFail = () => {
+        setLoading(false);
+      }
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
     setFormData(null);
+    return 1
   };
 
   return (
@@ -144,16 +133,18 @@ const PDCVouchers = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={20}>
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              onClick={() => {
-                handleAdd();
-              }}
-              loading={loading}
-            >
-              Add
-            </Button>
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  handleAdd();
+                }}
+                loading={loading}
+              >
+                Add
+              </Button>
+            )}
             {loading ? (
               <Skeleton />
             ) : (
