@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, Popconfirm, message } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
-import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { PlusOutlined, CheckOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import TableDisplay from '../../../components/TableDisplay';
 import {tableHeader, tableHeaderAccounts} from './data';
 import { clearData, listPurchaseVouchers, createPurchaseVouchers, approvePurchaseVoucher, rejectPurchaseVoucher } from './redux';
@@ -236,25 +236,43 @@ const PurchaseVouchers = (props) => {
 								<Space style={{ marginTop: '2%' }} size="middle">
 									{_.toLower(purchaseVoucher.status) === 'pending' && (
 										<>
+											<Popconfirm
+												title="Would you like to perform this action?"
+												icon={<QuestionCircleOutlined />}
+												onConfirm={handleApprovePV}
+												onCancel={(e) => {
+												}}
+												okText="Yes"
+												cancelText="No"
+											>
 											<Button
 												style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
 												icon={<CheckOutlined />}
-												onClick={handleApprovePV}
 												loading={contentLoading}
 												type="primary"
 											>
 												Approve
 											</Button>
+											</Popconfirm>
+											<Popconfirm
+												title="Would you like to perform this action?"
+												icon={<QuestionCircleOutlined />}
+												onConfirm={handleRejectPV}
+												onCancel={(e) => {
+												}}
+												okText="Yes"
+												cancelText="No"
+											>
 											<Button
 												style={{ marginRight: '1%' }}
 												icon={<CloseOutlined />}
-												onClick={handleRejectPV}
 												loading={contentLoading}
 												type="primary"
 												danger
 											>
 												Reject
 											</Button>
+											</Popconfirm>
 										</>
 									)}
 								</Space>
