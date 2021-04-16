@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
+import React, { useEffect, useState, useRef } from 'react';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, Table } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
@@ -20,7 +20,7 @@ import JVHelper from './helper';
 
 const { Title } = Typography;
 
-const { RangePicker } = DatePicker
+// const { RangePicker } = DatePicker
 
 const JournalVouchers = (props) => {
   const { title, company, actions } = props;
@@ -86,7 +86,7 @@ const JournalVouchers = (props) => {
     })
   }
 
-  const handleRangedChanged = () => {}
+  // const handleRangedChanged = () => {}
 
   const handleApproveJV = () => {
     setContentLoading(true);
@@ -157,7 +157,7 @@ const JournalVouchers = (props) => {
               </Button>
             )}
           </Col>
-          <Col style={GeneralStyles.reportsArea} span={20}>
+          {/* <Col style={GeneralStyles.reportsArea} span={20}>
 						{contentLoading ? <Skeleton/> : (
 							<Space size="middle">
 								<RangePicker onChange={handleRangedChanged} format="MM/DD/YYYY" />
@@ -169,7 +169,7 @@ const JournalVouchers = (props) => {
                 </Button>
 							</Space>
 						)}
-					</Col>
+					</Col> */}
           <Col span={20}>
             {contentLoading ? <Skeleton/> : 
               <TableDisplay

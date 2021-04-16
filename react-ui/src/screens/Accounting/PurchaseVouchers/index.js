@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, DatePicker, Table, message } from 'antd';
+import { Row, Typography, Col, Button, Skeleton, Modal, Descriptions, Space, Table } from 'antd';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import { PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
@@ -20,7 +20,7 @@ import PVHelper from './helper';
 
 const { Title } = Typography;
 
-const { RangePicker } = DatePicker
+// const { RangePicker } = DatePicker
 
 const PurchaseVouchers = (props) => {
 	const { title, company, actions } = props;
@@ -38,6 +38,15 @@ const PurchaseVouchers = (props) => {
 	const { id: userId } = useSelector(state => state.auth.user)
 	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers);
 
+	const performCleanup = useCallback(() => {
+		dispatch(clearData());
+		dispatch(clearAC());
+		dispatch(clearDeptArea());
+		dispatch(clearRR());
+		dispatch(clearGroupCat());
+		dispatch(clearVendor());
+	},[dispatch]);
+
 	useEffect(() => {
 		reevalutateMessageStatus({status, action,statusMessage, statusLevel})
 	}, [status, action, statusMessage, statusLevel]);
@@ -53,16 +62,7 @@ const PurchaseVouchers = (props) => {
 			isMounted.current = false
 			performCleanup()
 		}
-	}, [company, dispatch]);
-
-	const performCleanup = () => {
-		dispatch(clearData());
-		dispatch(clearAC());
-		dispatch(clearDeptArea());
-		dispatch(clearRR());
-		dispatch(clearGroupCat());
-		dispatch(clearVendor());
-	}
+	}, [company, dispatch, performCleanup]);
 
 	const onSuccess = useCallback((method) => {
 		if ( method === "add" ){
@@ -96,9 +96,9 @@ const PurchaseVouchers = (props) => {
 		})
 	}
 
-	const handleRangedChanged = (value) => {
-		console.log("Report feature is still not included in this system version")
-	}
+	// const handleRangedChanged = (value) => {
+	// 	console.log("Report feature is still not included in this system version")
+	// }
 
 	const handleRetrieve = (value) => {
 		setPurchaseVoucher(value)
@@ -168,7 +168,7 @@ const PurchaseVouchers = (props) => {
 							</Button>
 						)}
 					</Col>
-					<Col style={GeneralStyles.reportsArea} span={20}>
+					{/* <Col style={GeneralStyles.reportsArea} span={20}>
 						{contentLoading ? <Skeleton/> : (
 							<Space size="middle">
 								<RangePicker onChange={handleRangedChanged} format="MM/DD/YYYY" />
@@ -177,7 +177,7 @@ const PurchaseVouchers = (props) => {
 								</Button>
 							</Space>
 						)}
-					</Col>
+					</Col> */}
 					<Col span={20}>
 						{contentLoading ? <Skeleton/> : (
 							<TableDisplay
