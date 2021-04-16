@@ -33,6 +33,32 @@ export const listInventory = createAsyncThunk('listInventory', async (payload, t
   }
 });
 
+export const listInventoryByStock = createAsyncThunk('listInventoryByStock', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `rest/inventory/company/${payload.company}?token=${accessToken}`
+    );
+
+    const processedResponse = {
+      ...response,
+      data: filterInventoryByStock(response.data),
+    };
+
+    const { response: validateResponse, valid } = checkResponseValidity(processedResponse);
+    if (valid) {
+      return validateResponse;
+    }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED
+    });
+  }
+});
+
 export const addInventory = createAsyncThunk(
   'addInventory',
   async (payload, thunkAPI) => {
@@ -81,6 +107,17 @@ export const getInventory = createAsyncThunk(
   }
 );
 
+const filterInventoryByStock = (data) => {
+  const processedData = [];
+  data.forEach((inventory) => {
+    if (inventory.quantity > 0) {
+      processedData.push(inventory);
+    }
+  });
+
+  return processedData;
+};
+
 const inventorySlice = createSlice({
   name: 'inventory',
   initialState,
@@ -113,6 +150,47 @@ const inventorySlice = createSlice({
       }
     },
     [listInventory.rejected]: (state, action) => {
+      const {status} = action.payload;
+      const {message: statusMessage, level} = generateStatusMessage(
+        action.payload, 
+        'Inventory',
+        state.action  
+      );
+
+      return {
+        ...state,
+        list: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage
+      }
+    },
+    [listInventoryByStock.pending]: (state) => {
+      return {
+        ...state,
+        action: 'fetch',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for inventory`
+      }
+    },
+    [listInventoryByStock.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const {message: statusMessage, level} = generateStatusMessage(
+        action.payload, 'Inventory',
+        state.action  
+      );
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage
+      }
+    },
+    [listInventoryByStock.rejected]: (state, action) => {
       const {status} = action.payload;
       const {message: statusMessage, level} = generateStatusMessage(
         action.payload, 

@@ -301,25 +301,29 @@ export const FormDetails = () => {
             title: 'Item Code',
             dataIndex: 'code',
             key: 'code',
+            datatype: 'string'
             },
             {
             title: 'Item Name',
             dataIndex: 'name',
             key: 'name',
+            datatype: 'string'
             },
             {
             title: 'Type',
             dataIndex: 'type',
             key: 'type',
-            render: (object) => 
-                object.name,
+            datatype: 'object',
+            dataToString: (object) => object?.name ?? "",
+            render: (object) => object?.name ?? "",
             },
             {
             title: 'Unit',
             dataIndex: 'unit',
             key: 'unit',
-            render: (object) => 
-                object.code,
+            datatype: 'object',
+            dataToString: (object) => object?.code ?? "",
+            render: (object) => object?.code ?? "",
             },
         ],
         processData: (data) => {

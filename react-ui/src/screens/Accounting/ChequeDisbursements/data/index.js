@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import React, { useState } from 'react';
 import moment from 'moment';
 import { Table, Typography } from 'antd';
+import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
 const { Text } = Typography;
 
@@ -70,6 +71,29 @@ const FormDetails = () => {
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
 
+  const selectTableColumns = [
+    {
+      title: 'CP Number',
+      dataIndex: 'number',
+      key: 'number',
+      datatype: 'string'
+    },
+    /*{
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+    },*/
+    {
+      title: 'Payee',
+      dataIndex: 'vendor',
+      key: 'vendor',
+      datatype: 'object',
+      dataToString: (data) => {return `[${data?.code}] ${data?.name}`},
+      render: (data) => {return `[${data?.code}] ${data?.name}`},
+    },
+  ]
+
   const formDetails = {
     form_name: 'cheque_disbursement',
     form_items: [
@@ -84,25 +108,7 @@ const FormDetails = () => {
         displayModal,
         setDisplayModal,
         dataSource: chequePrintings,
-        columns: [
-          {
-            title: 'CP Number',
-            dataIndex: 'number',
-            key: 'number',
-          },
-          /*{
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
-          },*/
-          {
-            title: 'Payee',
-            dataIndex: 'vendor',
-            key: 'vendor',
-            render: (data) => {return `[${data?.code}] ${data?.name}`},
-          },
-        ],
+        columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
         rowKey: 'id',
         getValueProps: (value) => {
           if (typeof value !== 'undefined') {

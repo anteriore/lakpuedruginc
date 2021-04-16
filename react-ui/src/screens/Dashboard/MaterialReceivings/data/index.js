@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
+import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
 export const columns = [
   {
@@ -29,6 +30,45 @@ export const columns = [
 const FormDetails = () => {
   const MISList = useSelector((state) => state.dashboard.materialIssuances.list);
   const [displayModal, setDisplayModal] = useState(false);
+  const selectTableColumns = [
+    {
+      title: 'MIS Number',
+      dataIndex: 'misNo',
+      key: 'misNo',
+      datatype: 'string'
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+      datatype: 'date'
+    },
+    {
+      title: 'Company',
+      dataIndex: 'company',
+      key: 'company',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `${object.name}`;
+      },
+      render: (object) => {
+        return `${object.name}`;
+      },
+    },
+    {
+      title: 'Requested By',
+      dataIndex: 'requestedBy',
+      key: 'requestedBy',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `${object.firstName} ${object.lastName}`;
+      },
+      render: (object) => {
+        return `${object.firstName} ${object.lastName}`;
+      },
+    },
+  ]
 
   const formDetails = {
     form_name: 'material_receiving',
@@ -55,35 +95,7 @@ const FormDetails = () => {
         setDisplayModal,
         toString: (object) => object.misNo,
         dataSource: MISList,
-        columns: [
-          {
-            title: 'MIS Number',
-            dataIndex: 'misNo',
-            key: 'misNo',
-          },
-          {
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
-          },
-          {
-            title: 'Company',
-            dataIndex: 'company',
-            key: 'company',
-            render: (object) => {
-              return `${object.name}`;
-            },
-          },
-          {
-            title: 'Requested By',
-            dataIndex: 'requestedBy',
-            key: 'requestedBy',
-            render: (object) => {
-              return `${object.firstName} ${object.lastName}`;
-            },
-          },
-        ],
+        columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
         rowKey: 'id',
         getValueProps: (value) => {
           if (typeof value !== 'undefined' && value !== null) {

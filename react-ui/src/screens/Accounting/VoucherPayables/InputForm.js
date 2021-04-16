@@ -22,6 +22,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import FormItem from '../../../components/forms/FormItem';
 import GeneralHelper from '../../../helpers/general-helper';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../Vouchers/redux';
 import { listPurchaseVouchersByVendorWithoutAdjustent, clearData as clearPurchaseVouchers } from '../PurchaseVouchers/redux';
@@ -400,7 +401,7 @@ const InputForm = (props) => {
                   },
                   preserveSelectedRowKeys: false,
                 }}
-                columns={formTable.selectFields}
+                columns={TableHeader({ columns: formTable.selectFields, hasSorter: true, hasFilter: true })}
                 dataSource={formTable.selectData}
                 rowKey={formTable.selectedKey}
                 pagination={{ size: 'small' }}

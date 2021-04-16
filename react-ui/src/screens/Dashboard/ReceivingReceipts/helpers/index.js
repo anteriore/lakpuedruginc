@@ -3,8 +3,7 @@ export const formatPayload = (approvalId, company, data) => {
 
   data.receivedItems.forEach((rrItem) => {
     receivedItems.push({
-      id: rrItem.id || null,
-      item: { id: rrItem.itemID },
+      item: { id: rrItem.id },
       quantity: rrItem.quantity,
       unit: { id: rrItem.unit.id },
       status: 'Quarantined',

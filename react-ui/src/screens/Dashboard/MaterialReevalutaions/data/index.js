@@ -6,7 +6,8 @@ export const tableHeader = [
     dataIndex: 'approvedReceipt',
     key: 'approvedReceipt',
     align: 'center',
-    render: (object) => object?.controlNumber ?? '',
+    datatype: 'object', 
+    dataToString: (object) => object?.controlNumber ?? '',
   },
   {
     title: 'Date',

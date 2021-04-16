@@ -234,11 +234,16 @@ const FormDetails = () => {
         title: 'PRF Number',
         dataIndex: 'number',
         key: 'number',
+        datatype: 'string'
       },
       {
         title: 'Requested by',
         dataIndex: 'requestedBy',
         key: 'requestedBy',
+        datatype: 'object',
+        dataToString: (item) => {
+          return `${item?.firstName} ${item?.lastName}`;
+        },
         render: (item) => {
           return `${item?.firstName} ${item?.lastName}`;
         },
@@ -247,6 +252,7 @@ const FormDetails = () => {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
+        datatype: 'string'
       },
     ],
     nestedData: {

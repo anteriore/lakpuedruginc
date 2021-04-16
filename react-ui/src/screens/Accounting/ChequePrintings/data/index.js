@@ -145,24 +145,34 @@ const FormDetails = () => {
       {
         title: 'Number',
         dataIndex: 'number',
+        key: 'number',
+        datatype: 'string'
       },
       {
         title: 'Date',
         dataIndex: 'date',
+        key: 'date',
+        datatype: 'date',
         render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
       },
       {
         title: 'Payee',
         dataIndex: 'vendor',
+        key: 'vendor',
+        datatype: 'object',
+        dataToString: (data) => `[${data.code}] ${data.name}`,
         render: (data) => `[${data.code}] ${data.name}`
       },
       {
         title: 'Remarks',
         dataIndex: 'remarks',
+        key: 'remarks',
+        datatype: 'string'
       },
       {
         title: 'Amount',
         dataIndex: 'totalAmount',
+        key: 'totalAmount',
       },
     ],
     processData: (data) => {
