@@ -92,7 +92,7 @@ const FormDetails = () => {
         onChange: (e) => {
           dispatch(clearPR());
           setLoadingPR(true)
-          dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: e, status: 'PO Created' })).then(() => {
+          dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: e, status: 'Approved' })).then(() => {
             setLoadingPR(false)
           })
         },

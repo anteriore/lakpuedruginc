@@ -18,6 +18,7 @@ import {
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 const { Title } = Typography;
 
@@ -293,7 +294,7 @@ const InputForm = (props) => {
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
-                      pagination={false}
+                      pagination={{simple: true}}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       summary={formTable.summary}
                     />
@@ -330,23 +331,12 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
-                // for nested tables
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  expandable={{ expandedRowRender }}
-                  rowKey={formTable.foreignKey}
-                />
-              ) : (
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  rowKey={formTable.foreignKey}
-                />
-              )}
+              <Table
+                dataSource={formTable.selectData}
+                columns={TableHeader({ columns: renderModalColumns(formTable.selectFields), hasSorter: true, hasFilter: true })}
+                pagination={{simple: true}}
+                rowKey={formTable.foreignKey}
+              />
             </Modal>
           )}
         </Col>
