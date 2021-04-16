@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
 import { listFGIssuanceByDepot, clearData as clearFGIS } from '../../FGIssuances/redux';
 
@@ -44,6 +45,58 @@ const FormDetails = () => {
   const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
   const [displayModal, setDisplayModal] = useState(false);
   const [loadingData, setLoadingData] = useState(false)
+
+  const selectTableColumns = [
+    {
+      title: 'FG-IS Number',
+      dataIndex: 'pisNo',
+      key: 'pisNo',
+      datatype: 'string'
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      datatype: 'date',
+      render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+    },
+    {
+      title: 'Ship From',
+      dataIndex: 'fromDepot',
+      key: 'fromDepot',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `[${object.code}] ${object.name}`;
+      },
+      render: (object) => {
+        return `[${object.code}] ${object.name}`;
+      },
+    },
+    {
+      title: 'Ship To',
+      dataIndex: 'toDepot',
+      key: 'toDepot',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `[${object.code}] ${object.name}`;
+      },
+      render: (object) => {
+        return `[${object.code}] ${object.name}`;
+      },
+    },
+    {
+      title: 'Requested By',
+      dataIndex: 'requestedBy',
+      key: 'requestedBy',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `${object.firstName} ${object.lastName}`;
+      },
+      render: (object) => {
+        return `${object.firstName} ${object.lastName}`;
+      },
+    },
+  ]
 
   const formDetails = {
     form_name: 'fg_receiving',
@@ -89,43 +142,7 @@ const FormDetails = () => {
         setDisplayModal,
         toString: (object) => object.pisNo,
         dataSource: FGISList,
-        columns: [
-          {
-            title: 'FG-IS Number',
-            dataIndex: 'pisNo',
-            key: 'pisNo',
-          },
-          {
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
-          },
-          {
-            title: 'Ship From',
-            dataIndex: 'fromDepot',
-            key: 'fromDepot',
-            render: (object) => {
-              return `[${object.code}] ${object.name}`;
-            },
-          },
-          {
-            title: 'Ship To',
-            dataIndex: 'toDepot',
-            key: 'toDepot',
-            render: (object) => {
-              return `[${object.code}] ${object.name}`;
-            },
-          },
-          {
-            title: 'Requested By',
-            dataIndex: 'requestedBy',
-            key: 'requestedBy',
-            render: (object) => {
-              return `${object.firstName} ${object.lastName}`;
-            },
-          },
-        ],
+        columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
         rowKey: 'id',
         getValueProps: (value) => {
           if (typeof value !== 'undefined' && value !== null) {

@@ -159,17 +159,31 @@ const FormDetails = () => {
         title: 'Emp No',
         dataIndex: 'number',
         key: 'number',
+        datatype: 'string'
       },
       {
-        title: 'Name',
-        key: 'name',
-        render: (object) =>
-          `${object?.firstName ?? ''} ${object?.middleName ?? ''} ${object?.lastName ?? ''}`,
+        title: 'First Name',
+        dataIndex: 'firstName',
+        key: 'firstName',
+        datatype: 'string'
+      },
+      {
+        title: 'Middle Name',
+        dataIndex: 'middleName',
+        key: 'middleName',
+        datatype: 'string'
+      },
+      {
+        title: 'Last Name',
+        dataIndex: 'lastName',
+        key: 'lastName',
+        datatype: 'string'
       },
       {
         title: 'Gender',
         dataIndex: 'gender',
         key: 'gender',
+        datatype: 'string'
       },
       {
         title: 'Monthly Salary',
