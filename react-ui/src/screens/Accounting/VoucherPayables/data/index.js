@@ -268,35 +268,51 @@ const FormDetails = () => {
       {
         title: 'Type',
         dataIndex: 'type',
+        key: 'type',
+        datatype: 'string'
       },
       {
         title: 'Number',
         dataIndex: 'number',
+        key: 'number',
+        datatype: 'string'
       },
       {
         title: 'Date',
         dataIndex: 'date',
+        key: 'date',
+        datatype: 'date',
         render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
       },
       {
         title: 'Status',
         dataIndex: 'status',
+        key: 'status',
+        datatype: 'string',
       },
       {
         title: 'DR',
         dataIndex: 'drNumber',
+        key: 'drNumber',
+        datatype: 'string',
       },
       {
         title: 'SI',
         dataIndex: 'siNumber',
+        key: 'siNumber',
+        datatype: 'string',
       },
       {
         title: 'PO',
         dataIndex: 'poNumber',
+        dataIndex: 'poNumber',
+        datatype: 'string',
       },
       {
         title: 'RR',
         dataIndex: 'rrNumber',
+        key: 'rrNumber',
+        datatype: 'string',
       },
     ],
     processData: (data) => {
