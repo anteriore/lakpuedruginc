@@ -12,7 +12,7 @@ import {
   Space,
   message,
 } from 'antd';
-import { PlusOutlined, FileTextOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -173,14 +173,14 @@ const ReturnSlips = (props) => {
     setDisplayModal(true);
   };
 
-  const handleReport = () => {
-    setFormTitle('Return Slip Summary Report');
-    setFormData(list);
-    console.log(formData);
-    setLoading(true);
-    history.push(`${path}/report`);
-    setLoading(false);
-  };
+  // const handleReport = () => {
+  //   setFormTitle('Return Slip Summary Report');
+  //   setFormData(list);
+  //   console.log(formData);
+  //   setLoading(true);
+  //   history.push(`${path}/report`);
+  //   setLoading(false);
+  // };
 
   const renderReportDetails = () => {
     return (
@@ -316,7 +316,7 @@ const ReturnSlips = (props) => {
                 Add
               </Button>
             )}
-            <Button
+            {/* <Button
               style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
               icon={<FileTextOutlined />}
               onClick={() => {
@@ -325,7 +325,7 @@ const ReturnSlips = (props) => {
               loading={loading}
             >
               View Report
-            </Button>
+            </Button> */}
             {loading ? (
               <Skeleton />
             ) : (
