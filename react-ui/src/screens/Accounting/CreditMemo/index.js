@@ -32,7 +32,7 @@ const CreditMemo = (props) => {
   const [formData, setFormData] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
-  const {list: cmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.creditMemo.list);
+  const {list: cmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.creditMemo);
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
  

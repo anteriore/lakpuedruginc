@@ -11,6 +11,7 @@ export const DisplayDetails = () => {
             title: 'C.M. No.',
             dataIndex: 'number',
             key: 'number',
+            dataToString: 'string'
             //defaultSortOrder: 'ascend',
             //sorter: (a, b) => a.number.length - b.number.length,
         },
