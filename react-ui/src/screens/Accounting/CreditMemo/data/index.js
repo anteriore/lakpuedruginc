@@ -111,6 +111,7 @@ export const FormDetails = () => {
             dataIndex: 'salesOrder',
             key: 'salesOrder',
             datatype: 'object',
+            dataToString: (object) => object.client.name,
             render: (object) => object.client.name,
         },
         {
@@ -190,9 +191,9 @@ export const FormDetails = () => {
                 columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
                 rowKey: 'id',
                 getValueProps: (value) => {
-                    if (typeof value !== 'undefined') {
-                        return { value };
-                    }
+                  if (typeof value !== 'undefined' && value !== null) {
+                    return { value: value.number };
+                  }
                 },
                 emptyText:
                   'No data retrieved for sales slips in the selected depot. Please select another depot.',
