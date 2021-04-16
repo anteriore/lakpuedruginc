@@ -25,7 +25,7 @@ export const columns = [
     key: 'item',
     datatype: 'object',
     dataToString: (object) => {
-        return object.unit.name
+        return (object?.unit?.name ?? "")
     }
   },
   {
