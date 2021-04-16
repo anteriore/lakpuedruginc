@@ -161,6 +161,10 @@ const FormDetails = () => {
         title: 'Lot Number',
         dataIndex: 'product',
         key: 'product',
+        datatype: 'object',
+        dataToString: (product) => {
+          return product.lotNumber;
+        },
         render: (product) => {
           return product.lotNumber;
         },
@@ -169,6 +173,7 @@ const FormDetails = () => {
         title: 'Date Created',
         dataIndex: 'dateCreated',
         key: 'dateCreated',
+        datatype: 'date',
         render: (object) => {
           return moment(new Date(object)).format('DD/MM/YYYY');
         },
@@ -177,6 +182,10 @@ const FormDetails = () => {
         title: 'FG Code',
         dataIndex: 'product',
         key: 'product',
+        datatype: 'object',
+        dataToString: (object) => {
+          return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
+        },
         render: (object) => {
           return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
         },
