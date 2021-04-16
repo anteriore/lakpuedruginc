@@ -160,7 +160,7 @@ public class ItemData {
 					tempInventory.setCompany(companyRepository.getOne( Long.parseLong(  data[1].replace("\"", "") )  ));
 					tempInventory.setItem(tempItem);
 					inventoryRepository.save(tempInventory);
-					tempInventory.setControlNumber(tempInventory.getId);
+					tempInventory.setControlNumber(tempInventory.getId()+" ");
 					inventoryRepository.save(tempInventory);
 
 			
