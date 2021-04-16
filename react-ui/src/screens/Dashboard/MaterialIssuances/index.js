@@ -12,7 +12,7 @@ import {
   clearData,
 } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { listInventory, clearData as clearInventory } from '../Inventory/redux';
+import { listInventoryByStock, clearData as clearInventory } from '../Inventory/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
@@ -101,8 +101,8 @@ const MaterialIssuances = (props) => {
     setFormTitle('Create Material Issuance');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then((response1) => {
-      dispatch(listInventory({ company, message })).then((response2) => {
+    dispatch(listDepot({ company })).then((response1) => {
+      dispatch(listInventoryByStock({ company })).then((response2) => {
         if(isMounted.current){
           const onSuccess = () => {
             history.push(`${path}/new`);
