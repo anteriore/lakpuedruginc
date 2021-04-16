@@ -164,7 +164,7 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany })).then((response2) => {
         dispatch(listArea({ company: selectedCompany })).then((response3) => {
           dispatch(listUnit({ company: selectedCompany })).then(() => {
-            dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: poData.department.id, status: 'Approved' })).then((response4) => {
+            dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: poData.department.id, status: 'PO Created' })).then((response4) => {
               if(isMounted.current){
                 const onSuccess = () => {
                   history.push(`${path}/${data.id}`);

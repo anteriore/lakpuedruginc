@@ -204,10 +204,10 @@ export const rejectPR = createAsyncThunk('rejectPR', async (payload, thunkAPI) =
 
 export const cancelPR = createAsyncThunk('cancelPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-
+  const { id, remarks } = payload
   try {
     const response = await axiosInstance.post(
-      `rest/purchase-requests/cancel/${payload.id}?token=${accessToken}`, payload
+      `rest/purchase-requests/cancel/${id}?token=${accessToken}`, remarks
     );
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 

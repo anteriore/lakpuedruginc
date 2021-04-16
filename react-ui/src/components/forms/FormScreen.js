@@ -19,6 +19,7 @@ import {
 import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from './FormItem';
+import TableHeader from '../TableDisplay/TableHeader';
 
 const { Title } = Typography;
 
@@ -388,7 +389,7 @@ const FormScreen = (props) => {
                   preserveSelectedRowKeys: false,
                   selectedRowKeys: tableSelectedKeys
                 }}
-                columns={formTable.selectFields}
+                columns={TableHeader({ columns: formTable.selectFields, hasSorter: true, hasFilter: true })}
                 dataSource={formTable.selectData}
                 rowKey={formTable.selectedKey}
                 pagination={{simple: true}}

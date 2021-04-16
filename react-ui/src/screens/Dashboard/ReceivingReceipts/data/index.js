@@ -219,19 +219,19 @@ export const FormDetails = () => {
         title: 'Item',
         dataIndex: 'item',
         key: 'item',
-        render: (object) => `[${object.code}] ${object.name}`,
+        render: (object) => `[${object?.code}] ${object?.name}`,
       },
       {
         title: 'Type',
         dataIndex: 'item',
         key: 'item',
-        render: (object) => object.type.name,
+        render: (object) => object?.type?.name,
       },
       {
         title: 'Unit',
         dataIndex: 'item',
         key: 'item',
-        render: (object) => object.unit.code,
+        render: (object) => object?.unit?.code,
       },
     ],
 
