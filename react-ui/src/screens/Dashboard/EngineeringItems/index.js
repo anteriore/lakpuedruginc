@@ -92,6 +92,9 @@ const EngineeringItems = (props) => {
     dispatch(listIT({ company, message })).then((resp1) => {
       dispatch(listUnit({ message })).then((resp2) => {
         const onSuccess = () => {
+          setFormData({
+            type: resp1.payload.data.find((item) => item.code === "ENG").id
+          })
           setDisplayForm(true);
           setLoading(false)
         }
