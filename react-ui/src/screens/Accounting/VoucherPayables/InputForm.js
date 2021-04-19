@@ -390,6 +390,7 @@ const InputForm = (props) => {
               width={1000}
             >
               <Table
+                tableLayout={'fixed'}
                 rowSelection={{
                   type: mode === '1 Voucher' ? 'radio' : 'checkbox',
                   //selectedRowKeys: item.selectedData,

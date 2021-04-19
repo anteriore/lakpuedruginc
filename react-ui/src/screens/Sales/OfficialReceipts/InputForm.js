@@ -258,6 +258,7 @@ const styles = {
     marginBottom: '2%',
   },
   tailLayout: {
+    marginTop: '2%', 
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',
