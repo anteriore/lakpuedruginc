@@ -301,6 +301,7 @@ const InputForm = (props) => {
               width={1200}
             >
               <Table
+                tableLayout={'fixed'}
                 rowSelection={{
                   type: 'checkbox',
                   //selectedRowKeys: item.selectedData,
