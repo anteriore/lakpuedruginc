@@ -3,8 +3,15 @@ import _ from 'lodash';
 export const formatOrderedProducts = (lotProducts, sales) => {
   const orderedProducts = _.filter(sales?.products ?? [], 
     (o) => _.some(lotProducts, {'product': {'finishedGood': {'id': o.finishedGood.id}}}));
+  const processedData = []
+  orderedProducts.forEach((orderedProduct) => {
+    processedData.push({
+      ...orderedProduct,
+      product: orderedProduct.product.product
+    })
+  })
 
-  return orderedProducts;
+  return processedData;
 };
 
 export const formatLotProducts = (sales, inventoryProducts) => {
