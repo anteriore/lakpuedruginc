@@ -32,7 +32,7 @@ const CreditMemo = (props) => {
   const [formData, setFormData] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
-  const {list: cmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.creditMemo.list);
+  const {list: cmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.creditMemo);
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
  
@@ -43,9 +43,6 @@ const CreditMemo = (props) => {
     dispatch(listCM({ company, message })).then(() => {
       setFormData(null);
       setLoading(false);
-      if(!isMounted.current){
-        performCleanup()
-      }
     });
 
     return function cleanup() {
@@ -75,8 +72,8 @@ const CreditMemo = (props) => {
     setLoading(true);
     dispatch(clearOS());
     dispatch(clearSI());
-    dispatch(listDepot({ company, message })).then((response1) => {
-      dispatch(listMemo({ company, message })).then((response2) => {
+    dispatch(listDepot({ company })).then((response1) => {
+      dispatch(listMemo({ company })).then((response2) => {
         if(isMounted.current){
           const onSuccess = () => {
               history.push(`${path}/new`);
@@ -107,9 +104,7 @@ const CreditMemo = (props) => {
     });
   };
 
-  const handleUpdate = (data) => {
-    
-  };
+  const handleUpdate = (data) => {};
 
   const handleRetrieve = (data) => {
     setLoading(true);

@@ -154,7 +154,6 @@ const InputForm = (props) => {
   }, [tempManualForm, listVendor])
 
   const onFail = () => {
-    console.log("Failing")
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`)
   }
 

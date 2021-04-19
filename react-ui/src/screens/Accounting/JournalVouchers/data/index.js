@@ -242,7 +242,7 @@ const FormDetails = () => {
         name: 'vendor',
         rules: [{ required: true, message: 'Please select a vendor' }],
         placeholder: 'Select Vendor',
-        render: (object) => `[${object?.code ?? ""}] ${object?.fullName ?? ""}`,
+        render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
         type: 'selectSearch',
         choices: [],
       },

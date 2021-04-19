@@ -78,23 +78,26 @@ const Purchasing = () => {
   }, [dispatch])
 
   useEffect(() => {
-    dispatch(listCompany()).then(() => {
-      setLoadingCompany(false);
-      if (actions.includes('read')) {
-        dispatch(listPO({ company: selectedCompany, message })).then(() => {
-          setLoading(false);
-          setSelectedPO(null);
-        });
-      } else {
+    if (actions.includes('read')) {
+      dispatch(listPO({ company: selectedCompany, message })).then(() => {
         setLoading(false);
         setSelectedPO(null);
-      }
+      });
+    } else {
+      setLoading(false);
+      setSelectedPO(null);
+    }
+  }, [actions, dispatch, selectedCompany])
+
+  useEffect(() => {
+    dispatch(listCompany()).then(() => {
+      setLoadingCompany(false);
     });
     return function cleanup() {
       isMounted.current = false
       performCleanup()
     };
-  }, [dispatch, selectedCompany, performCleanup]);
+  }, [dispatch, performCleanup]);
 
   useEffect(() => {
     reevalutateMessageStatus({status, action, statusMessage, statusLevel})
@@ -145,7 +148,7 @@ const Purchasing = () => {
     poData.orderedItems.forEach((item) => {
       orderedItems.push({
         ...item,
-        unit: item.unit.id,
+        unit: item?.unit?.id,
         amount: null,
       });
     });

@@ -53,11 +53,13 @@ const InputForm = (props) => {
     const handleDepotChange = (value) => {
       form.setFieldsValue({ product: [] });
       setRequestedProductList([]);
-      setProductInv(
-        _.filter(productInventoryList, (o) => {
-          return o.depot?.id === value && o.quantity !== 0 ;
-        })
-      );
+      const productlist = _.filter(productInventoryList, (o) => {
+        return o.depot?.id === value && o.quantity !== 0 ;
+      })
+      setProductInv(productlist);
+      if(productlist.length === 0){
+        message.error("The selected depot does not have items with stock")
+      }
     };
 
     formItem.onChange = (e) => handleDepotChange(e);
@@ -237,7 +239,12 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()} disabled={processingData}>
                       Cancel
                     </Button>
-                    <Button type="primary" htmlType="submit" loading={processingData}>
+                    <Button
+                      disabled={requestedProductList.length === 0} 
+                      type="primary" 
+                      htmlType="submit" 
+                      loading={processingData}
+                    >
                       Submit
                     </Button>
                   </Space>

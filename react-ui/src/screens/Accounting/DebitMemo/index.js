@@ -32,7 +32,7 @@ const DebitMemo = (props) => {
   const [formData, setFormData] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
-  const {list: dmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.debitMemo.list);
+  const {list: dmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.debitMemo);
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
  
