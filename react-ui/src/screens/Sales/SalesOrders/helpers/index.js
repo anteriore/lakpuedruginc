@@ -68,7 +68,7 @@ export const formatPayload = (approvalId, company, value) => {
       newProductValue = {
         ...newProductValue,
         finishedGood: { id: prod.finishedGood.id },
-        product: { id: prod.product },
+        product: { id: prod.id },
         quantity: prod.quantity,
         quantityRemaining: prod.quantityRemaining,
         quantityRequested: prod.quantityRequested,
