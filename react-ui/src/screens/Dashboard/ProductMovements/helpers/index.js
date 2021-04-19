@@ -16,7 +16,7 @@ export const formatPMPayload = (approvalId, company, value) => {
     let newProductValue = {};
     newProductValue = {
       ...newProductValue,
-      product: { id: prod.id },
+      product: { id: prod.product.id },
       quantity: prod.requestedQuantity,
     };
 
