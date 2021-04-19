@@ -32,7 +32,7 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             datatype: 'object',
             dataToString: (object) => {
-                return object.code
+                return object?.code ?? ""
             }
         },
         {
@@ -43,7 +43,7 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             datatype: 'object',
             dataToString: (object) => {
-                return object.salesOrder.client.name
+                return object?.salesOrder?.client?.name ?? ""
             }
         },
         {
@@ -62,7 +62,7 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             datatype: 'object',
             dataToString: (object) => {
-                return object.code
+                return object?.code ?? ""
             }
         },
     ];
@@ -111,8 +111,8 @@ export const FormDetails = () => {
             dataIndex: 'salesOrder',
             key: 'salesOrder',
             datatype: 'object',
-            dataToString: (object) => object.client.name,
-            render: (object) => object.client.name,
+            dataToString: (object) => object?.client?.name ?? "",
+            render: (object) => object?.client?.name ?? "",
         },
         {
             title: 'Amount',
