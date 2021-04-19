@@ -21,7 +21,7 @@ import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/
 
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -33,7 +33,7 @@ const VoucherPayables = (props) => {
   const [selectedData, setSelectedData] = useState(null);
   const isMounted = useRef(true);
 
-  const listData = useSelector((state) => state.accounting.voucherPayables.list);
+  const { list:listData, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.voucherPayables);
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -58,6 +58,11 @@ const VoucherPayables = (props) => {
       dispatch(clearVendor());
     };
   }, [dispatch, company]);
+
+  
+	useEffect(() => {
+		reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+	}, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Voucher Payable');
@@ -157,9 +162,11 @@ const VoucherPayables = (props) => {
       },
       voucher: voucher,
       vouchers: vouchers,
-      vendor: {
-          id: data?.vendor ?? voucher.vendor.id
-      },
+      vendor: (data?.vendor ?? null) !== null ? ({
+        id: data.vendor
+      }):(
+        voucher?.vendor?.id ?? null
+      ),
       preparedBy: {
         id: user.id
       }
