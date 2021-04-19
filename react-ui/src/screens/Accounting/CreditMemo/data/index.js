@@ -30,7 +30,7 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             datatype: 'object',
             dataToString: (object) => {
-                return object.code
+                return object?.code ?? ""
             }
         },
         {
@@ -41,7 +41,7 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             datatype: 'object',
             dataToString: (object) => {
-                return object.salesOrder.client.name
+                return object?.salesOrder?.client?.name ?? ""
             }
         },
         {
@@ -60,7 +60,7 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             datatype: 'object',
             dataToString: (object) => {
-                return object.code
+                return object?.code ?? ""
             }
         },
     ];
@@ -115,7 +115,7 @@ export const FormDetails = () => {
                 type: 'selectSearch',
                 selectName: 'name',
                 choices: memoTypes,
-                render: (object) => `[${object.code}] ${object.name}`,
+                render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
                 rules: [{ required: true }],
             },
             {
@@ -171,7 +171,7 @@ export const FormDetails = () => {
                         title: 'Client',
                         dataIndex: 'salesOrder',
                         key: 'salesOrder',
-                        render: (object) => object.client.name,
+                        render: (object) => object?.client?.name ?? "",
                     },
                     {
                         title: 'Amount',
