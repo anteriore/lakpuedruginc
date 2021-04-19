@@ -71,6 +71,7 @@ const Items = (props) => {
         name: 'type',
         type: 'select',
         choices: types,
+        tooltip: 'Items of type "Engineering Materials" could be found in the Engineering Items module'
       },
       {
         label: 'Unit',

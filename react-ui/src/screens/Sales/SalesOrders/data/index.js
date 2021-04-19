@@ -208,16 +208,19 @@ const FormDetails = () => {
       },
       {
         title: 'Code',
+        key: 'code',
         dataIndex: 'code',
         render: (object) => object.code,
       },
       {
         title: 'Finished Good',
+        key: 'finishedGood',
         dataIndex: 'finishedGood',
         render: (object) => object.name,
       },
       {
         title: 'Stock on Hand',
+        key: 'quantity',
         dataIndex: 'quantity',
       },
       {
@@ -229,6 +232,7 @@ const FormDetails = () => {
       {
         title: 'Remaining',
         dataIndex: 'quantityRemaining',
+        key: 'quantityRemaining',
       },
       {
         title: 'Unit Price',
@@ -238,6 +242,7 @@ const FormDetails = () => {
       },
       {
         title: 'Amount',
+        key: 'amount',
         dataIndex: 'amount',
       },
       {
