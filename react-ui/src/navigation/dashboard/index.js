@@ -12,7 +12,7 @@ import MaterialReceivings from '../../screens/Dashboard/MaterialReceivings';
 import Employees from '../../screens/Dashboard/Employees';
 // import SalesReports from '../../screens/Dashboard/SalesReports';
 import JobOrder from '../../screens/Dashboard/JobOrder';
-//import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
+import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
 import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
 import MaterialReevaluations from '../../screens/Dashboard/MaterialReevalutaions';
 
@@ -92,12 +92,12 @@ export const routes = [
     path: '/engineering-items',
     component: EngineeringItems,
   },
-  /*{
+  {
     title: 'Engineering Inventory',
     path: '/engineering-inventory',
     component: EngineeringInventories,
   },
-  {
+  /*{
     title: 'Account Summary Reports',
     path: '/account-summary',
     component: '',

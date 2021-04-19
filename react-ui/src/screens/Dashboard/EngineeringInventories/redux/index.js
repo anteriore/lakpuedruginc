@@ -107,7 +107,7 @@ const engineeringInventorySlice = createSlice({
 
       return {
         ...state,
-        employeeList: data,
+        list: data,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
