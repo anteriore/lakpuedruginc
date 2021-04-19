@@ -4,6 +4,7 @@ import { message } from 'antd';
 import moment from 'moment';
 import { listOrderSlipsByDepotAndStatus, clearData as clearOS } from '../../../Sales/OrderSlips/redux';
 import { listSalesInvoiceByDepotAndStatus, clearData as clearSI } from '../../../Sales/SalesInvoice/redux';
+import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
 export const DisplayDetails = () => {
     const columns = [
@@ -60,7 +61,7 @@ export const DisplayDetails = () => {
             defaultSortOrder: 'ascend',
             datatype: 'object',
             dataToString: (object) => {
-                return object?.code ?? ""
+                return object?.code  ?? ""
             }
         },
     ];
@@ -73,10 +74,51 @@ export const FormDetails = () => {
     const depots = useSelector((state) => state.maintenance.depots.list);
     const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
     const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
-    const memoTypes = useSelector((state) => state.maintenance.memoTypes.memoList);
+    const memoTypes = useSelector((state) => state.maintenance.memoTypes.list);
     const [displayModal, setDisplayModal] = useState(false);
     let salesSlips = [];
     salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
+
+    const selectTableColumns = [
+        {
+            label: 'Sales Slip ID',
+            dataIndex: 'id',
+            key: 'id',
+            type: 'hidden',
+        },
+        {
+            title: 'DR/OS Number',
+            dataIndex: 'number',
+            key: 'number',
+            datatype: 'string'
+        },
+        {
+            title: 'Type',
+            dataIndex: 'type',
+            key: 'type',
+            datatype: 'string'
+        },
+        {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            datatype: 'date',
+            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+        },
+        {
+            title: 'Client',
+            dataIndex: 'salesOrder',
+            key: 'salesOrder',
+            datatype: 'object',
+            dataToString: (object) => object?.client?.name ?? "",
+            render: (object) => object?.client?.name ?? "",
+        },
+        {
+            title: 'Amount',
+            dataIndex: 'totalAmount',
+            key: 'totalAmount',
+        },
+    ]
 
     const formDetails = {
         form_name: 'debit_memo',
@@ -100,7 +142,7 @@ export const FormDetails = () => {
                 type: 'selectSearch',
                 selectName: 'name',
                 choices: depots,
-                render: (object) => `[${object.code}] ${object.name}`,
+                render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
                 rules: [{ required: true }],
                 onChange: (e) => {
                   dispatch(clearOS());
@@ -145,44 +187,11 @@ export const FormDetails = () => {
                 displayModal,
                 setDisplayModal,
                 dataSource: salesSlips,
-                columns: [
-                    {
-                        label: 'Sales Slip ID',
-                        name: 'id',
-                        type: 'hidden',
-                    },
-                    {
-                        title: 'DR/OS Number',
-                        dataIndex: 'number',
-                        key: 'number',
-                    },
-                    {
-                        title: 'Type',
-                        dataIndex: 'type',
-                        key: 'type',
-                    },
-                    {
-                        title: 'Date',
-                        dataIndex: 'date',
-                        key: 'date',
-                        render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
-                    },
-                    {
-                        title: 'Client',
-                        dataIndex: 'salesOrder',
-                        key: 'salesOrder',
-                        render: (object) => object?.client?.name ?? "",
-                    },
-                    {
-                        title: 'Amount',
-                        dataIndex: 'totalAmount',
-                        key: 'totalAmount',
-                    },
-                ],
+                columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
                 rowKey: 'id',
                 getValueProps: (value) => {
-                    if (typeof value !== 'undefined') {
-                        return { value };
+                    if (typeof value !== 'undefined' && value !== null) {
+                      return { value: value.number };
                     }
                 },
                 emptyText:
