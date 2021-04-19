@@ -289,6 +289,7 @@ const InputForm = (props) => {
               width={1000}
             >
               <Table
+                tableLayout={'fixed'}
                 rowSelection={{
                   type: 'radio',
                   //selectedRowKeys: item.selectedData,
