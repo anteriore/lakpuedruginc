@@ -24,7 +24,7 @@ export const formatPayload = (approvalId, company, data) => {
     origin: data.origin,
     status: data.status,
     remarks: data.remarks,
-    tolling: false,
+    tolling: true,
 
     receivedItems,
   };
