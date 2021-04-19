@@ -192,6 +192,7 @@ const FormDetails = () => {
 
   // different format from other "tableDetails"
   const tableDetails = {
+    label: "Acknowledgement Receipts", 
     columns: [
       {
         title: 'SI Number',
