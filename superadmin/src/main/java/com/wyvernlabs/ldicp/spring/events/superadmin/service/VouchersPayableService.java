@@ -70,7 +70,7 @@ public class VouchersPayableService {
 		VouchersPayable vp = vouchersPayableRepository.getOne(id);
 		User approvedBy = userRepository.getOne(userId);
 
-		Long maxId = vouchersPayableRepository.getMaxIdInStatus(new String[] { "Approved", "Completed" });
+		Long maxId = vouchersPayableRepository.getMaxIdInStatus(new String[] { "Approved", "Cheque Created", "Completed" });
 
 		if (maxId == null) {
 			maxId = 0L;
