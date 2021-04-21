@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Form,
   Button,
   Input,
   InputNumber,
   Select,
-  Checkbox,
   Modal,
   Row,
   Col,
@@ -39,6 +38,10 @@ const FormScreen = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
 
   const toggleName = formDetails.toggle_name;
+
+  const onFail = useCallback(() => {
+    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
+  }, [history, path]);
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -74,9 +77,7 @@ const FormScreen = (props) => {
         }
       })
     }
-    
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formDetails, formTable, hasTable, onFail, toggleName]);
 
   const onFinish = (data) => {
     setLoading(true)
@@ -269,10 +270,6 @@ const FormScreen = (props) => {
     else {
       return null
     }
-  };
-
-  const onFail = () => {
-    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
 
   const onValuesChange = (values) => {
