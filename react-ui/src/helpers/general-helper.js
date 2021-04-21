@@ -130,14 +130,14 @@ export const reevalDependencyMsgStats = ({
 const GeneralHelper = (props) => {
   const history = useHistory();
 
-  const pushErrorPage = (statusCode, returnPath) => {
+  const pushErrorPage = useCallback((statusCode, returnPath) => {
     history.push({
       pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
       state: {
         moduleList: returnPath || '/',
       },
     });
-  };
+  }, [history]);
 
   const handleRequestResponse = useCallback((responseList, onSuccess, onFail, returnPath) => {
     let hasFailed = false;
@@ -157,7 +157,7 @@ const GeneralHelper = (props) => {
         onSuccess();
       }
     }
-  }, []);
+  }, [pushErrorPage]);
 
   return { handleRequestResponse };
 };
