@@ -134,7 +134,7 @@ const Users = () => {
       setUserDepartments([]);
       setContentLoading(false);
     }
-  }, [actions, selectedCompany, dispatch])
+  }, [actions, selectedCompany, dispatch, handleRequestResponse])
 
   useEffect(() => {
     updateUserDepartments()

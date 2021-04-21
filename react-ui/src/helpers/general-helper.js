@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
@@ -138,7 +139,7 @@ const GeneralHelper = (props) => {
     });
   };
 
-  const handleRequestResponse = (responseList, onSuccess, onFail, returnPath) => {
+  const handleRequestResponse = useCallback((responseList, onSuccess, onFail, returnPath) => {
     let hasFailed = false;
     responseList.forEach((response) => {
       if (response.hasOwnProperty('error') && !hasFailed) {
@@ -156,7 +157,7 @@ const GeneralHelper = (props) => {
         onSuccess();
       }
     }
-  };
+  }, []);
 
   return { handleRequestResponse };
 };
