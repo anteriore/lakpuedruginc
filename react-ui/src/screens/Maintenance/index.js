@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Tabs, Typography, Skeleton, Empty } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,16 +20,7 @@ const Maintenance = () => {
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
   const { permissions } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    dispatch(listCompany()).then(() => {
-      // setModuleRoutes(routes)
-      setModuleRoutes(getPermittedRoutes());
-      setContentLoading(false);
-    });
-    // eslint-disable-next-line
-  }, [dispatch]);
-
-  const getPermittedRoutes = () => {
+  const getPermittedRoutes = useCallback(() => {
     const routeList = [];
     routes.forEach((route) => {
       if (typeof permissions[route.path.split('/')[1]] !== 'undefined' && (permissions[route.path.split('/')[1]]?.actions ?? "").search('r') !== -1) {
@@ -37,7 +28,14 @@ const Maintenance = () => {
       }
     });
     return routeList;
-  };
+  }, [permissions]);
+
+  useEffect(() => {
+    dispatch(listCompany()).then(() => {
+      setModuleRoutes(getPermittedRoutes());
+      setContentLoading(false);
+    });
+  }, [dispatch, getPermittedRoutes]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));

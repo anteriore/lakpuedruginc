@@ -43,29 +43,21 @@ const DebitMemo = (props) => {
     dispatch(listDM({ company, message })).then(() => {
       setFormData(null);
       setLoading(false);
-      if(!isMounted.current){
-        performCleanup()
-      }
     });
 
     return function cleanup() {
       isMounted.current = false
-      performCleanup();
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearMemo());
+      dispatch(clearOS());
+      dispatch(clearSI());
     };
-    // eslint-disable-next-line
   }, [dispatch, company]);
 
   useEffect(() => {
     reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
-  
-  const performCleanup = () => {
-    dispatch(clearData());
-    dispatch(clearDepot());
-    dispatch(clearMemo());
-    dispatch(clearOS());
-    dispatch(clearSI());
-  }
 
   const handleAdd = () => {
     setFormTitle('Create Debit Memo');

@@ -9,8 +9,7 @@ const SimpleForm = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    // eslint-disable-next-line
-  }, [values]);
+  }, [values, form]);
 
   const onFinish = (data) => {
     setProcessingData(true)

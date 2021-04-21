@@ -54,8 +54,7 @@ const FormScreen = (props) => {
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable, hasTable, toggleName]);
 
   const onFinish = (data) => {
     setProcessingData(true)

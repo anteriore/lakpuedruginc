@@ -4,9 +4,7 @@ import { Menu } from 'antd';
 import {
   ProfileOutlined,
   UserOutlined,
-  ExperimentOutlined,
   ShoppingCartOutlined,
-  TagsOutlined,
 } from '@ant-design/icons';
 
 class SideNav extends Component {

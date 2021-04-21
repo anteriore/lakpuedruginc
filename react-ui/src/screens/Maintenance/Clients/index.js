@@ -45,21 +45,16 @@ const Clients = (props) => {
 
     return function cleanup() {
       isMounted.current = false
-      performCleanup()
+      dispatch(clearData());
+      dispatch(clearCluster());
+      dispatch(clearInstitution());
+      dispatch(clearS());
     };
-    // eslint-disable-next-line
   }, [dispatch, company]);
 
   useEffect(() => {
     reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
-  
-  const performCleanup = () => {
-    dispatch(clearData());
-    dispatch(clearCluster());
-    dispatch(clearInstitution());
-    dispatch(clearS());
-  }
 
   const handleAdd = () => {
     setFormTitle('Add Client');

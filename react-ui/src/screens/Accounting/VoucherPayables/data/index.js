@@ -305,7 +305,7 @@ const FormDetails = () => {
       {
         title: 'PO',
         dataIndex: 'poNumber',
-        dataIndex: 'poNumber',
+        key: 'poNumber',
         datatype: 'string',
       },
       {

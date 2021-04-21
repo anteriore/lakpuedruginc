@@ -4,7 +4,7 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import TableDisplay from '../../../components/TableDisplay';
-import { listProduct, createProduct, deleteProduct, updateProduct, clearData } from './redux';
+import { listProduct, createProduct, updateProduct, clearData } from './redux';
 import { clearData as clearDepots, listDepot } from '../Depots/redux';
 import { clearData as clearClassification, listClassification} from '../Classification/redux';
 import { clearData as clearCategories, listPC } from '../ProductCategories/redux';
@@ -47,19 +47,15 @@ const Product = (props) => {
 
     return function cleanup() {
       isMounted.current = false
-      performCleanup()
+      dispatch(clearData());
+      dispatch(clearDepots());
+      dispatch(clearClassification());
+      dispatch(clearCategories());
+      dispatch(clearDivisions());
+      dispatch(clearUnits());
+      dispatch(clearFinishedGoods());
     };
   }, [dispatch, company]);
-
-  const performCleanup = () => {
-    dispatch(clearData());
-    dispatch(clearDepots());
-    dispatch(clearClassification());
-    dispatch(clearCategories());
-    dispatch(clearDivisions());
-    dispatch(clearUnits());
-    dispatch(clearFinishedGoods());
-  }
 
   const onSuccess = useCallback((method, id) => {
     if(isMounted.current){
