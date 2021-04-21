@@ -28,7 +28,7 @@ const InputForm = (props) => {
   }, [values, form, formTable, hasTable]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -42,8 +42,8 @@ const InputForm = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
@@ -128,7 +128,11 @@ const InputForm = (props) => {
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Space direction="vertical" size={20} style={{ width: '100%', marginBottom: '2%' }}>
+                  <Space
+                    direction="vertical"
+                    size={20}
+                    style={{ width: '100%', marginBottom: '2%' }}
+                  >
                     <Text style={{ float: 'left', marginLeft: '2%' }}>{'Received Items: '}</Text>
                     <Table
                       dataSource={tableData}
@@ -144,10 +148,12 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               onClick={() => form.submit()}
-              disabled={hasTable && !(typeof formTable.isVisible === 'undefined' || formTable.isVisible)}
+              disabled={
+                hasTable && !(typeof formTable.isVisible === 'undefined' || formTable.isVisible)
+              }
               loading={processingData}
             >
               Submit

@@ -3,9 +3,9 @@ export const tableHeader = [
     title: 'Emp No',
     dataIndex: 'number',
     key: 'number',
-    datatype: 'string'
+    datatype: 'string',
   },
-  /*{
+  /* {
     title: 'Name',
     align: 'center',
     key: 'name',
@@ -21,14 +21,14 @@ export const tableHeader = [
       }`;
       return left.localeCompare(right);
     },
-  },*/
+  }, */
 
   {
     title: 'First Name',
     dataIndex: 'firstName',
     key: 'firstName',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
 
   {
@@ -36,7 +36,7 @@ export const tableHeader = [
     dataIndex: 'lastName',
     key: 'lastName',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
 
   {
@@ -44,7 +44,7 @@ export const tableHeader = [
     dataIndex: 'middleName',
     key: 'middleName',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
 
   {
@@ -52,7 +52,7 @@ export const tableHeader = [
     dataIndex: 'givenName',
     key: 'givenName',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Gender',
@@ -69,8 +69,8 @@ export const tableHeader = [
     dataIndex: 'monthlySalary',
     key: 'monthlySalary',
     align: 'center',
-    datatype:'number'
-    //sorter: (a, b) => a.mothlySalary - b.mothlySalary,
+    datatype: 'number',
+    // sorter: (a, b) => a.mothlySalary - b.mothlySalary,
   },
   {
     title: 'Hourly Rate',

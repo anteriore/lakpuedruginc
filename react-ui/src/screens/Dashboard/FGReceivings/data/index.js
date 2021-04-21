@@ -44,14 +44,14 @@ const FormDetails = () => {
   const company = useSelector((state) => state.company.selectedCompany);
   const FGISList = useSelector((state) => state.dashboard.FGIssuances.list);
   const [displayModal, setDisplayModal] = useState(false);
-  const [loadingData, setLoadingData] = useState(false)
+  const [loadingData, setLoadingData] = useState(false);
 
   const selectTableColumns = [
     {
       title: 'FG-IS Number',
       dataIndex: 'pisNo',
       key: 'pisNo',
-      datatype: 'string'
+      datatype: 'string',
     },
     {
       title: 'Date',
@@ -96,7 +96,7 @@ const FormDetails = () => {
         return `${object.firstName} ${object.lastName}`;
       },
     },
-  ]
+  ];
 
   const formDetails = {
     form_name: 'fg_receiving',
@@ -124,12 +124,12 @@ const FormDetails = () => {
         loading: loadingData,
         onChange: (e) => {
           dispatch(clearFGIS());
-          setLoadingData(true)
+          setLoadingData(true);
           dispatch(listFGIssuanceByDepot({ company, depot: e })).then(() => {
-            setLoadingData(false)
-          })
+            setLoadingData(false);
+          });
         },
-        tooltip: 'Receiving Depot'
+        tooltip: 'Receiving Depot',
       },
       {
         label: 'FG-IS Number',

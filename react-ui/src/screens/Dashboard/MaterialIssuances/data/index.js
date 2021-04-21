@@ -64,7 +64,7 @@ const FormDetails = () => {
     name: 'inventoryList',
     key: 'inventoryList',
     rules: [{ required: true }],
-    preloadedData: true, 
+    preloadedData: true,
     fields: [
       {
         label: 'Control Number',
@@ -114,7 +114,7 @@ const FormDetails = () => {
         title: 'Control Number',
         dataIndex: 'controlNumber',
         key: 'controlNumber',
-        datatype: 'string'
+        datatype: 'string',
       },
       {
         title: 'Date Created',
@@ -123,7 +123,7 @@ const FormDetails = () => {
         render: (object) => {
           return moment(new Date(object)).format('DD/MM/YYYY');
         },
-        datatype: 'date'
+        datatype: 'date',
       },
       {
         title: 'Item',

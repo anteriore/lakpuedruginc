@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { DatePicker, Form, Button, InputNumber, Input, Select, Modal, Row, Col, Typography, Table, Empty, message,} from 'antd';
+import {
+  DatePicker,
+  Form,
+  Button,
+  InputNumber,
+  Input,
+  Select,
+  Modal,
+  Row,
+  Col,
+  Typography,
+  Table,
+  Empty,
+  message,
+} from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
@@ -27,14 +41,14 @@ const InputForm = (props) => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
-      let selectedKeys = []
-      if(values !== null && values[formTable.name] !== null){
+      let selectedKeys = [];
+      if (values !== null && values[formTable.name] !== null) {
         values[formTable.name].forEach((item) => {
-          selectedKeys.push(item[formTable.foreignKey])
-        })
+          selectedKeys.push(item[formTable.foreignKey]);
+        });
       }
-      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
-      setTableSelectedKeys(selectedKeys)
+      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i);
+      setTableSelectedKeys(selectedKeys);
     }
   }, [values, form, formTable, hasTable]);
 
@@ -44,9 +58,8 @@ const InputForm = (props) => {
     });
   }, [user, form]);
 
-
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -60,8 +73,8 @@ const InputForm = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
@@ -103,8 +116,8 @@ const InputForm = (props) => {
                   fieldKey={[index, field.name]}
                   rules={field.rules}
                   initialValue={field.initialValue}
-                >              
-                  <DatePicker/>
+                >
+                  <DatePicker />
                 </Form.Item>
               );
             },
@@ -184,28 +197,31 @@ const InputForm = (props) => {
   };
 
   const onTableSelect = (selectedRowKeys, selectedRows) => {
-    setTableSelectedKeys(selectedRowKeys)
-    let prevSelectData = []
-    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
-      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
+    setTableSelectedKeys(selectedRowKeys);
+    let prevSelectData = [];
+    if (typeof form.getFieldValue(formTable.name) !== 'undefined') {
+      prevSelectData = form
+        .getFieldValue(formTable.name)
+        .filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]));
     }
 
-    let processedData = []
+    let processedData = [];
     selectedRows.forEach((rowData) => {
-      const index = prevSelectData.findIndex((item) => item[formTable.selectedKey] === rowData[formTable.selectedKey])
-      if(index !== -1){
-        processedData.push(prevSelectData[index])
+      const index = prevSelectData.findIndex(
+        (item) => item[formTable.selectedKey] === rowData[formTable.selectedKey]
+      );
+      if (index !== -1) {
+        processedData.push(prevSelectData[index]);
+      } else {
+        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData]);
       }
-      else {
-        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData])
-      }
-    })
+    });
 
     const fieldsValue = {};
     fieldsValue[formTable.name] = processedData;
     setTableData(processedData);
     form.setFieldsValue(fieldsValue);
-  }
+  };
 
   const expandedRowRender = (row) => {
     if (formTable.hasOwnProperty('nestedData')) {
@@ -220,9 +236,8 @@ const InputForm = (props) => {
         </>
       );
     }
-    else {
-      return null
-    }
+
+    return null;
   };
 
   const onFail = () => {
@@ -306,20 +321,28 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-            <Table
-              rowSelection={{
-                type: 'radio',
-                //selectedRowKeys: item.selectedData,
-                onChange: onTableSelect,
-                preserveSelectedRowKeys: false,
-                selectedRowKeys: tableSelectedKeys
-              }}
-              columns={TableHeader({ columns: formTable.selectFields, hasSorter: true, hasFilter: true })}
-              dataSource={formTable.selectData}
-              rowKey={formTable.selectedKey}
-              pagination={{simple: true}}
-              expandable={{ expandedRowRender: formTable.hasOwnProperty('nestedData') ? expandedRowRender : null }}
-            />
+              <Table
+                rowSelection={{
+                  type: 'radio',
+                  // selectedRowKeys: item.selectedData,
+                  onChange: onTableSelect,
+                  preserveSelectedRowKeys: false,
+                  selectedRowKeys: tableSelectedKeys,
+                }}
+                columns={TableHeader({
+                  columns: formTable.selectFields,
+                  hasSorter: true,
+                  hasFilter: true,
+                })}
+                dataSource={formTable.selectData}
+                rowKey={formTable.selectedKey}
+                pagination={{ simple: true }}
+                expandable={{
+                  expandedRowRender: formTable.hasOwnProperty('nestedData')
+                    ? expandedRowRender
+                    : null,
+                }}
+              />
             </Modal>
           )}
         </Col>

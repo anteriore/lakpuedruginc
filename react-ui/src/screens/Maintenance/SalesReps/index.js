@@ -20,9 +20,11 @@ const SalesReps = (props) => {
 
   const { company, actions } = props;
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
-  const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.salesReps);
+  const { list, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.salesReps
+  );
   const categories = useSelector((state) => state.maintenance.groupsCategories.categoryList);
   const regionCodes = useSelector((state) => state.maintenance.regionCodes.regionCodeList);
 
@@ -101,7 +103,7 @@ const SalesReps = (props) => {
   };
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
@@ -127,13 +129,13 @@ const SalesReps = (props) => {
     setFormData(null);
     dispatch(listCategory()).then((response1) => {
       dispatch(listRegionCode({ company, message })).then((response2) => {
-          const onSuccess = () => {
-            setDisplayForm(true);
-          }
-          const onFail = () => {
-            handleCancelButton()
-          }
-          handleRequestResponse([response1, response2], onSuccess, onFail, '');
+        const onSuccess = () => {
+          setDisplayForm(true);
+        };
+        const onFail = () => {
+          handleCancelButton();
+        };
+        handleRequestResponse([response1, response2], onSuccess, onFail, '');
       });
     });
   };
@@ -151,10 +153,10 @@ const SalesReps = (props) => {
       dispatch(listRegionCode({ company, message })).then((response2) => {
         const onSuccess = () => {
           setDisplayForm(true);
-        }
+        };
         const onFail = () => {
-          handleCancelButton()
-        }
+          handleCancelButton();
+        };
         handleRequestResponse([response1, response2], onSuccess, onFail, '');
       });
     });
@@ -167,10 +169,10 @@ const SalesReps = (props) => {
         dispatch(listS({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -206,12 +208,12 @@ const SalesReps = (props) => {
             setDisplayForm(false);
             setFormData(null);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
-      })
+      });
     } else if (formMode === 'add') {
       const payload = {
         ...data,
@@ -232,15 +234,15 @@ const SalesReps = (props) => {
             setDisplayForm(false);
             setFormData(null);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
-      })
+      });
     }
 
-    return 1
+    return 1;
   };
 
   return (

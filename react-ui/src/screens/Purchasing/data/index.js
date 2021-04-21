@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Typography } from 'antd';
-import { listPRByCompanyAndStatusAndDepartment, clearData as clearPR } from '../../Dashboard/PurchaseRequests/redux';
+import {
+  listPRByCompanyAndStatusAndDepartment,
+  clearData as clearPR,
+} from '../../Dashboard/PurchaseRequests/redux';
 
 const { Text } = Typography;
 
@@ -56,7 +59,7 @@ const FormDetails = () => {
   const units = useSelector((state) => state.maintenance.units.unitList);
   const purchaseRequests = useSelector((state) => state.dashboard.purchaseRequests.list);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
-  const [loadingPR, setLoadingPR] = useState(false)
+  const [loadingPR, setLoadingPR] = useState(false);
 
   const formDetails = {
     form_name: 'depot',
@@ -91,12 +94,18 @@ const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearPR());
-          setLoadingPR(true)
-          dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: e, status: 'Approved' })).then(() => {
-            setLoadingPR(false)
-          })
+          setLoadingPR(true);
+          dispatch(
+            listPRByCompanyAndStatusAndDepartment({
+              company: selectedCompany,
+              department: e,
+              status: 'Approved',
+            })
+          ).then(() => {
+            setLoadingPR(false);
+          });
         },
-        loading: loadingPR
+        loading: loadingPR,
       },
       {
         label: 'Area',
@@ -161,9 +170,9 @@ const FormDetails = () => {
     label: 'Purchase Request',
     name: 'orderedItems',
     key: 'id',
-    rules: [{ required: true, message: "Please select a Purchase Request" }],
+    rules: [{ required: true, message: 'Please select a Purchase Request' }],
     isVisible: purchaseRequests.length > 0 && !loadingPR,
-    emptyText: "Please select a department with an approved Purchase Request",
+    emptyText: 'Please select a department with an approved Purchase Request',
     fields: [
       {
         label: 'Item',
@@ -234,7 +243,7 @@ const FormDetails = () => {
         title: 'PRF Number',
         dataIndex: 'number',
         key: 'number',
-        datatype: 'string'
+        datatype: 'string',
       },
       {
         title: 'Requested by',
@@ -252,7 +261,7 @@ const FormDetails = () => {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
-        datatype: 'string'
+        datatype: 'string',
       },
     ],
     nestedData: {
@@ -303,7 +312,7 @@ const FormDetails = () => {
           unit: item.item.unit.id,
           quantity: item.quantityRequested,
         });
-      })
+      });
       return processedData;
     },
     checkSelected: (selectedData, rowData) => {

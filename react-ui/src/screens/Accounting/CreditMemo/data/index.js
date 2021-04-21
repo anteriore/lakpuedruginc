@@ -2,204 +2,210 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { message } from 'antd';
 import moment from 'moment';
-import { listOrderSlipsByDepotAndStatus, clearData as clearOS } from '../../../Sales/OrderSlips/redux';
-import { listSalesInvoiceByDepotAndStatus, clearData as clearSI } from '../../../Sales/SalesInvoice/redux';
+import {
+  listOrderSlipsByDepotAndStatus,
+  clearData as clearOS,
+} from '../../../Sales/OrderSlips/redux';
+import {
+  listSalesInvoiceByDepotAndStatus,
+  clearData as clearSI,
+} from '../../../Sales/SalesInvoice/redux';
 import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
 export const DisplayDetails = () => {
-    const columns = [
-        {
-            title: 'C.M. No.',
-            dataIndex: 'number',
-            key: 'number',
-            dataToString: 'string'
-            //defaultSortOrder: 'ascend',
-            //sorter: (a, b) => a.number.length - b.number.length,
-        },
-        {
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            datatype: 'date',
-        },
-        {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            datatype: 'object',
-            dataToString: (object) => {
-                return object?.code ?? ""
-            }
-        },
-        {
-            title: 'Client',
-            dataIndex: 'reference',
-            key: 'reference',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            datatype: 'object',
-            dataToString: (object) => {
-                return object?.salesOrder?.client?.name ?? ""
-            }
-        },
-        {
-            title: 'Amount',
-            dataIndex: 'amount',
-            key: 'amount',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.number.length - b.number.length,
-        },
-        {
-            title: 'Depot',
-            dataIndex: 'depot',
-            key: 'depot',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            datatype: 'object',
-            dataToString: (object) => {
-                return object?.code ?? ""
-            }
-        },
-    ];
+  const columns = [
+    {
+      title: 'C.M. No.',
+      dataIndex: 'number',
+      key: 'number',
+      dataToString: 'string',
+      // defaultSortOrder: 'ascend',
+      // sorter: (a, b) => a.number.length - b.number.length,
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      datatype: 'date',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      datatype: 'object',
+      dataToString: (object) => {
+        return object?.code ?? '';
+      },
+    },
+    {
+      title: 'Client',
+      dataIndex: 'reference',
+      key: 'reference',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      datatype: 'object',
+      dataToString: (object) => {
+        return object?.salesOrder?.client?.name ?? '';
+      },
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.number.length - b.number.length,
+    },
+    {
+      title: 'Depot',
+      dataIndex: 'depot',
+      key: 'depot',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      datatype: 'object',
+      dataToString: (object) => {
+        return object?.code ?? '';
+      },
+    },
+  ];
 
-    return { columns };
+  return { columns };
 };
 
 export const FormDetails = () => {
-    const dispatch = useDispatch();
-    const depots = useSelector((state) => state.maintenance.depots.list);
-    const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
-    const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
-    const memoTypes = useSelector((state) => state.maintenance.memoTypes.list);
-    const [displayModal, setDisplayModal] = useState(false);
-    let salesSlips = [];
-    salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
+  const dispatch = useDispatch();
+  const depots = useSelector((state) => state.maintenance.depots.list);
+  const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
+  const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
+  const memoTypes = useSelector((state) => state.maintenance.memoTypes.list);
+  const [displayModal, setDisplayModal] = useState(false);
+  let salesSlips = [];
+  salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
 
-    const selectTableColumns = [
-        {
-            label: 'Sales Slip ID',
-            dataIndex: 'id',
-            key: 'id',
-            type: 'hidden',
-        },
-        {
-            title: 'DR/OS Number',
-            dataIndex: 'number',
-            key: 'number',
-            datatype: 'string'
-        },
-        {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type',
-            datatype: 'string'
-        },
-        {
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            datatype: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
-        },
-        {
-            title: 'Client',
-            dataIndex: 'salesOrder',
-            key: 'salesOrder',
-            datatype: 'object',
-            dataToString: (object) => object?.client?.name ?? "",
-            render: (object) => object?.client?.name ?? "",
-        },
-        {
-            title: 'Amount',
-            dataIndex: 'totalAmount',
-            key: 'totalAmount',
-        },
-    ]
+  const selectTableColumns = [
+    {
+      label: 'Sales Slip ID',
+      dataIndex: 'id',
+      key: 'id',
+      type: 'hidden',
+    },
+    {
+      title: 'DR/OS Number',
+      dataIndex: 'number',
+      key: 'number',
+      datatype: 'string',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      datatype: 'string',
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      datatype: 'date',
+      render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+    },
+    {
+      title: 'Client',
+      dataIndex: 'salesOrder',
+      key: 'salesOrder',
+      datatype: 'object',
+      dataToString: (object) => object?.client?.name ?? '',
+      render: (object) => object?.client?.name ?? '',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'totalAmount',
+      key: 'totalAmount',
+    },
+  ];
 
-    const formDetails = {
-        form_name: 'credit_memo',
-        toggle_name: 'reference',
-        form_items: [
-            {
-                label: 'Credit Memo No.',
-                name: 'number',
-                placeholder: 'AUTOGENERATED UPON CREATION',
-                readOnly: true,
-            },
-            {
-                label: 'Date',
-                name: 'date',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select a date' }],
-            },
-            {
-                label: 'Depot',
-                name: 'depot',
-                type: 'selectSearch',
-                selectName: 'name',
-                choices: depots,
-                render: (object) => `[${object.code}] ${object.name}`,
-                rules: [{ required: true }],
-                onChange: (e) => {
-                  dispatch(clearOS());
-                  dispatch(clearSI());
-                  dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] }));
-                  dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] }));
-                }, 
-            },
-            {
-                label: 'Memo Type',
-                name: 'type',
-                type: 'selectSearch',
-                selectName: 'name',
-                choices: memoTypes,
-                render: (object) => `[${object.code}] ${object.name}`,
-                rules: [{ required: true }],
-            },
-            {
-                label: 'Amount Paid',
-                name: 'amount',
-                type: 'number',
-                min: 0,
-                rules: [{ required: true, message: 'Please provide an Amount Paid' }],
-                placeholder: 'Max Containers',
-            },
-            {
-                label: 'Remarks',
-                name: 'remarks',
-                rules: [{}],
-                placeholder: 'Remarks (optional)',
-                type: 'textArea',
-            },
-        ],
-        memo_items: [
-            {
-                label: 'DR/OS',
-                name: 'reference',
-                type: 'selectTable',
-                rules: [{ required: true }],
-                allowEmpty: true,
-                placeholder: 'Select DR/OS',
-                displayModal,
-                setDisplayModal,
-                dataSource: salesSlips,
-                columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
-                rowKey: 'id',
-                getValueProps: (value) => {
-                  if (typeof value !== 'undefined' && value !== null) {
-                    return { value: value.number };
-                  }
-                },
-                emptyText:
-                  'No data retrieved for sales slips in the selected depot. Please select another depot.',
-            },
-        ],
-    };
+  const formDetails = {
+    form_name: 'credit_memo',
+    toggle_name: 'reference',
+    form_items: [
+      {
+        label: 'Credit Memo No.',
+        name: 'number',
+        placeholder: 'AUTOGENERATED UPON CREATION',
+        readOnly: true,
+      },
+      {
+        label: 'Date',
+        name: 'date',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a date' }],
+      },
+      {
+        label: 'Depot',
+        name: 'depot',
+        type: 'selectSearch',
+        selectName: 'name',
+        choices: depots,
+        render: (object) => `[${object.code}] ${object.name}`,
+        rules: [{ required: true }],
+        onChange: (e) => {
+          dispatch(clearOS());
+          dispatch(clearSI());
+          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] }));
+          dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] }));
+        },
+      },
+      {
+        label: 'Memo Type',
+        name: 'type',
+        type: 'selectSearch',
+        selectName: 'name',
+        choices: memoTypes,
+        render: (object) => `[${object.code}] ${object.name}`,
+        rules: [{ required: true }],
+      },
+      {
+        label: 'Amount Paid',
+        name: 'amount',
+        type: 'number',
+        min: 0,
+        rules: [{ required: true, message: 'Please provide an Amount Paid' }],
+        placeholder: 'Max Containers',
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        rules: [{}],
+        placeholder: 'Remarks (optional)',
+        type: 'textArea',
+      },
+    ],
+    memo_items: [
+      {
+        label: 'DR/OS',
+        name: 'reference',
+        type: 'selectTable',
+        rules: [{ required: true }],
+        allowEmpty: true,
+        placeholder: 'Select DR/OS',
+        displayModal,
+        setDisplayModal,
+        dataSource: salesSlips,
+        columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
+        rowKey: 'id',
+        getValueProps: (value) => {
+          if (typeof value !== 'undefined' && value !== null) {
+            return { value: value.number };
+          }
+        },
+        emptyText:
+          'No data retrieved for sales slips in the selected depot. Please select another depot.',
+      },
+    ],
+  };
 
-    return { formDetails };
+  return { formDetails };
 };

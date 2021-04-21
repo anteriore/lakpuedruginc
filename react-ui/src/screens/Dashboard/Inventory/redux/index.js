@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
-import {checkResponseValidity, generateStatusMessage} from '../../../../helpers/general-helper';
+import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 const initialState = {
   list: [],
@@ -28,44 +28,45 @@ export const listInventory = createAsyncThunk('listInventory', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
 
-export const listInventoryByStock = createAsyncThunk('listInventoryByStock', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(
-      `rest/inventory/company/${payload.company}?token=${accessToken}`
-    );
-
-    const processedResponse = {
-      ...response,
-      data: filterInventoryByStock(response.data),
-    };
-
-    const { response: validateResponse, valid } = checkResponseValidity(processedResponse);
-    if (valid) {
-      return validateResponse;
-    }
-    return thunkAPI.rejectWithValue(validateResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: message.ERROR_OCCURED
-    });
-  }
-});
-
-export const addInventory = createAsyncThunk(
-  'addInventory',
+export const listInventoryByStock = createAsyncThunk(
+  'listInventoryByStock',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(
+        `rest/inventory/company/${payload.company}?token=${accessToken}`
+      );
+
+      const processedResponse = {
+        ...response,
+        data: filterInventoryByStock(response.data),
+      };
+
+      const { response: validateResponse, valid } = checkResponseValidity(processedResponse);
+      if (valid) {
+        return validateResponse;
+      }
+      return thunkAPI.rejectWithValue(validateResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: message.ERROR_OCCURED,
+      });
+    }
+  }
+);
+
+export const addInventory = createAsyncThunk('addInventory', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
   try {
-    const response = await axiosInstance.post(`/rest/inventory?token=${accessToken}`, payload );
+    const response = await axiosInstance.post(`/rest/inventory?token=${accessToken}`, payload);
 
     const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
@@ -76,7 +77,7 @@ export const addInventory = createAsyncThunk(
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -95,17 +96,12 @@ export const deleteInventory = createAsyncThunk('deleteInventory', async (payloa
   return response;
 });
 
-export const getInventory = createAsyncThunk(
-  'getInventory',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const getInventory = createAsyncThunk('getInventory', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
-    const response = await axiosInstance.get(
-      `rest/inventory/${payload.id}?token=${accessToken}`
-    );
-    return response;
-  }
-);
+  const response = await axiosInstance.get(`rest/inventory/${payload.id}?token=${accessToken}`);
+  return response;
+});
 
 const filterInventoryByStock = (data) => {
   const processedData = [];
@@ -130,14 +126,15 @@ const inventorySlice = createSlice({
         ...state,
         action: 'fetch',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for inventory`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for inventory`,
+      };
     },
     [listInventory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(
-        action.payload, 'Inventory',
-        state.action  
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Inventory',
+        state.action
       );
 
       return {
@@ -146,15 +143,15 @@ const inventorySlice = createSlice({
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage
-      }
+        statusMessage,
+      };
     },
     [listInventory.rejected]: (state, action) => {
-      const {status} = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(
-        action.payload, 
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
         'Inventory',
-        state.action  
+        state.action
       );
 
       return {
@@ -163,22 +160,23 @@ const inventorySlice = createSlice({
         status: 'failed',
         statusLevel: level,
         responseCode: status,
-        statusMessage
-      }
+        statusMessage,
+      };
     },
     [listInventoryByStock.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for inventory`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for inventory`,
+      };
     },
     [listInventoryByStock.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(
-        action.payload, 'Inventory',
-        state.action  
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Inventory',
+        state.action
       );
 
       return {
@@ -187,15 +185,15 @@ const inventorySlice = createSlice({
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
-        statusMessage
-      }
+        statusMessage,
+      };
     },
     [listInventoryByStock.rejected]: (state, action) => {
-      const {status} = action.payload;
-      const {message: statusMessage, level} = generateStatusMessage(
-        action.payload, 
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
         'Inventory',
-        state.action  
+        state.action
       );
 
       return {
@@ -204,8 +202,8 @@ const inventorySlice = createSlice({
         status: 'failed',
         statusLevel: level,
         responseCode: status,
-        statusMessage
-      }
+        statusMessage,
+      };
     },
     [addInventory.pending]: (state) => {
       return {
@@ -219,10 +217,7 @@ const inventorySlice = createSlice({
     },
     [addInventory.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Inventory'
-      );
+      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Inventory');
 
       return {
         ...state,

@@ -62,11 +62,11 @@ export const setConnectionEffect = (response, noDataFoundError, serverError, def
 };
 
 export const checkResponseValidity = (response) => {
-  if(response.status >= 300){
+  if (response.status >= 300) {
     response.statusText = 'failed. An error has occurred';
     return { response, valid: false };
   }
-  else if(response.status >= 200){
+  if (response.status >= 200) {
     if (response.data.length === 0) {
       response.statusText = 'successful. No data retrieved.';
       return { response, valid: true };
@@ -74,90 +74,97 @@ export const checkResponseValidity = (response) => {
     response.statusText = 'successful';
     return { response, valid: true };
   }
-  else {
-    response.statusText = 'failed. An error has occured';
-    return { response, valid: false };
-  }
+
+  response.statusText = 'failed. An error has occured';
+  return { response, valid: false };
 };
 
 export const generateStatusMessage = (payload, currentModule, action) => {
-  const { status, data, statusText } = payload; 
+  const { status, data, statusText } = payload;
   const getMessageLevel = () => {
     if (status === 200) {
       if (data.length === 0) {
-        return 'warning'
+        return 'warning';
       }
-      return 'success'
+      return 'success';
     }
     return 'error';
-  }
+  };
   return {
     level: getMessageLevel(),
-    message: `${currentModule}: ${_.upperFirst(action)} ${statusText}`
+    message: `${currentModule}: ${_.upperFirst(action)} ${statusText}`,
+  };
+};
+
+export const reevalutateMessageStatus = ({ action, statusMessage, statusLevel }) => {
+  if (action !== '') {
+    statusDialogue({ statusMessage, statusLevel, action }, 'message');
   }
 };
 
-export const reevalutateMessageStatus = ({ action, statusMessage, statusLevel}) => {
-  if ( action !== '') {
-    statusDialogue({ statusMessage, statusLevel, action }, 'message');
-  }
-}
-
 export const reevalDependencyMsgStats = ({
-  status, action, 
-  statusLevel, statusMessage, 
-  module}) => {
-
+  status,
+  action,
+  statusLevel,
+  statusMessage,
+  module,
+}) => {
   if (status !== 'loading') {
-    if(statusLevel !== 'success') {
+    if (statusLevel !== 'success') {
       if (action === 'fetch') {
         statusDialogue(
           {
-            statusLevel: statusLevel,
+            statusLevel,
             modalContent: {
               title: `${_.capitalize(statusLevel)} - ${module}`,
               content: statusMessage,
             },
           },
           'modal'
-        );  
+        );
       }
     }
   }
-}
+};
 
 // for helper functions that use hooks
-const GeneralHelper = (props) => {
+const GeneralHelper = () => {
   const history = useHistory();
 
-  const pushErrorPage = useCallback((statusCode, returnPath) => {
-    history.push({
-      pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
-      state: {
-        moduleList: returnPath || '/',
-      },
-    });
-  }, [history]);
+  const pushErrorPage = useCallback(
+    (statusCode, returnPath) => {
+      history.push({
+        pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
+        state: {
+          moduleList: returnPath || '/',
+        },
+      });
+    },
+    [history]
+  );
 
-  const handleRequestResponse = useCallback((responseList, onSuccess, onFail, returnPath) => {
-    let hasFailed = false;
-    responseList.forEach((response) => {
-      if (response.hasOwnProperty('error') && !hasFailed) {
-        hasFailed = true;
-        if (typeof onFail === 'function') {
-          onFail();
-        } else {
-          pushErrorPage(response?.payload?.status ?? 400, returnPath);
+  const handleRequestResponse = useCallback(
+    (responseList, onSuccess, onFail, returnPath) => {
+      let hasFailed = false;
+      responseList.forEach((response) => {
+        if (Object.prototype.hasOwnProperty.call(response, 'error') && !hasFailed) {
+          hasFailed = true;
+          if (typeof onFail === 'function') {
+            onFail();
+          } else {
+            pushErrorPage(response?.payload?.status ?? 400, returnPath);
+          }
+        }
+      });
+
+      if (!hasFailed) {
+        if (onSuccess !== null) {
+          onSuccess();
         }
       }
-    });
-
-    if (!hasFailed) {
-      if (onSuccess !== null) {
-        onSuccess();
-      }
-    }
-  }, [pushErrorPage]);
+    },
+    [pushErrorPage]
+  );
 
   return { handleRequestResponse };
 };

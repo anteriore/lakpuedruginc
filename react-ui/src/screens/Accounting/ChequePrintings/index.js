@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, Popconfirm, message } from 'antd';
-import { PlusOutlined, QuestionCircleOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  Row,
+  Col,
+  Skeleton,
+  Typography,
+  Button,
+  Modal,
+  Space,
+  Table,
+  Empty,
+  Popconfirm,
+  message,
+} from 'antd';
+import {
+  PlusOutlined,
+  QuestionCircleOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
@@ -11,10 +28,13 @@ import {
   addChequePrinting,
   clearData,
   approveChequePrinting,
-  rejectChequePrinting
+  rejectChequePrinting,
 } from './redux';
 import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
-import { listBankAccount, clearData as clearBankAccount } from '../../Maintenance/BankAccounts/redux';
+import {
+  listBankAccount,
+  clearData as clearBankAccount,
+} from '../../Maintenance/BankAccounts/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
@@ -29,7 +49,9 @@ const ChequePrintings = (props) => {
   const [selectedData, setSelectedData] = useState(null);
   const isMounted = useRef(true);
 
-  const {list: listData, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.chequePrintings);
+  const { list: listData, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.accounting.chequePrintings
+  );
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -46,7 +68,7 @@ const ChequePrintings = (props) => {
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
       dispatch(clearVendor());
       dispatch(clearBankAccount());
@@ -54,7 +76,7 @@ const ChequePrintings = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
@@ -63,48 +85,45 @@ const ChequePrintings = (props) => {
     setLoading(true);
     dispatch(listVendor({ company, message })).then((response) => {
       dispatch(listBankAccount({ company, message })).then((response1) => {
-        if(isMounted.current){
+        if (isMounted.current) {
           const onSuccess = () => {
             history.push(`${path}/new`);
             setLoading(false);
-          }
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([response, response1], onSuccess, onFail, '');
         }
-      })
+      });
     });
   };
 
   const handleUpdate = (data) => {};
 
-  const handleDelete = (data) => {
-  };
+  const handleDelete = (data) => {};
 
   const handleApprove = (data) => {
-    setLoading(true)
+    setLoading(true);
     dispatch(approveChequePrinting({ id: data.id, user: user.id })).then(() => {
       setDisplayModal(false);
       setSelectedData(null);
       dispatch(listChequePrinting({ company, message })).then(() => {
-        setLoading(false)
+        setLoading(false);
       });
     });
-
-  }
+  };
 
   const handleReject = (data) => {
-    setLoading(true)
+    setLoading(true);
     dispatch(rejectChequePrinting({ id: data.id, user: user.id })).then(() => {
       setDisplayModal(false);
       setSelectedData(null);
       dispatch(listChequePrinting({ company, message })).then(() => {
-        setLoading(false)
+        setLoading(false);
       });
     });
-
-  }
+  };
 
   const handleRetrieve = (data) => {
     setSelectedData(data);
@@ -115,15 +134,15 @@ const ChequePrintings = (props) => {
     const payload = {
       ...data,
       vendor: {
-        id: data.vendor
+        id: data.vendor,
       },
       bankAccount: {
-        id: data.bankAccount
+        id: data.bankAccount,
       },
       company: {
-        id: company
+        id: company,
       },
-    }
+    };
     await dispatch(addChequePrinting(payload)).then((response) => {
       setLoading(true);
       history.goBack();
@@ -136,11 +155,11 @@ const ChequePrintings = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (
@@ -205,7 +224,7 @@ const ChequePrintings = (props) => {
               />
             )}
           </Col>
-          {<Modal
+          <Modal
             visible={displayModal}
             onOk={() => {
               setDisplayModal(false);
@@ -234,8 +253,8 @@ const ChequePrintings = (props) => {
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
-                
-                {(selectedData.status === 'Pending' && // add approval permissions here
+
+                {selectedData.status === 'Pending' && ( // add approval permissions here
                   <>
                     <Text>{'Actions: '}</Text>
                     <Space>
@@ -245,8 +264,7 @@ const ChequePrintings = (props) => {
                         onConfirm={(e) => {
                           handleApprove(selectedData);
                         }}
-                        onCancel={(e) => {
-                        }}
+                        onCancel={(e) => {}}
                         okText="Yes"
                         cancelText="No"
                       >
@@ -259,15 +277,14 @@ const ChequePrintings = (props) => {
                           Approve
                         </Button>
                       </Popconfirm>
-                      
+
                       <Popconfirm
                         title="Would you like to perform this action?"
                         icon={<QuestionCircleOutlined />}
                         onConfirm={(e) => {
                           handleReject(selectedData);
                         }}
-                        onCancel={(e) => {
-                        }}
+                        onCancel={(e) => {}}
                         okText="Yes"
                         cancelText="No"
                       >
@@ -286,7 +303,7 @@ const ChequePrintings = (props) => {
                 )}
               </Space>
             )}
-          </Modal>}
+          </Modal>
         </Row>
       </Route>
     </Switch>

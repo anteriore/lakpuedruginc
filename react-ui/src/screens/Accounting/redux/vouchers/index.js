@@ -16,10 +16,12 @@ export const listVoucherByCompanyAndStatus = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    const { company, status } = payload
+    const { company, status } = payload;
 
     try {
-      const response = await axiosInstance.get(`rest/vouchers/company/${company}/status/${status}/new-vouchers?token=${accessToken}`);
+      const response = await axiosInstance.get(
+        `rest/vouchers/company/${company}/status/${status}/new-vouchers?token=${accessToken}`
+      );
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
       if (valid) {
@@ -29,11 +31,8 @@ export const listVoucherByCompanyAndStatus = createAsyncThunk(
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
     }
-
   }
 );
-
-
 
 const voucherSlice = createSlice({
   name: 'vouchers',

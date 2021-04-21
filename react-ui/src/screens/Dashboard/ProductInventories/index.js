@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import TableDisplay from '../../../components/TableDisplay';
 import Report from '../../../components/Report';
-import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 import { columns, reportColumns } from './data';
 import { listProductInventory, listProductInventoryByDepot, clearData } from './redux';
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
@@ -22,11 +25,15 @@ const ProductInventories = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { list, status, statusMessage, statusLevel, action } = useSelector((state) => state.dashboard.productInventories);
-  const { 
-    list: depotList, statusMessage: statusMessageDepot,  
-    status: statusDepot, statusLevel: statusLevelDepot,
-    action: actionDepot
+  const { list, status, statusMessage, statusLevel, action } = useSelector(
+    (state) => state.dashboard.productInventories
+  );
+  const {
+    list: depotList,
+    statusMessage: statusMessageDepot,
+    status: statusDepot,
+    statusLevel: statusLevelDepot,
+    action: actionDepot,
   } = useSelector((state) => state.maintenance.depots);
   const companies = useSelector((state) => state.company.companyList);
   const isMounted = useRef(true);
@@ -34,11 +41,11 @@ const ProductInventories = (props) => {
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearDepot());
-  },[dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listProductInventory({ company })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
         setSelectedDepot(null);
       } else {
@@ -54,16 +61,16 @@ const ProductInventories = (props) => {
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: "Depot"
+      module: 'Depot',
     });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
@@ -79,33 +86,32 @@ const ProductInventories = (props) => {
         setDisplayModal(true);
       };
 
-      handleRequestResponse([response], onSuccess, '','');
+      handleRequestResponse([response], onSuccess, '', '');
     });
   };
 
   const onGenerateReport = () => {
-    setLoading(true)
+    setLoading(true);
     if (selectedDepot !== null) {
-      dispatch(listProductInventoryByDepot({ depot: selectedDepot.id, 
-      message })).then((response) => {
+      dispatch(listProductInventoryByDepot({ depot: selectedDepot.id, message })).then(
+        (response) => {
           const onSuccess = () => {
-            setLoading(false)
-            history.push(`${path}/report`);  
+            setLoading(false);
+            history.push(`${path}/report`);
           };
 
           const onFail = () => {
             setLoading(false);
-          }
-    
-          handleRequestResponse([response], onSuccess, onFail,'');
+          };
+
+          handleRequestResponse([response], onSuccess, onFail, '');
         }
       );
-    } 
-    else {
-      setLoading(false)
+    } else {
+      setLoading(false);
       history.push(`${path}/report`);
     }
-  }
+  };
 
   const renderReportDetails = () => {
     return (
@@ -179,13 +185,13 @@ const ProductInventories = (props) => {
               okText="Generate Report"
               title="Report Details"
               onCancel={() => {
-                setDisplayModal(false)
-                setLoading(false)
+                setDisplayModal(false);
+                setLoading(false);
 
-                //TODO: Cancel dispatch onCancel
+                // TODO: Cancel dispatch onCancel
               }}
               onOk={onGenerateReport}
-              okButtonProps={{ loading: loading }}
+              okButtonProps={{ loading }}
               afterClose={() => {
                 setSelectedDepot(null);
               }}

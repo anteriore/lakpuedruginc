@@ -13,28 +13,25 @@ const initialState = {
   action: '',
 };
 
-export const listProcedure = createAsyncThunk(
-  'listProcedure',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    try {
-      const response = await axiosInstance.get(`/rest/procedures?token=${accessToken}`);
-  
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: 'failed. An error has occurred'
-      });
+export const listProcedure = createAsyncThunk('listProcedure', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(`/rest/procedures?token=${accessToken}`);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred',
+    });
   }
-);
+});
 
 export const createProcedure = createAsyncThunk('createProcedure', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -52,7 +49,7 @@ export const createProcedure = createAsyncThunk('createProcedure', async (payloa
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -72,7 +69,7 @@ export const updateProcedure = createAsyncThunk('updateProcedure', async (payloa
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -93,7 +90,7 @@ export const deleteProcedure = createAsyncThunk('deleteProcedure', async (payloa
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -106,12 +103,12 @@ const proceduresSlice = createSlice({
   },
   extraReducers: {
     [listProcedure.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for procedures` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for procedures`,
       };
     },
     [listProcedure.fulfilled]: (state, action) => {
@@ -144,12 +141,12 @@ const proceduresSlice = createSlice({
       };
     },
     [createProcedure.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for procedures` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for procedures`,
       };
     },
     [createProcedure.fulfilled]: (state, action) => {
@@ -181,12 +178,12 @@ const proceduresSlice = createSlice({
       };
     },
     [updateProcedure.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for procedures` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for procedures`,
       };
     },
     [updateProcedure.fulfilled]: (state, action) => {
@@ -218,12 +215,12 @@ const proceduresSlice = createSlice({
       };
     },
     [deleteProcedure.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for procedures` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for procedures`,
       };
     },
     [deleteProcedure.fulfilled]: (state, action) => {

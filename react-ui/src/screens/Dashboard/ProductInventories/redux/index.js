@@ -33,7 +33,7 @@ export const listProductInventory = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -59,7 +59,7 @@ export const listProductInventoryByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -91,7 +91,7 @@ export const listProductInventoryWithStockByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -121,7 +121,7 @@ export const addProductInventory = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -151,7 +151,7 @@ export const deleteProductInventory = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -186,9 +186,9 @@ const productInventorySlice = createSlice({
     [listProductInventory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Product Inventory',
-        state.action  
+        state.action
       );
 
       return {
@@ -229,9 +229,9 @@ const productInventorySlice = createSlice({
     [listProductInventoryByDepot.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Product Inventory',
-        state.action  
+        state.action
       );
 
       return {
@@ -272,9 +272,9 @@ const productInventorySlice = createSlice({
     [listProductInventoryWithStockByDepot.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Product Inventory',
-        state.action  
+        state.action
       );
 
       return {

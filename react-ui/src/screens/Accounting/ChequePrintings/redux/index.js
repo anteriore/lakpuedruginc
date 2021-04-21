@@ -33,7 +33,7 @@ export const listChequePrinting = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -48,8 +48,8 @@ export const listChequePrintingByCompanyAndStatus = createAsyncThunk(
     try {
       const response = await axiosInstance.get(
         `rest/cheque-printings/company/${company}/status/${status}?token=${accessToken}`
-        );
-        const { response: validatedResponse, valid } = checkResponseValidity(response);
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
       if (valid) {
         return validatedResponse;
       }
@@ -58,12 +58,11 @@ export const listChequePrintingByCompanyAndStatus = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
 );
-
 
 export const approveChequePrinting = createAsyncThunk(
   'approveChequePrinting',
@@ -85,7 +84,7 @@ export const approveChequePrinting = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -111,7 +110,7 @@ export const rejectChequePrinting = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -137,10 +136,9 @@ export const addChequePrinting = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
-
   }
 );
 
@@ -164,7 +162,7 @@ export const deleteChequePrinting = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -178,17 +176,21 @@ const chequePrintingSlice = createSlice({
   },
   extraReducers: {
     [listChequePrinting.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers`,
       };
     },
     [listChequePrinting.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cheque Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -216,17 +218,21 @@ const chequePrintingSlice = createSlice({
       };
     },
     [listChequePrintingByCompanyAndStatus.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers`,
       };
     },
     [listChequePrintingByCompanyAndStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cheque Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -255,17 +261,21 @@ const chequePrintingSlice = createSlice({
       };
     },
     [addChequePrinting.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers`,
       };
     },
     [addChequePrinting.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cheque Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -292,17 +302,21 @@ const chequePrintingSlice = createSlice({
       };
     },
     [approveChequePrinting.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'approve', 
+      return {
+        ...state,
+        action: 'approve',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers`,
       };
     },
     [approveChequePrinting.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cheque Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -329,17 +343,21 @@ const chequePrintingSlice = createSlice({
       };
     },
     [rejectChequePrinting.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'reject', 
+      return {
+        ...state,
+        action: 'reject',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers`,
       };
     },
     [rejectChequePrinting.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cheque Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -366,17 +384,21 @@ const chequePrintingSlice = createSlice({
       };
     },
     [deleteChequePrinting.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cheque Vouchers`,
       };
     },
     [deleteChequePrinting.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cheque Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cheque Vouchers',
+        state.action
+      );
 
       return {
         ...state,

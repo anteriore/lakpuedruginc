@@ -1,4 +1,4 @@
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 export const tableHeader = [
   {
@@ -14,7 +14,7 @@ export const tableHeader = [
     key: 'number',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Prepared By',
@@ -76,7 +76,7 @@ const FormDetails = () => {
         rules: [{ required: true, message: 'Please provide a sales order depot' }],
         placeholder: 'Sales order depot',
         render: (depot) => {
-          return `[${depot?.code ?? ""}] ${depot?.name ?? ""}`;
+          return `[${depot?.code ?? ''}] ${depot?.name ?? ''}`;
         },
         type: 'select',
         choices: [],
@@ -97,7 +97,7 @@ const FormDetails = () => {
         name: 'preparedBy',
         type: 'selectSearch',
         choices: [user],
-        render: (user) => `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
+        render: (object) => `${object?.firstName ?? ''} ${object?.lastName ?? ''}`,
         initialValue: user.id,
         rules: [{ required: true }],
         readOnly: true,
@@ -107,7 +107,7 @@ const FormDetails = () => {
         name: 'checkedBy',
         type: 'selectSearch',
         choices: [user],
-        render: (user) => `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
+        render: (object) => `${object?.firstName ?? ''} ${object?.lastName ?? ''}`,
         initialValue: user.id,
         rules: [{ required: true }],
         readOnly: true,
@@ -121,19 +121,19 @@ const FormDetails = () => {
       },
     ],
   };
-  
+
   const itemColumn = [
     {
       title: 'Finished Good',
       dataIndex: 'finishedGood',
       key: 'finishedGood',
-      render: (object) => object?.name ?? ""
+      render: (object) => object?.name ?? '',
     },
     {
       title: 'Depot',
       dataIndex: 'depot',
       key: 'depot',
-      render: (object) => object?.code ?? "",
+      render: (object) => object?.code ?? '',
     },
     {
       title: 'Stock On Hand',
@@ -155,7 +155,7 @@ const FormDetails = () => {
       dataIndex: 'status',
       key: 'status',
     },
-  ]
+  ];
 
   const tableProductInventory = [
     {
@@ -163,29 +163,28 @@ const FormDetails = () => {
       dataIndex: 'product',
       key: 'product',
       datatype: 'object',
-      dataToString: (product) => product?.lotNumber ?? ''
-    }, 
+      dataToString: (product) => product?.lotNumber ?? '',
+    },
     {
       title: 'FG Code',
       dataIndex: 'product',
       key: 'product',
       datatype: 'object',
-      dataToString: (product) => product?.finishedGood?.code ?? ''
+      dataToString: (product) => product?.finishedGood?.code ?? '',
     },
     {
       title: 'Finished Good',
       dataIndex: 'product',
       key: 'product',
       datatype: 'object',
-      dataToString: (product) => product?.finishedGood?.name ?? ''
+      dataToString: (product) => product?.finishedGood?.name ?? '',
     },
     {
       title: 'Expiration',
       dataIndex: 'product',
       key: 'product',
       datatype: 'object',
-      dataToString: (product) => product.expiration.toString() ?? ''
-  
+      dataToString: (product) => product.expiration.toString() ?? '',
     },
     {
       title: 'Stock on Hand',
@@ -198,8 +197,8 @@ const FormDetails = () => {
     label: 'Sales Order Products',
     name: 'salesOrderProducts',
     key: 'id',
-    rules: [{required: true, message: "Please select items to be requested"}],
-    emptyText: "Please select a depot for the items to be requested",
+    rules: [{ required: true, message: 'Please select items to be requested' }],
+    emptyText: 'Please select a depot for the items to be requested',
     fields: [
       {
         title: 'FG ID',
@@ -248,15 +247,15 @@ const FormDetails = () => {
       {
         title: 'Action',
       },
-    ]
-  }
-  
+    ],
+  };
+
   return {
     tableDetails,
-    tableProductInventory, 
-    itemColumn, 
-    formDetails
-  }
-}
+    tableProductInventory,
+    itemColumn,
+    formDetails,
+  };
+};
 
 export default FormDetails;

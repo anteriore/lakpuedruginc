@@ -15,7 +15,7 @@ import {
   updateInventory,
 } from './redux';
 import FormScreen from '../../../components/forms/FormScreen';
-import {reevalutateMessageStatus} from '../../../helpers/general-helper';
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -33,17 +33,19 @@ const Inventory = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.dashboard.inventory);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.inventory
+  );
   const { formDetails } = FormDetails();
   const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listInventory({ company, message })).then(() => {
-      if(isMounted.current) {
+      if (isMounted.current) {
         setLoading(false);
         setFormData(null);
       }
@@ -56,8 +58,8 @@ const Inventory = (props) => {
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
-  },[status, action, statusMessage, statusLevel]);
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
 
   // const handleAdd = () => {
   //   setFormTitle('Add Inventory');

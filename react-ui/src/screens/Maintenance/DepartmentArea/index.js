@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deptColumns, tableName, areaColumns, formDetailD, formDetailA } from './data';
-import { listD, addD, updateD,deleteD, listA, addA, updateA,deleteA, clearData } from './redux';
+import { listD, addD, updateD, deleteD, listA, addA, updateA, deleteA, clearData } from './redux';
 
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
@@ -23,21 +23,22 @@ const DepartmentArea = (props) => {
   const [formDataD, setFormDataD] = useState(null);
 
   const { company, title, actions } = props;
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
   const dispatch = useDispatch();
   const {
-    areaList: areaData, 
+    areaList: areaData,
     deptList: deptData,
-    statusMessage, action,
-    statusLevel, status
+    statusMessage,
+    action,
+    statusLevel,
+    status,
   } = useSelector((state) => state.maintenance.departmentArea);
-
 
   useEffect(() => {
     let isCancelled = false;
     dispatch(listD({ company })).then(() => {
       dispatch(listA({ company })).then(() => {
-        setLoading(false)
+        setLoading(false);
         if (isCancelled) {
           dispatch(clearData());
         }
@@ -51,7 +52,7 @@ const DepartmentArea = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddD = () => {
@@ -71,13 +72,15 @@ const DepartmentArea = (props) => {
   };
 
   const handleDeleteD = (data) => {
-    setLoading(true)
-    dispatch(deleteD(data.id)).then(() => {
-      dispatch(listD({ company }));
-      setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    setLoading(true);
+    dispatch(deleteD(data.id))
+      .then(() => {
+        dispatch(listD({ company }));
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
   const handleAddA = () => {
@@ -97,13 +100,15 @@ const DepartmentArea = (props) => {
   };
 
   const handleDeleteA = (data) => {
-    setLoading(true)
-    dispatch(deleteA(data.id)).then(() => {
-      dispatch(listA({ company }));
-      setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    setLoading(true);
+    dispatch(deleteA(data.id))
+      .then(() => {
+        dispatch(listA({ company }));
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
   const handleRetrieve = () => {};
 
@@ -129,12 +134,12 @@ const DepartmentArea = (props) => {
         const onSuccess = () => {
           dispatch(listD({ company }));
           setLoading(false);
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
-      })
+      });
     } else if (formMode === 'add') {
       const payload = {
         ...values,
@@ -146,12 +151,12 @@ const DepartmentArea = (props) => {
         const onSuccess = () => {
           dispatch(listD({ company }));
           setLoading(false);
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
-      })
+      });
     }
 
     setDisplayFormD(false);
@@ -159,7 +164,7 @@ const DepartmentArea = (props) => {
     setFormDataA(null);
     setFormDataD(null);
 
-    return 1
+    return 1;
   };
 
   const onSubmitA = async (values) => {
@@ -177,12 +182,12 @@ const DepartmentArea = (props) => {
         const onSuccess = () => {
           dispatch(listA({ company }));
           setLoading(false);
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
-      })
+      });
     } else if (formMode === 'add') {
       const payload = {
         ...values,
@@ -194,19 +199,19 @@ const DepartmentArea = (props) => {
         const onSuccess = () => {
           dispatch(listA({ company }));
           setLoading(false);
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
-      })
+      });
     }
 
     setDisplayFormD(false);
     setDisplayFormA(false);
     setFormDataA(null);
     setFormDataD(null);
-    return 1
+    return 1;
   };
 
   return (
@@ -235,7 +240,9 @@ const DepartmentArea = (props) => {
               Add
             </Button>
           )}
-          {loading ? <Skeleton/> : 
+          {loading ? (
+            <Skeleton />
+          ) : (
             <TableDisplay
               name={tableName}
               columns={deptColumns}
@@ -247,7 +254,7 @@ const DepartmentArea = (props) => {
               updateEnabled={actions.includes('update')}
               deleteEnabled={actions.includes('delete')}
             />
-          }
+          )}
         </Col>
         <Col span={12}>
           <Title level={5} style={{ float: 'left' }}>
@@ -265,7 +272,9 @@ const DepartmentArea = (props) => {
               Add
             </Button>
           )}
-          {loading ? <Skeleton/> : 
+          {loading ? (
+            <Skeleton />
+          ) : (
             <TableDisplay
               name={tableName}
               columns={areaColumns}
@@ -276,7 +285,8 @@ const DepartmentArea = (props) => {
               pagination={{ size: 'small' }}
               updateEnabled={actions.includes('update')}
               deleteEnabled={actions.includes('delete')}
-            />}
+            />
+          )}
         </Col>
         <SimpleForm
           visible={displayFormD}

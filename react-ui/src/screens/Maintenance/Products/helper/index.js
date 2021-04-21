@@ -18,40 +18,39 @@ export const updateList = (form, choices) => {
 };
 
 export const formatPayload = (values) => {
-  if ( values?.id !== undefined) {
+  if (values?.id !== undefined) {
     return {
       id: values.id,
       company: values.company,
-      finishedGood: {id: values.finishedGood},
-      depot: {id: values.depot},
-      division: {id: values.division},
-      bigUnit: {id: values.bigUnit},
-      smallUnit: {id: values.smallUnit},
-      classification: {id: values.classification},
-      category: {id: values.category},
+      finishedGood: { id: values.finishedGood },
+      depot: { id: values.depot },
+      division: { id: values.division },
+      bigUnit: { id: values.bigUnit },
+      smallUnit: { id: values.smallUnit },
+      classification: { id: values.classification },
+      category: { id: values.category },
       quantityPerBox: values.quantityPerBox,
       expiration: values.expiration,
       reorderLevel: values.reorderLevel,
       lotNumber: values.lotNumber,
-      unitPrice: values.unitPrice
-    }
-  } else {
-    return {
-      company: values.company,
-      finishedGood: {id: values.finishedGood},
-      depot: {id: values.depot},
-      division: {id: values.division},
-      bigUnit: {id: values.bigUnit},
-      smallUnit: {id: values.smallUnit},
-      classification: {id: values.classification},
-      category: {id: values.category},
-      quantityPerBox: values.quantityPerBox,
-      expiration: values.expiration,
-      reorderLevel: values.reorderLevel,
-      lotNumber: values.lotNumber,
-      unitPrice: values.unitPrice
-    }
+      unitPrice: values.unitPrice,
+    };
   }
+  return {
+    company: values.company,
+    finishedGood: { id: values.finishedGood },
+    depot: { id: values.depot },
+    division: { id: values.division },
+    bigUnit: { id: values.bigUnit },
+    smallUnit: { id: values.smallUnit },
+    classification: { id: values.classification },
+    category: { id: values.category },
+    quantityPerBox: values.quantityPerBox,
+    expiration: values.expiration,
+    reorderLevel: values.reorderLevel,
+    lotNumber: values.lotNumber,
+    unitPrice: values.unitPrice,
+  };
 };
 
 export const formatInitialValue = (object) => {
@@ -68,6 +67,6 @@ export const formatInitialValue = (object) => {
     lotNumber: object?.lotNumber,
     quantityPerBox: object?.quantityPerBox,
     reorderLevel: object?.reorderLevel,
-    unitPrice: object?.unitPrice
-  }
-}
+    unitPrice: object?.unitPrice,
+  };
+};

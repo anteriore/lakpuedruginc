@@ -14,7 +14,7 @@ const initialState = {
 
 export const listRR = createAsyncThunk('listRR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.get(
       `rest/receiving-receipts/company/${payload.company}?token=${accessToken}`
     );
@@ -29,7 +29,7 @@ export const listRR = createAsyncThunk('listRR', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -52,8 +52,8 @@ export const addRR = createAsyncThunk('addRR', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
-    })
+      statusText: message.ERROR_OCCURED,
+    });
   }
 });
 
@@ -77,11 +77,9 @@ export const getRR = createAsyncThunk('getRR', async (payload, thunkAPI) => {
   return response;
 });
 
-export const listRRByStatus = createAsyncThunk(
-  'listRRByStatus',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    try {
+export const listRRByStatus = createAsyncThunk('listRRByStatus', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
     const response = await axiosInstance.get(
       `rest/receiving-receipts/company/${payload.company}/status/${payload.status}?token=${accessToken}`
     );
@@ -95,34 +93,31 @@ export const listRRByStatus = createAsyncThunk(
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
-    })
+      statusText: message.ERROR_OCCURED,
+    });
   }
 });
 
-export const listRRByPO = createAsyncThunk(
-  'listRRByPO',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    try {
-      const response = await axiosInstance.get(
-        `rest/receiving-receipts/company/${payload.company}/po/${payload.poID}?token=${accessToken}`
-      );
+export const listRRByPO = createAsyncThunk('listRRByPO', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `rest/receiving-receipts/company/${payload.company}/po/${payload.poID}?token=${accessToken}`
+    );
 
-      const { response: validateResponse, valid } = checkResponseValidity(response);
-      if (valid) {
-        return validateResponse;
-      }
-      return thunkAPI.rejectWithValue(validateResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: message.ERROR_OCCURED
-      })
+    const { response: validateResponse, valid } = checkResponseValidity(response);
+    if (valid) {
+      return validateResponse;
     }
+    return thunkAPI.rejectWithValue(validateResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED,
+    });
   }
-);
+});
 
 export const listRRByNoPV = createAsyncThunk('listRRByNoPV', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -138,11 +133,11 @@ export const listRRByNoPV = createAsyncThunk('listRRByNoPV', async (payload, thu
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-   return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: message.ERROR_OCCURED
-      })
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED,
+    });
   }
 });
 

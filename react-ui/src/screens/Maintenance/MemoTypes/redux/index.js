@@ -20,7 +20,7 @@ export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -40,7 +40,7 @@ export const createMemo = createAsyncThunk('createMemo', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -60,7 +60,7 @@ export const updateMemo = createAsyncThunk('updateMemo', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -81,7 +81,7 @@ export const deleteMemo = createAsyncThunk('deleteMemo', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -103,12 +103,12 @@ const memoSlice = createSlice({
   },
   extraReducers: {
     [listMemo.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [listMemo.fulfilled]: (state, action) => {
@@ -141,12 +141,12 @@ const memoSlice = createSlice({
       };
     },
     [createMemo.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [createMemo.fulfilled]: (state, action) => {
@@ -178,12 +178,12 @@ const memoSlice = createSlice({
       };
     },
     [updateMemo.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [updateMemo.fulfilled]: (state, action) => {
@@ -215,12 +215,12 @@ const memoSlice = createSlice({
       };
     },
     [deleteMemo.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [deleteMemo.fulfilled]: (state, action) => {
