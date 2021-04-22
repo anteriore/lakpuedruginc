@@ -25,6 +25,28 @@ export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI) =
   }
 });
 
+export const listMemoByType = createAsyncThunk('listMemoByType', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { type } = payload
+
+  try {
+    const response = await axiosInstance.get(`/rest/memo-types/type/${type}?token=${accessToken}`);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred'
+    });
+  }
+});
+
 export const createMemo = createAsyncThunk('createMemo', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
@@ -125,6 +147,44 @@ const memoSlice = createSlice({
       };
     },
     [listMemo.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Memo Types',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
+      };
+    },
+    [listMemoByType.pending]: (state) => {
+      return { 
+        ...state,  
+        action: 'fetch', 
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+      };
+    },
+    [listMemoByType.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Memo Types', state.action);
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listMemoByType.rejected]: (state, action) => {
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
         'Memo Types',

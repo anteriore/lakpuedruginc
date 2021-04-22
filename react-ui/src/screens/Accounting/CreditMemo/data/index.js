@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { message } from 'antd';
 import moment from 'moment';
 import { listOrderSlipsByDepotAndStatus, clearData as clearOS } from '../../../Sales/OrderSlips/redux';
+import { listMemoByType } from '../../../Maintenance/MemoTypes/redux';
 import { listSalesInvoiceByDepotAndStatus, clearData as clearSI } from '../../../Sales/SalesInvoice/redux';
 import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
@@ -76,6 +77,7 @@ export const FormDetails = () => {
     const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
     const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
     const memoTypes = useSelector((state) => state.maintenance.memoTypes.list);
+    dispatch(listMemoByType({ type: ['CM'] }));
     const [displayModal, setDisplayModal] = useState(false);
     let salesSlips = [];
     salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
