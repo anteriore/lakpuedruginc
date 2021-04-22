@@ -162,6 +162,7 @@ export const FormDetails = () => {
         name: 'type',
         type: 'selectSearch',
         selectName: 'name',
+        allowEmpty: true,
         choices: memoTypes,
         render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
         rules: [{ required: true }],

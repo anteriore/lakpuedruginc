@@ -63,7 +63,7 @@ const InputForm = (props) => {
       if (!value) {
         form.setFieldsValue(defaultValNewAdj);
         setFormType(value);
-      } else if (listVoucher.length !== 0) {
+      } else if (_.filter(listVoucher, (o) => _.toLower(o.status) === 'approved').length !== 0) {
         form.setFieldsValue(defaultValWithAdj);
         setFormType(value);
       } else {
@@ -153,7 +153,7 @@ const InputForm = (props) => {
     setSubContentLoading(true);
     const newForm = tempWithAdjForm;
     const masterList = {
-      voucher: listVoucher,
+      voucher: _.filter(listVoucher, (o) => _.toLower(o.status) === 'approved')
     };
 
     if (listVoucher.length === 0) {

@@ -153,7 +153,7 @@ export const FormDetails = () => {
         rules: [{ required: true }],
         onChange: (e) => {
           dispatch(clearOS());
-          dispatch(clearSI());
+          dispatch(clearSI())
           dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] }));
           dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] }));
         },
