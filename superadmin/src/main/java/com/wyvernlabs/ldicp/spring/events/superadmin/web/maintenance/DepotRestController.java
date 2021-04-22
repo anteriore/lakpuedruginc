@@ -23,6 +23,7 @@ public class DepotRestController {
     private static final Logger logger = LoggerFactory.getLogger(DepotRestController.class);
     @Autowired
     private DepotRepository depotRepository;
+    @Autowired
 	private CompanyRepository companyRepository;
 
     @GetMapping("/{id}")
