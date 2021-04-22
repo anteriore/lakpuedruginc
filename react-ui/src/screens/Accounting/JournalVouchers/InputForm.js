@@ -50,12 +50,12 @@ const InputForm = (props) => {
       form.setFieldsValue(defaultValNewAdj)
       setFormType(value);
     }else {
-      if(listVoucher.length !== 0){
+      if(_.filter(listVoucher, (o) => _.toLower(o.status) === 'approved').length !== 0){
         form.setFieldsValue(defaultValWithAdj)
         setFormType(value);
       }else{
-        form.setFieldsValue({adjustment: true})
-        message.warning("There are no available receiving receipts to select")
+        form.setFieldsValue({adjustment: false})
+        message.warning("There are no available data for adjustment vouchers")
       }
     }
     setSubContentLoading(false)
@@ -132,7 +132,7 @@ const InputForm = (props) => {
     setSubContentLoading(true);
     const newForm = tempWithAdjForm;
     const masterList = {
-      voucher: listVoucher
+      voucher: _.filter(listVoucher, (o) => _.toLower(o.status) === 'approved')
     };
 
     if (listVoucher.length === 0) {
