@@ -18,7 +18,6 @@ const InputForm = (props) => {
   const [tableData, setTableData] = useState();
   const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
   const [processingData, setProcessingData] = useState(false);
-  const [contentLoading, setContentLoading] = useState(true);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
 
@@ -37,15 +36,12 @@ const InputForm = (props) => {
       selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
       setTableSelectedKeys(selectedKeys)
     }
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable, hasTable]);
 
   useEffect(() => {
     form.setFieldsValue({
       receivedBy: `${user.firstName} ${user.lastName}`,
     });
-
-    setContentLoading(false);
   }, [user, form]);
 
 

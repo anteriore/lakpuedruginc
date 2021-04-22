@@ -18,7 +18,6 @@ const PDCVouchers = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const isMounted = useRef(true);
@@ -26,7 +25,7 @@ const PDCVouchers = (props) => {
   const { formDetails, tableDetails } = FormDetails();
   const { handleRequestResponse } = GeneralHelper()
 
-  const listData = useSelector((state) => state.accounting.PDCVouchers.list);
+  const {list: listData, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.PDCVouchers);
 
   const { company, actions } = props;
 
@@ -45,9 +44,12 @@ const PDCVouchers = (props) => {
     };
   }, [dispatch, company]);
 
+  useEffect(() => {
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+  }, [status, action, statusMessage, statusLevel]);
+
   const handleAdd = () => {
     setFormTitle('Create PDC Voucher');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
     dispatch(listPDCDisbursementByStatus({ status: "Pending", message })).then((response) => {

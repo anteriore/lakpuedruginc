@@ -39,7 +39,6 @@ const ReceivingReceipts = (props) => {
   const [loading, setLoading] = useState(true);
 
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
 
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
@@ -90,7 +89,6 @@ const ReceivingReceipts = (props) => {
 
   const handleAdd = () => {
     setFormTitle('Create Receiving Receipt');
-    setFormMode('add');
     setReceivingReceipt(null);
     setLoading(true)
     dispatch(listPO({ company, message })).then((resp1) => {

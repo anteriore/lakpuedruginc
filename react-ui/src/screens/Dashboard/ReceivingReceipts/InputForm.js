@@ -6,7 +6,6 @@ import {
   InputNumber,
   Input,
   Select,
-  Checkbox,
   Modal,
   Row,
   Col,
@@ -50,8 +49,7 @@ const InputForm = (props) => {
     }
     setTableSelectedKeys(selectedKeys)
 
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable]);
 
   useEffect(() => {
     form.setFieldsValue({

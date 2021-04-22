@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
@@ -129,16 +130,16 @@ export const reevalDependencyMsgStats = ({
 const GeneralHelper = (props) => {
   const history = useHistory();
 
-  const pushErrorPage = (statusCode, returnPath) => {
+  const pushErrorPage = useCallback((statusCode, returnPath) => {
     history.push({
       pathname: `/error/${statusCode === 400 || statusCode === 404 ? 403 : statusCode}`,
       state: {
         moduleList: returnPath || '/',
       },
     });
-  };
+  }, [history]);
 
-  const handleRequestResponse = (responseList, onSuccess, onFail, returnPath) => {
+  const handleRequestResponse = useCallback((responseList, onSuccess, onFail, returnPath) => {
     let hasFailed = false;
     responseList.forEach((response) => {
       if (response.hasOwnProperty('error') && !hasFailed) {
@@ -156,7 +157,7 @@ const GeneralHelper = (props) => {
         onSuccess();
       }
     }
-  };
+  }, [pushErrorPage]);
 
   return { handleRequestResponse };
 };

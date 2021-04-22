@@ -58,8 +58,7 @@ const InputForm = (props) => {
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable, hasTable]);
 
   useEffect(() => {
     switch(mode){

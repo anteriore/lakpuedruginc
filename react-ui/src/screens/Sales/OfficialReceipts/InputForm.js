@@ -25,8 +25,7 @@ const FormScreen = (props) => {
     if (hasTable && values !== null) {
       setTableData(formTable.getValues(values.acknowledgementReceipt));
     }
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable, hasTable]);
 
   const onFinish = (data) => {
     setProcessingData(true)

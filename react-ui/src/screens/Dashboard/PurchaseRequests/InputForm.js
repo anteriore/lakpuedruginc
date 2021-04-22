@@ -47,9 +47,7 @@ const InputForm = (props) => {
       setTableData(values[formTable.name])
     }
     setTableSelectedKeys(selectedKeys)
-
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable]);
 
   const onFinish = (data) => {
     setProcessingData(true)

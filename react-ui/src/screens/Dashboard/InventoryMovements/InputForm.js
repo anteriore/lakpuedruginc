@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Form,
   Button,
@@ -34,6 +34,10 @@ const InputForm = (props) => {
 
   const [requireMO, setRequireMO] = useState(false); // for toggling MO input
 
+  const onFail = useCallback(() => {
+    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
+  }, [history, path]);
+
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -54,9 +58,7 @@ const InputForm = (props) => {
         onFail()
       }
     })
-
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formDetails, formTable, hasTable, onFail]);
 
   const onFinish = (data) => {
     setProcessingData(true)
@@ -198,10 +200,6 @@ const InputForm = (props) => {
     else {
       return null
     }
-  };
-
-  const onFail = () => {
-    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
 
   const onValuesChange = (values) => {

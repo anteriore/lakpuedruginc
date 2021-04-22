@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Row,
   Col,
@@ -83,36 +83,68 @@ const Users = () => {
       }
     }
     setActions(actionList);
+  }, [permissions])
 
+  useEffect(() => {
     dispatch(listCompany()).then(() => {
       setFormData(null);
       setCompanyLoading(false);
       setSelectedUser(null);
-      if (actionList.includes('read')) {
-        updateUserDepartments(selectedCompany);
-      } else {
-        setContentLoading(false);
-      }
-      
-      if(!isMounted.current){
-        performCleanup()
-      }
-
     });
 
     return function cleanup() {
       isMounted.current = false
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearDepartment());
     }
   }, [dispatch]);
+
+  const updateUserDepartments = useCallback(() => {
+    setContentLoading(true);
+    if(actions.includes('read')){
+      dispatch(listD({ company: selectedCompany, message })).then((response1) => {
+        dispatch(listUser({ company: selectedCompany, message })).then((response2) => {
+          const onSuccess = () => {
+            const userDepartmentList = [];
+            response1.payload.data.forEach((department) => {
+              userDepartmentList.push({
+                id: department.id,
+                users: [],
+              });
+            });
+            response2.payload.data.forEach((user) => {
+              const usersPerDept = userDepartmentList.find(
+                (department) => department.id === user.department.id
+              );
+              usersPerDept.users.push(user);
+            });
+            setUserDepartments(userDepartmentList);
+            setContentLoading(false);
+          }
+          const onFail = () => {
+            setUserDepartments([]);
+            setContentLoading(false);
+          }
+          handleRequestResponse([response1, response2], onSuccess, onFail, '');
+        });
+      });
+    }
+    else {
+      setUserDepartments([]);
+      setContentLoading(false);
+    }
+  }, [actions, selectedCompany, dispatch, handleRequestResponse])
+
+  useEffect(() => {
+    updateUserDepartments()
+  }, [updateUserDepartments])
 
   useEffect(() => {
     reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   const performCleanup = () => {
-    dispatch(clearData());
-    dispatch(clearDepot());
-    dispatch(clearDepartment());
   };
 
   const formDetails = {
@@ -283,21 +315,6 @@ const Users = () => {
     });
   };
 
-  /* const handleDelete = (data) => {
-    dispatch(deleteUser(data.id)).then((response) => {
-      setContentLoading(true);
-      if (response.payload.status === 200) {
-        dispatch(listUser({ selectedCompany })).then(() => {
-          setContentLoading(false);
-          message.success(`Successfully deleted ${data.firstName} ${data.lastName}`);
-        });
-      } else {
-        setContentLoading(false);
-        message.error(`Unable to delete ${data.firstName} ${data.lastName}`);
-      }
-    });
-  }; */
-
   const handleCancelButton = () => {
     setFormData(null);
   };
@@ -373,43 +390,8 @@ const Users = () => {
     return 1
   };
 
-  const updateUserDepartments = (companyID) => {
-    dispatch(listD({ company: companyID, message })).then((response1) => {
-      dispatch(listUser({ company: companyID, message })).then((response2) => {
-        const onSuccess = () => {
-          const userDepartmentList = [];
-          response1.payload.data.forEach((department) => {
-            userDepartmentList.push({
-              id: department.id,
-              users: [],
-            });
-          });
-          response2.payload.data.forEach((user) => {
-            const usersPerDept = userDepartmentList.find(
-              (department) => department.id === user.department.id
-            );
-            usersPerDept.users.push(user);
-          });
-          setUserDepartments(userDepartmentList);
-          setContentLoading(false);
-        }
-        const onFail = () => {
-          setUserDepartments([]);
-          setContentLoading(false);
-        }
-        handleRequestResponse([response1, response2], onSuccess, onFail, '');
-      });
-    });
-  };
-
   const handleChangeTab = (companyID) => {
-    setContentLoading(true);
     dispatch(setCompany(companyID));
-    if (actions.includes('read')) {
-      updateUserDepartments(companyID);
-    } else {
-      setContentLoading(false);
-    }
   };
 
   const renderUsers = (departmentUsers) => {

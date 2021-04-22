@@ -32,7 +32,6 @@ const InputForm = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    // eslint-disable-next-line
   }, [values, form]);
 
   const onFinish = (data) => {
