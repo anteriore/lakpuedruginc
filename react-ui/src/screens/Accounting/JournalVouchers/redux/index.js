@@ -262,7 +262,7 @@ const journalVouchersSlice = createSlice({
     [approveJournalVouchers.pending]: (state) => {
       return {
         ...state,
-        action: 'approving',
+        action: 'approve',
         status: 'loading',
         statusLevel: '',
         statusMessage: `Approving selected journal voucher`,
@@ -304,7 +304,7 @@ const journalVouchersSlice = createSlice({
     [rejectJournalVouchers.pending]: (state) => {
       return {
         ...state,
-        action: 'rejecting',
+        action: 'reject',
         status: 'loading',
         statusLevel: '',
         statusMessage: `Reject selected journal voucher`,
@@ -331,7 +331,8 @@ const journalVouchersSlice = createSlice({
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
         action.payload,
-        'Journal Vouchers'
+        'Journal Vouchers',
+        state.action
       );
 
       return {
