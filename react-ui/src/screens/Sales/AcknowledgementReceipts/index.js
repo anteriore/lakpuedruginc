@@ -11,7 +11,7 @@ import InputForm from './InputForm';
 
 import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearOrderSlips } from '../OrderSlips/redux';
 import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
 import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
@@ -95,8 +95,8 @@ const AcknowledgementReceipts = (props) => {
     setLoading(true);
     dispatch(clearOrderSlips());
     dispatch(clearSalesInvoice());
-    dispatch(listClient({ company, message })).then((resp1) => {
-      dispatch(listDepot({ company, message })).then((resp2) => {
+    dispatch(listClient({ company })).then((resp1) => {
+      dispatch(listDepotByCompany({ company })).then((resp2) => {
         if(isMounted.current){
           const onSuccess = () => {
               history.push(`${path}/new`);

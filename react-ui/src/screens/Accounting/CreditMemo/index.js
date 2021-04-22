@@ -10,7 +10,7 @@ import { FormDetails, DisplayDetails } from './data';
 import InputForm from './InputForm';
 
 import { listCM, addCM, deleteCM, updateCM, getCM, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listMemo, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
@@ -67,7 +67,7 @@ const CreditMemo = (props) => {
     setLoading(true);
     dispatch(clearOS());
     dispatch(clearSI());
-    dispatch(listDepot({ company })).then((response1) => {
+    dispatch(listDepotByCompany({ company })).then((response1) => {
       dispatch(listMemo({ company })).then((response2) => {
         if(isMounted.current){
           const onSuccess = () => {

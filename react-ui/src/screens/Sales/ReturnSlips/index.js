@@ -24,7 +24,7 @@ import Report from '../../../components/Report';
 
 import { listReturnSlip, addReturnSlip, deleteReturnSlip, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
 import { clearData as clearSI } from '../SalesInvoice/redux';
 import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
@@ -114,8 +114,8 @@ const ReturnSlips = (props) => {
     setFormData(null);
     setLoading(true);
     dispatch(clearOS());
-    dispatch(listClient({ company, message })).then((resp1) => {
-        dispatch(listDepot({ company, message })).then((resp2) => {
+    dispatch(listClient({ company })).then((resp1) => {
+        dispatch(listDepotByCompany({ company })).then((resp2) => {
           if(isMounted.current){
             const onSuccess = () => {
                 history.push(`${path}/new`);
@@ -145,7 +145,7 @@ const ReturnSlips = (props) => {
       listOrderSlipsByDepot({ message, depot: itemData.depot !== null ? itemData.depot.id : null })
     ).then(() => {
       dispatch(listClient({ company, message })).then(() => {
-        dispatch(listDepot({ company, message })).then(() => {
+        dispatch(listDepotByCompany({ company })).then(() => {
           history.push(`${path}/${data.id}`);
           setLoading(false);
         });

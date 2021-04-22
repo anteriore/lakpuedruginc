@@ -7,7 +7,7 @@ import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import { listSalesInvoice, clearData, createSalesInvoice } from './redux';
-import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearDepot, listDepotByCompany } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import InputForm from './InputForm';
 import { listProductInventory } from '../../Dashboard/ProductInventories/redux';
@@ -119,7 +119,7 @@ const SalesInvoice = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepot({company})).then((resp1) => {
+    dispatch(listDepotByCompany({company})).then((resp1) => {
       dispatch(listProductInventory({company})).then((resp2) => {
         dispatch(listSalesOrder(company)).then((resp3) => {
           if(isMounted.current){
