@@ -202,7 +202,6 @@ const FormDetails = () => {
         };
       },
       summary: (data) => {
-        console.log(data);
         let totalCredit = 0;
         let totalDebit = 0;
         data.forEach((item) => {
