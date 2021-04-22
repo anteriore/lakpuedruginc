@@ -171,7 +171,7 @@ const FormDetails = () => {
           dependencies: ['accountTitle'],
           rules: [{ required: true, message: 'Please provide debit' }],
           isVisible: (selectedAccount?.type ?? '') === 'Debit',
-          render: (object) => object?.debit,
+          render: (object) => object?.debit ?? object,
           initialValue: 0,
           min: 0,
           width: 200,
@@ -182,7 +182,7 @@ const FormDetails = () => {
           type: 'number',
           rules: [{ required: true, message: 'Please provide credit' }],
           isVisible: (selectedAccount?.type ?? '') === 'Credit',
-          render: (object) => object?.credit,
+          render: (object) => object?.credit ?? object,
           initialValue: 0,
           min: 0,
           width: 200,
@@ -202,6 +202,7 @@ const FormDetails = () => {
         };
       },
       summary: (data) => {
+        console.log(data);
         let totalCredit = 0;
         let totalDebit = 0;
         data.forEach((item) => {
