@@ -44,7 +44,7 @@ import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/
 
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -59,6 +59,35 @@ const VoucherPayables = (props) => {
   const { list: listData, status, action, statusMessage, statusLevel } = useSelector(
     (state) => state.accounting.voucherPayables
   );
+  
+  const { 
+    status: statusAT, 
+    statusLevel: statusLevelAT, 
+    statusMessage: statusMessageAT,
+    action: actionAT 
+  } = useSelector((state) => state.accounting.accountTitles);
+
+  const {
+    status: statusDA, 
+    statusLevel: statusLevelDA,
+    statusMessage: statusMessageDA, 
+    action: actionDA
+  } =  useSelector((state) => state.maintenance.departmentArea);
+
+  const {
+    status: statusGC,
+    statusLevel: statusLevelGC, 
+    statusMessage: statusMessageGC, 
+    action: actionGC
+  } = useSelector((state) => state.maintenance.groupsCategories);
+
+  const { 
+    status: statusVendor,
+    statusLevel: statusLevelVendor,
+    statusMessage: statusMessageVendor,
+    action: actionVendor
+  } = useSelector((state) => state.maintenance.vendors);
+
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -87,6 +116,46 @@ const VoucherPayables = (props) => {
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusAT,
+      statusMessage: statusMessageAT,
+      action: actionAT,
+      statusLevel: statusLevelAT,
+      module: 'Account Tittles',
+    });
+  }, [actionAT, statusMessageAT, statusAT, statusLevelAT]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDA,
+      statusMessage: statusMessageDA,
+      action: actionDA,
+      statusLevel: statusLevelDA,
+      module: 'Departments & Areas',
+    });
+  }, [actionDA, statusMessageDA, statusDA, statusLevelDA]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusGC,
+      statusMessage: statusMessageGC,
+      action: actionGC,
+      statusLevel: statusLevelGC,
+      module: 'Groups & Categories',
+    });
+  }, [actionGC, statusMessageGC, statusGC, statusLevelGC]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVendor,
+      statusMessage: statusMessageVendor,
+      action: actionVendor,
+      statusLevel: statusLevelVendor,
+      module: 'Vendors',
+    });
+  }, [actionVendor, statusMessageVendor, statusVendor, statusLevelVendor]);
 
   const handleAdd = () => {
     setFormTitle('Create Voucher Payable');
