@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, Empty, message } from 'antd';
+import {
+  Row,
+  Col,
+  Skeleton,
+  Typography,
+  Button,
+  Modal,
+  Space,
+  Table,
+  Popconfirm,
+  Empty,
+  message,
+} from 'antd';
 import { PlusOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -10,8 +22,10 @@ import { listFGIssuance, addFGIssuance, cancelFGIssuance, clearData } from './re
 import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
-
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -23,11 +37,15 @@ const FGIssuances = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const { list, status, statusLevel, statusMessage, action } = useSelector((state) => state.dashboard.FGIssuances);
-  const { 
-    status: statusDepot, statusLevel: statusLevelDepot, 
-    statusMessage: statusMessageDepot, action: actionDepot
-  } = useSelector((state) => state.maintenance.depots)
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.FGIssuances
+  );
+  const {
+    status: statusDepot,
+    statusLevel: statusLevelDepot,
+    statusMessage: statusMessageDepot,
+    action: actionDepot,
+  } = useSelector((state) => state.maintenance.depots);
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -45,48 +63,45 @@ const FGIssuances = (props) => {
 
   useEffect(() => {
     dispatch(listFGIssuance({ company, message })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: "Depot"
-    })
-  }, [
-    actionDepot, statusMessageDepot, 
-    statusDepot, statusLevelDepot
-  ]);
+      module: 'Depot',
+    });
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   const handleAdd = () => {
     setFormTitle('Create FG Issuance');
     setFormData(null);
     setLoading(true);
     dispatch(listDepot({ company, message })).then((response) => {
-        const onSuccess = () => {
-          history.push(`${path}/new`);
-          setLoading(false);
-        }
+      const onSuccess = () => {
+        history.push(`${path}/new`);
+        setLoading(false);
+      };
 
-        const onFail = () => {
-          setLoading(false);
-        }
-        handleRequestResponse([response], onSuccess, onFail, '');
+      const onFail = () => {
+        setLoading(false);
+      };
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
@@ -114,9 +129,9 @@ const FGIssuances = (props) => {
         setDisplayModal(false);
         setSelectedData(null);
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
-    })
+    });
   };
 
   const onSubmit = async (data) => {
@@ -156,11 +171,11 @@ const FGIssuances = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (
@@ -260,34 +275,32 @@ const FGIssuances = (props) => {
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
                 {selectedData.status === 'Pending' && ( // add approval permissions here
-                <>
-                  <Text>{'Actions: '}</Text>
-                  <Space>
-                    <Popconfirm
-                      title="Would you like to perform this action?"
-                      icon={<QuestionCircleOutlined />}
-                      onConfirm={(e) => {
-                        handleCancel(selectedData)
-                      }}
-                      onCancel={(e) => {
-                      }}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <Button
-                        style={{ marginRight: '1%' }}
-                        icon={<CloseOutlined />}
-                        onClick={(e) => {
+                  <>
+                    <Text>{'Actions: '}</Text>
+                    <Space>
+                      <Popconfirm
+                        title="Would you like to perform this action?"
+                        icon={<QuestionCircleOutlined />}
+                        onConfirm={(e) => {
+                          handleCancel(selectedData);
                         }}
-                        type="primary"
-                        danger
+                        onCancel={(e) => {}}
+                        okText="Yes"
+                        cancelText="No"
                       >
-                        Cancel
-                      </Button>
-                    </Popconfirm>
-                  </Space>
-                </>
-              )}
+                        <Button
+                          style={{ marginRight: '1%' }}
+                          icon={<CloseOutlined />}
+                          onClick={(e) => {}}
+                          type="primary"
+                          danger
+                        >
+                          Cancel
+                        </Button>
+                      </Popconfirm>
+                    </Space>
+                  </>
+                )}
               </Space>
             )}
           </Modal>

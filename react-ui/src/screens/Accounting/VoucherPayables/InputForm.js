@@ -25,8 +25,14 @@ import GeneralHelper from '../../../helpers/general-helper';
 import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 import { listVoucherByCompanyAndStatus, clearData as clearVouchers } from '../Vouchers/redux';
-import { listPurchaseVouchersByVendorWithoutAdjustent, clearData as clearPurchaseVouchers } from '../PurchaseVouchers/redux';
-import { listJournalVouchersByVendorWithoutAdjustent, clearData as clearJournalVouchers } from '../JournalVouchers/redux';
+import {
+  listPurchaseVouchersByVendorWithoutAdjustent,
+  clearData as clearPurchaseVouchers,
+} from '../PurchaseVouchers/redux';
+import {
+  listJournalVouchersByVendorWithoutAdjustent,
+  clearData as clearJournalVouchers,
+} from '../JournalVouchers/redux';
 
 const { Title } = Typography;
 
@@ -35,7 +41,7 @@ const InputForm = (props) => {
   const [form] = Form.useForm();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
   const { handleRequestResponse } = GeneralHelper();
 
@@ -52,7 +58,6 @@ const InputForm = (props) => {
   const journalVouchers = useSelector((state) => state.accounting.journalVouchers.list);
   const vouchers = useSelector((state) => state.accounting.vouchers.list);
 
-
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable) {
@@ -61,21 +66,21 @@ const InputForm = (props) => {
   }, [values, form, formTable, hasTable]);
 
   useEffect(() => {
-    switch(mode){
-      case "1 Voucher": 
-        //TODO: limit selection to one
-        formDetails.setVoucherChoices(vouchers)
+    switch (mode) {
+      case '1 Voucher':
+        // TODO: limit selection to one
+        formDetails.setVoucherChoices(vouchers);
         break;
-      case "Multiple PJV": 
-        formDetails.setVoucherChoices(purchaseVouchers)
+      case 'Multiple PJV':
+        formDetails.setVoucherChoices(purchaseVouchers);
         break;
-      case "Multiple JV": 
-        formDetails.setVoucherChoices(journalVouchers)
+      case 'Multiple JV':
+        formDetails.setVoucherChoices(journalVouchers);
         break;
       default:
         break;
     }
-  }, [mode, purchaseVouchers, journalVouchers, vouchers, formDetails])
+  }, [mode, purchaseVouchers, journalVouchers, vouchers, formDetails]);
 
   const onFinish = (data) => {
     setFormButtonLoading(true);
@@ -92,7 +97,7 @@ const InputForm = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setFormButtonLoading(false)
+      setFormButtonLoading(false);
     });
   };
 
@@ -233,66 +238,80 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
-    
-    if(values.hasOwnProperty('variation')){
-      switch(values.variation){
-        case "1 Voucher": 
-            setLoadingTable(true)
-            formDetails.setSelectedPayee(false)
-            dispatch(clearVouchers())
-            dispatch(listVoucherByCompanyAndStatus({ company, status: "Approved" })).then(() => {
-              setLoadingTable(false)
-              setMode(values.variation)
+    if (values.hasOwnProperty('variation')) {
+      switch (values.variation) {
+        case '1 Voucher':
+          setLoadingTable(true);
+          formDetails.setSelectedPayee(false);
+          dispatch(clearVouchers());
+          dispatch(listVoucherByCompanyAndStatus({ company, status: 'Approved' })).then(() => {
+            setLoadingTable(false);
+            setMode(values.variation);
+          });
+          break;
+        case 'Multiple PJV':
+          formDetails.setSelectedPayee(true);
+          form.setFieldsValue({ vendor: null });
+          setMode(values.variation);
+          break;
+        case 'Multiple JV':
+          formDetails.setSelectedPayee(true);
+          form.setFieldsValue({ vendor: null });
+          setMode(values.variation);
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (values.hasOwnProperty('vendor')) {
+      switch (mode) {
+        case 'Multiple PJV':
+          setLoadingTable(true);
+          dispatch(clearPurchaseVouchers());
+          dispatch(
+            listPurchaseVouchersByVendorWithoutAdjustent({
+              company,
+              vendor: values.vendor,
+              status: 'Approved',
             })
+          ).then((response) => {
+            const onSuccess = () => {
+              if (response.payload.data.length === 0) {
+                message.error(
+                  'The are no approved Purchase Journal Vouchers associated with the selected payee.'
+                );
+              }
+            };
+            handleRequestResponse([response], onSuccess, null, '');
+          });
+          setLoadingTable(false);
           break;
-        case "Multiple PJV": 
-          formDetails.setSelectedPayee(true)
-          form.setFieldsValue({vendor: null})
-          setMode(values.variation)
-          break;
-        case "Multiple JV": 
-          formDetails.setSelectedPayee(true)
-          form.setFieldsValue({vendor: null})
-          setMode(values.variation)
+        case 'Multiple JV':
+          setLoadingTable(true);
+          dispatch(clearJournalVouchers());
+          dispatch(
+            listJournalVouchersByVendorWithoutAdjustent({
+              company,
+              vendor: values.vendor,
+              status: 'Approved',
+            })
+          ).then((response) => {
+            const onSuccess = () => {
+              if (response.payload.data.length === 0) {
+                message.error(
+                  'The are no approved Journal Vouchers associated with the selected payee.'
+                );
+              }
+            };
+            handleRequestResponse([response], onSuccess, null, '');
+          });
+          setLoadingTable(false);
           break;
         default:
           break;
       }
     }
-
-    if(values.hasOwnProperty('vendor')){
-      switch(mode){
-        case "Multiple PJV":
-          setLoadingTable(true)
-          dispatch(clearPurchaseVouchers())
-          dispatch(listPurchaseVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
-            const onSuccess = () => {
-              if(response.payload.data.length === 0){
-                message.error("The are no approved Purchase Journal Vouchers associated with the selected payee.")
-              }
-            };
-            handleRequestResponse([response], onSuccess, null, '');
-          })
-          setLoadingTable(false)
-          break;
-        case "Multiple JV": 
-          setLoadingTable(true)
-          dispatch(clearJournalVouchers())
-          dispatch(listJournalVouchersByVendorWithoutAdjustent({ company, vendor: values.vendor, status: "Approved" })).then((response) => {
-            const onSuccess = () => {
-              if(response.payload.data.length === 0){
-                message.error("The are no approved Journal Vouchers associated with the selected payee.")
-              }
-            };
-            handleRequestResponse([response], onSuccess, null, '');
-          })
-          setLoadingTable(false)
-          break;
-        default:
-          break;
-      }
-    }
-
   };
 
   return (
@@ -315,53 +334,54 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
-            {
-              loadingTable ? (
-                <Skeleton/>
-              ) : ( formTable.isVisible && 
-                (
-                  <Space 
-                    direction="vertical" 
-                    size={15} 
-                    style={{ 
-                      width: '100%', 
-                      marginBottom: '5%',
-                    }}
-                  >
-                    <Row style={{ width: '87.5%'}}>
+            {loadingTable ? (
+              <Skeleton />
+            ) : (
+              formTable.isVisible && (
+                <Space
+                  direction="vertical"
+                  size={15}
+                  style={{
+                    width: '100%',
+                    marginBottom: '5%',
+                  }}
+                >
+                  <Row style={{ width: '87.5%' }}>
                     <Button
                       onClick={() => {
                         setDisplayModal(true);
                         setLoadingModal(false);
                       }}
                       icon={<SelectOutlined />}
-                      style={{marginLeft: "auto"}}
+                      style={{ marginLeft: 'auto' }}
                     >
                       {`Select ${formTable.label}`}
                     </Button>
-                    </Row>
-                    <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
-                      {(fields, { errors }) => (
-                        <Col span={20} offset={1}>
-                          <Table
-                            dataSource={tableData}
-                            columns={renderTableColumns(formTable)}
-                            pagination={false}
-                            locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                            summary={formTable.summary}
-                          />
-                        </Col>
-                      )}
-                    </Form.List>
-                  </Space>
-                )
+                  </Row>
+                  <Form.List
+                    label={formTable.label}
+                    name={formTable.name}
+                    rules={formTable?.rules ?? []}
+                  >
+                    {(fields, { errors }) => (
+                      <Col span={20} offset={1}>
+                        <Table
+                          dataSource={tableData}
+                          columns={renderTableColumns(formTable)}
+                          pagination={false}
+                          locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                          summary={formTable.summary}
+                        />
+                      </Col>
+                    )}
+                  </Form.List>
+                </Space>
               )
-            }
-            
+            )}
+
             <Space direction="vertical" size={15} style={{ width: '95%' }}>
               <FormItem item={formDetails.accountTitles} onFail={onFail} formInstance={form} />
             </Space>
-
           </Form>
 
           <div style={styles.tailLayout}>
@@ -389,10 +409,10 @@ const InputForm = (props) => {
               width={1000}
             >
               <Table
-                tableLayout={'fixed'}
+                tableLayout="fixed"
                 rowSelection={{
                   type: mode === '1 Voucher' ? 'radio' : 'checkbox',
-                  //selectedRowKeys: item.selectedData,
+                  // selectedRowKeys: item.selectedData,
                   onChange: (selectedRowKeys, selectedRows) => {
                     const fieldsValue = {};
                     fieldsValue[formTable.name] = selectedRows;
@@ -401,7 +421,11 @@ const InputForm = (props) => {
                   },
                   preserveSelectedRowKeys: false,
                 }}
-                columns={TableHeader({ columns: formTable.selectFields, hasSorter: true, hasFilter: true })}
+                columns={TableHeader({
+                  columns: formTable.selectFields,
+                  hasSorter: true,
+                  hasFilter: true,
+                })}
                 dataSource={formTable.selectData}
                 rowKey={formTable.selectedKey}
                 pagination={{ size: 'small' }}

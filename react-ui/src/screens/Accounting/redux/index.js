@@ -13,7 +13,6 @@ import creditMemo from '../CreditMemo/redux';
 import journalVouchers from '../JournalVouchers/redux';
 import vouchers from '../Vouchers/redux';
 
-
 const accounting = combineReducers({
   accountTitles,
   PDCDisbursements,

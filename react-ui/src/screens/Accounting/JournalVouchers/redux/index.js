@@ -3,118 +3,133 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listJournalVouchers = createAsyncThunk('listJournalVouchers', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
-  try {
-    const response = await axiosInstance.get(
-      `/rest/journal-vouchers/company/${company}?token=${accessToken}`
-    );
+export const listJournalVouchers = createAsyncThunk(
+  'listJournalVouchers',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/journal-vouchers/company/${company}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
-export const listJournalVouchersByVendorWithoutAdjustent = createAsyncThunk('listJournalVouchersByVendorWithoutAdjustent', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company, vendor, status } = payload
-  try {
-    const response = await axiosInstance.get(
-      `/rest/journal-vouchers/company/${company}/vendor/${vendor}/status/${status}/journal-vouchers-no-adjustment?token=${accessToken}`
-    );
+export const listJournalVouchersByVendorWithoutAdjustent = createAsyncThunk(
+  'listJournalVouchersByVendorWithoutAdjustent',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company, vendor, status } = payload;
+    try {
+      const response = await axiosInstance.get(
+        `/rest/journal-vouchers/company/${company}/vendor/${vendor}/status/${status}/journal-vouchers-no-adjustment?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
-export const createJournalVouchers = createAsyncThunk('createJournalVouchers', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.post(
-      `/rest/journal-vouchers?token=${accessToken}`,
-      payload
-    );
+export const createJournalVouchers = createAsyncThunk(
+  'createJournalVouchers',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `/rest/journal-vouchers?token=${accessToken}`,
+        payload
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-})
+);
 
-export const approveJournalVouchers = createAsyncThunk('approveJournalVouchers', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.post(
-      `/rest/journal-vouchers/approve/${payload.jvId}/user/${payload.user}?token=${accessToken}`
-    );
+export const approveJournalVouchers = createAsyncThunk(
+  'approveJournalVouchers',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `/rest/journal-vouchers/approve/${payload.jvId}/user/${payload.user}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
-export const rejectJournalVouchers = createAsyncThunk('rejectJournalVouchers', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.post(
-      `/rest/journal-vouchers/reject/${payload.jvId}/user/${payload.user}?token=${accessToken}`
-    );
+export const rejectJournalVouchers = createAsyncThunk(
+  'rejectJournalVouchers',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.post(
+        `/rest/journal-vouchers/reject/${payload.jvId}/user/${payload.user}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
 const initialState = {
   list: [],
@@ -342,8 +357,8 @@ const journalVouchersSlice = createSlice({
         statusMessage,
       };
     },
-  }
+  },
 });
 
-export const {clearData} = journalVouchersSlice.actions;
+export const { clearData } = journalVouchersSlice.actions;
 export default journalVouchersSlice.reducer;

@@ -128,7 +128,7 @@ const FormDetails = () => {
       },
     ],
   };
-  return {formDetails};
-}
+  return { formDetails };
+};
 
 export default FormDetails;

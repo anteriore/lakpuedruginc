@@ -29,10 +29,9 @@ export const listCashReceiptVoucher = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
-
   }
 );
 
@@ -55,7 +54,7 @@ export const addCashReceiptVoucher = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -81,7 +80,7 @@ export const deleteCashReceiptVoucher = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -95,17 +94,21 @@ const cashReceiptVoucherSlice = createSlice({
   },
   extraReducers: {
     [listCashReceiptVoucher.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cash Receipt Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cash Receipt Vouchers`,
       };
     },
     [listCashReceiptVoucher.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cash Receipt Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cash Receipt Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -133,17 +136,21 @@ const cashReceiptVoucherSlice = createSlice({
       };
     },
     [addCashReceiptVoucher.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cash Receipt Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cash Receipt Vouchers`,
       };
     },
     [addCashReceiptVoucher.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cash Receipt Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cash Receipt Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -170,17 +177,21 @@ const cashReceiptVoucherSlice = createSlice({
       };
     },
     [deleteCashReceiptVoucher.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Cash Receipt Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Cash Receipt Vouchers`,
       };
     },
     [deleteCashReceiptVoucher.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cash Receipt Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cash Receipt Vouchers',
+        state.action
+      );
 
       return {
         ...state,

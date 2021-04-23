@@ -45,7 +45,7 @@ const Users = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -83,7 +83,7 @@ const Users = () => {
       }
     }
     setActions(actionList);
-  }, [permissions])
+  }, [permissions]);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
@@ -93,16 +93,16 @@ const Users = () => {
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearDepartment());
-    }
+    };
   }, [dispatch]);
 
   const updateUserDepartments = useCallback(() => {
     setContentLoading(true);
-    if(actions.includes('read')){
+    if (actions.includes('read')) {
       dispatch(listD({ company: selectedCompany, message })).then((response1) => {
         dispatch(listUser({ company: selectedCompany, message })).then((response2) => {
           const onSuccess = () => {
@@ -121,31 +121,29 @@ const Users = () => {
             });
             setUserDepartments(userDepartmentList);
             setContentLoading(false);
-          }
+          };
           const onFail = () => {
             setUserDepartments([]);
             setContentLoading(false);
-          }
+          };
           handleRequestResponse([response1, response2], onSuccess, onFail, '');
         });
       });
-    }
-    else {
+    } else {
       setUserDepartments([]);
       setContentLoading(false);
     }
-  }, [actions, selectedCompany, dispatch, handleRequestResponse])
+  }, [actions, selectedCompany, dispatch, handleRequestResponse]);
 
   useEffect(() => {
-    updateUserDepartments()
-  }, [updateUserDepartments])
+    updateUserDepartments();
+  }, [updateUserDepartments]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
-  const performCleanup = () => {
-  };
+  const performCleanup = () => {};
 
   const formDetails = {
     form_name: 'user',
@@ -250,18 +248,17 @@ const Users = () => {
     dispatch(listD({ company: selectedCompany, message })).then((response1) => {
       dispatch(listDepot({ company: selectedCompany, message })).then((response2) => {
         dispatch(listPermission({ company: selectedCompany, message })).then((response3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
               history.push(`${path}/new`);
               setCompanyLoading(false);
-            }
+            };
             const onFail = () => {
               setCompanyLoading(false);
-            }
+            };
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
+          } else {
+            performCleanup();
           }
         });
       });
@@ -297,18 +294,17 @@ const Users = () => {
     dispatch(listD({ company: selectedCompany, message })).then((response1) => {
       dispatch(listDepot({ company: selectedCompany, message })).then((response2) => {
         dispatch(listPermission({ company: selectedCompany, message })).then((response3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
               history.push(`${path}/${data.id}`);
               setCompanyLoading(false);
-            }
+            };
             const onFail = () => {
               setCompanyLoading(false);
-            }
+            };
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
+          } else {
+            performCleanup();
           }
         });
       });
@@ -366,28 +362,27 @@ const Users = () => {
         history.goBack();
         const onSuccess = () => {
           updateUserDepartments(selectedCompany);
-        }
+        };
         const onFail = () => {
           setContentLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
-    } 
-    else if (formMode === 'add') {
+    } else if (formMode === 'add') {
       await dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
         history.goBack();
         const onSuccess = () => {
           updateUserDepartments(selectedCompany);
-        }
+        };
         const onFail = () => {
           setContentLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
     setFormData(null);
-    return 1
+    return 1;
   };
 
   const handleChangeTab = (companyID) => {

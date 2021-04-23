@@ -10,7 +10,6 @@ import DebitMemo from '../../screens/Accounting/DebitMemo';
 import CreditMemo from '../../screens/Accounting/CreditMemo';
 import JournalVouchers from '../../screens/Accounting/JournalVouchers';
 
-
 export const routes = [
   {
     title: 'Purchase Vouchers',

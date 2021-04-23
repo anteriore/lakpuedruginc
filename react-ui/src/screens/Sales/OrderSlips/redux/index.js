@@ -20,7 +20,7 @@ export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -29,7 +29,7 @@ export const listOrderSlipsByDepot = createAsyncThunk(
   'listOrderSlipsByDepot',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    try{
+    try {
       const response = await axiosInstance.get(
         `/rest/order-slips/depot/${payload.depot}?token=${accessToken}`
       );
@@ -43,7 +43,7 @@ export const listOrderSlipsByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -51,9 +51,9 @@ export const listOrderSlipsByDepot = createAsyncThunk(
 
 export const listOrderSlipsByDepotAndBalance = createAsyncThunk(
   'listOrderSlipsByDepotAndBalance',
-  async (payload, thunkAPI,) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const { depot, hasBalance } = payload
+    const { depot, hasBalance } = payload;
 
     try {
       const response = await axiosInstance.get(
@@ -75,7 +75,7 @@ export const listOrderSlipsByDepotAndBalance = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -85,7 +85,7 @@ export const listOrderSlipsByDepotAndStatus = createAsyncThunk(
   'listOrderSlipsByDepotAndStatus',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    const { depot, statuses } = payload
+    const { depot, statuses } = payload;
     try {
       const response = await axiosInstance.get(
         `/rest/order-slips/depot/${depot}?token=${accessToken}`
@@ -106,7 +106,7 @@ export const listOrderSlipsByDepotAndStatus = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -127,7 +127,7 @@ export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });

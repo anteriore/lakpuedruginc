@@ -7,8 +7,7 @@ import TableDisplay from '../../../components/TableDisplay';
 
 import { columns } from './data';
 import { listEngineeringInventory, clearData } from './redux';
-import {reevalutateMessageStatus} from '../../../helpers/general-helper';
-
+import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -17,26 +16,28 @@ const EngineeringInventories = (props) => {
 
   const { company } = props;
   const dispatch = useDispatch();
-  const {list, status, statusMessage, statusLevel, action } = useSelector((state) => state.dashboard.engineeringInventories);
+  const { list, status, statusMessage, statusLevel, action } = useSelector(
+    (state) => state.dashboard.engineeringInventories
+  );
   const isMounted = useRef(true);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel});
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
-  },[dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listEngineeringInventory({ company, message })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       performCleanup();
     };
   }, [dispatch, company, performCleanup]);

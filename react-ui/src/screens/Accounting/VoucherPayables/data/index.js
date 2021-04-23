@@ -17,7 +17,7 @@ export const columns = [
     dataIndex: 'date',
     key: 'date',
     datatype: 'string',
-    render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
+    render: (data) => moment(new Date(data)).format('DD/MM/YYYY'),
   },
   {
     title: 'Vendor',
@@ -42,7 +42,6 @@ export const columns = [
 ];
 
 const FormDetails = () => {
-
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [voucherChoices, setVoucherChoices] = useState([]);
   const [selectedPayee, setSelectedPayee] = useState(false);
@@ -55,8 +54,8 @@ const FormDetails = () => {
 
   const formDetails = {
     form_name: 'voucher_payables',
-    setVoucherChoices: setVoucherChoices,
-    setSelectedPayee: setSelectedPayee,
+    setVoucherChoices,
+    setSelectedPayee,
     form_items: [
       {
         label: 'Number',
@@ -80,41 +79,42 @@ const FormDetails = () => {
       {
         label: 'Payee',
         name: 'vendor',
-        rules: [{ required: selectedPayee, message: 'Please select a payee from the given options '}],
+        rules: [
+          { required: selectedPayee, message: 'Please select a payee from the given options ' },
+        ],
         placeholder: 'Select Payee',
         type: 'select',
         choices: vendors,
         readOnly: !selectedPayee,
-        render: (object) => `[${object?.code}] ${object?.name}`
+        render: (object) => `[${object?.code}] ${object?.name}`,
       },
       {
         label: 'Mode',
         name: 'variation',
-        rules: [{ required: true, message: 'Please select a Voucher selection mode '}],
+        rules: [{ required: true, message: 'Please select a Voucher selection mode ' }],
         placeholder: 'Select Voucher selection mode',
         type: 'radioGroup',
         choices: [
           {
-            id: "1 Voucher",
-            value: "1 Voucher",
-            name: "Single Voucher"
+            id: '1 Voucher',
+            value: '1 Voucher',
+            name: 'Single Voucher',
           },
           {
-            id: "Multiple PJV",
-            value: "Multiple PJV",
-            name: "Multiple Purchase Voucher"
+            id: 'Multiple PJV',
+            value: 'Multiple PJV',
+            name: 'Multiple Purchase Voucher',
           },
           {
-            id: "Multiple JV",
-            value: "Multiple JV",
-            name: "Multiple Journal Voucher"
-          }
+            id: 'Multiple JV',
+            value: 'Multiple JV',
+            name: 'Multiple Journal Voucher',
+          },
         ],
-        render: (data) => data.name
+        render: (data) => data.name,
       },
     ],
-    accountTitles: 
-    {
+    accountTitles: {
       label: 'Account Titles',
       name: 'accountTitles',
       type: 'listTable',
@@ -125,20 +125,21 @@ const FormDetails = () => {
           name: 'accountTitle',
           rules: [{ required: true, message: 'Please select account title' }],
           placeholder: 'Select Account Title',
-          render: (object) => `[${object?.type}] ${object?.title}` ?? "",
+          render: (object) => `[${object?.type}] ${object?.title}` ?? '',
           type: 'selectSearch',
           choices: accountTitles,
           width: 200,
           onChange: (e) => {
-            const accountTitle = accountTitles.find((data) => data.id === e)
-            setSelectedAccount(accountTitle)
-          }
-        },{
+            const accountTitle = accountTitles.find((data) => data.id === e);
+            setSelectedAccount(accountTitle);
+          },
+        },
+        {
           label: 'Department',
           name: 'department',
           rules: [{ required: true, message: 'Please select department' }],
           placeholder: 'Select Department',
-          render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+          render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
           type: 'selectSearch',
           choices: departments,
           width: 200,
@@ -148,7 +149,7 @@ const FormDetails = () => {
           name: 'group',
           rules: [{ required: true, message: 'Please select group' }],
           placeholder: 'Select Group',
-          render: (object) => object?.name ?? "",
+          render: (object) => object?.name ?? '',
           type: 'selectSearch',
           choices: groups,
           width: 200,
@@ -158,7 +159,7 @@ const FormDetails = () => {
           name: 'area',
           rules: [{ required: true, message: 'Please select area' }],
           placeholder: 'Select Area',
-          render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+          render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
           type: 'selectSearch',
           choices: areas,
           width: 200,
@@ -169,7 +170,7 @@ const FormDetails = () => {
           type: 'number',
           dependencies: ['accountTitle'],
           rules: [{ required: true, message: 'Please provide debit' }],
-          isVisible: (selectedAccount?.type ?? "") === "Debit",
+          isVisible: (selectedAccount?.type ?? '') === 'Debit',
           render: (object) => object?.debit,
           initialValue: 0,
           min: 0,
@@ -180,7 +181,7 @@ const FormDetails = () => {
           name: 'credit',
           type: 'number',
           rules: [{ required: true, message: 'Please provide credit' }],
-          isVisible: (selectedAccount?.type ?? "") === "Credit",
+          isVisible: (selectedAccount?.type ?? '') === 'Credit',
           render: (object) => object?.credit,
           initialValue: 0,
           min: 0,
@@ -188,26 +189,26 @@ const FormDetails = () => {
         },
       ],
       handleAdd: (values) => {
-        const accountTitle = accountTitles.find((data) => data.id === values.accountTitle)
-        const department = departments.find((data) => data.id === values.department)
-        const group = groups.find((data) => data.id === values.group)
-        const area = areas.find((data) => data.id === values.area)
+        const accountTitle = accountTitles.find((data) => data.id === values.accountTitle);
+        const department = departments.find((data) => data.id === values.department);
+        const group = groups.find((data) => data.id === values.group);
+        const area = areas.find((data) => data.id === values.area);
         return {
           ...values,
           accountTitle,
           department,
           group,
-          area
-        }
+          area,
+        };
       },
       summary: (data) => {
         let totalCredit = 0;
         let totalDebit = 0;
         data.forEach((item) => {
-          totalCredit += (item?.credit ?? 0)
-          totalDebit += (item?.debit ?? 0)
+          totalCredit += item?.credit ?? 0;
+          totalDebit += item?.debit ?? 0;
         });
-  
+
         return (
           <Table.Summary.Row>
             <Table.Summary.Cell>Total Credit</Table.Summary.Cell>
@@ -221,7 +222,7 @@ const FormDetails = () => {
           </Table.Summary.Row>
         );
       },
-    }
+    },
   };
 
   const tableDetails = {
@@ -238,7 +239,7 @@ const FormDetails = () => {
       {
         label: 'Date',
         name: 'date',
-        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`
+        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`,
       },
       {
         label: 'DR',
@@ -269,20 +270,20 @@ const FormDetails = () => {
         title: 'Type',
         dataIndex: 'type',
         key: 'type',
-        datatype: 'string'
+        datatype: 'string',
       },
       {
         title: 'Number',
         dataIndex: 'number',
         key: 'number',
-        datatype: 'string'
+        datatype: 'string',
       },
       {
         title: 'Date',
         dataIndex: 'date',
         key: 'date',
         datatype: 'date',
-        render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
+        render: (data) => moment(new Date(data)).format('DD/MM/YYYY'),
       },
       {
         title: 'Status',
@@ -316,7 +317,7 @@ const FormDetails = () => {
       },
     ],
     processData: (data) => {
-      return data
+      return data;
     },
     checkSelected: (selectedData, rowData) => {
       if (

@@ -47,7 +47,7 @@ const ProductionArea = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -66,12 +66,11 @@ const ProductionArea = (props) => {
 
   const handleDeleteButton = (row) => {
     setLoading(true);
-    dispatch(deleteProductionArea(row))
-      .then(() => {
-        dispatch(listProductionArea({ message })).then(() => {
-          setLoading(false);
-        });
-      })
+    dispatch(deleteProductionArea(row)).then(() => {
+      dispatch(listProductionArea({ message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -87,7 +86,7 @@ const ProductionArea = (props) => {
 
       await dispatch(updateProductionArea(newValues)).then(() => {
         dispatch(listProductionArea({ message })).then(() => {
-          setLoading(false)
+          setLoading(false);
         });
       });
     } else if (mode === 'add') {
@@ -99,7 +98,7 @@ const ProductionArea = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-    return 1
+    return 1;
   };
 
   return (
@@ -113,7 +112,9 @@ const ProductionArea = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { loading ? <Skeleton/> : 
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={productionAreaList}
@@ -122,7 +123,7 @@ const ProductionArea = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

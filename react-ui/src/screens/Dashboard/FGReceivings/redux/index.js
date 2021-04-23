@@ -9,7 +9,7 @@ const initialState = {
   status: 'loading',
   statusLevel: '',
   statusMessage: '',
-  responseCode: null, 
+  responseCode: null,
   action: '',
 };
 
@@ -31,7 +31,7 @@ export const listFGReceiving = createAsyncThunk('listFGReceiving', async (payloa
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -53,7 +53,7 @@ export const addFGReceiving = createAsyncThunk('addFGReceiving', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -75,7 +75,7 @@ export const deleteFGIssuance = createAsyncThunk('deleteFGIssuance', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -88,18 +88,18 @@ const FGReceivingSlice = createSlice({
   },
   extraReducers: {
     [listFGReceiving.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for FG receivings` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for FG receivings`,
       };
     },
     [listFGReceiving.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'FG Receivings',
         state.action
       );
@@ -131,17 +131,21 @@ const FGReceivingSlice = createSlice({
     },
 
     [addFGReceiving.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEM_ADD_PENDING} for FG receiving` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for FG receiving`,
       };
     },
     [addFGReceiving.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'FG Receiving', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'FG Receiving',
+        state.action
+      );
 
       return {
         ...state,

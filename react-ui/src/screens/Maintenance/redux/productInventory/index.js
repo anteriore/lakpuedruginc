@@ -8,7 +8,9 @@ export const listProductInventory = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
     try {
-      const response = await axiosInstance.get(`rest/product-inventory/company/${payload.company}?token=${accessToken}`);
+      const response = await axiosInstance.get(
+        `rest/product-inventory/company/${payload.company}?token=${accessToken}`
+      );
 
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -20,7 +22,7 @@ export const listProductInventory = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -44,7 +46,7 @@ export const listProductInventoryByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -78,7 +80,7 @@ const productInventorySlice = createSlice({
     [listProductInventory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Product Inventory',
         state.action
       );
@@ -120,7 +122,7 @@ const productInventorySlice = createSlice({
     [listProductInventory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Product Inventory',
         state.action
       );

@@ -20,7 +20,10 @@ import {
   clearData as clearDA,
 } from '../Maintenance/DepartmentArea/redux';
 import { listUnit, clearData as clearUnit } from '../Maintenance/Units/redux';
-import { listPRByCompanyAndStatusAndDepartment, clearData as clearPR } from '../Dashboard/PurchaseRequests/redux';
+import {
+  listPRByCompanyAndStatusAndDepartment,
+  clearData as clearPR,
+} from '../Dashboard/PurchaseRequests/redux';
 import { listCompany, setCompany } from '../../redux/company';
 
 const { TabPane } = Tabs;
@@ -39,7 +42,9 @@ const Purchasing = () => {
   const [formData, setFormData] = useState(null);
   const isMounted = useRef(true);
 
-  const {list: purchaseOrders, statusMessage, action, status, statusLevel} = useSelector((state) => state.purchaseOrders);
+  const { list: purchaseOrders, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.purchaseOrders
+  );
   const companies = useSelector((state) => state.company.companyList);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
 
@@ -75,7 +80,7 @@ const Purchasing = () => {
     dispatch(clearDA());
     dispatch(clearPR());
     dispatch(clearUnit());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     if (actions.includes('read')) {
@@ -87,20 +92,20 @@ const Purchasing = () => {
       setLoading(false);
       setSelectedPO(null);
     }
-  }, [actions, dispatch, selectedCompany])
+  }, [actions, dispatch, selectedCompany]);
 
   useEffect(() => {
     dispatch(listCompany()).then(() => {
       setLoadingCompany(false);
     });
     return function cleanup() {
-      isMounted.current = false
-      performCleanup()
+      isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleChangeTab = (id) => {
@@ -124,15 +129,20 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany })).then((response2) => {
         dispatch(listArea({ company: selectedCompany })).then((response3) => {
           dispatch(listUnit({ company: selectedCompany })).then((response4) => {
-            if(isMounted.current){
+            if (isMounted.current) {
               const onSuccess = () => {
                 history.push(`${path}/new`);
                 setLoading(false);
-              }
+              };
               const onFail = () => {
                 setLoading(false);
-              }
-              handleRequestResponse([response1, response2, response3, response4], onSuccess, onFail, '');
+              };
+              handleRequestResponse(
+                [response1, response2, response3, response4],
+                onSuccess,
+                onFail,
+                ''
+              );
             }
           });
         });
@@ -167,16 +177,27 @@ const Purchasing = () => {
       dispatch(listDepartment({ company: selectedCompany })).then((response2) => {
         dispatch(listArea({ company: selectedCompany })).then((response3) => {
           dispatch(listUnit({ company: selectedCompany })).then(() => {
-            dispatch(listPRByCompanyAndStatusAndDepartment({ company: selectedCompany, department: poData.department.id, status: 'PO Created' })).then((response4) => {
-              if(isMounted.current){
+            dispatch(
+              listPRByCompanyAndStatusAndDepartment({
+                company: selectedCompany,
+                department: poData.department.id,
+                status: 'PO Created',
+              })
+            ).then((response4) => {
+              if (isMounted.current) {
                 const onSuccess = () => {
                   history.push(`${path}/${data.id}`);
                   setLoadingCompany(false);
-                }
+                };
                 const onFail = () => {
                   setLoadingCompany(false);
-                }
-                handleRequestResponse([response1, response2, response3, response4], onSuccess, onFail, '');
+                };
+                handleRequestResponse(
+                  [response1, response2, response3, response4],
+                  onSuccess,
+                  onFail,
+                  ''
+                );
               }
             });
           });
@@ -192,10 +213,10 @@ const Purchasing = () => {
         dispatch(listPO({ company: selectedCompany, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -252,15 +273,13 @@ const Purchasing = () => {
           dispatch(listPO({ company: selectedCompany, message })).then(() => {
             setLoading(false);
           });
-        } 
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
-
-    }
-    else {
+    } else {
       await dispatch(addPO(payload)).then((response) => {
         setLoading(true);
         history.goBack();
@@ -268,15 +287,15 @@ const Purchasing = () => {
           dispatch(listPO({ company: selectedCompany, message })).then(() => {
             setLoading(false);
           });
-        } 
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (
@@ -293,7 +312,7 @@ const Purchasing = () => {
               <Col span={20}>
                 <Tabs defaultActiveKey={selectedCompany} onChange={handleChangeTab}>
                   {companies.map((val) => (
-                    <TabPane tab={val.name} key={val.id}  disabled={loading} />
+                    <TabPane tab={val.name} key={val.id} disabled={loading} />
                   ))}
                 </Tabs>
                 {actions.includes('create') && (

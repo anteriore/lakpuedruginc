@@ -17,7 +17,7 @@ const TableDisplay = (props) => {
     updateEnabled,
     pagination,
     name,
-    size
+    size,
   } = props;
   const [defaultpageSize, setDefaultPageSize] = useState(5);
   const [pageSize, setPageSize] = useState(defaultpageSize);

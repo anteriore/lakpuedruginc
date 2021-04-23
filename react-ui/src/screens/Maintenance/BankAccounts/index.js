@@ -24,12 +24,12 @@ const BankAccounts = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const { bankAccountList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.bankAccount
   );
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     let isCancelled = false;
@@ -47,7 +47,7 @@ const BankAccounts = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -65,13 +65,12 @@ const BankAccounts = (props) => {
   };
 
   const handleDeleteButton = (row) => {
-    setLoading(true)
-    dispatch(deleteBankAccount(row))
-      .then(() => {
-        dispatch(listBankAccount({ message })).then(() => {
-          setLoading(false);
-        });
-      })
+    setLoading(true);
+    dispatch(deleteBankAccount(row)).then(() => {
+      dispatch(listBankAccount({ message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -88,32 +87,32 @@ const BankAccounts = (props) => {
       await dispatch(updateBankAccount(newValues)).then((response) => {
         const onSuccess = () => {
           dispatch(listBankAccount({ message })).then(() => {
-            setLoading(false)
+            setLoading(false);
             setFormValues('');
             setIsOpenForm(!isOpenForm);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
       await dispatch(createBankAccount(values)).then((response) => {
         const onSuccess = () => {
           dispatch(listBankAccount({ message })).then(() => {
-            setLoading(false)
+            setLoading(false);
             setFormValues('');
             setIsOpenForm(!isOpenForm);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   return (
@@ -127,7 +126,9 @@ const BankAccounts = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { loading ? <Skeleton/> : 
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={bankAccountList}
@@ -136,7 +137,7 @@ const BankAccounts = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

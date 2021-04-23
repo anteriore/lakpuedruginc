@@ -10,7 +10,7 @@ const InputForm = (props) => {
   const { title, onCancel, onSubmit, values, formDetails, formMode } = props;
   const [form] = Form.useForm();
   const history = useHistory();
-  const [processingData, setProcessingData] = useState(false)
+  const [processingData, setProcessingData] = useState(false);
   const permissions = useSelector((state) => state.users.listPermission);
 
   useEffect(() => {
@@ -27,11 +27,11 @@ const InputForm = (props) => {
   };
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
-  }
+      setProcessingData(false);
+    });
+  };
 
   const onFail = () => {
     history.push(`/users`);
