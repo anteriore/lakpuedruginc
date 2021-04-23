@@ -39,10 +39,6 @@ const MaterialIssuances = (props) => {
     statusMessage: statusMessageInventory,
   } = useSelector((state) => state.dashboard.inventory);
   
-  const {
-    status: statusInventory, action: actionInventory, 
-    statusLevel: statusLevelInventory, statusMessage: statusMessageInventory 
-  } = useSelector(state => state.dashboard.inventory);
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
