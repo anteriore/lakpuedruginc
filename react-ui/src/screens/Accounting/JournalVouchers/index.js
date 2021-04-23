@@ -209,17 +209,14 @@ const JournalVouchers = (props) => {
                   <Descriptions.Item label="RR Number">
                     {journalVoucher?.rrNumber ?? ''}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Payee Code">
-                    {journalVoucher?.vendor?.code ?? ''}
+                  <Descriptions.Item label="Payee">
+                    {`[${journalVoucher?.vendor?.code ?? ''}] ${journalVoucher?.vendor?.name ?? ''}`}
                   </Descriptions.Item>
                   <Descriptions.Item label="PJV Date">
                     {moment(new Date(journalVoucher.date)).format('DD/MM/YYYY')}
                   </Descriptions.Item>
                   <Descriptions.Item label="Receiving Receipt Date">
                     {moment(new Date(journalVoucher.rrDate)).format('DD/MM/YYYY')}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Payee Name">
-                    {journalVoucher?.vendor?.fullName ?? ''}
                   </Descriptions.Item>
                   <Descriptions.Item label="SI #">
                     {journalVoucher?.siNumber ?? ''}

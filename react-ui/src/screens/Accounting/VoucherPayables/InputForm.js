@@ -46,6 +46,7 @@ const InputForm = (props) => {
   const { handleRequestResponse } = GeneralHelper();
 
   const [tableData, setTableData] = useState();
+  const [tableSelectedKeys, setTableSelectedKeys] = useState();
   const [loadingTable, setLoadingTable] = useState(false);
   const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [mode, setMode] = useState(null);
@@ -239,6 +240,9 @@ const InputForm = (props) => {
     }
 
     if (values.hasOwnProperty('variation')) {
+      setTableData([])
+      setTableSelectedKeys([])
+      form.setFieldsValue({ [formTable.name]: null });
       switch (values.variation) {
         case '1 Voucher':
           setLoadingTable(true);
@@ -412,11 +416,12 @@ const InputForm = (props) => {
                 tableLayout="fixed"
                 rowSelection={{
                   type: mode === '1 Voucher' ? 'radio' : 'checkbox',
-                  // selectedRowKeys: item.selectedData,
+                  selectedRowKeys: tableSelectedKeys,
                   onChange: (selectedRowKeys, selectedRows) => {
                     const fieldsValue = {};
                     fieldsValue[formTable.name] = selectedRows;
                     setTableData(selectedRows);
+                    setTableSelectedKeys(selectedRowKeys);
                     form.setFieldsValue(fieldsValue);
                   },
                   preserveSelectedRowKeys: false,

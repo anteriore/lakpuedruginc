@@ -220,17 +220,14 @@ const PurchaseVouchers = (props) => {
                   <Descriptions.Item label="RR Number">
                     {purchaseVoucher?.rrNumber ?? ''}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Payee Code">
-                    {purchaseVoucher?.vendor?.code ?? ''}
+                  <Descriptions.Item label="Payee">
+                    {`[${purchaseVoucher?.vendor?.code ?? ''}] ${purchaseVoucher?.vendor?.name ?? ''}`}
                   </Descriptions.Item>
                   <Descriptions.Item label="PJV Date">
                     {moment(new Date(purchaseVoucher.date)).format('DD/MM/YYYY')}
                   </Descriptions.Item>
                   <Descriptions.Item label="Receiving Receipt Date">
                     {moment(new Date(purchaseVoucher.rrDate)).format('DD/MM/YYYY')}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Payee Name">
-                    {purchaseVoucher?.vendor?.fullName ?? ''}
                   </Descriptions.Item>
                   <Descriptions.Item label="SI #">
                     {purchaseVoucher?.siNumber ?? ''}
