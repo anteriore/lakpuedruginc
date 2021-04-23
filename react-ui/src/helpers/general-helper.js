@@ -154,8 +154,11 @@ const GeneralHelper = () => {
           } else {
             pushErrorPage(response?.payload?.status ?? 400, returnPath);
           }
+        } else if (response?.payload?.status === 200 && response?.payload?.data.length === 0) {
+          hasFailed = true;
+          onFail();
         }
-      });
+    });
 
       if (!hasFailed) {
         if (onSuccess !== null) {
