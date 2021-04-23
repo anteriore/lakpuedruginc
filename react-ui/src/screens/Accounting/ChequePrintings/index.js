@@ -37,7 +37,7 @@ import {
 } from '../../Maintenance/BankAccounts/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -52,6 +52,21 @@ const ChequePrintings = (props) => {
   const { list: listData, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.accounting.chequePrintings
   );
+
+  const { 
+    status: statusVendor, 
+    statusLevel: statusLevelVendor, 
+    statusMessage: statusMessageVendor, 
+    action: actionVendor 
+  } = useSelector((state) => state.maintenance.vendors);
+
+  const {
+    status: statusBA, 
+    statusLevel: statusLevelBA,
+    statusMessage: statusMessageBA, 
+    action: actionBA
+  } = useSelector((state) => state.maintenance.bankAccount);
+  
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -78,6 +93,26 @@ const ChequePrintings = (props) => {
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVendor,
+      statusMessage: statusMessageVendor,
+      action: actionVendor,
+      statusLevel: statusLevelVendor,
+      module: 'Vendors',
+    });
+  }, [actionVendor, statusMessageVendor, statusVendor, statusLevelVendor]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusBA,
+      statusMessage: statusMessageBA,
+      action: actionBA,
+      statusLevel: statusLevelBA,
+      module: 'Bank Accounts',
+    });
+  }, [actionBA, statusMessageBA, statusBA, statusLevelBA]);
 
   const handleAdd = () => {
     setFormTitle('Create Cheque Voucher');
