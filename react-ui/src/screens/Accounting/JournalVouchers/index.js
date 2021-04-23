@@ -23,7 +23,7 @@ import {
   listGroupByCompany,
   clearData as clearGroupCat,
 } from '../../Maintenance/GroupsCategories/redux';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 import InputForm from './InputForm';
 import JVHelper from './helper';
 
@@ -48,6 +48,91 @@ const JournalVouchers = (props) => {
   const { list, status, action, statusMessage, statusLevel } = useSelector(
     (state) => state.accounting.journalVouchers
   );
+
+  const { 
+    status: statusVoucher, 
+    statusLevel: statusLevelVoucher, 
+    statusMessage: statusMessageVoucher,
+    action: actionVoucher
+  } = useSelector(state => state.accounting.vouchers);
+
+  const { 
+		action: actionVendor,
+		status: statusVendor, 
+		statusLevel: statusLevelVendor, 
+		statusMessage: statusMessageVendor 
+	} = useSelector((state) => state.maintenance.vendors)
+
+	const { 
+		status: statusAC, 
+		statusLevel: statusLevelAC,  
+		statusMessage: statusMessageAC, 
+		action: actionAC
+	} = useSelector(state => state.accounting.accountTitles);
+
+	const {
+		status: statusDA, 
+		statusLevel: statusLevelDA, 
+		statusMessage: statusMessageDA,
+		action: actionDA
+	} = useSelector(state => state.maintenance.departmentArea);
+
+	const {
+		status: statusGC, 
+		statusLevel: statusLevelGC, 
+		statusMessage: statusMessageGC, 
+		action: actionGC
+	} = useSelector(state => state.maintenance.groupsCategories )
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVoucher,
+      statusMessage: statusMessageVoucher,
+      action: actionVoucher, 
+      statusLevel: statusLevelVoucher,
+      module: 'Vouchers'
+    })
+  }, [actionVoucher, statusMessageVoucher, statusVoucher, statusLevelVoucher]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVendor,
+      statusMessage: statusMessageVendor,
+      action: actionVendor, 
+      statusLevel: statusLevelVendor,
+      module: 'Vendors'
+    })
+  }, [actionVendor, statusMessageVendor, statusVendor, statusLevelVendor]);
+
+	useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusAC,
+      statusMessage: statusMessageAC,
+      action: actionAC, 
+      statusLevel: statusLevelAC,
+      module: 'Account Titles'
+    })
+  }, [actionAC, statusMessageAC, statusAC, statusLevelAC]);
+	
+	useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDA,
+      statusMessage: statusMessageDA,
+      action: actionDA, 
+      statusLevel: statusLevelDA,
+      module: 'Department and Areas'
+    })
+  }, [actionDA, statusMessageDA, statusDA, statusLevelDA]);
+
+	useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusGC,
+      statusMessage: statusMessageGC,
+      action: actionGC, 
+      statusLevel: statusLevelGC,
+      module: 'Groups and Categories'
+    })
+  }, [actionGC, statusMessageGC, statusGC, statusLevelGC]);
 
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
