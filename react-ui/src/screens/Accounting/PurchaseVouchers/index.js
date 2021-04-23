@@ -24,7 +24,7 @@ import {
   clearData as clearGroupCat,
 } from '../../Maintenance/GroupsCategories/redux';
 import InputForm from './InputForm';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 import PVHelper from './helper';
 
 const { Title } = Typography;
@@ -44,10 +44,37 @@ const PurchaseVouchers = (props) => {
   const [purchaseVoucher, setPurchaseVoucher] = useState(null);
   const isMounted = useRef(true);
 
-  const { id: userId } = useSelector((state) => state.auth.user);
-  const { list, status, action, statusMessage, statusLevel } = useSelector(
-    (state) => state.accounting.purchaseVouchers
-  );
+	const { id: userId } = useSelector(state => state.auth.user)
+	const { list, status, action, statusMessage, statusLevel } = useSelector((state) => state.accounting.purchaseVouchers);
+	
+	const { 
+		action: actionVendor,
+		status: statusVendor, 
+		statusLevel: statusLevelVendor, 
+		statusMessage: statusMessageVendor 
+	} = useSelector((state) => state.maintenance.vendors)
+
+	const { 
+		status: statusAC, 
+		statusLevel: statusLevelAC,  
+		statusMessage: statusMessageAC, 
+		action: actionAC
+	} = useSelector(state => state.accounting.accountTitles);
+
+	const {
+		status: statusDA, 
+		statusLevel: statusLevelDA, 
+		statusMessage: statusMessageDA,
+		action: actionDA
+	} = useSelector(state => state.maintenance.departmentArea);
+	
+
+	const {
+		status: statusGC, 
+		statusLevel: statusLevelGC, 
+		statusMessage: statusMessageGC, 
+		action: actionGC
+	} = useSelector(state => state.maintenance.groupsCategories )
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
@@ -62,12 +89,52 @@ const PurchaseVouchers = (props) => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
-  useEffect(() => {
-    setContentLoading(true);
+	useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVendor,
+      statusMessage: statusMessageVendor,
+      action: actionVendor, 
+      statusLevel: statusLevelVendor,
+      module: 'Vendors'
+    })
+  }, [actionVendor, statusMessageVendor, statusVendor, statusLevelVendor]);
 
-    dispatch(listPurchaseVouchers({ company })).then((data) => {
-      setContentLoading(false);
-    });
+	useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusAC,
+      statusMessage: statusMessageAC,
+      action: actionAC, 
+      statusLevel: statusLevelAC,
+      module: 'Account Titles'
+    })
+  }, [actionAC, statusMessageAC, statusAC, statusLevelAC]);
+	
+	useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDA,
+      statusMessage: statusMessageDA,
+      action: actionDA, 
+      statusLevel: statusLevelDA,
+      module: 'Department and Areas'
+    })
+  }, [actionDA, statusMessageDA, statusDA, statusLevelDA]);
+
+	useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusGC,
+      statusMessage: statusMessageGC,
+      action: actionGC, 
+      statusLevel: statusLevelGC,
+      module: 'Groups and Categories'
+    })
+  }, [actionGC, statusMessageGC, statusGC, statusLevelGC]);
+
+	useEffect(() => {
+		setContentLoading(true);
+
+		dispatch(listPurchaseVouchers({company})).then(() => {
+			setContentLoading(false);
+		})
 
     return function cleanup() {
       isMounted.current = false;

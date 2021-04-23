@@ -68,12 +68,18 @@ const vouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading', 
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for vouchers`,
       };
     },
     [listVoucherByCompany.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Vouchers');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Vouchers',
+        state.action  
+      );
 
       return {
         ...state,
@@ -86,7 +92,11 @@ const vouchersSlice = createSlice({
     },
     [listVoucherByCompany.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Vouchers');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Vouchers',
+        state.action  
+      );
 
       return {
         ...state,
@@ -101,12 +111,18 @@ const vouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for vouchers`,
       };
     },
     [listVoucherByCompanyAndStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Vouchers');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Vouchers',
+        state.action      
+      );
 
       return {
         ...state,
@@ -119,7 +135,11 @@ const vouchersSlice = createSlice({
     },
     [listVoucherByCompanyAndStatus.rejected]: (state, action) => {
       const { status } = action.payload;
-      const { message: statusMessage, level } = generateStatusMessage(action.payload, 'Vouchers');
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload, 
+        'Vouchers',
+        state.action  
+      );
 
       return {
         ...state,

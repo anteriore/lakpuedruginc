@@ -8,9 +8,8 @@ import TableDisplay from '../../../components/TableDisplay';
 import { modalColumns, tableHeader } from './data';
 import InputForm from './InputForm';
 import { listApprovedReceipts, clearData as clearAR } from '../ApprovedReceipts/redux';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import { formatPayload } from './helpers';
-
+import GeneralHelper ,{ reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper'
 import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
@@ -31,7 +30,13 @@ const MaterialReevaluations = (props) => {
     statusMessage,
     statusLevel,
   } = useSelector((state) => state.dashboard.materialReevaluations);
-  const { list: ARList } = useSelector((state) => state.dashboard.approvedReceipts);
+  const { 
+    list: ARList, 
+    status: statusAR, 
+    statusMessage: statusMessageAR, 
+    statusLevel: statusLevelAR, 
+    action: actionAR
+  } = useSelector((state) => state.dashboard.approvedReceipts);
   const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
@@ -53,7 +58,18 @@ const MaterialReevaluations = (props) => {
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    dispatch(listMaterialReevaluations(company)).then(() => {
+    reevalDependencyMsgStats({
+      status: statusAR,
+      statusMessage: statusMessageAR,
+      action: actionAR, 
+      statusLevel: statusLevelAR,
+      module: 'Approved Receipts'
+    });
+  }, [actionAR, statusMessageAR, statusAR, statusLevelAR]);
+
+  useEffect(() => {
+    dispatch(listMaterialReevaluations(company))
+    .then(() => {
       if (isMounted.current) {
         setContentLoading(false);
       }
