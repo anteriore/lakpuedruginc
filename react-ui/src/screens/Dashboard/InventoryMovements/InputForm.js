@@ -57,7 +57,7 @@ const InputForm = (props) => {
         onFail();
       }
     });
-  }, [values, form, formDetails, formTable, hasTable, onFail]);
+  }, [values, form, formDetails, formTable.name, formTable.foreignKey, hasTable, onFail]);
 
   const onFinish = (data) => {
     setProcessingData(true);

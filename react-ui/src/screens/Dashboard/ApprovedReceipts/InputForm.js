@@ -50,7 +50,7 @@ const InputForm = (props) => {
       selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i);
       setTableSelectedKeys(selectedKeys);
     }
-  }, [values, form, formTable, hasTable]);
+  }, [values, form, formTable.name, formTable.foreignKey, hasTable]);
 
   useEffect(() => {
     form.setFieldsValue({

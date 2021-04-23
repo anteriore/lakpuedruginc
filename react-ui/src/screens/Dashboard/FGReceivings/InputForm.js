@@ -25,7 +25,7 @@ const InputForm = (props) => {
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
-  }, [values, form, formTable, hasTable]);
+  }, [values, form, formTable.name, hasTable]);
 
   const onFinish = (data) => {
     setProcessingData(true);

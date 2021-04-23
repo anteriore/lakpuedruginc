@@ -47,7 +47,7 @@ const InputForm = (props) => {
       setTableData(values[formTable.name]);
     }
     setTableSelectedKeys(selectedKeys);
-  }, [values, form, formTable]);
+  }, [values, form, formTable.name, formTable.selectedKey]);
 
   const onFinish = (data) => {
     setProcessingData(true);

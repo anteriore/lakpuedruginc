@@ -270,7 +270,6 @@ const ChequeDisbursements = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          // formTable={tableDetails}
         />
       </Route>
       <Route>

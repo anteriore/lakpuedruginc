@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Row, Col, Typography, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -15,25 +15,12 @@ const InputForm = (props) => {
 
   const [tableData, setTableData] = useState(null);
   const [selectedSaleSlip, setSelectedSaleSlip] = useState([]);
-  const [toggleValue, setToggleValue] = useState(null);
   const [formButtonLoading, setFormButtonLoading] = useState(false);
 
   const orderSlips = useSelector((state) => state.sales.orderSlips.orderSlipsList);
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
   let salesSlips = [];
   salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
-
-  const toggleName = formDetails.toggle_name;
-
-  useEffect(() => {
-    form.setFieldsValue(values);
-    if (hasTable && values !== null) {
-      setTableData(formTable.getValues(values));
-    }
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
-    }
-  }, [values, form, formTable, hasTable, toggleName]);
 
   const onFinish = (data) => {
     setFormButtonLoading(true);
@@ -76,18 +63,6 @@ const InputForm = (props) => {
   };
 
   const onValuesChange = (values) => {
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
-      }
-    }
-
-    /* if (values.hasOwnProperty(formTable.name)) {
-      setTableData(form.getFieldValue(formTable.name));
-      console.log(form.getFieldsValue());
-      console.log(tableData);
-    } */
-
     if (values.hasOwnProperty('depot')) {
       setSelectedSaleSlip([]);
       setTableData(null);

@@ -62,7 +62,7 @@ const InputForm = (props) => {
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
-  }, [values, form, formTable, hasTable, toggleName]);
+  }, [values, form, formTable.name, formTable.foreignKey, hasTable, toggleName]);
 
   const onFinish = (data) => {
     setProcessingData(true);
