@@ -32,13 +32,13 @@ export const listPC = createAsyncThunk('listPC', async (payload, thunkAPI) => {
 
 export const addPC = createAsyncThunk('addPC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.post(
       `rest/product-categories/?token=${accessToken}`,
       payload
     );
 
-  const { response: validateResponse, valid } = checkResponseValidity(response);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
       return validateResponse;
     }
@@ -47,20 +47,20 @@ export const addPC = createAsyncThunk('addPC', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const updatePC = createAsyncThunk('updatePC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.post(
       `rest/product-categories/?token=${accessToken}`,
       payload
     );
 
-  const { response: validateResponse, valid } = checkResponseValidity(response);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
       return validateResponse;
     }
@@ -69,14 +69,14 @@ export const updatePC = createAsyncThunk('updatePC', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const deletePC = createAsyncThunk('deletePC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try { 
+  try {
     const response = await axiosInstance.post(
       `rest/product-categories/delete?token=${accessToken}`,
       payload
@@ -90,7 +90,7 @@ export const deletePC = createAsyncThunk('deletePC', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -108,8 +108,8 @@ const productCategorySlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for product categories`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for product categories`,
+      };
     },
     [listPC.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
@@ -123,8 +123,8 @@ const productCategorySlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

@@ -40,15 +40,14 @@ const InputForm = (props) => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
 
-    const selectedKeys = []
-    if(values !== null && values[formTable.name] !== null){
+    const selectedKeys = [];
+    if (values !== null && values[formTable.name] !== null) {
       values[formTable.name].forEach((item) => {
-        selectedKeys.push(item[formTable.selectedKey])
-      })
-      setTableData(values[formTable.name])
+        selectedKeys.push(item[formTable.selectedKey]);
+      });
+      setTableData(values[formTable.name]);
     }
-    setTableSelectedKeys(selectedKeys)
-
+    setTableSelectedKeys(selectedKeys);
   }, [values, form, formTable]);
 
   useEffect(() => {
@@ -58,7 +57,7 @@ const InputForm = (props) => {
   }, [user, form]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -72,8 +71,8 @@ const InputForm = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
@@ -103,7 +102,6 @@ const InputForm = (props) => {
               );
             },
           });
-        
         } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
@@ -179,24 +177,28 @@ const InputForm = (props) => {
   };
 
   const onTableSelect = (selectedRowKeys, selectedRows) => {
-    setTableSelectedKeys(selectedRowKeys)
-    let prevSelectData = []
-    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
-      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
+    setTableSelectedKeys(selectedRowKeys);
+    let prevSelectData = [];
+    if (typeof form.getFieldValue(formTable.name) !== 'undefined') {
+      prevSelectData = form
+        .getFieldValue(formTable.name)
+        .filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]));
     }
 
     prevSelectData.forEach((data) => {
-      const index = selectedRows.findIndex((item) => item[formTable.selectedKey] === data[formTable.selectedKey])
-      if(index !== -1){
-        selectedRows[index] = data 
+      const index = selectedRows.findIndex(
+        (item) => item[formTable.selectedKey] === data[formTable.selectedKey]
+      );
+      if (index !== -1) {
+        selectedRows[index] = data;
       }
-    })
-  
+    });
+
     const fieldsValue = {};
     fieldsValue[formTable.name] = selectedRows;
     setTableData(selectedRows);
     form.setFieldsValue(fieldsValue);
-  }
+  };
 
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
@@ -246,7 +248,7 @@ const InputForm = (props) => {
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
-                      pagination={{simple: true}}
+                      pagination={{ simple: true }}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       summary={formTable.summary}
                     />
@@ -257,11 +259,7 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button 
-              type="primary" 
-              onClick={() => form.submit()}
-              loading={processingData}
-            >
+            <Button type="primary" onClick={() => form.submit()} loading={processingData}>
               Submit
             </Button>
             <Button
@@ -288,12 +286,16 @@ const InputForm = (props) => {
                 rowSelection={{
                   type: 'checkbox',
                   onChange: onTableSelect,
-                  selectedRowKeys: tableSelectedKeys
+                  selectedRowKeys: tableSelectedKeys,
                 }}
-                columns={TableHeader({ columns: formTable.selectFields, hasSorter: true, hasFilter: true })}
+                columns={TableHeader({
+                  columns: formTable.selectFields,
+                  hasSorter: true,
+                  hasFilter: true,
+                })}
                 dataSource={formTable.selectData}
                 rowKey={formTable.selectedKey}
-                pagination={{simple: true}}
+                pagination={{ simple: true }}
               />
             </Modal>
           )}

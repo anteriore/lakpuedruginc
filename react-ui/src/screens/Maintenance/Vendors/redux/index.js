@@ -12,11 +12,10 @@ const initialState = {
   action: '',
 };
 
-export const listVendor = createAsyncThunk(
-  'listVendor', async (payload, thunkAPI) => {
+export const listVendor = createAsyncThunk('listVendor', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  
-  try{
+
+  try {
     const response = await axiosInstance.get(
       `rest/vendors/company/${payload.company}/?token=${accessToken}`
     );
@@ -30,7 +29,7 @@ export const listVendor = createAsyncThunk(
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -49,7 +48,7 @@ export const addVendor = createAsyncThunk('addVendor', async (payload, thunkAPI)
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -68,7 +67,7 @@ export const updateVendor = createAsyncThunk('updateVendor', async (payload, thu
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -76,7 +75,7 @@ export const updateVendor = createAsyncThunk('updateVendor', async (payload, thu
 export const getVendor = createAsyncThunk('getVendor', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
+  try {
     const response = await axiosInstance.get(`rest/vendors/${payload.id}?token=${accessToken}`);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -88,14 +87,14 @@ export const getVendor = createAsyncThunk('getVendor', async (payload, thunkAPI)
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const deleteVendor = createAsyncThunk('deleteVendor', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.post(`rest/vendors/delete?token=${accessToken}`, payload);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -107,7 +106,7 @@ export const deleteVendor = createAsyncThunk('deleteVendor', async (payload, thu
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });

@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Empty,
-  message,
-} from 'antd';
+import { Form, Button, Row, Col, Typography, Table, Empty, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import FormItem from '../../../components/forms/FormItem';
 import moment from 'moment';
+import FormItem from '../../../components/forms/FormItem';
 
 const { Title } = Typography;
 
@@ -33,7 +24,7 @@ const InputForm = (props) => {
 
   const toggleName = formDetails.toggle_name;
 
-  const selectTableName = 'disbursement'
+  const selectTableName = 'disbursement';
 
   useEffect(() => {
     form.setFieldsValue(values);
@@ -46,7 +37,7 @@ const InputForm = (props) => {
   }, [values, form, formTable, hasTable, toggleName]);
 
   const onFinish = (data) => {
-    setProccessingData(true)
+    setProccessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -62,16 +53,15 @@ const InputForm = (props) => {
     if (hasTable) {
       if (tableData !== null) {
         data[formTable.name] = tableData;
-      } 
-      else {
+      } else {
         onFinishFailed(
           `Unable to submit. Please provide the necessary information on ${formTable.label}`
         );
       }
-    } 
+    }
     onSubmit(data).then(() => {
-      setProccessingData(false)
-    })
+      setProccessingData(false);
+    });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -122,11 +112,11 @@ const InputForm = (props) => {
       const selectedPDC = pdcDisbursements.find((slip) => slip.id === value);
       formValues[key] = {
         id: selectedPDC.id,
-        number: selectedPDC.number
+        number: selectedPDC.number,
       };
       formValues.cheques = selectedPDC?.cheques ?? [];
-      formValues.disbursementDate = moment(new Date(selectedPDC.date)).format('DD/MM/YYYY')
-      formValues.payee = `[${selectedPDC.payee.code}] ${selectedPDC.payee.name}`
+      formValues.disbursementDate = moment(new Date(selectedPDC.date)).format('DD/MM/YYYY');
+      formValues.payee = `[${selectedPDC.payee.code}] ${selectedPDC.payee.name}`;
       setCheques(selectedPDC.cheques);
     } else {
       formValues[key] = value;
@@ -155,7 +145,7 @@ const InputForm = (props) => {
               const itemData = {
                 ...item,
               };
-                            
+
               if (item.name === selectTableName) {
                 itemData.selectedData = selectedPDC;
                 itemData.setSelectedData = setSelectedPDC;
@@ -179,11 +169,7 @@ const InputForm = (props) => {
               </Form.List>
             )}
             <div style={styles.tailLayout}>
-              <Button 
-                type="primary" 
-                onClick={() => form.submit()}
-                loading={proccessingData}
-              >
+              <Button type="primary" onClick={() => form.submit()} loading={proccessingData}>
                 Submit
               </Button>
               <Button

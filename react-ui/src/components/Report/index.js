@@ -11,11 +11,11 @@ const Report = (props) => {
   const onFail = useCallback(() => {
     history.push(`${path.replace(new RegExp('/report'), '')}`);
     return null;
-  },[history, path])
+  }, [history, path]);
 
   useEffect(() => {
-    if(data === null || typeof data === 'undefined' || data?.length === 0){
-      onFail()
+    if (data === null || typeof data === 'undefined' || data?.length === 0) {
+      onFail();
     }
   }, [data, onFail]);
 
@@ -28,7 +28,7 @@ const Report = (props) => {
             <Table
               dataSource={data}
               columns={TableHeader({ columns, hasSorter: false, hasFilter: false })}
-              pagination={{simple: true}}
+              pagination={{ simple: true }}
               locale={{ emptyText: <Empty description="No Data." /> }}
             />
           </Col>

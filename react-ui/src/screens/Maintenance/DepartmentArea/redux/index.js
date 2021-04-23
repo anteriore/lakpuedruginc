@@ -29,7 +29,7 @@ export const listD = createAsyncThunk('listD', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -48,7 +48,7 @@ export const addD = createAsyncThunk('addD', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -67,7 +67,7 @@ export const updateD = createAsyncThunk('updateD', async (payload, thunkAPI) => 
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -89,14 +89,14 @@ export const deleteD = createAsyncThunk('deleteD', async (payload, thunkAPI) => 
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const listA = createAsyncThunk('listA', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.get(
       `rest/areas/company/${payload.company}?token=${accessToken}`
     );
@@ -110,7 +110,7 @@ export const listA = createAsyncThunk('listA', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -129,7 +129,7 @@ export const addA = createAsyncThunk('addA', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -148,7 +148,7 @@ export const updateA = createAsyncThunk('updateA', async (payload, thunkAPI) => 
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -167,7 +167,7 @@ export const deleteA = createAsyncThunk('deleteA', async (payload, thunkAPI) => 
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -185,8 +185,8 @@ const departmentAreaSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for departments`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for departments`,
+      };
     },
     [listD.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
@@ -200,8 +200,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         deptList: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
@@ -355,8 +355,8 @@ const departmentAreaSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for areas`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for areas`,
+      };
     },
     [listA.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
@@ -370,8 +370,8 @@ const departmentAreaSlice = createSlice({
         ...state,
         areaList: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

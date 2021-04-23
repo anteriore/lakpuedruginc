@@ -6,15 +6,21 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
+import { listChequeDisbursement, addChequeDisbursement, clearData } from './redux';
 import {
-  listChequeDisbursement,
-  addChequeDisbursement,
-  clearData,
-} from './redux';
-import { listChequePrintingByCompanyAndStatus, clearData as clearChequePrinting } from '../ChequePrintings/redux';
+  listChequePrintingByCompanyAndStatus,
+  clearData as clearChequePrinting,
+} from '../ChequePrintings/redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
-import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
+import {
+  listD as listDepartment,
+  listA as listArea,
+  clearData as clearDeptArea,
+} from '../../Maintenance/DepartmentArea/redux';
+import {
+  listGroupByCompany,
+  clearData as clearGroupCat,
+} from '../../Maintenance/GroupsCategories/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
@@ -29,7 +35,9 @@ const ChequeDisbursements = (props) => {
   const [selectedData, setSelectedData] = useState(null);
   const isMounted = useRef(true);
 
-  const {list: listData, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.chequeDisbursements);
+  const { list: listData, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.accounting.chequeDisbursements
+  );
 
   const { company, actions } = props;
   const { formDetails } = FormDetails();
@@ -45,7 +53,7 @@ const ChequeDisbursements = (props) => {
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
       dispatch(clearDeptArea());
       dispatch(clearGroupCat());
@@ -55,33 +63,40 @@ const ChequeDisbursements = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Cheque Disbursement Voucher');
     setFormData(null);
     setLoading(true);
-    dispatch(listChequePrintingByCompanyAndStatus({ company, status: "Approved" })).then((response1) => {
-      dispatch(listAccountTitles({ company, message })).then((response2) => {
-        dispatch(listDepartment({ company, message })).then((response3) => {
-          dispatch(listArea({ company, message })).then((response4) => {
-            dispatch(listGroupByCompany({ company })).then((response5) => {
-              if(isMounted.current){
-                const onSuccess = () => {
-                  history.push(`${path}/new`);
-                  setLoading(false);
+    dispatch(listChequePrintingByCompanyAndStatus({ company, status: 'Approved' })).then(
+      (response1) => {
+        dispatch(listAccountTitles({ company, message })).then((response2) => {
+          dispatch(listDepartment({ company, message })).then((response3) => {
+            dispatch(listArea({ company, message })).then((response4) => {
+              dispatch(listGroupByCompany({ company })).then((response5) => {
+                if (isMounted.current) {
+                  const onSuccess = () => {
+                    history.push(`${path}/new`);
+                    setLoading(false);
+                  };
+                  const onFail = () => {
+                    setLoading(false);
+                  };
+                  handleRequestResponse(
+                    [response1, response2, response3, response4, response5],
+                    onSuccess,
+                    onFail,
+                    ''
+                  );
                 }
-                const onFail = () => {
-                  setLoading(false);
-                }
-                handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, onFail, '');
-              }
-            })
-          })
-        })
-      })
-    })
+              });
+            });
+          });
+        });
+      }
+    );
   };
 
   const handleUpdate = (data) => {};
@@ -94,32 +109,32 @@ const ChequeDisbursements = (props) => {
   };
 
   const processSubmitPayload = (data) => {
-    const accountTitles = []
+    const accountTitles = [];
     data.accountTitles.forEach((item) => {
       accountTitles.push({
         accountTitle: {
           id: item.accountTitle.id,
-          type: item.accountTitle.type
+          type: item.accountTitle.type,
         },
-        department: {id: item.department.id},
-        group: {id: item.group.id },
-        area: {id: item.area.id },
-        amount: item?.credit ?? item.debit
-      })
-    })
+        department: { id: item.department.id },
+        group: { id: item.group.id },
+        area: { id: item.area.id },
+        amount: item?.credit ?? item.debit,
+      });
+    });
 
     return {
       ...data,
       accountTitles,
       company: {
-        id: company
-      }
-    }
-  }
+        id: company,
+      },
+    };
+  };
 
   const onSubmit = async (data) => {
-    const payload = processSubmitPayload(data)
-    
+    const payload = processSubmitPayload(data);
+
     await dispatch(addChequeDisbursement(payload)).then((response) => {
       setLoading(true);
       history.goBack();
@@ -131,39 +146,39 @@ const ChequeDisbursements = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
-  //for data display
+  // for data display
   const renderTableColumns = (fields) => {
     const columns = [];
     fields.forEach((field) => {
       if (typeof field.render === 'undefined' || field.render === null) {
         field.render = (object) => object[field.name];
       }
-      if(field.name !== 'credit' && field.name !== 'debit'){
+      if (field.name !== 'credit' && field.name !== 'debit') {
         columns.push({
           title: field.label,
           key: field.name,
           render: (object) => field.render(object[field.name]),
         });
-      }
-      else {
+      } else {
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => field.render({[object.accountTitle.type.toLowerCase()]: object['amount']}),
+          render: (object) =>
+            field.render({ [object.accountTitle.type.toLowerCase()]: object.amount }),
         });
       }
     });
 
     return columns;
-  }
+  };
 
   return (
     <Switch>
@@ -187,7 +202,7 @@ const ChequeDisbursements = (props) => {
             setFormData(null);
           }}
           formDetails={formDetails}
-          //formTable={tableDetails}
+          // formTable={tableDetails}
         />
       </Route>
       <Route>
@@ -226,7 +241,7 @@ const ChequeDisbursements = (props) => {
               />
             )}
           </Col>
-          {<Modal
+          <Modal
             visible={displayModal}
             onOk={() => {
               setDisplayModal(false);
@@ -254,12 +269,32 @@ const ChequeDisbursements = (props) => {
                 <Text>{'Account Title Entries: '}</Text>
                 <Table
                   dataSource={selectedData.accountTitles}
-                  columns={renderTableColumns(formDetails.form_items.find((item) => item.name === 'accountTitles').fields)}
+                  columns={renderTableColumns(
+                    formDetails.account_titles.fields
+                  )}
                   pagination={false}
+                  summary={(data) => {
+                    const processedData = []
+                    data.forEach((item) => {
+                      if(item.accountTitle.type === 'Debit'){
+                        processedData.push({
+                          credit: 0,
+                          debit: item.amount
+                        })
+                      }
+                      else {
+                        processedData.push({
+                          credit: item.amount,
+                          debit: 0
+                        })
+                      }
+                    })
+                    return formDetails.account_titles.summary(processedData)
+                  }}
                 />
               </Space>
             )}
-          </Modal>}
+          </Modal>
         </Row>
       </Route>
     </Switch>

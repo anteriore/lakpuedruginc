@@ -31,7 +31,7 @@ export const listPDCDisbursement = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -44,7 +44,9 @@ export const listPDCDisbursementByStatus = createAsyncThunk(
     const { status } = payload;
 
     try {
-      const response = await axiosInstance.get(`rest/pdc-disbursements/status/${status}?token=${accessToken}`);
+      const response = await axiosInstance.get(
+        `rest/pdc-disbursements/status/${status}?token=${accessToken}`
+      );
 
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -56,7 +58,7 @@ export const listPDCDisbursementByStatus = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -83,7 +85,7 @@ export const addPDCDisbursement = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -110,7 +112,7 @@ export const updatePDCDisbursement = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -121,10 +123,11 @@ export const deletePDCDisbursement = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    try {const response = await axiosInstance.post(
-      `rest/pdc-disbursements/delete?token=${accessToken}`,
-      payload
-    );
+    try {
+      const response = await axiosInstance.post(
+        `rest/pdc-disbursements/delete?token=${accessToken}`,
+        payload
+      );
 
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -136,7 +139,7 @@ export const deletePDCDisbursement = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -150,17 +153,21 @@ const PDCDisbursementSlice = createSlice({
   },
   extraReducers: {
     [listPDCDisbursement.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements`,
       };
     },
     [listPDCDisbursement.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
 
       return {
         ...state,
@@ -188,17 +195,21 @@ const PDCDisbursementSlice = createSlice({
       };
     },
     [listPDCDisbursementByStatus.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements`,
       };
     },
     [listPDCDisbursementByStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
 
       return {
         ...state,
@@ -226,17 +237,21 @@ const PDCDisbursementSlice = createSlice({
       };
     },
     [addPDCDisbursement.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements`,
       };
     },
     [addPDCDisbursement.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
 
       return {
         ...state,
@@ -263,17 +278,21 @@ const PDCDisbursementSlice = createSlice({
       };
     },
     [updatePDCDisbursement.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements`,
       };
     },
     [updatePDCDisbursement.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
 
       return {
         ...state,
@@ -300,17 +319,21 @@ const PDCDisbursementSlice = createSlice({
       };
     },
     [deletePDCDisbursement.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Disbursements`,
       };
     },
     [deletePDCDisbursement.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Disbursements', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Disbursements',
+        state.action
+      );
 
       return {
         ...state,

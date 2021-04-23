@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Company;
 import com.wyvernlabs.ldicp.spring.events.superadmin.domain.Depot;
 import com.wyvernlabs.ldicp.spring.events.superadmin.repository.DepotRepository;
+import com.wyvernlabs.ldicp.spring.events.superadmin.repository.CompanyRepository;
 
 @RestController
 @RequestMapping("rest/depots")
@@ -21,6 +23,8 @@ public class DepotRestController {
     private static final Logger logger = LoggerFactory.getLogger(DepotRestController.class);
     @Autowired
     private DepotRepository depotRepository;
+    @Autowired
+	private CompanyRepository companyRepository;
 
     @GetMapping("/{id}")
     public Depot get(@PathVariable Long id) {
@@ -31,6 +35,12 @@ public class DepotRestController {
     public List<Depot> list() {
         return depotRepository.findAll();
     }
+
+	@GetMapping("/company/{companyId}")
+	public List<Depot> listByCompany(@PathVariable Long companyId) {
+		Company company = companyRepository.getOne(companyId);
+		return depotRepository.findByCompany(company);
+	}
 
     @PostMapping()
     public Depot upsert(@RequestBody Depot depot) {

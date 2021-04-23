@@ -23,7 +23,10 @@ import InputForm from './InputForm';
 import { listRR, addRR, clearData } from './redux';
 import { clearData as clearPO, listPO } from '../../Purchasing/redux';
 import { clearData as clearItem, listI } from '../../Maintenance/Items/redux';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -43,26 +46,26 @@ const ReceivingReceipts = (props) => {
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
   const [receivingReceipt, setReceivingReceipt] = useState(null);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.receivingReceipts
+  );
   const {
-    list, status, statusLevel, statusMessage, action
-  } = useSelector((state) => state.dashboard.receivingReceipts);
-  const { 
     status: statusItems,
     statusLevel: statusLevelItems,
     statusMessage: statusMessageItems,
-    action: actionItems
-  } = useSelector((state) => state.maintenance.items)
+    action: actionItems,
+  } = useSelector((state) => state.maintenance.items);
   const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearPO());
     dispatch(clearItem());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listRR({ company, message })).then(() => {
-      if(isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
       }
     });
@@ -74,33 +77,33 @@ const ReceivingReceipts = (props) => {
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
-  },[status, action, statusMessage, statusLevel]);
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusItems,
       statusMessage: statusMessageItems,
-      action: actionItems, 
+      action: actionItems,
       statusLevel: statusLevelItems,
-      module: title
-    })
+      module: title,
+    });
   }, [actionItems, statusMessageItems, statusItems, statusLevelItems, title]);
 
   const handleAdd = () => {
     setFormTitle('Create Receiving Receipt');
     setReceivingReceipt(null);
-    setLoading(true)
+    setLoading(true);
     dispatch(listPO({ company, message })).then((resp1) => {
       dispatch(listI({ company, message })).then((resp2) => {
-        if(isMounted.current){
+        if (isMounted.current) {
           const onSuccess = () => {
-              history.push(`${path}/new`);
-              setLoading(false);
-          }
+            history.push(`${path}/new`);
+            setLoading(false);
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
         }
       });
@@ -116,20 +119,20 @@ const ReceivingReceipts = (props) => {
     const payload = formatPayload(id, company, data);
 
     await dispatch(addRR(payload)).then((response) => {
-        setLoading(true);
-        const onSuccess = () => {
-          history.goBack();
-          dispatch(listRR({ company, message })).then(() => {
-            setLoading(false);
-          });
-        }
-        const onFail = () => {
+      setLoading(true);
+      const onSuccess = () => {
+        history.goBack();
+        dispatch(listRR({ company, message })).then(() => {
           setLoading(false);
-        }
-  
-        handleRequestResponse([response], onSuccess, onFail, '');
+        });
+      };
+      const onFail = () => {
+        setLoading(false);
+      };
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   const handleCancelButton = () => {

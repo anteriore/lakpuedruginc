@@ -27,7 +27,7 @@ const InstitutionalCodes = (props) => {
   const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   const { institutionList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.institutionalCodes
@@ -49,7 +49,7 @@ const InstitutionalCodes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -67,13 +67,12 @@ const InstitutionalCodes = (props) => {
   };
 
   const handleDeleteButton = (row) => {
-    setLoading(true)
-    dispatch(deleteInstitution(row))
-      .then(() => {
-        dispatch(listInstitution({ message })).then(() => {
-          setLoading(false);
-        });
-      })
+    setLoading(true);
+    dispatch(deleteInstitution(row)).then(() => {
+      dispatch(listInstitution({ message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -94,11 +93,11 @@ const InstitutionalCodes = (props) => {
             setIsOpenForm(!isOpenForm);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
@@ -109,15 +108,15 @@ const InstitutionalCodes = (props) => {
             setIsOpenForm(!isOpenForm);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   return (
@@ -131,7 +130,9 @@ const InstitutionalCodes = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { loading ? <Skeleton/> : 
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={institutionList}
@@ -140,7 +141,7 @@ const InstitutionalCodes = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

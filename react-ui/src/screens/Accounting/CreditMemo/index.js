@@ -10,8 +10,8 @@ import { FormDetails, DisplayDetails } from './data';
 import InputForm from './InputForm';
 
 import { listCM, addCM, deleteCM, updateCM, getCM, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { listMemo, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listMemoByType, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
 
@@ -32,11 +32,13 @@ const CreditMemo = (props) => {
   const [formData, setFormData] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
-  const {list: cmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.creditMemo);
+  const { list: cmList, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.accounting.creditMemo
+  );
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
- 
-  const { handleRequestResponse } = GeneralHelper()
+
+  const { handleRequestResponse } = GeneralHelper();
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const CreditMemo = (props) => {
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
       dispatch(clearDepot());
       dispatch(clearMemo());
@@ -56,7 +58,7 @@ const CreditMemo = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
@@ -67,16 +69,16 @@ const CreditMemo = (props) => {
     setLoading(true);
     dispatch(clearOS());
     dispatch(clearSI());
-    dispatch(listDepot({ company })).then((response1) => {
-      dispatch(listMemo({ company })).then((response2) => {
-        if(isMounted.current){
+    dispatch(listDepotByCompany({ company })).then((response1) => {
+      dispatch(listMemoByType({ type: ['CM'] })).then((response2) => {
+        if (isMounted.current) {
           const onSuccess = () => {
-              history.push(`${path}/new`);
-              setLoading(false);
-          }
+            history.push(`${path}/new`);
+            setLoading(false);
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([response1, response2], onSuccess, onFail, '');
         }
       });
@@ -90,10 +92,10 @@ const CreditMemo = (props) => {
         dispatch(listCM({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -108,10 +110,10 @@ const CreditMemo = (props) => {
         setDisplayModal(true);
         setSelectedData(response.payload.data);
         setLoading(false);
-      }
+      };
       const onFail = () => {
         setDisplayModal(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -123,14 +125,14 @@ const CreditMemo = (props) => {
 
   const onSubmit = async (data) => {
     const payload = {
-        ...data,
-        memoSlipType: 'CM',
-        depot: {id: data.depot},
-        type: {id: data.type},
-    }
+      ...data,
+      memoSlipType: 'CM',
+      depot: { id: data.depot },
+      type: { id: data.type },
+    };
 
     if (formMode === 'edit') {
-      payload.id = formData.id
+      payload.id = formData.id;
 
       await dispatch(updateCM(payload)).then((response) => {
         setLoading(true);
@@ -139,11 +141,11 @@ const CreditMemo = (props) => {
           dispatch(listCM({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -154,15 +156,15 @@ const CreditMemo = (props) => {
           dispatch(listCM({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    
+
     setFormData(null);
     return 1;
   };

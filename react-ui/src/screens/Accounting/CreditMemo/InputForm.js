@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Row, Col, Typography, message,} from 'antd';
+import { Form, Button, Row, Col, Typography, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
@@ -82,11 +82,11 @@ const InputForm = (props) => {
       }
     }
 
-    /*if (values.hasOwnProperty(formTable.name)) {
+    /* if (values.hasOwnProperty(formTable.name)) {
       setTableData(form.getFieldValue(formTable.name));
       console.log(form.getFieldsValue());
       console.log(tableData);
-    }*/
+    } */
 
     if (values.hasOwnProperty('depot')) {
       setSelectedSaleSlip([]);
@@ -101,11 +101,11 @@ const InputForm = (props) => {
     if (key === 'reference') {
       const selectedSaleSlip = salesSlips.find((slip) => slip.id === value);
       formValues[key] = selectedSaleSlip.number;
-      /*formValues.reference = { 
+      /* formValues.reference = { 
           id: selectedSaleSlip.id,
           type: selectedSaleSlip.type,
           remainingBalance: selectedSaleSlip.remainingBalance,
-      }*/
+      } */
       formValues.reference = selectedSaleSlip;
       formValues.client = selectedSaleSlip.salesOrder.client.id;
     } else {

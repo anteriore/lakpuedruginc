@@ -27,7 +27,7 @@ export const listReturnSlip = createAsyncThunk('listReturnSlip', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -46,7 +46,7 @@ export const addReturnSlip = createAsyncThunk('addReturnSlip', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -68,7 +68,7 @@ export const deleteReturnSlip = createAsyncThunk('deleteReturnSlip', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });

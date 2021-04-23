@@ -13,7 +13,10 @@ import { listMoInventories, clearData as clearDataMO } from '../../RND/MOInvento
 import { listProcedure, clearData as clearDataProcedure } from '../../Maintenance/Procedures/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import { formatEmployeePayload } from './helpers';
-import  GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -29,16 +32,14 @@ const JobOrder = (props) => {
   const { jobOrderList, action, statusMessage, status, statusLevel } = useSelector(
     (state) => state.dashboard.jobOrders
   );
-  const moList = useSelector(
-    (state) => state.rnd.moInventories.moInventoryList
-  );
+  const moList = useSelector((state) => state.rnd.moInventories.moInventoryList);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearDataEmployees());
     dispatch(clearDataMO());
     dispatch(clearDataProcedure());
-  }, [dispatch])
+  }, [dispatch]);
 
   const {
     action: actionMO,
@@ -61,36 +62,35 @@ const JobOrder = (props) => {
     reevalDependencyMsgStats({
       status: statusMO,
       statusMessage: statusMessageMO,
-      action: actionMO, 
+      action: actionMO,
       statusLevel: statusLevelMO,
-      module: 'MO'
-    })
+      module: 'MO',
+    });
   }, [actionMO, statusMessageMO, statusMO, statusLevelMO]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusEmployee,
       statusMessage: statusMessageEmployee,
-      action: actionEmployee, 
+      action: actionEmployee,
       statusLevel: statusLevelEmployee,
-      module: 'Employee'
-    })
+      module: 'Employee',
+    });
   }, [actionEmployee, statusMessageEmployee, statusEmployee, statusLevelEmployee]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     setContentLoading(true);
-    dispatch(listJobOrders())
-    .then(() => {
+    dispatch(listJobOrders()).then(() => {
       setContentLoading(false);
     });
 
     return function cleanup() {
       isMounted.current = false;
-      performCleanup()
+      performCleanup();
     };
   }, [dispatch, performCleanup]);
 
@@ -99,16 +99,16 @@ const JobOrder = (props) => {
     dispatch(listEmployees()).then((resp1) => {
       dispatch(listMoInventories(company)).then((resp2) => {
         dispatch(listProcedure()).then((resp3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
               history.push(`${path}/new`);
               setContentLoading(false);
-            }
-      
+            };
+
             const onFail = () => {
               setContentLoading(false);
-            }
-      
+            };
+
             handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
         });
@@ -123,7 +123,7 @@ const JobOrder = (props) => {
 
   const onSubmit = async (values) => {
     setContentLoading(true);
-    values.moType = moList.find((item) => item.id === values.moNumber)?.type
+    values.moType = moList.find((item) => item.id === values.moNumber)?.type;
     await dispatch(createJobOrder(formatEmployeePayload(values))).then((response) => {
       const onSuccess = () => {
         history.goBack();
@@ -135,10 +135,10 @@ const JobOrder = (props) => {
       const onFail = () => {
         history.goBack();
         setContentLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   return (

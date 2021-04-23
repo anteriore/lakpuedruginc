@@ -18,18 +18,12 @@ const SalesJournalVouchers = (props) => {
 
   const [loading, setLoading] = useState(true);
 
-  const {
-    orderSlipsList, 
-    status, 
-    statusLevel, 
-    statusMessage, 
-    action 
-  } = useSelector((state) => state.sales.orderSlips);
-  
-  const {
-    salesInvoiceList
-  } = useSelector((state) => state.sales.salesInvoice);
-  
+  const { orderSlipsList, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.sales.orderSlips
+  );
+
+  const { salesInvoiceList } = useSelector((state) => state.sales.salesInvoice);
+
   let salesSlips = [];
   salesSlips = salesSlips.concat(orderSlipsList).concat(salesInvoiceList);
   const isMounted = useRef(true);
@@ -37,19 +31,19 @@ const SalesJournalVouchers = (props) => {
   const performCleanup = useCallback(() => {
     dispatch(clearOrderSlips());
     dispatch(clearSalesInvoice());
-  },[dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
-    dispatch(listSalesInvoice(company))
+    dispatch(listSalesInvoice(company));
     dispatch(listOrderSlips(company)).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
       }
-    })
+    });
 
     return function cleanup() {
       isMounted.current = false;

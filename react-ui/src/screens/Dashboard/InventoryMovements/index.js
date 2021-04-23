@@ -10,12 +10,15 @@ import { listInventoryMovement, addInventoryMovement, clearData } from './redux'
 import { listInventory, clearData as clearInventory } from '../Inventory/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const InventoryMovements = (props) => {
-  const {title} = props
+  const { title } = props;
   const { handleRequestResponse } = GeneralHelper();
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -23,14 +26,15 @@ const InventoryMovements = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.inventoryMovements
+  );
   const {
-    list, status, statusLevel, 
-    statusMessage, action
-  } = useSelector((state) => state.dashboard.inventoryMovements);
-  const {
-    status: statusInventory, statusLevel: statusLevelInventory, 
-    statusMessage: statusMessageInventory, action: actionInventory
-  } = useSelector((state) => state.dashboard.inventory)
+    status: statusInventory,
+    statusLevel: statusLevelInventory,
+    statusMessage: statusMessageInventory,
+    action: actionInventory,
+  } = useSelector((state) => state.dashboard.inventory);
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -44,11 +48,11 @@ const InventoryMovements = (props) => {
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearInventory());
-  },[dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listInventoryMovement({ company, message })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setFormData(null);
         setLoading(false);
       }
@@ -61,21 +65,18 @@ const InventoryMovements = (props) => {
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusInventory,
       statusMessage: statusMessageInventory,
-      action: actionInventory, 
+      action: actionInventory,
       statusLevel: statusLevelInventory,
-      module: title
-    })
-  }, [
-    actionInventory, statusMessageInventory, 
-    statusInventory, statusLevelInventory, title
-  ]);
+      module: title,
+    });
+  }, [actionInventory, statusMessageInventory, statusInventory, statusLevelInventory, title]);
 
   const handleAdd = () => {
     setFormTitle('Create Inventory Movement Slip');
@@ -85,11 +86,11 @@ const InventoryMovements = (props) => {
       const onSuccess = () => {
         history.push(`${path}/new`);
         setLoading(false);
-      }
+      };
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -125,7 +126,7 @@ const InventoryMovements = (props) => {
       },
       inventory,
     };
-    
+
     await dispatch(addInventoryMovement(payload)).then((response) => {
       setLoading(true);
       const onSuccess = () => {
@@ -137,11 +138,11 @@ const InventoryMovements = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (
@@ -228,8 +229,8 @@ const InventoryMovements = (props) => {
                   selectedData={{
                     ...selectedData,
                     classification: {
-                      name: selectedData.classification
-                    }
+                      name: selectedData.classification,
+                    },
                   }}
                   formItems={formDetails.form_items}
                 />

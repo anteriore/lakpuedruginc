@@ -34,9 +34,8 @@ const Procedures = (props) => {
     (state) => state.maintenance.procedures
   );
 
-  
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     let isCancelled = false;
@@ -55,7 +54,7 @@ const Procedures = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
@@ -79,8 +78,8 @@ const Procedures = (props) => {
     dispatch(listProductionArea({ message })).then((response) => {
       const onSuccess = () => {
         setIsOpenForm(!isOpenForm);
-      }
-      const onFail = () => {}
+      };
+      const onFail = () => {};
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -96,20 +95,19 @@ const Procedures = (props) => {
           procedureArea: row.procedureArea.id,
         });
         setIsOpenForm(!isOpenForm);
-      }
-      const onFail = () => {}
+      };
+      const onFail = () => {};
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
   const handleDeleteButton = (row) => {
-    setLoading(true)
-    dispatch(deleteProcedure(row))
-      .then(() => {
-        dispatch(listProcedure({ message })).then(() => {
-          setLoading(false)
-        });
-      })
+    setLoading(true);
+    dispatch(deleteProcedure(row)).then(() => {
+      dispatch(listProcedure({ message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -118,25 +116,25 @@ const Procedures = (props) => {
   };
 
   const onSubmit = async (values) => {
-    setLoading(true)
+    setLoading(true);
     if (mode === 'edit') {
       const newValues = formatProcedurePayload(values, productionAreaList);
       newValues.id = currentID;
       dispatch(updateProcedure(newValues)).then(() => {
         dispatch(listProcedure({ message })).then(() => {
-          setLoading(false)
+          setLoading(false);
         });
       });
     } else if (mode === 'add') {
       dispatch(createProcedure(formatProcedurePayload(values, productionAreaList))).then(() => {
         dispatch(listProcedure({ message })).then(() => {
-          setLoading(false)
-        });;
+          setLoading(false);
+        });
       });
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-    return 1
+    return 1;
   };
 
   return (
@@ -150,7 +148,9 @@ const Procedures = (props) => {
         )}
       </Col>
       <Col span={20}>
-        {loading ? <Skeleton/> : 
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={procedureList}
@@ -159,7 +159,7 @@ const Procedures = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

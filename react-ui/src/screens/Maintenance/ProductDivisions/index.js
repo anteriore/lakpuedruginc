@@ -15,7 +15,7 @@ const ProductDivisions = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     {
@@ -64,8 +64,10 @@ const ProductDivisions = (props) => {
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
-  const { list: data, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.productDivisions);
+  const { handleRequestResponse } = GeneralHelper();
+  const { list: data, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.productDivisions
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -83,7 +85,7 @@ const ProductDivisions = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
@@ -118,7 +120,7 @@ const ProductDivisions = (props) => {
   };
 
   const onSubmit = async (values) => {
-    setLoading(true)
+    setLoading(true);
     if (formMode === 'edit') {
       const payload = {
         ...values,
@@ -133,12 +135,12 @@ const ProductDivisions = (props) => {
           dispatch(listPD({ company, message })).then(() => {
             setDisplayForm(false);
             setFormData(null);
-            setLoading(false)
+            setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -153,16 +155,16 @@ const ProductDivisions = (props) => {
           dispatch(listPD({ company, message })).then(() => {
             setDisplayForm(false);
             setFormData(null);
-            setLoading(false)
+            setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   return (
@@ -188,7 +190,9 @@ const ProductDivisions = (props) => {
               Add
             </Button>
           )}
-          { loading ? <Skeleton/> : 
+          {loading ? (
+            <Skeleton />
+          ) : (
             <TableDisplay
               columns={columns}
               data={data}
@@ -198,7 +202,7 @@ const ProductDivisions = (props) => {
               updateEnabled={actions.includes('update')}
               deleteEnabled={actions.includes('delete')}
             />
-          }
+          )}
         </Col>
         <SimpleForm
           visible={displayForm}

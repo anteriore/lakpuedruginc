@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Typography, Form, Skeleton, Space, Button, Descriptions, Alert } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import {InfoCircleFilled } from '@ant-design/icons';
+import { InfoCircleFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -34,7 +34,7 @@ const InputForm = (props) => {
     const masterList = {
       controlNumber: approvedReceiptsList,
     };
-    console.log(approvedReceiptsList)
+    console.log(approvedReceiptsList);
     const formItem = _.find(newForm.form_items, { name: 'controlNumber' });
     formItem.onChange = (e) => handleControlNumberChange(e);
     setTempFormDetails(updateList(newForm, masterList));
@@ -43,7 +43,7 @@ const InputForm = (props) => {
   }, [tempFormDetails, approvedReceiptsList, handleControlNumberChange]);
 
   const onFail = () => {
-    console.log("Fialing")
+    console.log('Fialing');
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 
@@ -87,8 +87,8 @@ const InputForm = (props) => {
                       message="Please select a control number"
                       type="warning"
                       showIcon
-                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                      icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                      style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
                     />
                   </Form.Item>
                 ) : (
@@ -137,8 +137,19 @@ const InputForm = (props) => {
                       {appReceipts?.receivingReceipt?.drNumber ?? ''}
                     </Descriptions.Item>
                     {_.dropRight(_.drop(tempFormDetails.form_items, 1), 1).map((item) => (
-                      <Descriptions.Item key={item.name} label={item.label} span={1} style={{padding: '1%'}}>
-                        <FormItem disableLable={true} noStyle={true} onFail={onFail} key={item.name} item={item} />
+                      <Descriptions.Item
+                        key={item.name}
+                        label={item.label}
+                        span={1}
+                        style={{ padding: '1%' }}
+                      >
+                        <FormItem
+                          disableLable
+                          noStyle
+                          onFail={onFail}
+                          key={item.name}
+                          item={item}
+                        />
                       </Descriptions.Item>
                     ))}
                   </Descriptions>

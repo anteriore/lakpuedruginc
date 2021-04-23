@@ -15,7 +15,7 @@ const initialState = {
 export const listOReceipt = createAsyncThunk('listOReceipt', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
+  try {
     const response = await axiosInstance.get(`rest/order-receipts?token=${accessToken}`);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -27,7 +27,7 @@ export const listOReceipt = createAsyncThunk('listOReceipt', async (payload, thu
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -46,7 +46,7 @@ export const addOReceipt = createAsyncThunk('addOReceipt', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -68,7 +68,7 @@ export const deleteOReceipt = createAsyncThunk('deleteOReceipt', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });

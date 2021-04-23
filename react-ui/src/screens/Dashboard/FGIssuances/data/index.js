@@ -2,7 +2,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import moment from 'moment';
 
-import { listProductInventoryWithStockByDepot, clearData as clearPI } from '../../ProductInventories/redux';
+import {
+  listProductInventoryWithStockByDepot,
+  clearData as clearPI,
+} from '../../ProductInventories/redux';
 
 export const columns = [
   {
@@ -84,11 +87,11 @@ const FormDetails = () => {
         rules: [{ required: true }],
         loading: loadingDepot,
         onChange: (e) => {
-          setLoadingDepot(true)
+          setLoadingDepot(true);
           dispatch(clearPI());
           dispatch(listProductInventoryWithStockByDepot({ company, depot: e })).then(() => {
-            setLoadingDepot(false)
-          })
+            setLoadingDepot(false);
+          });
         },
       },
       {

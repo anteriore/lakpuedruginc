@@ -69,28 +69,28 @@ const FormDetails = () => {
             title: 'Payee',
             dataIndex: 'payee',
             key: 'payee',
-            render: (data) => `[${data?.code}] ${data?.name}`
+            render: (data) => `[${data?.code}] ${data?.name}`,
           },
         ],
         rowKey: 'id',
         getValueProps: (value) => {
           if (typeof value !== 'undefined') {
-            return { value: value?.number ?? "" };
+            return { value: value?.number ?? '' };
           }
         },
-        toString: (data) => data.number
+        toString: (data) => data.number,
       },
       {
         label: 'Disbursement Date',
         name: 'disbursementDate',
         readOnly: true,
-        render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
+        render: (data) => moment(new Date(data)).format('DD/MM/YYYY'),
       },
       {
         label: 'Payee',
         name: 'payee',
         readOnly: true,
-        render: (data) => `[${data.code}] ${data.name}`
+        render: (data) => `[${data.code}] ${data.name}`,
       },
     ],
     processDisplayData: (data) => {
@@ -98,9 +98,9 @@ const FormDetails = () => {
         ...data,
         disbursementDate: data.disbursement.date,
         payee: data.disbursement.payee,
-      }
-      return processedData
-    }
+      };
+      return processedData;
+    },
   };
 
   const tableDetails = {

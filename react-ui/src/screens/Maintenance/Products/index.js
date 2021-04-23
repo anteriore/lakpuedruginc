@@ -5,17 +5,16 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import TableDisplay from '../../../components/TableDisplay';
 import { listProduct, createProduct, updateProduct, clearData } from './redux';
-import { clearData as clearDepots, listDepot } from '../Depots/redux';
-import { clearData as clearClassification, listClassification} from '../Classification/redux';
+import { clearData as clearDepots, listDepotByCompany } from '../Depots/redux';
+import { clearData as clearClassification, listClassification } from '../Classification/redux';
 import { clearData as clearCategories, listPC } from '../ProductCategories/redux';
 import { clearData as clearDivisions, listPD } from '../ProductDivisions/redux';
 import { clearData as clearUnits, listUnit } from '../Units/redux';
 import { clearData as clearFinishedGoods, getFGList } from '../FinishedGoods/redux';
-import FormDetails ,{ tableHeader } from './data';
-import GeneralHelper from '../../../helpers/general-helper';
+import FormDetails, { tableHeader } from './data';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 import FormScreen from '../../../components/forms/FormScreen';
 import { formatInitialValue, formatPayload } from './helper';
-import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -32,21 +31,23 @@ const Product = (props) => {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const { productList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.products);
+  const { productList, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.products
+  );
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     dispatch(listProduct({ company, message })).then(() => {
-      if(isMounted.current){
+      if (isMounted.current) {
         setContentLoading(false);
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
       dispatch(clearDepots());
       dispatch(clearClassification());
@@ -57,87 +58,107 @@ const Product = (props) => {
     };
   }, [dispatch, company]);
 
-  const onSuccess = useCallback((method, id) => {
-    if(isMounted.current){
-      if ( method === "add" ){
-        history.push(`${path}/new`);
-      } 
+  const onSuccess = useCallback(
+    (method, id) => {
+      if (isMounted.current) {
+        if (method === 'add') {
+          history.push(`${path}/new`);
+        }
 
-      if (method === 'edit'){
-        history.push(`${path}/${id}/edit`);
+        if (method === 'edit') {
+          history.push(`${path}/${id}/edit`);
+        }
+        setContentLoading(false);
       }
-      setContentLoading(false);
-    }
-	},[history, path]);
+    },
+    [history, path]
+  );
 
   const handleAddButton = () => {
     setFormTitle('Create Product');
     setContentLoading(true);
     dispatch(getFGList()).then((dataFG) => {
-      dispatch(listDepot(company)).then((dataDepot) => {
+      dispatch(listDepotByCompany({company})).then((dataDepot) => {
         dispatch(listClassification()).then((dataClassification) => {
           dispatch(listPC()).then((dataPC) => {
             dispatch(listPD()).then((dataPD) => {
               dispatch(listUnit()).then((dataUnit) => {
                 const dataList = [dataFG, dataDepot, dataClassification, dataPD, dataUnit, dataPC];
-                handleRequestResponse(dataList, () => onSuccess('add'), () => console.log("Failed"), '/maintenance')
+                handleRequestResponse(
+                  dataList,
+                  () => onSuccess('add'),
+                  () => console.log('Failed'),
+                  '/maintenance'
+                );
                 setContentLoading(false);
-              })
-            })
-          })
-        })
-      })
-    })
-  }
+              });
+            });
+          });
+        });
+      });
+    });
+  };
 
   const handleUpdate = (values) => {
     setFormTitle(`Edit Product - ${values.id}`);
     setContentLoading(true);
     setFormData(formatInitialValue(values));
     dispatch(getFGList()).then((dataFG) => {
-      dispatch(listDepot(company)).then((dataDepot) => {
+      dispatch(listDepotByCompany({company})).then((dataDepot) => {
         dispatch(listClassification()).then((dataClassification) => {
           dispatch(listPC()).then((dataPC) => {
             dispatch(listPD()).then((dataPD) => {
               dispatch(listUnit()).then((dataUnit) => {
                 dispatch(listUnit()).then((dataUnit) => {
-                  const dataList = [dataFG, dataDepot, dataClassification, dataPD, dataUnit, dataPC];
-                  handleRequestResponse(dataList, () => onSuccess('edit', values.id), () => console.log("Failed"), '/maintenance')
+                  const dataList = [
+                    dataFG,
+                    dataDepot,
+                    dataClassification,
+                    dataPD,
+                    dataUnit,
+                    dataPC,
+                  ];
+                  handleRequestResponse(
+                    dataList,
+                    () => onSuccess('edit', values.id),
+                    () => console.log('Failed'),
+                    '/maintenance'
+                  );
                   setContentLoading(false);
-                })
-              })
-            })
-          })
-        })
-      })
-    })
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   };
 
-  /*const handleDelete = (row) => {
+  /* const handleDelete = (row) => {
     setContentLoading(true)
     dispatch(deleteProduct(row)).then(() => {
       dispatch(listProduct({ company, message }));
     })
     setContentLoading(false);
-  };*/
+  }; */
 
   const onCreate = async (values) => {
     values.company = { id: company };
-    setContentLoading(true)
+    setContentLoading(true);
     await dispatch(createProduct(formatPayload(values))).then((response) => {
       const onSuccess = () => {
         history.goBack();
         dispatch(listProduct({ company, message })).then(() => {
           setContentLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setContentLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   const onUpdate = async (values) => {
@@ -150,14 +171,14 @@ const Product = (props) => {
         dispatch(listProduct({ company, message })).then(() => {
           setContentLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setContentLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   return (
@@ -168,7 +189,7 @@ const Product = (props) => {
           onSubmit={onCreate}
           values={formData}
           onCancel={() => {
-            setFormData(null)
+            setFormData(null);
           }}
           formDetails={formDetails}
         />
@@ -179,7 +200,7 @@ const Product = (props) => {
           onSubmit={onUpdate}
           values={formData}
           onCancel={() => {
-            setFormData(null)
+            setFormData(null);
           }}
           formDetails={formDetails}
         />
@@ -195,7 +216,9 @@ const Product = (props) => {
             )}
           </Col>
           <Col span={20}>
-            { contentLoading ? <Skeleton/> : 
+            {contentLoading ? (
+              <Skeleton />
+            ) : (
               <TableDisplay
                 columns={tableHeader}
                 data={productList}
@@ -203,7 +226,7 @@ const Product = (props) => {
                 updateEnabled={actions.includes('update')}
                 deleteEnabled={false}
               />
-            }
+            )}
           </Col>
         </Row>
       </Route>

@@ -33,7 +33,7 @@ export const listMaterialReceiving = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -59,7 +59,7 @@ export const addMaterialReceiving = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -69,7 +69,7 @@ export const deleteMaterialReceiving = createAsyncThunk(
   'deleteMaterialReceiving',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    try{
+    try {
       const response = await axiosInstance.post(
         `rest/material-receivings/delete?token=${accessToken}`,
         payload
@@ -84,7 +84,7 @@ export const deleteMaterialReceiving = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -98,18 +98,18 @@ const materialReceivingSlice = createSlice({
   },
   extraReducers: {
     [listMaterialReceiving.pending]: (state, action) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for material receivings` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for material receivings`,
       };
     },
     [listMaterialReceiving.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Material Receiving Slips',
         state.action
       );
@@ -140,17 +140,21 @@ const materialReceivingSlice = createSlice({
       };
     },
     [addMaterialReceiving.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEM_ADD_PENDING} for material receiving` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for material receiving`,
       };
     },
     [addMaterialReceiving.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Material Receiving Slips', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Material Receiving Slips',
+        state.action
+      );
 
       return {
         ...state,

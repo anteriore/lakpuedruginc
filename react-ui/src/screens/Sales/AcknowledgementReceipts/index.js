@@ -11,15 +11,18 @@ import InputForm from './InputForm';
 
 import { listAReceipt, addAReceipt, deleteAReceipt, clearData } from './redux';
 import { listClient, clearData as clearClient } from '../../Maintenance/Clients/redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { clearData as clearOrderSlips } from '../OrderSlips/redux';
 import { clearData as clearSalesInvoice } from '../SalesInvoice/redux';
-import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const AcknowledgementReceipts = (props) => {
-  const {  handleRequestResponse } = GeneralHelper();
+  const { handleRequestResponse } = GeneralHelper();
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
@@ -32,15 +35,21 @@ const AcknowledgementReceipts = (props) => {
   const [selectedAR, setSelectedAR] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.sales.acknowledgementReceipts);
-  const { 
-    status: statusDepot, statusLevel: statusLevelDepot, 
-    statusMessage: statusMessageDepot, action: actionDepot
-  } = useSelector(state => state.maintenance.depots);
-  const { 
-    status: statusClient, statusLevel: statusLevelClient, 
-    statusMessage: statusMessageClient, action: actionClient 
-  } = useSelector(state => state.maintenance.clients);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.sales.acknowledgementReceipts
+  );
+  const {
+    status: statusDepot,
+    statusLevel: statusLevelDepot,
+    statusMessage: statusMessageDepot,
+    action: actionDepot,
+  } = useSelector((state) => state.maintenance.depots);
+  const {
+    status: statusClient,
+    statusLevel: statusLevelClient,
+    statusMessage: statusMessageClient,
+    action: actionClient,
+  } = useSelector((state) => state.maintenance.clients);
   const user = useSelector((state) => state.auth.user);
   const isMounted = useRef(true);
 
@@ -50,36 +59,36 @@ const AcknowledgementReceipts = (props) => {
     dispatch(clearDepot());
     dispatch(clearOrderSlips());
     dispatch(clearSalesInvoice());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusClient,
       statusMessage: statusMessageClient,
-      action: actionClient, 
+      action: actionClient,
       statusLevel: statusLevelClient,
-      module: 'Clients'
-    })
+      module: 'Clients',
+    });
   }, [actionClient, statusMessageClient, statusClient, statusLevelClient]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: 'Depots'
+      module: 'Depots',
     });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
     dispatch(listAReceipt({ company, message })).then(() => {
       if (isMounted.current) {
-        setLoading(false)
+        setLoading(false);
       }
     });
 
@@ -95,21 +104,21 @@ const AcknowledgementReceipts = (props) => {
     setLoading(true);
     dispatch(clearOrderSlips());
     dispatch(clearSalesInvoice());
-    dispatch(listClient({ company, message })).then((resp1) => {
-      dispatch(listDepot({ company, message })).then((resp2) => {
-        if(isMounted.current){
+    dispatch(listClient({ company })).then((resp1) => {
+      dispatch(listDepotByCompany({ company })).then((resp2) => {
+        if (isMounted.current) {
           const onSuccess = () => {
-              history.push(`${path}/new`);
-              setLoading(false);
-          }
+            history.push(`${path}/new`);
+            setLoading(false);
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
         }
       });
-    })
-  }
+    });
+  };
 
   const handleUpdate = () => {
     message.error('Unable to perform action.');
@@ -137,14 +146,13 @@ const AcknowledgementReceipts = (props) => {
 
   const onSubmit = async (data) => {
     const payments = [];
-    let totalSI = 0
+    let totalSI = 0;
     let totalOS = 0;
     data.payments.forEach((payment) => {
-      if(payment.type === 'DR_SI'){
-        totalSI += payment.appliedAmount
-      }
-      else {
-        totalOS += payment.appliedAmount
+      if (payment.type === 'DR_SI') {
+        totalSI += payment.appliedAmount;
+      } else {
+        totalOS += payment.appliedAmount;
       }
       payments.push({
         reference: {
@@ -183,11 +191,11 @@ const AcknowledgementReceipts = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
   const renderTableColumns = (item) => {

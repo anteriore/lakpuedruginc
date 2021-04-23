@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'antd';
-import {
-  ProfileOutlined,
-  UserOutlined,
-  ShoppingCartOutlined,
-} from '@ant-design/icons';
+import { ProfileOutlined, UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 
 class SideNav extends Component {
   render() {
@@ -29,18 +25,18 @@ class SideNav extends Component {
         <Menu.Item key="/sales" icon={<UserOutlined />}>
           <Link to="/sales">Sales</Link>
         </Menu.Item>
-        {/*<Menu.Item key="/mmd" icon={<ProfileOutlined />}>
+        {/* <Menu.Item key="/mmd" icon={<ProfileOutlined />}>
           <Link to="/mmd">MMD</Link>
-    </Menu.Item>*/}
-        {/*<Menu.Item key="/rnd" icon={<ExperimentOutlined />}>
+    </Menu.Item> */}
+        {/* <Menu.Item key="/rnd" icon={<ExperimentOutlined />}>
           <Link to="/rnd">R&D</Link>
-    </Menu.Item>*/}
+    </Menu.Item> */}
         <Menu.Item key="/purchasing" icon={<ShoppingCartOutlined />}>
           <Link to="/purchasing">Purchasing</Link>
         </Menu.Item>
-        {/*<Menu.Item key="/costing" icon={<TagsOutlined />}>
+        {/* <Menu.Item key="/costing" icon={<TagsOutlined />}>
           <Link to="/costing">Costing</Link>
-  </Menu.Item>*/}
+  </Menu.Item> */}
       </Menu>
     );
   }

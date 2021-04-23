@@ -62,7 +62,10 @@ export const updateIT = createAsyncThunk('updateIT', async (payload, thunkAPI) =
 export const deleteIT = createAsyncThunk('deleteIT', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
-    const response = await axiosInstance.post(`rest/item-types/delete?token=${accessToken}`, payload);
+    const response = await axiosInstance.post(
+      `rest/item-types/delete?token=${accessToken}`,
+      payload
+    );
     const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
       return validateResponse;
@@ -86,7 +89,7 @@ const itemTypeSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: message.ITEMS_GET_PENDING
+        statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listIT.fulfilled]: (state, action) => {
@@ -101,8 +104,8 @@ const itemTypeSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

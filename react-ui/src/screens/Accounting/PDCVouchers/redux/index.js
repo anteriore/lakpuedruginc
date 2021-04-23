@@ -17,8 +17,47 @@ export const listPDCVoucher = createAsyncThunk('listPDCVoucher', async (payload,
   const accessToken = thunkAPI.getState().auth.token;
 
   try {
-    const response = await axiosInstance.get(
-      `rest/pdc-vouchers/?token=${accessToken}`
+    const response = await axiosInstance.get(`rest/pdc-vouchers/?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred',
+    });
+  }
+});
+
+export const addPDCVoucher = createAsyncThunk('addPDCVoucher', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(`rest/pdc-vouchers/?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred',
+    });
+  }
+});
+
+export const deletePDCVoucher = createAsyncThunk('deletePDCVoucher', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.post(
+      `rest/pdc-vouchers/delete?token=${accessToken}`,
+      payload
     );
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -30,57 +69,9 @@ export const listPDCVoucher = createAsyncThunk('listPDCVoucher', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
-});
-
-export const addPDCVoucher = createAsyncThunk(
-  'addPDCVoucher',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    try {
-      const response = await axiosInstance.post(
-        `rest/pdc-vouchers/?token=${accessToken}`,
-        payload
-      );
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: 'failed. An error has occurred'
-      });
-    }
-});
-
-export const deletePDCVoucher = createAsyncThunk(
-  'deletePDCVoucher',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    try {
-      const response = await axiosInstance.post(
-        `rest/pdc-vouchers/delete?token=${accessToken}`,
-        payload
-      );
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: 'failed. An error has occurred'
-      });
-    }
 });
 
 const PDCVoucherSlice = createSlice({
@@ -91,17 +82,21 @@ const PDCVoucherSlice = createSlice({
   },
   extraReducers: {
     [listPDCVoucher.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers`,
       };
     },
     [listPDCVoucher.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -129,17 +124,21 @@ const PDCVoucherSlice = createSlice({
       };
     },
     [addPDCVoucher.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers`,
       };
     },
     [addPDCVoucher.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Vouchers',
+        state.action
+      );
 
       return {
         ...state,
@@ -166,17 +165,21 @@ const PDCVoucherSlice = createSlice({
       };
     },
     [deletePDCVoucher.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for PDC Vouchers`,
       };
     },
     [deletePDCVoucher.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'PDC Vouchers', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'PDC Vouchers',
+        state.action
+      );
 
       return {
         ...state,

@@ -15,7 +15,7 @@ const { Title } = Typography;
 const MemoTypes = (props) => {
   const { title, actions } = props;
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,9 @@ const MemoTypes = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const { list: memoList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.memoTypes);
+  const { list: memoList, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.memoTypes
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -41,7 +43,7 @@ const MemoTypes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -60,12 +62,11 @@ const MemoTypes = (props) => {
 
   const handleDeleteButton = (row) => {
     setLoading(true);
-    dispatch(deleteMemo(row))
-      .then(() => {
-        dispatch(listMemo({ message })).then(() => {
-          setLoading(false);
-        });
-      })
+    dispatch(deleteMemo(row)).then(() => {
+      dispatch(listMemo({ message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -86,10 +87,10 @@ const MemoTypes = (props) => {
             setIsOpenForm(!isOpenForm);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
@@ -100,14 +101,14 @@ const MemoTypes = (props) => {
             setIsOpenForm(!isOpenForm);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   return (
@@ -121,7 +122,9 @@ const MemoTypes = (props) => {
         )}
       </Col>
       <Col span={20}>
-        {loading ? <Skeleton/> : 
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={memoList}
@@ -130,7 +133,7 @@ const MemoTypes = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

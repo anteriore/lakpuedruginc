@@ -15,10 +15,12 @@ const initialState = {
 
 export const listClient = createAsyncThunk('listClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  let { company } = payload;
+  const { company } = payload;
 
   try {
-    const response = await axiosInstance.get(`rest/clients/company/${company}?token=${accessToken}`);
+    const response = await axiosInstance.get(
+      `rest/clients/company/${company}?token=${accessToken}`
+    );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -27,11 +29,11 @@ export const listClient = createAsyncThunk('listClient', async (payload, thunkAP
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    //client side error
+    // client side error
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -40,7 +42,7 @@ export const listClientBySalesRep = createAsyncThunk(
   'listClientBySalesRep',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    let { company, salesRep } = payload;
+    const { company, salesRep } = payload;
 
     try {
       const response = await axiosInstance.get(
@@ -57,7 +59,7 @@ export const listClientBySalesRep = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -78,7 +80,7 @@ export const addClient = createAsyncThunk('addClient', async (payload, thunkAPI)
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -98,7 +100,7 @@ export const updateClient = createAsyncThunk('updateClient', async (payload, thu
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -118,14 +120,14 @@ export const deleteClient = createAsyncThunk('deleteClient', async (payload, thu
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const getClient = createAsyncThunk('getClient', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload
+  const { id } = payload;
   try {
     const response = await axiosInstance.get(`rest/clients/${id}?token=${accessToken}`);
 
@@ -139,7 +141,7 @@ export const getClient = createAsyncThunk('getClient', async (payload, thunkAPI)
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -152,12 +154,12 @@ const clientSlice = createSlice({
   },
   extraReducers: {
     [listClient.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients`,
       };
     },
     [listClient.fulfilled]: (state, action) => {
@@ -190,12 +192,12 @@ const clientSlice = createSlice({
       };
     },
     [listClientBySalesRep.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients`,
       };
     },
     [listClientBySalesRep.fulfilled]: (state, action) => {
@@ -229,12 +231,12 @@ const clientSlice = createSlice({
       };
     },
     [getClient.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients`,
       };
     },
     [getClient.fulfilled]: (state, action) => {
@@ -266,12 +268,12 @@ const clientSlice = createSlice({
       };
     },
     [addClient.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients`,
       };
     },
     [addClient.fulfilled]: (state, action) => {
@@ -303,12 +305,12 @@ const clientSlice = createSlice({
       };
     },
     [updateClient.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients`,
       };
     },
     [updateClient.fulfilled]: (state, action) => {
@@ -340,12 +342,12 @@ const clientSlice = createSlice({
       };
     },
     [deleteClient.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clients` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clients`,
       };
     },
     [deleteClient.fulfilled]: (state, action) => {
