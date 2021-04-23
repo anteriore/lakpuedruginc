@@ -270,9 +270,27 @@ const ChequeDisbursements = (props) => {
                 <Table
                   dataSource={selectedData.accountTitles}
                   columns={renderTableColumns(
-                    formDetails.form_items.find((item) => item.name === 'accountTitles').fields
+                    formDetails.account_titles.fields
                   )}
                   pagination={false}
+                  summary={(data) => {
+                    const processedData = []
+                    data.forEach((item) => {
+                      if(item.accountTitle.type === 'Debit'){
+                        processedData.push({
+                          credit: 0,
+                          debit: item.amount
+                        })
+                      }
+                      else {
+                        processedData.push({
+                          credit: item.amount,
+                          debit: 0
+                        })
+                      }
+                    })
+                    return formDetails.account_titles.summary(processedData)
+                  }}
                 />
               </Space>
             )}

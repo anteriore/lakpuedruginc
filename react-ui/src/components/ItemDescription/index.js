@@ -39,6 +39,25 @@ const ItemDescription = (props) => {
           if (item.type === 'list') {
             return null;
           }
+          if (item.type === 'radioGroup') {
+            if (typeof item.render === 'undefined') {
+              if (typeof item.selectName === 'undefined') {
+                item.selectName = 'name';
+              }
+
+              if (item.selectName === 'codename') {
+                item.render = (choice) => `[${choice.code}] ${choice.name}`;
+              } else {
+                item.render = (choice) => choice[item.selectName];
+              }
+            }
+
+            return (
+              <Descriptions.Item label={item.label}>
+                {item.render({[item?.selectName ?? "name"]: selectedData[item.name]})}
+              </Descriptions.Item>
+            );
+          }
           if (typeof item.render === 'function') {
             return (
               <Descriptions.Item label={item.label}>

@@ -229,6 +229,7 @@ const VoucherPayables = (props) => {
       if (typeof field.render === 'undefined' || field.render === null) {
         field.render = (object) => object;
       }
+      
       if (field.name === 'credit' || field.name === 'debit') {
         columns.push({
           title: field.label,
@@ -236,7 +237,16 @@ const VoucherPayables = (props) => {
           render: (object) =>
             field.render({ [object.accountTitle.type.toLowerCase()]: object.amount }),
         });
-      } else {
+      } 
+      else if (field.name === 'date') {
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) =>
+            field.render(object),
+        });
+      } 
+      else {
         columns.push({
           title: field.label,
           key: field.name,
@@ -335,6 +345,24 @@ const VoucherPayables = (props) => {
                   dataSource={selectedData.accountTitles}
                   columns={renderTableColumns(formDetails.accountTitles.fields)}
                   pagination={false}
+                  summary={(data) => {
+                    const processedData = []
+                    data.forEach((item) => {
+                      if(item.accountTitle.type === 'Debit'){
+                        processedData.push({
+                          credit: 0,
+                          debit: item.amount
+                        })
+                      }
+                      else {
+                        processedData.push({
+                          credit: item.amount,
+                          debit: 0
+                        })
+                      }
+                    })
+                    return formDetails.accountTitles.summary(processedData)
+                  }}
                 />
                 {selectedData.status === 'Pending' && ( // add approval permissions here
                   <>
