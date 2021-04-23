@@ -10,7 +10,7 @@ import { FormDetails, DisplayDetails } from './data';
 import InputForm from './InputForm';
 
 import { listDM, addDM, deleteDM, updateDM, getDM, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listMemoByType, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
@@ -69,7 +69,7 @@ const DebitMemo = (props) => {
     setLoading(true);
     dispatch(clearOS());
     dispatch(clearSI());
-    dispatch(listDepot({ company, message })).then((response1) => {
+    dispatch(listDepotByCompany({ company })).then((response1) => {
       dispatch(listMemoByType({ type: ['DM'] })).then((response2) => {
         if (isMounted.current) {
           const onSuccess = () => {

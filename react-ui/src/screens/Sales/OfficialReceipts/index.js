@@ -10,7 +10,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
 
 import { listOReceipt, addOReceipt, deleteOReceipt, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import GeneralHelper, {
   reevalutateMessageStatus,
   reevalDependencyMsgStats,
@@ -80,8 +80,8 @@ const OfficialReceipts = (props) => {
     setFormTitle('Create Official Receipt');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then((resp1) => {
-      if (isMounted.current) {
+    dispatch(listDepotByCompany({ company })).then((resp1) => {
+      if(isMounted.current){
         const onSuccess = () => {
           history.push(`${path}/new`);
           setLoading(false);
@@ -96,21 +96,6 @@ const OfficialReceipts = (props) => {
 
   const handleUpdate = (data) => {
     message.error('Unable to perform action.');
-    /*
-    setFormTitle('Edit Official Receipt');
-    setLoading(true);
-    const itemData = listData.find((item) => item.id === data.id);
-    const formData = {
-      ...itemData,
-      date: moment(new Date(data.date)) || moment(),
-      depot: itemData.depot !== null ? itemData.depot.id : null,
-    };
-    setFormData(formData);
-    dispatch(listDepot({ company, message })).then(() => {
-      history.push(`${path}/${data.id}`);
-      setLoading(false);
-    });
-    */
   };
 
   const handleDelete = (data) => {

@@ -6,8 +6,11 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listMaterialIssuance, addMaterialIssuance, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import {
+  listMaterialIssuance,
+  addMaterialIssuance,
+  clearData,
+} from './redux';
 import { listInventoryByStock, clearData as clearInventory } from '../Inventory/redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import ItemDescription from '../../../components/ItemDescription';
@@ -35,12 +38,7 @@ const MaterialIssuances = (props) => {
     statusLevel: statusLevelInventory,
     statusMessage: statusMessageInventory,
   } = useSelector((state) => state.dashboard.inventory);
-  const {
-    status: statusDepot,
-    action: actionDepot,
-    statusLevel: statusLevelDepot,
-    statusMessage: statusMessageDepot,
-  } = useSelector((state) => state.maintenance.depots);
+  
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -54,7 +52,6 @@ const MaterialIssuances = (props) => {
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
-    dispatch(clearDepot());
     dispatch(clearInventory());
   }, [dispatch]);
 
@@ -86,53 +83,24 @@ const MaterialIssuances = (props) => {
     });
   }, [actionInventory, statusMessageInventory, statusInventory, statusLevelInventory, title]);
 
-  useEffect(() => {
-    reevalDependencyMsgStats({
-      status: statusDepot,
-      statusMessage: statusMessageDepot,
-      action: actionDepot,
-      statusLevel: statusLevelDepot,
-      module: title,
-    });
-  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot, title]);
-
   const handleAdd = () => {
     setFormTitle('Create Material Issuance');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company })).then((response1) => {
-      dispatch(listInventoryByStock({ company })).then((response2) => {
-        if (isMounted.current) {
-          const onSuccess = () => {
-            history.push(`${path}/new`);
-            setLoading(false);
-          };
-          handleRequestResponse([response1, response2], onSuccess, null, '');
+    dispatch(listInventoryByStock({ company })).then((response) => {
+      if(isMounted.current){
+        const onSuccess = () => {
+          history.push(`${path}/new`);
+          setLoading(false);
         }
-      });
+        handleRequestResponse([response], onSuccess, null, '');
+      }
     });
   };
 
   const handleUpdate = () => {};
 
-  const handleDelete = () => {
-    /* if (data.status === 'Pending') {
-      dispatch(deleteMaterialIssuance(data.id)).then((response) => {
-        setLoading(true);
-        if (response.payload.status === 200) {
-          dispatch(listMaterialIssuance({ company, message })).then(() => {
-            setLoading(false);
-            message.success(`Successfully deleted ${data.misNo}`);
-          });
-        } else {
-          setLoading(false);
-          message.error(`Unable to delete ${data.misNo}`);
-        }
-      });
-    } else {
-      message.error('This action can only be performed on pending material issuances.');
-    } */
-  };
+  const handleDelete = () => {};
 
   const handleRetrieve = (data) => {
     setSelectedData(data);

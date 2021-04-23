@@ -9,7 +9,7 @@ import FormDetails, { tableHeader } from './data';
 import InputForm from './InputForm';
 import { formatDescItems, formatPayload } from './helpers';
 import { listOrderSlips, createOrderSlips, clearData } from './redux';
-import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearDepot, listDepotByCompany } from '../../Maintenance/Depots/redux';
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import { listProductInventory } from '../../Dashboard/ProductInventories/redux';
 import ItemDescription from '../../../components/ItemDescription';
@@ -113,7 +113,7 @@ const OrderSlips = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepot({ company })).then((resp1) => {
+    dispatch(listDepotByCompany({ company })).then((resp1) => {
       dispatch(listProductInventory({ company })).then((resp2) => {
         dispatch(listSalesOrder(company)).then((resp3) => {
           if (isMounted.current) {

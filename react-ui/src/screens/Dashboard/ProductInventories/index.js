@@ -11,7 +11,7 @@ import GeneralHelper, {
 } from '../../../helpers/general-helper';
 import { columns, reportColumns } from './data';
 import { listProductInventory, listProductInventoryByDepot, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 
 const { Title, Text } = Typography;
 
@@ -81,7 +81,7 @@ const ProductInventories = (props) => {
   const handleRetrieve = () => {};
 
   const handleReport = () => {
-    dispatch(listDepot({ company, message })).then((response) => {
+    dispatch(listDepotByCompany({ company })).then((response) => {
       const onSuccess = () => {
         setDisplayModal(true);
       };
