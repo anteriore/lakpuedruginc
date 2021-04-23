@@ -23,7 +23,7 @@ import {
 } from '../../Maintenance/GroupsCategories/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -38,6 +38,34 @@ const ChequeDisbursements = (props) => {
   const { list: listData, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.accounting.chequeDisbursements
   );
+
+  const { 
+    status: statusCP, 
+    statusLevel: statusLevelCP, 
+    statusMessage: statusMessageCP, 
+    action: actionCP 
+  } = useSelector((state) => state.accounting.chequePrintings);
+
+  const { 
+    status: statusAC, 
+    statusLevel: statusLevelAC, 
+    statusMessage: statusMessageAC, 
+    action: actionAC 
+  } = useSelector((state) => state.accounting.accountTitles);
+
+  const { 
+    status: statusDA, 
+    statusLevel: statusLevelDA, 
+    statusMessage: statusMessageDA, 
+    action: actionDA
+  } = useSelector((state) => state.maintenance.departmentArea);
+
+  const {
+    status: statusGC, 
+    statusLevel: statusLevelGC,
+    statusMessage: statusMessageGC,
+    action: actionGC
+  } = useSelector((state) => state.maintenance.groupsCategories);
 
   const { company, actions } = props;
   const { formDetails } = FormDetails();
@@ -65,6 +93,46 @@ const ChequeDisbursements = (props) => {
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusCP,
+      statusMessage: statusMessageCP,
+      action: actionCP,
+      statusLevel: statusLevelCP,
+      module: 'Cheque Printings',
+    });
+  }, [actionCP, statusMessageCP, statusCP, statusLevelCP]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusAC,
+      statusMessage: statusMessageAC,
+      action: actionAC,
+      statusLevel: statusLevelAC,
+      module: 'AccountTitles',
+    });
+  }, [actionAC, statusMessageAC, statusAC, statusLevelAC]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDA,
+      statusMessage: statusMessageDA,
+      action: actionDA,
+      statusLevel: statusLevelDA,
+      module: 'Department Areas',
+    });
+  }, [actionDA, statusMessageDA, statusDA, statusLevelDA]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusGC,
+      statusMessage: statusMessageGC,
+      action: actionGC,
+      statusLevel: statusLevelGC,
+      module: 'Groups and Categories',
+    });
+  }, [actionGC, statusMessageGC, statusGC, statusLevelGC]);
 
   const handleAdd = () => {
     setFormTitle('Create Cheque Disbursement Voucher');
