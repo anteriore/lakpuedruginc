@@ -35,14 +35,14 @@ const FormDetails = () => {
       title: 'MIS Number',
       dataIndex: 'misNo',
       key: 'misNo',
-      datatype: 'string'
+      datatype: 'string',
     },
     {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
       render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
-      datatype: 'date'
+      datatype: 'date',
     },
     {
       title: 'Company',
@@ -68,7 +68,7 @@ const FormDetails = () => {
         return `${object.firstName} ${object.lastName}`;
       },
     },
-  ]
+  ];
 
   const formDetails = {
     form_name: 'material_receiving',

@@ -14,28 +14,31 @@ const initialState = {
   action: '',
 };
 
-export const listGroupByCompany = createAsyncThunk('listGroupByCompany', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const listGroupByCompany = createAsyncThunk(
+  'listGroupByCompany',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  try {
-    const response = await axiosInstance.get(
-      `rest/group/company/${payload.company}?token=${accessToken}`
-    );
+    try {
+      const response = await axiosInstance.get(
+        `rest/group/company/${payload.company}?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    })
   }
-});
+);
 
 export const createGroup = createAsyncThunk('createGroup', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -53,8 +56,8 @@ export const createGroup = createAsyncThunk('createGroup', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
-    })
+      statusText: 'failed. An error has occurred',
+    });
   }
 });
 
@@ -74,8 +77,8 @@ export const updateGroup = createAsyncThunk('updateGroup', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
-    })
+      statusText: 'failed. An error has occurred',
+    });
   }
 });
 
@@ -95,8 +98,8 @@ export const deleteGroup = createAsyncThunk('deleteGroup', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
-    })
+      statusText: 'failed. An error has occurred',
+    });
   }
 });
 
@@ -116,8 +119,8 @@ export const listCategory = createAsyncThunk('listCategory', async (payload, thu
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
-    })
+      statusText: 'failed. An error has occurred',
+    });
   }
 });
 
@@ -137,8 +140,8 @@ export const createCategory = createAsyncThunk('createCategory', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
-    })
+      statusText: 'failed. An error has occurred',
+    });
   }
 });
 
@@ -158,14 +161,14 @@ export const updateCategory = createAsyncThunk('updateCategory', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
-    })
+      statusText: 'failed. An error has occurred',
+    });
   }
 });
 
 export const deleteCategory = createAsyncThunk('deleteCategory', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  
+
   try {
     const response = await axiosInstance.post(`rest/category/delete?token=${accessToken}`, payload);
 
@@ -179,8 +182,8 @@ export const deleteCategory = createAsyncThunk('deleteCategory', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
-    })
+      statusText: 'failed. An error has occurred',
+    });
   }
 });
 
@@ -192,12 +195,12 @@ const groupCategorySlice = createSlice({
   },
   extraReducers: {
     [listGroupByCompany.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups`,
       };
     },
     [listGroupByCompany.fulfilled]: (state, action) => {
@@ -230,12 +233,12 @@ const groupCategorySlice = createSlice({
       };
     },
     [createGroup.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups`,
       };
     },
     [createGroup.fulfilled]: (state, action) => {
@@ -267,12 +270,12 @@ const groupCategorySlice = createSlice({
       };
     },
     [updateGroup.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups`,
       };
     },
     [updateGroup.fulfilled]: (state, action) => {
@@ -304,12 +307,12 @@ const groupCategorySlice = createSlice({
       };
     },
     [deleteGroup.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for groups` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for groups`,
       };
     },
     [deleteGroup.fulfilled]: (state, action) => {
@@ -341,12 +344,12 @@ const groupCategorySlice = createSlice({
       };
     },
     [listCategory.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories`,
       };
     },
     [listCategory.fulfilled]: (state, action) => {
@@ -379,12 +382,12 @@ const groupCategorySlice = createSlice({
       };
     },
     [createCategory.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories`,
       };
     },
     [createCategory.fulfilled]: (state, action) => {
@@ -416,12 +419,12 @@ const groupCategorySlice = createSlice({
       };
     },
     [updateCategory.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories`,
       };
     },
     [updateCategory.fulfilled]: (state, action) => {
@@ -453,12 +456,12 @@ const groupCategorySlice = createSlice({
       };
     },
     [deleteCategory.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for categories` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for categories`,
       };
     },
     [deleteCategory.fulfilled]: (state, action) => {

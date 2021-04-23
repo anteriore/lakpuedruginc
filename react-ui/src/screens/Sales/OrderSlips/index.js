@@ -5,7 +5,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import FormDetails ,{ tableHeader } from './data';
+import FormDetails, { tableHeader } from './data';
 import InputForm from './InputForm';
 import { formatDescItems, formatPayload } from './helpers';
 import { listOrderSlips, createOrderSlips, clearData } from './redux';
@@ -13,7 +13,10 @@ import { clearData as clearDepot, listDepotByCompany } from '../../Maintenance/D
 import { clearData as clearSO, listSalesOrder } from '../SalesOrders/redux';
 import { listProductInventory } from '../../Dashboard/ProductInventories/redux';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, { reevalDependencyMsgStats, reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalDependencyMsgStats,
+  reevalutateMessageStatus,
+} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -31,15 +34,13 @@ const OrderSlips = (props) => {
   const [selectedOS, setSelectedOS] = useState(null);
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth.user);
-  const isMounted =  useRef(true);
+  const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearDepot());
     dispatch(clearSO());
-  },[dispatch]);
-
-
+  }, [dispatch]);
 
   const {
     action: actionPI,
@@ -63,47 +64,46 @@ const OrderSlips = (props) => {
   } = useSelector((state) => state.sales.salesOrders);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusSO,
       statusMessage: statusMessageSO,
-      action: actionSO, 
+      action: actionSO,
       statusLevel: statusLevelSO,
-      module: title
-    })
+      module: title,
+    });
   }, [actionSO, statusMessageSO, statusSO, statusLevelSO, title]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusPI,
       statusMessage: statusMessagePI,
-      action: actionPI, 
+      action: actionPI,
       statusLevel: statusLevelPI,
-      module: title
-    })
+      module: title,
+    });
   }, [actionPI, statusMessagePI, statusPI, statusLevelPI, title]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: title
-    })
+      module: title,
+    });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot, title]);
 
   useEffect(() => {
     setContentLoading(true);
-    dispatch(listOrderSlips(company))
-    .then(() => {
-      if (isMounted.current){
+    dispatch(listOrderSlips(company)).then(() => {
+      if (isMounted.current) {
         setContentLoading(false);
       }
-    })
+    });
 
     return function cleanup() {
       isMounted.current = false;
@@ -113,17 +113,17 @@ const OrderSlips = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepotByCompany({company})).then((resp1) => {
-      dispatch(listProductInventory({company})).then((resp2) => {
+    dispatch(listDepotByCompany({ company })).then((resp1) => {
+      dispatch(listProductInventory({ company })).then((resp2) => {
         dispatch(listSalesOrder(company)).then((resp3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
-                history.push(`${path}/new`);
-                setContentLoading(false);
-            }
+              history.push(`${path}/new`);
+              setContentLoading(false);
+            };
             const onFail = () => {
               setContentLoading(false);
-            }
+            };
             handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
         });
@@ -141,18 +141,18 @@ const OrderSlips = (props) => {
     const payload = formatPayload(id, company, value, salesOrder, orderedProducts);
 
     await dispatch(createOrderSlips(payload)).then((response) => {
-        const onSuccess = () => {
-          dispatch(listOrderSlips(company)).then(() => {
-            setContentLoading(false);
-          });
-        }
-        const onFail = () => {
+      const onSuccess = () => {
+        dispatch(listOrderSlips(company)).then(() => {
           setContentLoading(false);
-        }
-  
-        handleRequestResponse([response], onSuccess, onFail, '');
-    })
-    return 1
+        });
+      };
+      const onFail = () => {
+        setContentLoading(false);
+      };
+
+      handleRequestResponse([response], onSuccess, onFail, '');
+    });
+    return 1;
   };
 
   return (
@@ -210,7 +210,7 @@ const OrderSlips = (props) => {
                 title="Order Slips Details"
                 selectedData={selectedOS}
                 formItems={formatDescItems(formDetails.form_items)}
-              />  
+              />
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Ordered Product Items:
               </Title>

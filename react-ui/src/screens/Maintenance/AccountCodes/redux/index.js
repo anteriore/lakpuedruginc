@@ -29,7 +29,7 @@ export const listAC = createAsyncThunk('listAC', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -50,7 +50,7 @@ export const addAC = createAsyncThunk('addAC', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -71,7 +71,7 @@ export const updateAC = createAsyncThunk('updateAC', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -79,7 +79,6 @@ export const updateAC = createAsyncThunk('updateAC', async (payload, thunkAPI) =
 export const deleteAC = createAsyncThunk('deleteAC', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  
   try {
     const response = await axiosInstance.post(
       `rest/account-codes/delete?token=${accessToken}`,
@@ -96,7 +95,7 @@ export const deleteAC = createAsyncThunk('deleteAC', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -109,17 +108,21 @@ const accountCodeSlice = createSlice({
   },
   extraReducers: {
     [listAC.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes`,
       };
     },
     [listAC.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -147,17 +150,21 @@ const accountCodeSlice = createSlice({
       };
     },
     [addAC.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes`,
       };
     },
     [addAC.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -184,17 +191,21 @@ const accountCodeSlice = createSlice({
       };
     },
     [updateAC.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes`,
       };
     },
     [updateAC.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -221,17 +232,21 @@ const accountCodeSlice = createSlice({
       };
     },
     [deleteAC.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Codes`,
       };
     },
     [deleteAC.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Codes',
+        state.action
+      );
 
       return {
         ...state,

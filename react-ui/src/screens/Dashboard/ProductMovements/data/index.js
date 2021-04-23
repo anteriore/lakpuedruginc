@@ -4,7 +4,7 @@ export const tableHeader = [
     dataIndex: 'number',
     key: 'number',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Date',
@@ -19,7 +19,7 @@ export const tableHeader = [
     dataIndex: 'type',
     key: 'type',
     align: 'center',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Depot',
@@ -65,29 +65,28 @@ export const tableProductInventory = [
     dataIndex: 'product',
     key: 'product',
     datatype: 'object',
-    dataToString: (product) => product?.lotNumber ?? ''
-  }, 
+    dataToString: (product) => product?.lotNumber ?? '',
+  },
   {
     title: 'FG Code',
     dataIndex: 'product',
     key: 'product',
     datatype: 'object',
-    dataToString: (product) => product?.finishedGood?.code ?? ''
+    dataToString: (product) => product?.finishedGood?.code ?? '',
   },
   {
     title: 'Finished Good',
     dataIndex: 'product',
     key: 'product',
     datatype: 'object',
-    dataToString: (product) => product?.finishedGood?.name ?? ''
+    dataToString: (product) => product?.finishedGood?.name ?? '',
   },
   {
     title: 'Expiration',
     dataIndex: 'product',
     key: 'product',
     datatype: 'object',
-    dataToString: (product) => product.expiration.toString() ?? ''
-
+    dataToString: (product) => product.expiration.toString() ?? '',
   },
   {
     title: 'Stock on Hand',
@@ -145,17 +144,17 @@ export const productModalHeader = [
   {
     title: 'ID',
     dataIndex: 'id',
-    key: 'id'
+    key: 'id',
   },
   {
     title: 'Finished Goods',
     dataIndex: 'product',
     key: 'product',
-    render: (object) => `[${object?.finishedGood?.code ?? ""}] ${object?.finishedGood?.name ?? ""}`
+    render: (object) => `[${object?.finishedGood?.code ?? ''}] ${object?.finishedGood?.name ?? ''}`,
   },
   {
     title: 'Quantity',
     dataIndex: 'quantity',
     key: 'quantity',
-  }
-]
+  },
+];

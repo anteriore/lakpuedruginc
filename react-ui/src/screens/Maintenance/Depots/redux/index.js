@@ -29,7 +29,7 @@ export const listDepot = createAsyncThunk('listDepot', async (payload, thunkAPI)
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -72,7 +72,7 @@ export const addDepot = createAsyncThunk('addDepot', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -93,7 +93,7 @@ export const updateDepot = createAsyncThunk('updateDepot', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -114,7 +114,7 @@ export const deleteDepot = createAsyncThunk('deleteDepot', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -126,14 +126,13 @@ const depotSlice = createSlice({
     clearData: () => initialState,
   },
   extraReducers: {
-    
     [listDepot.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots`,
       };
     },
     [listDepot.fulfilled]: (state, action) => {
@@ -204,12 +203,12 @@ const depotSlice = createSlice({
       };
     },
     [addDepot.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots`,
       };
     },
     [addDepot.fulfilled]: (state, action) => {
@@ -241,12 +240,12 @@ const depotSlice = createSlice({
       };
     },
     [updateDepot.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots`,
       };
     },
     [updateDepot.fulfilled]: (state, action) => {
@@ -278,12 +277,12 @@ const depotSlice = createSlice({
       };
     },
     [deleteDepot.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for depots` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for depots`,
       };
     },
     [deleteDepot.fulfilled]: (state, action) => {

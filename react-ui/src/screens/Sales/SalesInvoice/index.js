@@ -15,7 +15,10 @@ import { formatPayload } from './helpers';
 import ItemDescription from '../../../components/ItemDescription';
 import { formatDescItems } from '../OrderSlips/helpers';
 import FormDetails from '../OrderSlips/data';
-import GeneralHelper, {reevalDependencyMsgStats, reevalutateMessageStatus} from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalDependencyMsgStats,
+  reevalutateMessageStatus,
+} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -26,10 +29,7 @@ const SalesInvoice = (props) => {
   const { path } = useRouteMatch();
   const { handleRequestResponse } = GeneralHelper();
   const { itemColumns } = FormDetails();
-  const { 
-    salesInvoiceList, 
-    action, statusMessage, 
-    status, statusLevel } = useSelector(
+  const { salesInvoiceList, action, statusMessage, status, statusLevel } = useSelector(
     (state) => state.sales.salesInvoice
   );
   const { id } = useSelector((state) => state.auth.user);
@@ -65,52 +65,50 @@ const SalesInvoice = (props) => {
     dispatch(clearData());
     dispatch(clearDepot());
     dispatch(clearSO());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusSO,
       statusMessage: statusMessageSO,
-      action: actionSO, 
+      action: actionSO,
       statusLevel: statusLevelSO,
-      module: title
-    })
+      module: title,
+    });
   }, [actionSO, statusMessageSO, statusSO, statusLevelSO, title]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusPI,
       statusMessage: statusMessagePI,
-      action: actionPI, 
+      action: actionPI,
       statusLevel: statusLevelPI,
-      module: title
-    })
+      module: title,
+    });
   }, [actionPI, statusMessagePI, statusPI, statusLevelPI, title]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: title
-    })
+      module: title,
+    });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot, title]);
 
   useEffect(() => {
     setContentLoading(true);
-    dispatch(listSalesInvoice(company))
-    .then(() => {
+    dispatch(listSalesInvoice(company)).then(() => {
       if (isMounted.current) {
-        setContentLoading(false)
+        setContentLoading(false);
       }
     });
 
-  
     return function cleanup() {
       isMounted.current = false;
       performCleanup();
@@ -119,17 +117,17 @@ const SalesInvoice = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepotByCompany({company})).then((resp1) => {
-      dispatch(listProductInventory({company})).then((resp2) => {
+    dispatch(listDepotByCompany({ company })).then((resp1) => {
+      dispatch(listProductInventory({ company })).then((resp2) => {
         dispatch(listSalesOrder(company)).then((resp3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
-                history.push(`${path}/new`);
-                setContentLoading(false);
-            }
+              history.push(`${path}/new`);
+              setContentLoading(false);
+            };
             const onFail = () => {
               setContentLoading(false);
-            }
+            };
             handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
         });
@@ -143,7 +141,7 @@ const SalesInvoice = (props) => {
   };
 
   const onCreate = async (value, salesOrder, salesInvoiceProducts) => {
-    setContentLoading(true)
+    setContentLoading(true);
     const payload = formatPayload({
       id,
       company,
@@ -163,10 +161,10 @@ const SalesInvoice = (props) => {
       const onFail = () => {
         setDisplayModal(false);
         setContentLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   return (
@@ -179,9 +177,9 @@ const SalesInvoice = (props) => {
           <Col style={GeneralStyles.headerPage} span={20}>
             <Title>{title}</Title>
             {actions.includes('create') && (
-              <Button 
+              <Button
                 loading={contentLoading}
-                icon={<PlusOutlined />} 
+                icon={<PlusOutlined />}
                 onClick={() => handleAddButton()}
               >
                 Add

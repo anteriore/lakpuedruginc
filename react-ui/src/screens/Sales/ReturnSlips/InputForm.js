@@ -50,14 +50,14 @@ const InputForm = (props) => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
-      let selectedKeys = []
-      if(values !== null && values[formTable.name] !== null){
+      let selectedKeys = [];
+      if (values !== null && values[formTable.name] !== null) {
         values[formTable.name].forEach((item) => {
-          selectedKeys.push(item[formTable.foreignKey])
-        })
+          selectedKeys.push(item[formTable.foreignKey]);
+        });
       }
-      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
-      setTableSelectedKeys(selectedKeys)
+      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i);
+      setTableSelectedKeys(selectedKeys);
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
@@ -65,7 +65,7 @@ const InputForm = (props) => {
   }, [values, form, formTable, hasTable, toggleName]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -82,8 +82,8 @@ const InputForm = (props) => {
       if (tableData !== null) {
         data[formTable.name] = tableData;
         onSubmit(data).then(() => {
-          setProcessingData(false)
-        })
+          setProcessingData(false);
+        });
       } else {
         onFinishFailed(
           `Unable to submit. Please provide the necessary information on ${formTable.label}`
@@ -91,8 +91,8 @@ const InputForm = (props) => {
       }
     } else {
       onSubmit(data).then(() => {
-        setProcessingData(false)
-      })
+        setProcessingData(false);
+      });
     }
   };
 
@@ -200,28 +200,31 @@ const InputForm = (props) => {
   };
 
   const onModalSelect = (selectedRowKeys, selectedRows) => {
-    setTableSelectedKeys(selectedRowKeys)
-    let prevSelectData = []
-    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
-      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
+    setTableSelectedKeys(selectedRowKeys);
+    let prevSelectData = [];
+    if (typeof form.getFieldValue(formTable.name) !== 'undefined') {
+      prevSelectData = form
+        .getFieldValue(formTable.name)
+        .filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]));
     }
 
-    let processedData = []
+    let processedData = [];
     selectedRows.forEach((rowData) => {
-      const index = prevSelectData.findIndex((item) => item[formTable.selectedKey] === rowData[formTable.selectedKey])
-      if(index !== -1){
-        processedData.push(prevSelectData[index])
+      const index = prevSelectData.findIndex(
+        (item) => item[formTable.selectedKey] === rowData[formTable.selectedKey]
+      );
+      if (index !== -1) {
+        processedData.push(prevSelectData[index]);
+      } else {
+        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData]);
       }
-      else {
-        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData])
-      }
-    })
+    });
 
     const fieldsValue = {};
     fieldsValue[formTable.name] = processedData;
     setTableData(processedData);
     form.setFieldsValue(fieldsValue);
-  }
+  };
 
   const expandedRowRender = (row) => {
     if (formTable.hasOwnProperty('nestedData')) {
@@ -236,9 +239,8 @@ const InputForm = (props) => {
         </>
       );
     }
-    else {
-      return null
-    }
+
+    return null;
   };
 
   const onFail = () => {
@@ -339,13 +341,16 @@ const InputForm = (props) => {
               </Form.List>
             ) : (
               <Col span={15} offset={6}>
-              <Alert
-                message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
-                type="warning"
-                showIcon
-                icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
-              />
+                <Alert
+                  message={
+                    formTable?.emptyText ??
+                    `Please provide the necessary data for ${formTable.label}`
+                  }
+                  type="warning"
+                  showIcon
+                  icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                  style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
+                />
               </Col>
             )}
             <div style={styles.tailLayout}>
@@ -373,22 +378,28 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-            <Table
-              rowSelection={{
-                type: 'checkbox',
-                //selectedRowKeys: item.selectedData,
-                onChange: onModalSelect,
-                preserveSelectedRowKeys: false,
-                selectedRowKeys: tableSelectedKeys
-              }}
-              columns={TableHeader({ 
-                columns: formTable.selectFields, 
-                hasSorter: true, hasFilter: true })}
-              dataSource={orderedProducts}
-              rowKey={formTable.selectedKey}
-              pagination={{simple: true}}
-              expandable={{ expandedRowRender: formTable.hasOwnProperty('nestedData') ? expandedRowRender : null }}
-            />
+              <Table
+                rowSelection={{
+                  type: 'checkbox',
+                  // selectedRowKeys: item.selectedData,
+                  onChange: onModalSelect,
+                  preserveSelectedRowKeys: false,
+                  selectedRowKeys: tableSelectedKeys,
+                }}
+                columns={TableHeader({
+                  columns: formTable.selectFields,
+                  hasSorter: true,
+                  hasFilter: true,
+                })}
+                dataSource={orderedProducts}
+                rowKey={formTable.selectedKey}
+                pagination={{ simple: true }}
+                expandable={{
+                  expandedRowRender: formTable.hasOwnProperty('nestedData')
+                    ? expandedRowRender
+                    : null,
+                }}
+              />
             </Modal>
           )}
         </Col>

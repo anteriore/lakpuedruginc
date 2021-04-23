@@ -27,7 +27,7 @@ const InputForm = (props) => {
   }, [values, form, formTable, hasTable]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -41,8 +41,8 @@ const InputForm = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {

@@ -51,12 +51,15 @@ const InputForm = (props) => {
       form.setFieldsValue({ salesOrder: '' });
       setSelectedSales(null);
       setSelectedLot([]);
-      
+
       const selectedSalesList = _.filter(salesOrderList, (o) => o?.depot?.id === value)
         .filter((o) => _.toLower(o?.status) === 'approved' || _.toLower(o?.status) === 'incomplete')
         .filter((o) => _.toLower(o?.type) === 'dr_si')
-        .filter((o) => _.some(o.products, ['status', 'Pending']) ||
-        _.some(o.products, ['status', 'Incomplete']));
+        .filter(
+          (o) =>
+            _.some(o.products, ['status', 'Pending']) ||
+            _.some(o.products, ['status', 'Incomplete'])
+        );
 
       if (selectedSalesList.length !== 0) {
         const newForm = tempFormDetails;
@@ -140,11 +143,11 @@ const InputForm = (props) => {
   };
 
   const onFinish = (value) => {
-    setProcessingData(true)
+    setProcessingData(true);
     onSubmit(value, selectedSales, salesInvoiceProducts).then(() => {
       setProcessingData(false);
       history.goBack();
-    })
+    });
   };
 
   return (
@@ -167,7 +170,7 @@ const InputForm = (props) => {
                       <FormItem onFail={onFail} key={item.name} item={item} />
                     ))
                   : ''}
-                { selectedSales !== null ? (
+                {selectedSales !== null ? (
                   <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
                     <Form.Item>
                       <Table
@@ -190,8 +193,8 @@ const InputForm = (props) => {
                       message="Please salect a depot and then select an existing sales order."
                       type="warning"
                       showIcon
-                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                      icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                      style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
                     />
                   </Form.Item>
                 )}
@@ -201,10 +204,12 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button  
-                    loading={processingData}
-                    disabled={ salesInvoiceProducts.length !== 0 && selectedSales !== null ? false : true }  
-                    type="primary" htmlType="submit">
+                    <Button
+                      loading={processingData}
+                      disabled={!(salesInvoiceProducts.length !== 0 && selectedSales !== null)}
+                      type="primary"
+                      htmlType="submit"
+                    >
                       Submit
                     </Button>
                   </Space>

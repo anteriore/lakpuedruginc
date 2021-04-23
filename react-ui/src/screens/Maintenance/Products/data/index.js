@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
 export const tableHeaderFinishedGoods = [
   {
@@ -35,7 +35,7 @@ export const tableHeader = [
     key: 'finishedGood',
     align: 'center',
     datatype: 'object',
-    render: (object) => `${object.name}`
+    render: (object) => `${object.name}`,
   },
   {
     title: 'Quantity Per Box',
@@ -72,8 +72,8 @@ const FormDetails = () => {
   const { list: listClassification } = useSelector((state) => state.maintenance.classification);
   const { list: listPC } = useSelector((state) => state.maintenance.productCategories);
   const { list: listPD } = useSelector((state) => state.maintenance.productDivisions);
-  const {list: listFG } = useSelector((state) => state.maintenance.finishedGoods);
-  const { unitList: listUnit } = useSelector((state) => state.maintenance.units)
+  const { list: listFG } = useSelector((state) => state.maintenance.finishedGoods);
+  const { unitList: listUnit } = useSelector((state) => state.maintenance.units);
 
   const formDetails = {
     form_name: 'products',
@@ -85,7 +85,7 @@ const FormDetails = () => {
         placeholder: 'Product',
         type: 'selectSearch',
         choices: listFG,
-        render: (object) => `[${object.code}] ${object.name}`
+        render: (object) => `[${object.code}] ${object.name}`,
       },
       {
         label: 'Depot',
@@ -94,7 +94,7 @@ const FormDetails = () => {
         placeholder: 'Depot',
         type: 'selectSearch',
         choices: listDepot,
-        render: (object) => `[${object.code}] ${object.name}`
+        render: (object) => `[${object.code}] ${object.name}`,
       },
       {
         label: 'Lot #',
@@ -107,7 +107,9 @@ const FormDetails = () => {
         name: 'expiration',
         type: 'number',
         min: 0,
-        rules: [{ required: true, message: 'Please enter a valid value for expiration (in years)' }],
+        rules: [
+          { required: true, message: 'Please enter a valid value for expiration (in years)' },
+        ],
         placeholder: 'Product expiration',
       },
       {
@@ -117,7 +119,7 @@ const FormDetails = () => {
         placeholder: 'Classification',
         type: 'selectSearch',
         choices: listClassification,
-        render: (object) => `[${object.code}] ${object.name}`
+        render: (object) => `[${object.code}] ${object.name}`,
       },
       {
         label: 'Category',
@@ -126,7 +128,7 @@ const FormDetails = () => {
         placeholder: 'Category',
         type: 'selectSearch',
         choices: listPC,
-        render: (object) => `[${object.code}] ${object.title}`
+        render: (object) => `[${object.code}] ${object.title}`,
       },
       {
         label: 'Division',
@@ -135,7 +137,7 @@ const FormDetails = () => {
         placeholder: 'Division',
         type: 'selectSearch',
         choices: listPD,
-        render: (object) => `[${object.code}] ${object.title}`
+        render: (object) => `[${object.code}] ${object.title}`,
       },
       {
         label: 'Unit Price',
@@ -153,7 +155,7 @@ const FormDetails = () => {
         placeholder: 'Small UOM',
         type: 'selectSearch',
         choices: listUnit,
-        render: (object) => `${object.code}`
+        render: (object) => `${object.code}`,
       },
       {
         label: 'Big UOM',
@@ -162,7 +164,7 @@ const FormDetails = () => {
         placeholder: 'Big UOM',
         type: 'selectSearch',
         choices: listUnit,
-        render: (object) => `${object.code}`
+        render: (object) => `${object.code}`,
       },
       {
         label: 'Quantity/Box',
@@ -186,6 +188,6 @@ const FormDetails = () => {
   };
 
   return { formDetails };
-}
+};
 
 export default FormDetails;

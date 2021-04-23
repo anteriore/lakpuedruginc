@@ -8,16 +8,16 @@ import {
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { 
-  listGroupByCompany, 
-  createGroup, 
-  updateGroup, 
-  deleteGroup, 
-  listCategory, 
-  createCategory, 
-  updateCategory, 
-  deleteCategory, 
-  clearData 
+import {
+  listGroupByCompany,
+  createGroup,
+  updateGroup,
+  deleteGroup,
+  listCategory,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  clearData,
 } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
@@ -39,9 +39,11 @@ const GroupsCategories = (props) => {
   const [formDataG, setFormDataG] = useState(null);
   const [formDataC, setFormDataC] = useState(null);
 
-  const { groupList: groupData, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.groupsCategories);
+  const { groupList: groupData, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.groupsCategories
+  );
 
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
@@ -54,7 +56,7 @@ const GroupsCategories = (props) => {
         if (isCancelled) {
           dispatch(clearData());
         }
-      })
+      });
     });
     return () => {
       setselectedCategory(null);
@@ -71,9 +73,8 @@ const GroupsCategories = (props) => {
     }
   }, [groupData, selectedGroup]);
 
-  
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddG = () => {
@@ -103,10 +104,10 @@ const GroupsCategories = (props) => {
             setLoading(false);
           });
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -139,10 +140,10 @@ const GroupsCategories = (props) => {
             setselectedCategory(null);
           });
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -169,14 +170,14 @@ const GroupsCategories = (props) => {
       await dispatch(updateGroup(payload)).then((response) => {
         const onSuccess = () => {
           setselectedGroup(null);
-          dispatch(listGroupByCompany({ company, })).then(() => {
+          dispatch(listGroupByCompany({ company })).then(() => {
             setselectedCategory(null);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -194,17 +195,17 @@ const GroupsCategories = (props) => {
             setselectedCategory(null);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayFormG(false);
     setFormDataG(null);
-    return 1
+    return 1;
   };
 
   const onSubmitC = async (data) => {
@@ -229,10 +230,10 @@ const GroupsCategories = (props) => {
             setselectedCategory(category);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -258,17 +259,17 @@ const GroupsCategories = (props) => {
               setLoading(false);
             });
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayFormC(false);
     setFormDataC(null);
-    return 1
+    return 1;
   };
 
   function onSelectGroup(value) {

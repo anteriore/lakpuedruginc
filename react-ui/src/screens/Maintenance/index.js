@@ -23,7 +23,10 @@ const Maintenance = () => {
   const getPermittedRoutes = useCallback(() => {
     const routeList = [];
     routes.forEach((route) => {
-      if (typeof permissions[route.path.split('/')[1]] !== 'undefined' && (permissions[route.path.split('/')[1]]?.actions ?? "").search('r') !== -1) {
+      if (
+        typeof permissions[route.path.split('/')[1]] !== 'undefined' &&
+        (permissions[route.path.split('/')[1]]?.actions ?? '').search('r') !== -1
+      ) {
         routeList.push(route);
       }
     });

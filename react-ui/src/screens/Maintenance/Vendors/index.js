@@ -6,16 +6,19 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listVendor, addVendor, getVendor, updateVendor,deleteVendor, clearData } from './redux';
+import { listVendor, addVendor, getVendor, updateVendor, deleteVendor, clearData } from './redux';
 import { listD, listA, clearData as clearA } from '../DepartmentArea/redux';
 import { listGroupByCompany, clearData as clearG } from '../GroupsCategories/redux';
 import FormScreen from '../../../components/forms/FormScreen';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
 const Vendors = (props) => {
-  const {formDetails} = FormDetails();
+  const { formDetails } = FormDetails();
   const { handleRequestResponse } = GeneralHelper();
 
   const [loading, setLoading] = useState(true);
@@ -30,19 +33,21 @@ const Vendors = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const {status, action, statusMessage, statusLevel, list} = useSelector((state) => state.maintenance.vendors);
+  const { status, action, statusMessage, statusLevel, list } = useSelector(
+    (state) => state.maintenance.vendors
+  );
   const {
-    status: statusDA, 
+    status: statusDA,
     action: actionDA,
     statusMessage: statusMessageDA,
-    statusLevel: statusLevelDA
+    statusLevel: statusLevelDA,
   } = useSelector((state) => state.maintenance.departmentArea);
 
-  const { 
-    status: statusGC, 
+  const {
+    status: statusGC,
     action: actionGC,
     statusMessage: statusMessageGC,
-    statusLevel: statusLevelGC
+    statusLevel: statusLevelGC,
   } = useSelector((state) => state.maintenance.groupsCategories);
 
   const isMounted = useRef(true);
@@ -51,44 +56,44 @@ const Vendors = (props) => {
     dispatch(clearData());
     dispatch(clearA());
     dispatch(clearG());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listVendor({ company, message })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setFormData(null);
         setLoading(false);
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDA,
       statusMessage: statusMessageDA,
-      action: actionDA, 
+      action: actionDA,
       statusLevel: statusLevelDA,
-      module: title
-    })
+      module: title,
+    });
   }, [actionDA, statusMessageDA, statusDA, statusLevelDA, title]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusGC,
       statusMessage: statusMessageGC,
-      action: actionGC, 
+      action: actionGC,
       statusLevel: statusLevelGC,
-      module: title
-    })
+      module: title,
+    });
   }, [actionGC, statusMessageGC, statusGC, statusLevelGC, title]);
 
   const handleAdd = () => {
@@ -99,14 +104,14 @@ const Vendors = (props) => {
     dispatch(listA({ company, message })).then((resp1) => {
       dispatch(listD({ company, message })).then((resp2) => {
         dispatch(listGroupByCompany({ company })).then((resp3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
-                history.push(`${path}/new`);
-                setLoading(false);
-            }
+              history.push(`${path}/new`);
+              setLoading(false);
+            };
             const onFail = () => {
               setLoading(false);
-            }
+            };
             handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
         });
@@ -128,14 +133,14 @@ const Vendors = (props) => {
     dispatch(listA({ company, message })).then((resp1) => {
       dispatch(listD({ company, message })).then((resp2) => {
         dispatch(listGroupByCompany({ company })).then((resp3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
-                history.push(`${path}/new`);
-                setLoading(false);
-            }
+              history.push(`${path}/new`);
+              setLoading(false);
+            };
             const onFail = () => {
               setLoading(false);
-            }
+            };
             handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
         });
@@ -150,10 +155,10 @@ const Vendors = (props) => {
         dispatch(listVendor({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -204,11 +209,11 @@ const Vendors = (props) => {
           dispatch(listVendor({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -234,11 +239,11 @@ const Vendors = (props) => {
           dispatch(listVendor({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }

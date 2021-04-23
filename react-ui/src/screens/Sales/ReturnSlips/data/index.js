@@ -120,14 +120,18 @@ const FormDetails = () => {
         rules: [{ required: true }],
         loading: loadingDepot,
         onChange: (e) => {
-          dispatch(clearOS())
-          dispatch(clearSI())
-          setLoadingDepot(true)
-          dispatch(listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] })).then(() => {
-            dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] })).then(() => {
-              setLoadingDepot(false)
-            })
-          })
+          dispatch(clearOS());
+          dispatch(clearSI());
+          setLoadingDepot(true);
+          dispatch(
+            listOrderSlipsByDepotAndStatus({ message, depot: e, statuses: ['Pending'] })
+          ).then(() => {
+            dispatch(listSalesInvoiceByDepotAndStatus({ depot: e, statuses: ['Pending'] })).then(
+              () => {
+                setLoadingDepot(false);
+              }
+            );
+          });
         },
       },
       {
@@ -180,6 +184,9 @@ const FormDetails = () => {
         getValueProps: (value) => {
           if (typeof value !== 'undefined') {
             return { value };
+          }
+          else {
+            return { value: null }
           }
         },
         emptyText:
@@ -294,21 +301,21 @@ const FormDetails = () => {
         dataIndex: 'product',
         key: 'product',
         datatype: 'object',
-        dataToString: (product) => product?.lotNumber ?? ''
+        dataToString: (product) => product?.lotNumber ?? '',
       },
       {
         title: 'FG Code',
         dataIndex: 'product',
         key: 'product',
         datatype: 'object',
-        dataToString: (product) => product?.finishedGood?.code ?? ''
+        dataToString: (product) => product?.finishedGood?.code ?? '',
       },
       {
         title: 'Expiration',
         dataIndex: 'product',
         key: 'product',
         datatype: 'object',
-        dataToString: (product) => product.expiration.toString() ?? ''
+        dataToString: (product) => product.expiration.toString() ?? '',
       },
       {
         title: 'Stock',
@@ -342,6 +349,9 @@ const FormDetails = () => {
         selectedData.some((item) => item.product.id === rowData.product.id)
       ) {
         return true;
+      }
+      else {
+        return false;
       }
     },
     emptyText: 'Please select a delivery receipt (DR) or an order slip (OS).',

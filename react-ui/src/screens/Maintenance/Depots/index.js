@@ -20,11 +20,13 @@ const Depots = (props) => {
   const [formData, setFormData] = useState(null);
 
   const { company, actions } = props;
-  const { list: data, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.depots);
+  const { list: data, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.depots
+  );
   const areas = useSelector((state) => state.maintenance.departmentArea.areaList);
 
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   const columns = [
     {
@@ -89,9 +91,9 @@ const Depots = (props) => {
       isCancelled = true;
     };
   }, [dispatch, company]);
-  
+
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
@@ -101,8 +103,8 @@ const Depots = (props) => {
     dispatch(listA({ company })).then((response) => {
       const onSuccess = () => {
         setDisplayForm(true);
-      }
-      const onFail = () => {}
+      };
+      const onFail = () => {};
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -118,8 +120,8 @@ const Depots = (props) => {
     dispatch(listA({ company })).then((response) => {
       const onSuccess = () => {
         setDisplayForm(true);
-      }
-      const onFail = () => {}
+      };
+      const onFail = () => {};
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -131,10 +133,10 @@ const Depots = (props) => {
         dispatch(listDepotByCompany({ company })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -165,10 +167,10 @@ const Depots = (props) => {
           dispatch(listDepotByCompany({ company })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -187,17 +189,17 @@ const Depots = (props) => {
           dispatch(listDepotByCompany({ company })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayForm(false);
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (

@@ -75,7 +75,7 @@ const FormDetails = () => {
   const salesInvoices = useSelector((state) => state.sales.salesInvoice.salesInvoiceList);
   let salesSlips = [];
   salesSlips = salesSlips.concat(orderSlips).concat(salesInvoices);
-  const [loadingSalesSlips, setLoadingSalesSlips] = useState(false)
+  const [loadingSalesSlips, setLoadingSalesSlips] = useState(false);
 
   const formDetails = {
     form_name: 'acknowledgement_receipt',
@@ -107,12 +107,16 @@ const FormDetails = () => {
         onChange: (e) => {
           dispatch(clearOS());
           dispatch(clearSI());
-          setLoadingSalesSlips(true)
-          dispatch(listOrderSlipsByDepotAndBalance({ message, depot: e, hasBalance: true })).then(() => {
-            dispatch(listSalesInvoiceByDepotAndBalance({ depot: e, hasBalance: true })).then(() => {
-              setLoadingSalesSlips(false)
-            })
-          })
+          setLoadingSalesSlips(true);
+          dispatch(listOrderSlipsByDepotAndBalance({ message, depot: e, hasBalance: true })).then(
+            () => {
+              dispatch(listSalesInvoiceByDepotAndBalance({ depot: e, hasBalance: true })).then(
+                () => {
+                  setLoadingSalesSlips(false);
+                }
+              );
+            }
+          );
         },
       },
       {
@@ -226,7 +230,7 @@ const FormDetails = () => {
     key: 'id',
     rules: [{ required: true }],
     isVisible: salesSlips.length > 0 && !loadingSalesSlips,
-    emptyText: "Please select a depot with a pending Order Slip or Sales Invoice",
+    emptyText: 'Please select a depot with a pending Order Slip or Sales Invoice',
     fields: [
       {
         label: 'Type',
@@ -317,13 +321,13 @@ const FormDetails = () => {
         title: 'Type',
         dataIndex: 'type',
         key: 'type',
-        datatype: 'string'
+        datatype: 'string',
       },
       {
         title: 'Number',
         dataIndex: 'number',
         key: 'number',
-        datatype: 'string'
+        datatype: 'string',
       },
       {
         title: 'Total Amount',

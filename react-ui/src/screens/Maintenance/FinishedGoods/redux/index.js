@@ -9,33 +9,30 @@ import {
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
 // Async Actions API section
-export const getFGList = createAsyncThunk(
-  'getFGList',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    try{
-      const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
+export const getFGList = createAsyncThunk('getFGList', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(`/rest/finished-goods?token=${accessToken}`);
 
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: 'failed. An error has occurred'
-      });
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred',
+    });
   }
-);
+});
 
 export const createFG = createAsyncThunk('createFG', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  try{
+  try {
     const response = await axiosInstance.post(`/rest/finished-goods?token=${accessToken}`, payload);
 
     const { response: validateResponse, valid } = checkResponseValidity(response);
@@ -47,7 +44,7 @@ export const createFG = createAsyncThunk('createFG', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -65,7 +62,7 @@ export const updateFG = createAsyncThunk('updateFG', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -74,7 +71,10 @@ export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) =
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
   try {
-    const response = await axiosInstance.post(`/rest/finished-goods/delete?token=${accessToken}`, id);
+    const response = await axiosInstance.post(
+      `/rest/finished-goods/delete?token=${accessToken}`,
+      id
+    );
     const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
       return validateResponse;
@@ -84,7 +84,7 @@ export const deleteFG = createAsyncThunk('deleteFG', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -107,12 +107,12 @@ const finishedGoodsSlice = createSlice({
   },
   extraReducers: {
     [getFGList.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${ITEMS_GET_PENDING} for finished goods` 
+        statusMessage: `${ITEMS_GET_PENDING} for finished goods`,
       };
     },
     [getFGList.fulfilled]: (state, action) => {
@@ -127,8 +127,8 @@ const finishedGoodsSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import FormDetails ,{ tableHeader } from './data';
+import FormDetails, { tableHeader } from './data';
 import { formatDescItems, formatPayload } from './helpers';
 import InputForm from './InputForm';
 import {
@@ -21,8 +21,11 @@ import { clearData as clearClient, listClient } from '../../Maintenance/Clients/
 import {
   clearData as clearPI,
   listProductInventory,
-} from '../../Dashboard/ProductInventories/redux/';
-import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
+} from '../../Dashboard/ProductInventories/redux';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
@@ -64,59 +67,57 @@ const SalesOrders = (props) => {
     status: statusPI,
     statusLevel: statusLevelPI,
   } = useSelector((state) => state.maintenance.productInventory);
-  const isMounted =  useRef(true);
+  const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearDepot());
     dispatch(clearClient());
     dispatch(clearPI());
-  },[dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusClient,
       statusMessage: statusMessageClient,
-      action: actionClient, 
+      action: actionClient,
       statusLevel: statusLevelClient,
-      module: 'Clients'
-    })
+      module: 'Clients',
+    });
   }, [actionClient, statusMessageClient, statusClient, statusLevelClient]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusPI,
       statusMessage: statusMessagePI,
-      action: actionPI, 
+      action: actionPI,
       statusLevel: statusLevelPI,
-      module: 'Product Inventories'
-    })
+      module: 'Product Inventories',
+    });
   }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: 'Depots'
+      module: 'Depots',
     });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
     setContentLoading(true);
-    dispatch(listSalesOrder(company))
-      .then(() => {
-        if (isMounted.current) {
-          setContentLoading(false)
-        }
-      });
+    dispatch(listSalesOrder(company)).then(() => {
+      if (isMounted.current) {
+        setContentLoading(false);
+      }
+    });
 
-    
     return function cleanup() {
       isMounted.current = false;
       performCleanup();
@@ -125,18 +126,18 @@ const SalesOrders = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepotByCompany({company})).then((resp1) => {
-      dispatch(listClient({company})).then((resp2) => {
-        dispatch(listProductInventory({company})).then((resp3) => {
-          if(isMounted.current){
+    dispatch(listDepotByCompany({ company })).then((resp1) => {
+      dispatch(listClient({ company })).then((resp2) => {
+        dispatch(listProductInventory({ company })).then((resp3) => {
+          if (isMounted.current) {
             const onSuccess = () => {
-                history.push(`${path}/new`);
-                setContentLoading(false);
-            }
+              history.push(`${path}/new`);
+              setContentLoading(false);
+            };
             const onFail = () => {
               setContentLoading(false);
-            }
-            handleRequestResponse([resp1, resp2,resp3], onSuccess, onFail, '');
+            };
+            handleRequestResponse([resp1, resp2, resp3], onSuccess, onFail, '');
           }
         });
       });
@@ -161,7 +162,7 @@ const SalesOrders = (props) => {
       const onFail = () => {
         setDisplayModal(false);
         setContentLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -179,7 +180,7 @@ const SalesOrders = (props) => {
       const onFail = () => {
         setDisplayModal(false);
         setContentLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -198,10 +199,10 @@ const SalesOrders = (props) => {
       const onFail = () => {
         setDisplayModal(false);
         setContentLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   return (

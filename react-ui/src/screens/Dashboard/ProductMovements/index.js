@@ -15,7 +15,10 @@ import {
   listProductInventory,
 } from '../../Maintenance/redux/productInventory';
 import { formatPMPayload } from './helpers';
-import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -39,7 +42,7 @@ const ProductMovements = (props) => {
     dispatch(clearData());
     dispatch(clearDepot());
     dispatch(clearPI());
-  }, [dispatch])
+  }, [dispatch]);
 
   const {
     action: actionDepot,
@@ -56,16 +59,16 @@ const ProductMovements = (props) => {
   } = useSelector((state) => state.maintenance.productInventory);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusPI,
       statusMessage: statusMessagePI,
-      action: actionPI, 
+      action: actionPI,
       statusLevel: statusLevelPI,
-      module: "Product Inventory"
+      module: 'Product Inventory',
     });
   }, [actionPI, statusMessagePI, statusPI, statusLevelPI]);
 
@@ -73,18 +76,18 @@ const ProductMovements = (props) => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: "Depot"
+      module: 'Depot',
     });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
     dispatch(listProductMovements(company)).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setContentLoading(false);
       }
-    })
+    });
 
     return function cleanup() {
       isMounted.current = false;
@@ -94,16 +97,16 @@ const ProductMovements = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepotByCompany({company})).then((response1) => {
-      dispatch(listProductInventory({company})).then((response2) => {
-        if(isMounted.current){
+    dispatch(listDepotByCompany({ company })).then((response1) => {
+      dispatch(listProductInventory({ company })).then((response2) => {
+        if (isMounted.current) {
           const onSuccess = () => {
-              history.push(`${path}/new`);
-              setContentLoading(false);
-          }
+            history.push(`${path}/new`);
+            setContentLoading(false);
+          };
           const onFail = () => {
             setContentLoading(false);
-          }
+          };
           handleRequestResponse([response1, response2], onSuccess, onFail, '');
         }
       });
@@ -127,10 +130,10 @@ const ProductMovements = (props) => {
 
       const onFail = () => {
         setContentLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   return (

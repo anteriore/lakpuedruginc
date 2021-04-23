@@ -16,8 +16,8 @@ const initialState = {
 export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
-  const response = await axiosInstance.get(`rest/acknowledgement-receipts?token=${accessToken}`);
-  const { response: validateResponse, valid } = checkResponseValidity(response);
+    const response = await axiosInstance.get(`rest/acknowledgement-receipts?token=${accessToken}`);
+    const { response: validateResponse, valid } = checkResponseValidity(response);
     if (valid) {
       return validateResponse;
     }
@@ -26,7 +26,7 @@ export const listAReceipt = createAsyncThunk('listAReceipt', async (payload, thu
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -49,7 +49,7 @@ export const listAReceiptByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -72,7 +72,7 @@ export const listAReceiptWithSIByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -94,7 +94,7 @@ export const addAReceipt = createAsyncThunk('addAReceipt', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -115,7 +115,7 @@ export const deleteAReceipt = createAsyncThunk('deleteAReceipt', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -214,7 +214,7 @@ const acknowledgementReceiptSlice = createSlice({
       };
     },
     [listAReceiptWithSIByDepot.pending]: (state) => {
-       return {
+      return {
         ...state,
         action: 'fetch',
         status: 'loading',

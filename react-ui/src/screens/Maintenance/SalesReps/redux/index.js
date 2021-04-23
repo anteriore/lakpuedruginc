@@ -14,7 +14,7 @@ const initialState = {
 
 export const listS = createAsyncThunk('listS', async (payload, thunkAPI, rejectWithValue) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.get(`rest/sales-reps?token=${accessToken}`);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -26,14 +26,14 @@ export const listS = createAsyncThunk('listS', async (payload, thunkAPI, rejectW
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const addS = createAsyncThunk('addS', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.post(`rest/sales-reps/?token=${accessToken}`, payload);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -45,14 +45,14 @@ export const addS = createAsyncThunk('addS', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const updateS = createAsyncThunk('updateS', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.post(`rest/sales-reps/?token=${accessToken}`, payload);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -64,15 +64,18 @@ export const updateS = createAsyncThunk('updateS', async (payload, thunkAPI) => 
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const deleteS = createAsyncThunk('deleteS', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
-    const response = await axiosInstance.post(`rest/sales-reps/delete?token=${accessToken}`, payload);
+  try {
+    const response = await axiosInstance.post(
+      `rest/sales-reps/delete?token=${accessToken}`,
+      payload
+    );
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -83,7 +86,7 @@ export const deleteS = createAsyncThunk('deleteS', async (payload, thunkAPI) => 
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -100,8 +103,8 @@ const salesRepSlice = createSlice({
         ...state,
         action: 'fetch',
         status: 'loading',
-        statusMessage: `${message.ITEMS_GET_PENDING} form sales rep`
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} form sales rep`,
+      };
     },
     [listS.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
@@ -115,8 +118,8 @@ const salesRepSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

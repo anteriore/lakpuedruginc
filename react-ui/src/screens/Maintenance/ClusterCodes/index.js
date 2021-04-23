@@ -20,7 +20,7 @@ const ClusterCodes = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const { list: clusterList, action, statusMessage, status, statusLevel } = useSelector(
     (state) => state.maintenance.clusterCode
@@ -42,7 +42,7 @@ const ClusterCodes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -60,13 +60,12 @@ const ClusterCodes = (props) => {
   };
 
   const handleDeleteButton = (row) => {
-    setLoading(true)
-    dispatch(deleteCluster(row))
-      .then(() => {
-        dispatch(listCluster()).then(() => {
-          setLoading(false)
-        });
-      })
+    setLoading(true);
+    dispatch(deleteCluster(row)).then(() => {
+      dispatch(listCluster()).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -75,7 +74,7 @@ const ClusterCodes = (props) => {
   };
 
   const onSubmit = async (values) => {
-    setLoading(true)
+    setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
@@ -94,7 +93,7 @@ const ClusterCodes = (props) => {
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-    return 1
+    return 1;
   };
 
   return (
@@ -108,7 +107,9 @@ const ClusterCodes = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { loading ? <Skeleton/> : 
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={clusterList}
@@ -117,7 +118,7 @@ const ClusterCodes = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

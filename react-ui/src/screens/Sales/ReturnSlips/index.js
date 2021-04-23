@@ -27,7 +27,10 @@ import { listClient, clearData as clearClient } from '../../Maintenance/Clients/
 import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listOrderSlipsByDepot, clearData as clearOS } from '../OrderSlips/redux';
 import { clearData as clearSI } from '../SalesInvoice/redux';
-import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -45,7 +48,9 @@ const ReturnSlips = (props) => {
   const [selectedData, setSelectedData] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.sales.returnSlips);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.sales.returnSlips
+  );
   const {
     action: actionDepot,
     statusMessage: statusMessageDepot,
@@ -69,19 +74,19 @@ const ReturnSlips = (props) => {
     dispatch(clearDepot());
     dispatch(clearOS());
     dispatch(clearSI());
-  },[dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: 'Depots'
+      module: 'Depots',
     });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
@@ -89,22 +94,22 @@ const ReturnSlips = (props) => {
     reevalDependencyMsgStats({
       status: statusClient,
       statusMessage: statusMessageClient,
-      action: actionClient, 
+      action: actionClient,
       statusLevel: statusLevelClient,
-      module: 'Clients'
-    })
+      module: 'Clients',
+    });
   }, [actionClient, statusMessageClient, statusClient, statusLevelClient]);
 
   useEffect(() => {
     dispatch(listReturnSlip({ company, message })).then(() => {
       if (isMounted.current) {
-        setLoading(false)
+        setLoading(false);
       } else {
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       performCleanup();
     };
   }, [dispatch, company, performCleanup]);
@@ -115,20 +120,20 @@ const ReturnSlips = (props) => {
     setLoading(true);
     dispatch(clearOS());
     dispatch(listClient({ company })).then((resp1) => {
-        dispatch(listDepotByCompany({ company })).then((resp2) => {
-          if(isMounted.current){
-            const onSuccess = () => {
-                history.push(`${path}/new`);
-                setLoading(false);
-            }
-            const onFail = () => {
-              setLoading(false);
-            }
-            handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
-          }
+      dispatch(listDepotByCompany({ company })).then((resp2) => {
+        if (isMounted.current) {
+          const onSuccess = () => {
+            history.push(`${path}/new`);
+            setLoading(false);
+          };
+          const onFail = () => {
+            setLoading(false);
+          };
+          handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+        }
       });
-    })
-  }
+    });
+  };
 
   const handleUpdate = (data) => {
     setFormTitle('Update Return Slip');
@@ -242,11 +247,11 @@ const ReturnSlips = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
   const renderTableColumns = (fields) => {

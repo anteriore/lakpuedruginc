@@ -3,7 +3,10 @@ import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Empty, mes
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listFGReceiving, addFGReceiving, clearData } from './redux';
@@ -22,20 +25,23 @@ const FGReceivings = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.FGReceivings
+  );
+
   const {
-    list, status, statusLevel, 
-    statusMessage, action
-  } = useSelector((state) => state.dashboard.FGReceivings);
+    status: statusFGI,
+    statusLevel: statusLevelFGI,
+    statusMessage: statusMessageFGI,
+    action: actionFGI,
+  } = useSelector((state) => state.dashboard.FGIssuances);
 
-  const { 
-    status: statusFGI, statusLevel: statusLevelFGI,  
-    statusMessage: statusMessageFGI, action: actionFGI
-  } = useSelector(state => state.dashboard.FGIssuances);
-
-  const { 
-    status: statusDepot, action: actionDepot,  
-    statusLevel: statusLevelDepot, statusMessage: statusMessageDepot
-  } = useSelector(state => state.maintenance.depots);
+  const {
+    status: statusDepot,
+    action: actionDepot,
+    statusLevel: statusLevelDepot,
+    statusMessage: statusMessageDepot,
+  } = useSelector((state) => state.maintenance.depots);
 
   const user = useSelector((state) => state.auth.user);
 
@@ -51,50 +57,44 @@ const FGReceivings = (props) => {
     dispatch(clearData());
     dispatch(clearDepot());
     dispatch(clearFGIS());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listFGReceiving({ company, message })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusFGI,
       statusMessage: statusMessageFGI,
-      action: actionFGI, 
+      action: actionFGI,
       statusLevel: statusLevelFGI,
-      module: 'FG Issuance'
-    })
-  }, [
-    actionFGI, statusMessageFGI, 
-    statusFGI, statusLevelFGI
-  ]);
+      module: 'FG Issuance',
+    });
+  }, [actionFGI, statusMessageFGI, statusFGI, statusLevelFGI]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: 'Depot'
-    })
-  }, [
-    actionDepot, statusMessageDepot, 
-    statusDepot, statusLevelDepot
-  ]);
+      module: 'Depot',
+    });
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   const handleAdd = () => {
     setFormTitle('Create FG Receiving Slip');
@@ -105,11 +105,11 @@ const FGReceivings = (props) => {
         dispatch(clearFGIS());
         history.push(`${path}/new`);
         setLoading(false);
-      }
+      };
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -151,11 +151,11 @@ const FGReceivings = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (

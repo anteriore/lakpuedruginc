@@ -5,11 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import FormDetails, { columns } from './data';
 import TableDisplay from '../../../components/TableDisplay';
-import { listItemByType, addI, updateI,deleteI, clearData } from '../../Maintenance/Items/redux';
+import { listItemByType, addI, updateI, deleteI, clearData } from '../../Maintenance/Items/redux';
 import { listIT, clearData as clearIT } from '../../Maintenance/ItemTypes/redux';
 import { listUnit } from '../../Maintenance/Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
-import GeneralHelper ,{reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -25,25 +28,31 @@ const EngineeringItems = (props) => {
 
   const { company, actions } = props;
   const dispatch = useDispatch();
-  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.maintenance.items);
-  const { 
-    status: statusUnit, statusLevel: statusLevelUnit, 
-    statusMessage: statusMessageUnit, action: actionUnit 
-  } = useSelector(state => state.maintenance.units);
-  const { 
-    status: statusIT, statusLevel: statusLevelIT, 
-    statusMessage: statusMessageIT, action: actionIT 
-  } = useSelector(state => state.maintenance.itemTypes);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.maintenance.items
+  );
+  const {
+    status: statusUnit,
+    statusLevel: statusLevelUnit,
+    statusMessage: statusMessageUnit,
+    action: actionUnit,
+  } = useSelector((state) => state.maintenance.units);
+  const {
+    status: statusIT,
+    statusLevel: statusLevelIT,
+    statusMessage: statusMessageIT,
+    action: actionIT,
+  } = useSelector((state) => state.maintenance.itemTypes);
   const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearIT());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listItemByType({ type: 'ENG', message })).then(() => {
-      if(isMounted.current) {
+      if (isMounted.current) {
         setLoading(false);
       }
     });
@@ -55,53 +64,47 @@ const EngineeringItems = (props) => {
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusUnit,
       statusMessage: statusMessageUnit,
-      action: actionUnit, 
+      action: actionUnit,
       statusLevel: statusLevelUnit,
-      module: 'Units'
-    })
-  }, [
-    actionUnit, statusMessageUnit, 
-    statusUnit, statusLevelUnit
-  ]);
+      module: 'Units',
+    });
+  }, [actionUnit, statusMessageUnit, statusUnit, statusLevelUnit]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusIT,
       statusMessage: statusMessageIT,
-      action: actionIT, 
+      action: actionIT,
       statusLevel: statusLevelIT,
-      module: 'Item Types'
-    })
-  }, [
-    actionIT, statusMessageIT, 
-    statusIT, statusLevelIT
-  ]);
+      module: 'Item Types',
+    });
+  }, [actionIT, statusMessageIT, statusIT, statusLevelIT]);
 
   const handleAdd = () => {
     setFormTitle('Add Item');
     setFormMode('add');
     setFormData(null);
-    setLoading(true)
+    setLoading(true);
     dispatch(listIT({ company, message })).then((resp1) => {
       dispatch(listUnit({ message })).then((resp2) => {
         const onSuccess = () => {
           setFormData({
-            type: resp1.payload.data.find((item) => item.code === "ENG").id
-          })
+            type: resp1.payload.data.find((item) => item.code === 'ENG').id,
+          });
           setDisplayForm(true);
-          setLoading(false)
-        }
-  
+          setLoading(false);
+        };
+
         const onFailed = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([resp1, resp2], onSuccess, onFailed, '');
       });
     });
@@ -116,34 +119,34 @@ const EngineeringItems = (props) => {
       type: data.type.id,
     };
     setFormData(formData);
-    setLoading(true)
+    setLoading(true);
     dispatch(listIT({ company, message })).then((resp1) => {
       dispatch(listUnit({ message })).then((resp2) => {
         const onSuccess = () => {
           setDisplayForm(true);
-          setLoading(false)
-        }
-  
+          setLoading(false);
+        };
+
         const onFailed = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([resp1, resp2], onSuccess, onFailed, '');
       });
     });
   };
 
   const handleDelete = (data) => {
-    setLoading(true)
+    setLoading(true);
     dispatch(deleteI(data.id)).then((response) => {
       const onSuccess = () => {
         dispatch(listItemByType({ type: 'ENG', message })).then(() => {
-          setLoading(false)
+          setLoading(false);
         });
-      }
+      };
 
       const onFailed = () => {
-        setLoading(false)
-      }
+        setLoading(false);
+      };
       handleRequestResponse([response], onSuccess, onFailed, '');
     });
   };
@@ -178,10 +181,10 @@ const EngineeringItems = (props) => {
             setLoading(false);
           });
         };
-  
+
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -191,17 +194,17 @@ const EngineeringItems = (props) => {
             setLoading(false);
           });
         };
-  
+
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
     setDisplayForm(false);
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (
@@ -227,8 +230,8 @@ const EngineeringItems = (props) => {
               Add
             </Button>
           )}
-          { loading ? (
-            <Skeleton/>
+          {loading ? (
+            <Skeleton />
           ) : (
             <TableDisplay
               columns={columns}
@@ -238,10 +241,8 @@ const EngineeringItems = (props) => {
               handleDelete={handleDelete}
               updateEnabled={actions.includes('update')}
               deleteEnabled={actions.includes('delete')}
-            />  
-          )
-            
-          }
+            />
+          )}
         </Col>
         {displayForm && (
           <SimpleForm

@@ -28,7 +28,7 @@ export const tableHeader = [
     key: 'remainingBalance',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'number'
+    datatype: 'number',
   },
   {
     title: 'Status',
@@ -36,7 +36,7 @@ export const tableHeader = [
     key: 'status',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
 ];
 
@@ -63,7 +63,7 @@ export const formDetails = {
       min: 0,
       initialValue: 12,
       placeholder: 'Tax percentage',
-      type: 'readOnly'
+      type: 'readOnly',
     },
     {
       label: 'Depot',
@@ -84,14 +84,17 @@ export const formDetails = {
       type: 'selectSearch',
       choices: [],
       render: (sales) => {
-        return `[${sales?.number ?? ""}] ${sales?.client?.name ?? ""}, Sales Rep: ${sales?.client?.salesRep?.name ?? ""}`;
+        return `[${sales?.number ?? ''}] ${sales?.client?.name ?? ''}, Sales Rep: ${
+          sales?.client?.salesRep?.name ?? ''
+        }`;
       },
     },
     {
       label: 'Prepared By',
       name: 'preparedBy',
       rules: [{ required: true, message: 'Please login a valid user' }],
-      render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
+      render: (object) =>
+        `${object?.firstName ?? ''} ${object?.middleInitial ?? ''} ${object?.lastName ?? ''}`,
       placeholder: '',
       type: 'readOnly',
     },
@@ -99,7 +102,8 @@ export const formDetails = {
       label: 'Released By',
       name: 'releasedBy',
       rules: [{ required: true, message: 'Please login a valid user' }],
-      render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
+      render: (object) =>
+        `${object?.firstName ?? ''} ${object?.middleInitial ?? ''} ${object?.lastName ?? ''}`,
       placeholder: '',
       type: 'readOnly',
     },
@@ -107,7 +111,8 @@ export const formDetails = {
       label: 'Checked By',
       name: 'checkedBy',
       rules: [{ required: true, message: 'Please login a valid user' }],
-      render: (object) => `${object?.firstName ?? ""} ${object?.middleInitial ?? ""} ${object?.lastName ?? ""}`,
+      render: (object) =>
+        `${object?.firstName ?? ''} ${object?.middleInitial ?? ''} ${object?.lastName ?? ''}`,
       placeholder: '',
       type: 'readOnly',
     },

@@ -12,9 +12,9 @@ const ItemDescription = (props) => {
           if (selectedData[item.name] === null && item.toggle) {
             return null;
           }
-          else if (item.type === 'select' || item.type === 'selectSearch') {
-            if(typeof item.render === 'undefined'){
-              item.render = (object) => object?.[item?.selectName] ?? null
+          if (item.type === 'select' || item.type === 'selectSearch') {
+            if (typeof item.render === 'undefined') {
+              item.render = (object) => object?.[item?.selectName] ?? null;
             }
             return (
               <Descriptions.Item label={item.label}>
@@ -22,36 +22,37 @@ const ItemDescription = (props) => {
               </Descriptions.Item>
             );
           }
-          else if (item.type === 'selectTable') {
+          if (item.type === 'selectTable') {
             return (
               <Descriptions.Item label={item.label}>
                 {item.toString(selectedData[item.name])}
               </Descriptions.Item>
             );
           }
-          else if (item.type === 'date') {
+          if (item.type === 'date') {
             return (
               <Descriptions.Item label={item.label}>
                 {moment(new Date(selectedData[item.name])).format('DD/MM/YYYY')}
               </Descriptions.Item>
             );
           }
-          else if (item.type === 'list') {
+          if (item.type === 'list') {
             return null;
           }
-          else if (typeof item.render === 'function'){
+          if (typeof item.render === 'function') {
             return (
-              <Descriptions.Item label={item.label}>{item.render(selectedData[item.name])}</Descriptions.Item>
+              <Descriptions.Item label={item.label}>
+                {item.render(selectedData[item.name])}
+              </Descriptions.Item>
             );
           }
-          else if(item.type === 'listTable'){
+          if (item.type === 'listTable') {
             return null;
           }
-          else {
-            return (
-              <Descriptions.Item label={item.label}>{selectedData[item.name]}</Descriptions.Item>
-            );
-          }
+
+          return (
+            <Descriptions.Item label={item.label}>{selectedData[item.name]}</Descriptions.Item>
+          );
         }
 
         return null;

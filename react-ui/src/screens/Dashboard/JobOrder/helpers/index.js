@@ -11,10 +11,10 @@ export const formatEmployeePayload = (value) => {
         timeIn: employee.timeIn ?? moment(),
         timeOut: employee.timeOut ?? moment(),
         employee: { id: employee.id },
-        moInventory: { 
+        moInventory: {
           id: value.moNumber,
-          type: value.moType
-         },
+          type: value.moType,
+        },
         procedure: { id: employee.procedure },
       });
     });

@@ -24,12 +24,12 @@ const ProvinceCode = (props) => {
   const [mode, setMode] = useState('');
   const [formValues, setFormValues] = useState('');
   const [currentID, setCurrentID] = useState('');
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const { provinceCodeList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.maintenance.provinceCodes
   );
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     let isCancelled = false;
@@ -47,7 +47,7 @@ const ProvinceCode = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -66,12 +66,11 @@ const ProvinceCode = (props) => {
 
   const handleDeleteButton = (row) => {
     setLoading(true);
-    dispatch(deleteProvinceCode(row))
-      .then(() => {
-        dispatch(listProvinceCode({ message })).then(() => {
-          setLoading(false)
-        })
-      })
+    dispatch(deleteProvinceCode(row)).then(() => {
+      dispatch(listProvinceCode({ message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -80,7 +79,7 @@ const ProvinceCode = (props) => {
   };
 
   const onSubmit = async (values) => {
-    setLoading(true)
+    setLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
@@ -91,12 +90,12 @@ const ProvinceCode = (props) => {
             setFormValues('');
             setIsOpenForm(!isOpenForm);
             setLoading(false);
-          })
-        }
+          });
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
@@ -106,16 +105,16 @@ const ProvinceCode = (props) => {
             setFormValues('');
             setIsOpenForm(!isOpenForm);
             setLoading(false);
-          })
-        }
+          });
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   return (
@@ -129,7 +128,9 @@ const ProvinceCode = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { loading ? <Skeleton/> :
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={provinceCodeList}
@@ -137,8 +138,8 @@ const ProvinceCode = (props) => {
             handleDelete={handleDeleteButton}
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
-          /> 
-        }
+          />
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { listItemSummaryNonEngineering, listItemSummaryEngineering, clearData as clearItem } from '../../../Maintenance/Items/redux';
+import {
+  listItemSummaryNonEngineering,
+  listItemSummaryEngineering,
+  clearData as clearItem,
+} from '../../../Maintenance/Items/redux';
 
 export const DisplayDetails = () => {
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
@@ -66,7 +70,7 @@ export const DisplayDetails = () => {
       title: 'Unit',
       dataIndex: 'item',
       key: 'item',
-      render: (object) => (object?.unit?.name ?? ""),
+      render: (object) => object?.unit?.name ?? '',
     },
     {
       title: 'Quantity Requested',
@@ -80,17 +84,15 @@ export const DisplayDetails = () => {
     },
   ];
 
-  
   return { columns, itemColumns };
-
-}
+};
 export const FormDetails = () => {
   const dispatch = useDispatch();
   const items = useSelector((state) => state.maintenance.items.list);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const company = useSelector((state) => state.company.selectedCompany);
   const user = useSelector((state) => state.auth.user);
-  const [loadingItemInventory, setLoadingItemInventory] = useState(false)
+  const [loadingItemInventory, setLoadingItemInventory] = useState(false);
 
   const formDetails = {
     form_name: 'purchase_request',
@@ -131,20 +133,19 @@ export const FormDetails = () => {
         choices: departments,
         render: (department) => `[${department?.code}] ${department?.name}`,
         onChange: (e) => {
-          const departmentData = departments.find((department) => department.id === e)
-          if(departmentData?.code === 'PL-ENGG'){
-            dispatch(clearItem())
-            setLoadingItemInventory(true)
+          const departmentData = departments.find((department) => department.id === e);
+          if (departmentData?.code === 'PL-ENGG') {
+            dispatch(clearItem());
+            setLoadingItemInventory(true);
             dispatch(listItemSummaryEngineering({ company })).then(() => {
-              setLoadingItemInventory(false)
-            })
-          }
-          else {
-            dispatch(clearItem())
-            setLoadingItemInventory(true)
+              setLoadingItemInventory(false);
+            });
+          } else {
+            dispatch(clearItem());
+            setLoadingItemInventory(true);
             dispatch(listItemSummaryNonEngineering({ company })).then(() => {
-              setLoadingItemInventory(false)
-            })
+              setLoadingItemInventory(false);
+            });
           }
         },
         loading: loadingItemInventory,
@@ -161,20 +162,19 @@ export const FormDetails = () => {
   };
 
   const processSelectData = (data) => {
-    const processedData = []
+    const processedData = [];
     data.forEach((item) => {
       const processedItem = {
         ...item,
         ...item.item,
         itemID: item.item.id,
-      }
+      };
       delete processedItem.item;
       delete processedItem.id;
-      processedData.push(processedItem)
-    })
-    return processedData
-  }
-
+      processedData.push(processedItem);
+    });
+    return processedData;
+  };
 
   const tableDetails = {
     label: 'Requested Items',
@@ -182,7 +182,7 @@ export const FormDetails = () => {
     key: 'id',
     rules: [{ required: true, message: 'Please select items to be requested' }],
     isVisible: items.length > 0 && !loadingItemInventory,
-    emptyText: "Please select a department for the items to be requested",
+    emptyText: 'Please select a department for the items to be requested',
     fields: [
       {
         label: 'Item ID',
@@ -259,28 +259,28 @@ export const FormDetails = () => {
         dataIndex: 'name',
         key: 'name',
         datatype: 'string',
-        //render: (object) => object.name,
+        // render: (object) => object.name,
       },
       {
         title: 'Code',
         dataIndex: 'code',
         key: 'code',
-        datatype: 'string'
-        //render: (object) => object.code,
+        datatype: 'string',
+        // render: (object) => object.code,
       },
       {
         title: 'Type',
         dataIndex: 'type',
         key: 'type',
         datatype: 'object',
-        dataToString: (type) => type?.name ?? ''
+        dataToString: (type) => type?.name ?? '',
       },
       {
         title: 'Unit of Measurement',
         dataIndex: 'unit',
         key: 'unit',
         datatype: 'object',
-        dataToString: (unit) => unit?.name ?? ''
+        dataToString: (unit) => unit?.name ?? '',
       },
       {
         title: 'Current Stocks',
@@ -304,8 +304,8 @@ export const FormDetails = () => {
       },
     ],
     processData: (data) => {
-      return data
-    }
+      return data;
+    },
   };
 
   return { formDetails, tableDetails };
