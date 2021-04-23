@@ -7,7 +7,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import SimpleForm from '../../../components/forms/FormModal';
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
-import { listDepot, addDepot, updateDepot, deleteDepot, clearData } from './redux';
+import { listDepotByCompany, addDepot, updateDepot, deleteDepot, clearData } from './redux';
 import { listA, clearData as clearArea } from '../DepartmentArea/redux';
 
 const { Title } = Typography;
@@ -77,7 +77,7 @@ const Depots = (props) => {
 
   useEffect(() => {
     let isCancelled = false;
-    dispatch(listDepot({ company })).then((response) => {
+    dispatch(listDepotByCompany({ company })).then((response) => {
       setLoading(false);
 
       if (isCancelled) {
@@ -130,7 +130,7 @@ const Depots = (props) => {
     dispatch(deleteDepot(data.id)).then((response) => {
       setLoading(true);
       const onSuccess = () => {
-        dispatch(listDepot({ company })).then(() => {
+        dispatch(listDepotByCompany({ company })).then(() => {
           setLoading(false);
         });
       };
@@ -164,7 +164,7 @@ const Depots = (props) => {
       await dispatch(updateDepot(payload)).then((response) => {
         setLoading(true);
         const onSuccess = () => {
-          dispatch(listDepot({ company })).then(() => {
+          dispatch(listDepotByCompany({ company })).then(() => {
             setLoading(false);
           });
         };
@@ -186,7 +186,7 @@ const Depots = (props) => {
       await dispatch(addDepot(payload)).then((response) => {
         setLoading(true);
         const onSuccess = () => {
-          dispatch(listDepot({ company })).then(() => {
+          dispatch(listDepotByCompany({ company })).then(() => {
             setLoading(false);
           });
         };

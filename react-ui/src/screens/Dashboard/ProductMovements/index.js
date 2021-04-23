@@ -9,7 +9,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import { formDetails, tableHeader, productModalHeader } from './data';
 import { listProductMovements, clearData, createProductMovement } from './redux';
 import InputForm from './InputForm';
-import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearDepot, listDepotByCompany } from '../../Maintenance/Depots/redux';
 import {
   clearData as clearPI,
   listProductInventory,
@@ -97,7 +97,7 @@ const ProductMovements = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepot(company)).then((response1) => {
+    dispatch(listDepotByCompany({ company })).then((response1) => {
       dispatch(listProductInventory({ company })).then((response2) => {
         if (isMounted.current) {
           const onSuccess = () => {

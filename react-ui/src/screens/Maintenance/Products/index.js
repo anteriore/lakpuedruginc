@@ -5,7 +5,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import TableDisplay from '../../../components/TableDisplay';
 import { listProduct, createProduct, updateProduct, clearData } from './redux';
-import { clearData as clearDepots, listDepot } from '../Depots/redux';
+import { clearData as clearDepots, listDepotByCompany } from '../Depots/redux';
 import { clearData as clearClassification, listClassification } from '../Classification/redux';
 import { clearData as clearCategories, listPC } from '../ProductCategories/redux';
 import { clearData as clearDivisions, listPD } from '../ProductDivisions/redux';
@@ -78,7 +78,7 @@ const Product = (props) => {
     setFormTitle('Create Product');
     setContentLoading(true);
     dispatch(getFGList()).then((dataFG) => {
-      dispatch(listDepot(company)).then((dataDepot) => {
+      dispatch(listDepotByCompany({company})).then((dataDepot) => {
         dispatch(listClassification()).then((dataClassification) => {
           dispatch(listPC()).then((dataPC) => {
             dispatch(listPD()).then((dataPD) => {
@@ -104,7 +104,7 @@ const Product = (props) => {
     setContentLoading(true);
     setFormData(formatInitialValue(values));
     dispatch(getFGList()).then((dataFG) => {
-      dispatch(listDepot(company)).then((dataDepot) => {
+      dispatch(listDepotByCompany({company})).then((dataDepot) => {
         dispatch(listClassification()).then((dataClassification) => {
           dispatch(listPC()).then((dataPC) => {
             dispatch(listPD()).then((dataPD) => {

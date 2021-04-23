@@ -25,7 +25,7 @@ import { listItemReportSummaryByProduct } from '../../Maintenance/Items/redux';
 import { listProduct, clearData as clearProducts } from '../../Maintenance/Products/redux';
 import { listPD, clearData as clearDivision } from '../../Maintenance/ProductDivisions/redux';
 import { listPC, clearData as clearCategory } from '../../Maintenance/ProductCategories/redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import { listClientBySalesRep } from '../../Maintenance/Clients/redux';
 
 const { Title, Text } = Typography;
@@ -56,7 +56,7 @@ const SalesReports = (props) => {
       dispatch(listProduct({ company, message })).then(() => {
         dispatch(listPD({ company, message })).then(() => {
           dispatch(listPC({ company, message })).then(() => {
-            dispatch(listDepot({ company, message })).then(() => {
+            dispatch(listDepotByCompany({ company })).then(() => {
               setLoading(false);
 
               if (isCancelled) {

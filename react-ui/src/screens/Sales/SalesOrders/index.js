@@ -16,7 +16,7 @@ import {
   approveSalesOrder,
   rejectSalesOrder,
 } from './redux';
-import { clearData as clearDepot, listDepot } from '../../Maintenance/Depots/redux';
+import { clearData as clearDepot, listDepotByCompany } from '../../Maintenance/Depots/redux';
 import { clearData as clearClient, listClient } from '../../Maintenance/Clients/redux';
 import {
   clearData as clearPI,
@@ -126,7 +126,7 @@ const SalesOrders = (props) => {
 
   const handleAddButton = () => {
     setContentLoading(true);
-    dispatch(listDepot({ company })).then((resp1) => {
+    dispatch(listDepotByCompany({ company })).then((resp1) => {
       dispatch(listClient({ company })).then((resp2) => {
         dispatch(listProductInventory({ company })).then((resp3) => {
           if (isMounted.current) {

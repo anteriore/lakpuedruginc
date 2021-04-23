@@ -35,7 +35,7 @@ import {
 } from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
-import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../Maintenance/Depots/redux';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -246,7 +246,7 @@ const Users = () => {
     setFormData(null);
     setCompanyLoading(true);
     dispatch(listD({ company: selectedCompany, message })).then((response1) => {
-      dispatch(listDepot({ company: selectedCompany, message })).then((response2) => {
+      dispatch(listDepotByCompany({ company: selectedCompany })).then((response2) => {
         dispatch(listPermission({ company: selectedCompany, message })).then((response3) => {
           if (isMounted.current) {
             const onSuccess = () => {
@@ -291,9 +291,9 @@ const Users = () => {
     };
     setFormData(formData);
     setCompanyLoading(true);
-    dispatch(listD({ company: selectedCompany, message })).then((response1) => {
-      dispatch(listDepot({ company: selectedCompany, message })).then((response2) => {
-        dispatch(listPermission({ company: selectedCompany, message })).then((response3) => {
+    dispatch(listD({ company: selectedCompany })).then((response1) => {
+      dispatch(listDepotByCompany({ company: selectedCompany })).then((response2) => {
+        dispatch(listPermission({ company: selectedCompany })).then((response3) => {
           if (isMounted.current) {
             const onSuccess = () => {
               history.push(`${path}/${data.id}`);

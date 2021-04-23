@@ -11,7 +11,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
 import { listFGReceiving, addFGReceiving, clearData } from './redux';
 import { clearData as clearFGIS } from '../FGIssuances/redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
 
@@ -100,7 +100,7 @@ const FGReceivings = (props) => {
     setFormTitle('Create FG Receiving Slip');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then((response) => {
+    dispatch(listDepotByCompany({ company })).then((response) => {
       const onSuccess = () => {
         dispatch(clearFGIS());
         history.push(`${path}/new`);
