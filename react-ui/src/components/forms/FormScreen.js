@@ -44,6 +44,13 @@ const FormScreen = (props) => {
   }, [history, path]);
 
   useEffect(() => {
+    if (!(formTable.isVisible ?? formTable.selectData.length > 0) && formTable.preloadedData) {
+      // selected data was pre-loaded but is empty
+      onFail();
+    }
+  }, [formTable.isVisible, formTable.selectData.length, formTable.preloadedData, onFail])
+
+  useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
@@ -55,15 +62,6 @@ const FormScreen = (props) => {
       }
       selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i);
       setTableSelectedKeys(selectedKeys);
-
-      if (typeof formTable.isVisible === 'undefined') {
-        formTable.isVisible = formTable.selectData.length > 0;
-      }
-
-      if (!formTable.isVisible && formTable.preloadedData) {
-        // selected data was pre-loaded but is empty
-        onFail();
-      }
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
@@ -76,7 +74,7 @@ const FormScreen = (props) => {
         }
       });
     }
-  }, [values, form, formDetails, formTable, hasTable, onFail, toggleName]);
+  }, [form, values, hasTable, toggleName, formDetails.required_data, formTable.foreignKey, formTable.name, onFail]);
 
   const onFinish = (data) => {
     setLoading(true);
@@ -313,7 +311,7 @@ const FormScreen = (props) => {
             })}
 
             {hasTable &&
-              (typeof formTable.isVisible === 'undefined' || formTable.isVisible ? (
+              ((formTable?.isVisible ?? formTable.selectData.length > 0) ? (
                 <Form.List
                   label={formTable.label}
                   name={formTable.name}
@@ -364,7 +362,7 @@ const FormScreen = (props) => {
               loading={loading}
               onClick={() => form.submit()}
               disabled={
-                hasTable && !(typeof formTable.isVisible === 'undefined' || formTable.isVisible)
+                hasTable && !((formTable?.isVisible ?? formTable.selectData.length > 0))
               }
             >
               Submit

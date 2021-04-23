@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Row, Col, Typography, Table, Empty, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -17,24 +17,11 @@ const InputForm = (props) => {
   const [tableData, setTableData] = useState(null);
   const [cheques, setCheques] = useState([]);
   const [selectedPDC, setSelectedPDC] = useState([]);
-  const [toggleValue, setToggleValue] = useState(null);
   const [proccessingData, setProccessingData] = useState(false);
 
   const pdcDisbursements = useSelector((state) => state.accounting.PDCDisbursements.list);
 
-  const toggleName = formDetails.toggle_name;
-
   const selectTableName = 'disbursement';
-
-  useEffect(() => {
-    form.setFieldsValue(values);
-    if (hasTable && values !== null) {
-      setTableData(formTable.getValues(values));
-    }
-    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
-      setToggleValue(values[toggleName]);
-    }
-  }, [values, form, formTable, hasTable, toggleName]);
 
   const onFinish = (data) => {
     setProccessingData(true);
@@ -94,12 +81,6 @@ const InputForm = (props) => {
   };
 
   const onValuesChange = (values) => {
-    if (toggleName !== null && typeof toggleName !== 'undefined') {
-      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
-        setToggleValue(values[toggleName]);
-      }
-    }
-
     if (values.hasOwnProperty(formTable.name)) {
       setTableData(form.getFieldValue(formTable.name));
     }

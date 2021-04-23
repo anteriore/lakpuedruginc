@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Row, Col, Typography, Table, Empty, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -19,10 +19,6 @@ const InputForm = (props) => {
   const chequePrintings = useSelector((state) => state.accounting.chequePrintings.list);
 
   const selectTableName = 'chequePrinting';
-
-  useEffect(() => {
-    form.setFieldsValue(values);
-  }, [values, form]);
 
   const onFinish = (data) => {
     setFormButtonLoading(true);

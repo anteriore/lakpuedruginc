@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Form,
   Button,
@@ -32,13 +32,6 @@ const InputForm = (props) => {
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [displayVoucherFields, setDisplayVoucherFields] = useState(false);
-
-  useEffect(() => {
-    form.setFieldsValue(values);
-    if (hasTable) {
-      setTableData(form.getFieldValue(formTable.name));
-    }
-  }, [values, form, formTable, hasTable]);
 
   const onFinish = (data) => {
     setFormButtonLoading(true);
