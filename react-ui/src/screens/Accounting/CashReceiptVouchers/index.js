@@ -7,7 +7,7 @@ import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 import ItemDescription from '../../../components/ItemDescription';
 
 import { listCashReceiptVoucher, addCashReceiptVoucher, clearData } from './redux';
@@ -50,6 +50,41 @@ const CashReceiptVouchers = (props) => {
   );
   const user = useSelector((state) => state.auth.user);
 
+  const { 
+    status: statusBA, 
+    statusLevel: statusLevelBA, 
+    statusMessage: statusMessageBA, 
+    action: actionBA 
+  } = useSelector(state => state.maintenance.bankAccount);
+
+  const { 
+    status: statusAT,
+    statusLevel: statusLevelAT,
+    statusMessage: statusMessageAT,
+    action: actionAT
+  } = useSelector(state => state.accounting.accountTitles);
+
+  const {
+    status: statusDA,
+    statusLevel: statusLevelDA,
+    statusMessage: statusMessageDA,
+    action: actionDA
+  } = useSelector(state => state.maintenance.departmentArea);
+
+  const {
+    status: statusGC,
+    statusLevel: statusLevelGC,
+    statusMessage: statusMessageGC,
+    action: actionGC
+   } = useSelector(state => state.maintenance.groupsCategories)
+
+   const { 
+    status: statusVoucher,
+    statusLevel: statusLevelVoucher,
+    statusMessage: statusMessageVoucher,
+    action: actionVoucher
+   } = useSelector(state => state.accounting.vouchers);
+
   useEffect(() => {
     dispatch(listCashReceiptVoucher()).then(() => {
       setLoading(false);
@@ -69,6 +104,56 @@ const CashReceiptVouchers = (props) => {
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusBA,
+      statusMessage: statusMessageBA,
+      action: actionBA, 
+      statusLevel: statusLevelBA,
+      module: 'Bank Accounts'
+    })
+  }, [actionBA, statusMessageBA, statusBA, statusLevelBA]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusAT,
+      statusMessage: statusMessageAT,
+      action: actionAT, 
+      statusLevel: statusLevelAT,
+      module: 'Account Tittles'
+    })
+  }, [actionAT, statusMessageAT, statusAT, statusLevelAT]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDA,
+      statusMessage: statusMessageDA,
+      action: actionDA, 
+      statusLevel: statusLevelDA,
+      module: 'Department and Areas'
+    })
+  }, [actionDA, statusMessageDA, statusDA, statusLevelDA]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusGC,
+      statusMessage: statusMessageGC,
+      action: actionGC, 
+      statusLevel: statusLevelGC,
+      module: 'Groups & Categories'
+    })
+  }, [actionGC, statusMessageGC, statusGC, statusLevelGC]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVoucher,
+      statusMessage: statusMessageVoucher,
+      action: actionVoucher, 
+      statusLevel: statusLevelVoucher,
+      module: 'Vouchers'
+    })
+  }, [actionVoucher, statusMessageVoucher, statusVoucher, statusLevelVoucher]);
 
   const handleAdd = () => {
     setFormTitle('Create Cash Receipt Voucher');
