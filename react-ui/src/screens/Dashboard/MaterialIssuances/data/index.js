@@ -64,7 +64,7 @@ const FormDetails = () => {
     name: 'inventoryList',
     key: 'inventoryList',
     rules: [{ required: true }],
-    preloadedData: true, 
+    preloadedData: true,
     fields: [
       {
         label: 'Control Number',
@@ -114,6 +114,7 @@ const FormDetails = () => {
         title: 'Control Number',
         dataIndex: 'controlNumber',
         key: 'controlNumber',
+        datatype: 'string',
       },
       {
         title: 'Date Created',
@@ -122,11 +123,16 @@ const FormDetails = () => {
         render: (object) => {
           return moment(new Date(object)).format('DD/MM/YYYY');
         },
+        datatype: 'date',
       },
       {
         title: 'Item',
         dataIndex: 'item',
         key: 'item',
+        datatype: 'object',
+        dataToString: (object) => {
+          return `[${object.code}] ${object.name}`;
+        },
         render: (object) => {
           return `[${object.code}] ${object.name}`;
         },
@@ -135,6 +141,10 @@ const FormDetails = () => {
         title: 'Type',
         dataIndex: 'item',
         key: 'item',
+        datatype: 'object',
+        dataToString: (object) => {
+          return `${object.type.name}`;
+        },
         render: (object) => {
           return `${object.type.name}`;
         },
@@ -143,6 +153,7 @@ const FormDetails = () => {
         title: 'Expiration',
         dataIndex: 'expiration',
         key: 'expiration',
+        datatype: 'date',
         render: (object) => {
           return moment(new Date(object)).format('DD/MM/YYYY');
         },

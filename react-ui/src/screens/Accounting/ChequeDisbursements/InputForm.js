@@ -1,14 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Empty,
-  message,
-} from 'antd';
+import React, { useState } from 'react';
+import { Form, Button, Row, Col, Typography, Table, Empty, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
@@ -27,13 +18,7 @@ const InputForm = (props) => {
 
   const chequePrintings = useSelector((state) => state.accounting.chequePrintings.list);
 
-  const selectTableName = 'chequePrinting'
-
-
-  useEffect(() => {
-    form.setFieldsValue(values);
-    // eslint-disable-next-line
-  }, [values, form]);
+  const selectTableName = 'chequePrinting';
 
   const onFinish = (data) => {
     setFormButtonLoading(true);
@@ -79,7 +64,7 @@ const InputForm = (props) => {
         width: field.width,
         render: (object) => field.render(object),
       });
-    })
+    });
 
     return columns;
   };
@@ -91,18 +76,23 @@ const InputForm = (props) => {
       const selectedData = chequePrintings.find((slip) => slip.id === value);
       formValues[key] = {
         id: value,
-        number: selectedData.number
+        number: selectedData.number,
       };
-      formValues.vendor = formDetails.form_items.find((item) => item.name === 'vendor').render(selectedData.vendor)
-      formValues.chequeDate = formDetails.form_items.find((item) => item.name === 'chequeDate').render(selectedData.chequeDate)
-      formValues.chequeNumber = selectedData.chequeNumber
-      formValues.payeeName = selectedData.payeeName
-      formValues.bankAccount = formDetails.form_items.find((item) => item.name === 'bankAccount').render(selectedData.bankAccount)
+      formValues.vendor = formDetails.form_items
+        .find((item) => item.name === 'vendor')
+        .render(selectedData.vendor);
+      formValues.chequeDate = formDetails.form_items
+        .find((item) => item.name === 'chequeDate')
+        .render(selectedData.chequeDate);
+      formValues.chequeNumber = selectedData.chequeNumber;
+      formValues.payeeName = selectedData.payeeName;
+      formValues.bankAccount = formDetails.form_items
+        .find((item) => item.name === 'bankAccount')
+        .render(selectedData.bankAccount);
 
-      setTableData(selectedData.payables)
+      setTableData(selectedData.payables);
 
-      //TODO: Display selected vouchers
-
+      // TODO: Display selected vouchers
     } else {
       formValues[key] = value;
     }
@@ -128,22 +118,34 @@ const InputForm = (props) => {
               const itemData = {
                 ...item,
               };
-                            
+
               if (item.name === selectTableName) {
                 itemData.selectedData = selectedData;
                 itemData.setSelectedData = setSelectedData;
               }
 
-              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} formInstance={form} />;
+              return (
+                <FormItem
+                  item={itemData}
+                  onFail={onFail}
+                  onTableSelect={onTableSelect}
+                  formInstance={form}
+                />
+              );
             })}
             <Table
               dataSource={tableData}
               columns={renderTableColumns(formDetails.form_table)}
-              pagination={{simple: true}}
+              pagination={{ simple: true }}
               locale={{ emptyText: <Empty description="No Item Seleted." /> }}
             />
 
-            <FormItem item={formDetails.account_titles} onFail={onFail} onTableSelect={onTableSelect} formInstance={form} />
+            <FormItem
+              item={formDetails.account_titles}
+              onFail={onFail}
+              onTableSelect={onTableSelect}
+              formInstance={form}
+            />
 
             <div style={styles.tailLayout}>
               <Button type="primary" loading={formButtonLoading} onClick={() => form.submit()}>

@@ -6,7 +6,13 @@ import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormDetails, { columns } from './data';
-import { listAccountTitles, listAccountTitlesByType, createAccountTitle, updateAccountTitle, clearData } from './redux';
+import {
+  listAccountTitles,
+  listAccountTitlesByType,
+  createAccountTitle,
+  updateAccountTitle,
+  clearData,
+} from './redux';
 import FormScreen from '../../../components/forms/FormScreen';
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
@@ -20,14 +26,16 @@ const AccountTitles = (props) => {
   const { formDetails } = FormDetails();
   const isMounted = useRef(true);
 
-  const {list: listData, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.accountTitles);
+  const { list: listData, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.accounting.accountTitles
+  );
 
   const { company, actions } = props;
 
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     dispatch(listAccountTitles({ company, message })).then(() => {
@@ -35,20 +43,20 @@ const AccountTitles = (props) => {
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
     };
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Account Title');
     setFormMode('add');
     setFormData(null);
-    dispatch(clearData())
+    dispatch(clearData());
     history.push(`${path}/new`);
   };
 
@@ -57,22 +65,22 @@ const AccountTitles = (props) => {
     setFormMode('edit');
     setFormData({
       ...data,
-      parent: data?.parent?.id ?? null
+      parent: data?.parent?.id ?? null,
     });
     setLoading(true);
-    dispatch(clearData())
-    dispatch(listAccountTitlesByType({ type: data.type})).then((response) => {
-      if(isMounted){
+    dispatch(clearData());
+    dispatch(listAccountTitlesByType({ type: data.type })).then((response) => {
+      if (isMounted) {
         const onSuccess = () => {
           history.push(`${path}/${data.id}`);
           setLoading(false);
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       }
-    })
+    });
   };
 
   const handleDelete = (data) => {};
@@ -80,11 +88,11 @@ const AccountTitles = (props) => {
   const handleRetrieve = (data) => {};
 
   const onSubmit = async (data) => {
-    const parent = listData.find((item) => item.id === data.parent)
+    const parent = listData.find((item) => item.id === data.parent);
     const payload = {
       ...data,
       parent: parent ?? null,
-      level: (parent?.level ?? 0) + 1
+      level: (parent?.level ?? 0) + 1,
     };
     if (formMode === 'edit') {
       payload.id = formData.id;
@@ -95,14 +103,13 @@ const AccountTitles = (props) => {
           dispatch(listAccountTitles({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
-    } 
-    else if (formMode === 'add') {
+    } else if (formMode === 'add') {
       await dispatch(createAccountTitle(payload)).then((response) => {
         setLoading(true);
         history.goBack();
@@ -110,15 +117,15 @@ const AccountTitles = (props) => {
           dispatch(listAccountTitles({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (

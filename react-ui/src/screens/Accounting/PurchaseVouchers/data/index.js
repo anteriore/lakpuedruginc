@@ -7,7 +7,7 @@ export const tableHeader = [
     key: 'number',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'RR No',
@@ -15,7 +15,7 @@ export const tableHeader = [
     key: 'rrNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Vendor',
@@ -23,7 +23,7 @@ export const tableHeader = [
     key: 'vendor',
     align: 'center',
     datatype: 'object',
-    dataToString: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`
+    dataToString: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
   },
   {
     title: 'DR No',
@@ -31,7 +31,7 @@ export const tableHeader = [
     key: 'drNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'SI No',
@@ -39,7 +39,7 @@ export const tableHeader = [
     key: 'siNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'PO No',
@@ -47,7 +47,7 @@ export const tableHeader = [
     key: 'poNumber',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
   {
     title: 'Total AMount',
@@ -55,7 +55,7 @@ export const tableHeader = [
     key: 'totalAmount',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'number'
+    datatype: 'number',
   },
   {
     title: 'Status',
@@ -63,7 +63,7 @@ export const tableHeader = [
     key: 'status',
     align: 'center',
     defaultSortOrder: 'ascend',
-    datatype: 'string'
+    datatype: 'string',
   },
 ];
 
@@ -71,57 +71,57 @@ export const tableHeaderAccounts = [
   {
     title: 'Account Title',
     dataIndex: 'accountTitle',
-    render: (object) => object?.title ?? ""
+    render: (object) => object?.title ?? '',
   },
   {
     title: 'Department',
     dataIndex: 'department',
-    render: (object) => object?.name ?? ""
+    render: (object) => object?.name ?? '',
   },
   {
     title: 'Group',
     dataIndex: 'group',
-    render: (object) => object?.name ?? ""
+    render: (object) => object?.name ?? '',
   },
   {
     title: 'Area',
     dataIndex: 'area',
-    render: (object) => object?.name ?? ""
+    render: (object) => object?.name ?? '',
   },
   {
     title: 'Debit',
     render: (object) => {
       if (object?.accountTitle?.type !== undefined) {
-        if(_.toLower(object?.accountTitle?.type) === 'debit') {
-          return object?.amount ?? "---"
+        if (_.toLower(object?.accountTitle?.type) === 'debit') {
+          return object?.amount ?? '---';
         }
-        return "---"
-      } 
+        return '---';
+      }
 
-      return "---"
-    }
+      return '---';
+    },
   },
   {
     title: 'Credit',
     render: (object) => {
       if (object?.accountTitle?.type !== undefined) {
-        if(_.toLower(object?.accountTitle?.type) === 'credit') {
-          return object?.amount ?? "---"
+        if (_.toLower(object?.accountTitle?.type) === 'credit') {
+          return object?.amount ?? '---';
         }
-        return "---"
-      } 
+        return '---';
+      }
 
-      return "---"
-    }
+      return '---';
+    },
   },
-]
+];
 
 const FormDetails = () => {
   const defaultValManual = {
     siNumber: undefined,
     rrNumber: undefined,
     poNumber: undefined,
-    drNumber: undefined
+    drNumber: undefined,
   };
 
   const defaultValAuto = {
@@ -157,11 +157,11 @@ const FormDetails = () => {
         choices: [
           {
             id: false,
-            name: "Automatic",
+            name: 'Automatic',
           },
           {
             id: true,
-            name: "Manual",
+            name: 'Manual',
           },
         ],
         rules: [{ required: true }],
@@ -171,7 +171,7 @@ const FormDetails = () => {
         name: 'accountTitles',
         rules: [{ required: true, message: 'Please select account title' }],
         placeholder: 'Select Account Title',
-        render: (object) => `[${object?.type ?? ""}] ${object?.title ?? ""}`,
+        render: (object) => `[${object?.type ?? ''}] ${object?.title ?? ''}`,
         type: 'selectSearch',
         width: 150,
         choices: [],
@@ -181,7 +181,7 @@ const FormDetails = () => {
         name: 'department',
         rules: [{ required: true, message: 'Please select department' }],
         placeholder: 'Select Department',
-        render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+        render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
         width: 150,
         type: 'selectSearch',
         choices: [],
@@ -191,7 +191,7 @@ const FormDetails = () => {
         name: 'group',
         rules: [{ required: true, message: 'Please select group' }],
         placeholder: 'Select Group',
-        render: (object) => object?.name ?? "",
+        render: (object) => object?.name ?? '',
         type: 'selectSearch',
         width: 150,
         choices: [],
@@ -201,7 +201,7 @@ const FormDetails = () => {
         name: 'area',
         rules: [{ required: true, message: 'Please select area' }],
         placeholder: 'Select Area',
-        render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+        render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
         type: 'selectSearch',
         choices: [],
       },
@@ -227,18 +227,18 @@ const FormDetails = () => {
         type: 'textArea',
         rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
-      }
-    ]
-  }
+      },
+    ],
+  };
 
   // Manual Form Details
   const manualFormDetails = {
-    form_items:   [
+    form_items: [
       {
         label: 'RR Number',
         name: 'rrNumber',
         placeholder: 'Enter RR Number',
-        rules: [{ required: true, message: "Please enter RR number" }],
+        rules: [{ required: true, message: 'Please enter RR number' }],
       },
       {
         label: 'RR Date',
@@ -251,7 +251,7 @@ const FormDetails = () => {
         name: 'vendor',
         rules: [{ required: true, message: 'Please select a vendor' }],
         placeholder: 'Select Vendor',
-        render: (object) => `[${object?.code ?? ""}] ${object?.fullName ?? ""}`,
+        render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
         type: 'selectSearch',
         choices: [],
       },
@@ -259,22 +259,22 @@ const FormDetails = () => {
         label: 'SI #',
         name: 'siNumber',
         placeholder: 'Enter SI number',
-        rules: [{ required: true, message: "Please enter SI number" }],
+        rules: [{ required: true, message: 'Please enter SI number' }],
       },
       {
         label: 'DR #',
         name: 'drNumber',
         placeholder: 'Enter DR number',
-        rules: [{ required: true, message: "Please enter DR number" }],
+        rules: [{ required: true, message: 'Please enter DR number' }],
       },
       {
         label: 'PO #',
         name: 'poNumber',
         placeholder: 'Enter PO number',
-        rules: [{ required: true, message: "Please enter PO number" }],
+        rules: [{ required: true, message: 'Please enter PO number' }],
       },
-    ]
-  }
+    ],
+  };
 
   const autoFormDetails = {
     form_items: [
@@ -283,7 +283,7 @@ const FormDetails = () => {
         name: 'rrNumber',
         rules: [{ required: true, message: 'Please select RR number' }],
         placeholder: 'Select RR Number',
-        render: (object) => `${object?.number ?? ""} - ${object?.status ?? ""}`,
+        render: (object) => `${object?.number ?? ''} - ${object?.status ?? ''}`,
         type: 'selectSearch',
         choices: [],
       },
@@ -305,8 +305,8 @@ const FormDetails = () => {
         placeholder: '',
         readOnly: true,
       },
-    ]
-  }
+    ],
+  };
 
   const accountTableHeader = [
     {
@@ -317,35 +317,41 @@ const FormDetails = () => {
     {
       title: 'Department',
       dataIndex: 'department',
-      render: (object) => object?.name ?? ""
+      render: (object) => object?.name ?? '',
     },
     {
       title: 'Group',
       dataIndex: 'group',
-      render: (object) => object?.name ?? ""
+      render: (object) => object?.name ?? '',
     },
     {
       title: 'Area',
       dataIndex: 'area',
-      render: (object) => object?.name ?? ""
+      render: (object) => object?.name ?? '',
     },
     {
       title: 'Debit',
       dataIndex: 'debit',
-      render: (value) => value ?? "---"
+      render: (value) => value ?? '---',
     },
     {
       title: 'Credit',
       dataIndex: 'credit',
-      render: (value) => value ?? "---"
+      render: (value) => value ?? '---',
     },
     {
       title: 'Action',
     },
   ];
 
-  return { formDetails, manualFormDetails, autoFormDetails, accountTableHeader, defaultValManual, defaultValAuto}
-}
-
+  return {
+    formDetails,
+    manualFormDetails,
+    autoFormDetails,
+    accountTableHeader,
+    defaultValManual,
+    defaultValAuto,
+  };
+};
 
 export default FormDetails;

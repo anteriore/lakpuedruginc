@@ -6,7 +6,8 @@ export const tableHeader = [
     dataIndex: 'approvedReceipt',
     key: 'approvedReceipt',
     align: 'center',
-    render: (object) => object?.controlNumber ?? '',
+    datatype: 'object',
+    dataToString: (object) => object?.controlNumber ?? '',
   },
   {
     title: 'Date',
@@ -34,26 +35,25 @@ export const tableHeader = [
   },
 ];
 
-
 export const modalColumns = [
   {
     label: 'Control Number',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.controlNumber ?? ''}`,
+    render: (object) => `${object?.controlNumber ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Raw Materials',
     name: 'approvedReceipt',
-    render: (object) =>  `[${object?.item?.code ?? ''}]${object?.item?.name ?? ''}`,
+    render: (object) => `[${object?.item?.code ?? ''}]${object?.item?.name ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Reevaluated By ',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.receivedBy?.firstName ?? ''} 
+    render: (object) => `${object?.receivedBy?.firstName ?? ''} 
     ${object?.receivedBy?.middleInitial ?? ''}
     ${object?.receivedBy?.lastName ?? ''}`,
     type: 'selectSearch',
@@ -62,77 +62,77 @@ export const modalColumns = [
   {
     label: 'Approved Receipt Date ',
     name: 'approvedReceipt',
-    render: (object) =>  `${moment(new Date(object.date)).format('DD/MM/YYYY')}`,
+    render: (object) => `${moment(new Date(object.date)).format('DD/MM/YYYY')}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Approved Receipt Number ',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.number ?? ''}`,
+    render: (object) => `${object?.number ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'RR No',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.rrNumber ?? ''}`,
+    render: (object) => `${object?.rrNumber ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'SI No',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.receivingReceipt?.siNumber ?? ''}`,
+    render: (object) => `${object?.receivingReceipt?.siNumber ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Specified Gravity',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.specifiedGravity ?? ''}`,
+    render: (object) => `${object?.specifiedGravity ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Max Containers',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.maxContainers ?? ''}`,
+    render: (object) => `${object?.maxContainers ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'QC Samples',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.qcSamples ?? ''}`,
+    render: (object) => `${object?.qcSamples ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Received Quantity',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.receivedQuantity ?? ''}`,
+    render: (object) => `${object?.receivedQuantity ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Rejected Quantity',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.rejectedQuantity ?? ''}`,
+    render: (object) => `${object?.rejectedQuantity ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Total Quantity',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.totalQuantity ?? ''}`,
+    render: (object) => `${object?.totalQuantity ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
   {
     label: 'Delivery Number',
     name: 'approvedReceipt',
-    render: (object) =>  `${object?.receivingReceipt?.drNumber ?? ''}`,
+    render: (object) => `${object?.receivingReceipt?.drNumber ?? ''}`,
     type: 'selectSearch',
     readOnly: true,
   },
@@ -186,7 +186,7 @@ export const modalColumns = [
     placeholder: 'Remarks (optional)',
     type: 'textArea',
   },
-]
+];
 
 export const formDetails = {
   form_name: 'approvedReceipts',

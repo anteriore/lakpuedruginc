@@ -21,7 +21,9 @@ const Units = (props) => {
   const [currentID, setCurrentID] = useState('');
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  const { unitList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.units);
+  const { unitList, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.units
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -39,7 +41,7 @@ const Units = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -58,12 +60,11 @@ const Units = (props) => {
 
   const handleDeleteButton = (row) => {
     setLoading(true);
-    dispatch(deleteUnit(row))
-      .then(() => {
-        dispatch(listUnit({ company, message })).then(() => {
-          setLoading(false);
-        });
-      })
+    dispatch(deleteUnit(row)).then(() => {
+      dispatch(listUnit({ company, message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -79,19 +80,19 @@ const Units = (props) => {
 
       await dispatch(updateUnit(newValues)).then(() => {
         dispatch(listUnit({ message })).then(() => {
-          setLoading(false)
+          setLoading(false);
         });
       });
     } else if (mode === 'add') {
       await dispatch(createUnit(values)).then(() => {
         dispatch(listUnit({ message })).then(() => {
-          setLoading(false)
-        });;
+          setLoading(false);
+        });
       });
     }
     setFormValues('');
     setIsOpenForm(!isOpenForm);
-    return 1
+    return 1;
   };
 
   return (
@@ -105,7 +106,9 @@ const Units = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { loading ? <Skeleton/> : 
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={unitList}
@@ -114,7 +117,7 @@ const Units = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

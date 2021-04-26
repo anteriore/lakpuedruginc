@@ -13,7 +13,7 @@ const statusDialogue = (response, dialogueType) => {
           content: response.statusMessage,
           key: response.action,
         });
-      case 'success': 
+      case 'success':
         return message.success({
           content: response.statusMessage,
           key: response.action,
@@ -22,7 +22,7 @@ const statusDialogue = (response, dialogueType) => {
         return message.loading({
           content: response.statusMessage,
           key: response.action,
-        })
+        });
     }
   } else {
     switch (response.statusLevel) {

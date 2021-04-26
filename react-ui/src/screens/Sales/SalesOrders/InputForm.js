@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Form, Table, Space, Button, Skeleton, Modal, message, Empty, InputNumber, Alert } from 'antd';
+import {
+  Row,
+  Col,
+  Typography,
+  Form,
+  Table,
+  Space,
+  Button,
+  Skeleton,
+  Modal,
+  message,
+  Empty,
+  InputNumber,
+  Alert,
+} from 'antd';
 import { PlusOutlined, DeleteOutlined, SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useSelector } from 'react-redux';
@@ -53,11 +67,13 @@ const InputForm = (props) => {
     const handleDepotChange = (value) => {
       form.setFieldsValue({ product: [] });
       setRequestedProductList([]);
-      setProductInv(
-        _.filter(productInventoryList, (o) => {
-          return o.depot?.id === value && o.quantity !== 0 ;
-        })
-      );
+      const productlist = _.filter(productInventoryList, (o) => {
+        return o.depot?.id === value && o.quantity !== 0;
+      });
+      setProductInv(productlist);
+      if (productlist.length === 0) {
+        message.error('The selected depot does not have items with stock');
+      }
     };
 
     formItem.onChange = (e) => handleDepotChange(e);
@@ -67,15 +83,16 @@ const InputForm = (props) => {
   const handleChange = (value, index, name) => {
     setRequestedProductList((prevData) => {
       const newData = [...prevData];
-      const newItem = {...newData[index]};
+      const newItem = { ...newData[index] };
       newItem[name] = value;
       newData[index] = newItem;
-      newData[index]['amount'] = (newData[index]['quantityRequested'] 
-      * newData[index]['unitPrice']).toFixed(2);
+      newData[index].amount = (newData[index].quantityRequested * newData[index].unitPrice).toFixed(
+        2
+      );
 
       return calcRqstdQtyPerProduct(newData);
-    })
-  }
+    });
+  };
 
   const handleRemoveSalesProduct = (data) => {
     const newData = [...requestedProductList];
@@ -105,36 +122,41 @@ const InputForm = (props) => {
     }
   };
 
-  const renderTableColumns = (table) => table.fields.map((col) => {
-    if(!col.editable) {
-      if (col.title === 'Action') {
-        const filteredColumn = {
-          ...col,
-          render: (row) => {
-            return (
-              <Button
-                type="dashed"
-                icon={<DeleteOutlined />}
-                onClick={() => handleRemoveSalesProduct(row)}
-                danger
-              />
-            );
-          },
-        };
-  
-        return filteredColumn;
+  const renderTableColumns = (table) =>
+    table.fields.map((col) => {
+      if (!col.editable) {
+        if (col.title === 'Action') {
+          const filteredColumn = {
+            ...col,
+            render: (row) => {
+              return (
+                <Button
+                  type="dashed"
+                  icon={<DeleteOutlined />}
+                  onClick={() => handleRemoveSalesProduct(row)}
+                  danger
+                />
+              );
+            },
+          };
+
+          return filteredColumn;
+        }
+
+        return col;
       }
-  
-      return col;
-    }
-    return {
-      ...col, 
-      render: (value, _, index) => <InputNumber
-      value={value} min={ col.dataIndex === 'unitPrice' ? 0 : 1}
-      precision={col.dataIndex === 'unitPrice' ? 2 : 0}
-      onChange={(value) => handleChange(value, index, col.dataIndex)}/>,
-    }
-  }) 
+      return {
+        ...col,
+        render: (value, _, index) => (
+          <InputNumber
+            value={value}
+            min={col.dataIndex === 'unitPrice' ? 0 : 1}
+            precision={col.dataIndex === 'unitPrice' ? 2 : 0}
+            onChange={(value) => handleChange(value, index, col.dataIndex)}
+          />
+        ),
+      };
+    });
 
   // render Product Items with add button
   const renderProductItemColumns = (rawColumns) => {
@@ -167,12 +189,12 @@ const InputForm = (props) => {
   };
 
   const onFinish = () => {
-    setProcessingData(true)
-    form.setFieldsValue({salesOrderProducts: requestedProductList});
+    setProcessingData(true);
+    form.setFieldsValue({ salesOrderProducts: requestedProductList });
     onSubmit(form.getFieldsValue()).then(() => {
-      setProcessingData(false)
+      setProcessingData(false);
       history.goBack();
-    })
+    });
   };
 
   return (
@@ -185,64 +207,71 @@ const InputForm = (props) => {
           {contentLoading ? (
             <Skeleton />
           ) : (
-              <Form form={form} onFinish={onFinish} {...styles.formLayout}>
-                {_.dropRight(tempFormDetails.form_items).map((item) => (
-                  <FormItem key={item.name} onFail={onFail} item={item} />
-                ))}
-                { productInv.length !== 0 ? 
-                  <Form.List
-                    label={tableDetails.label} 
-                    name={tableDetails.name}
-                  >
-                    {(fields) => (
-                      <Form.Item
-                        wrapperCol={{ span: 17, offset: 3 }}
-                      >
-                        <Form.Item wrapperCol={{ offset: 15, span: 11 }}>
-                          <Button
-                            icon={<SelectOutlined />}
-                            onClick={() => {
-                              setProductModal(true);
-                            }}
-                          >
-                            {`Select ${tableDetails.label}`}
-                          </Button>
-                        </Form.Item>
-                        <Form.Item> 
-                          <Table
-                            rowKey={record => record.uid}
-                            dataSource={requestedProductList}
-                            columns={renderTableColumns(tableDetails)}
-                            pagination={false}
-                            locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                          />
-                        </Form.Item>
+            <Form form={form} onFinish={onFinish} {...styles.formLayout}>
+              {_.dropRight(tempFormDetails.form_items).map((item) => (
+                <FormItem key={item.name} onFail={onFail} item={item} />
+              ))}
+              {productInv.length !== 0 ? (
+                <Form.List label={tableDetails.label} name={tableDetails.name}>
+                  {(fields) => (
+                    <Form.Item wrapperCol={{ span: 17, offset: 3 }}>
+                      <Form.Item wrapperCol={{ offset: 15, span: 11 }}>
+                        <Button
+                          icon={<SelectOutlined />}
+                          onClick={() => {
+                            setProductModal(true);
+                          }}
+                        >
+                          {`Select ${tableDetails.label}`}
+                        </Button>
                       </Form.Item>
-                    )}
-                  </Form.List>  
-                : 
-                  <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
-                    <Alert
-                      message={tableDetails?.emptyText ?? `Please provide the necessary data for ${tableDetails.label}`}
-                      type="warning"
-                      showIcon
-                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
-                    />
-                  </Form.Item>
-                }
-                <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
-                <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
-                  <Space size={16}>
-                    <Button htmlType="button" onClick={() => history.goBack()} disabled={processingData}>
-                      Cancel
-                    </Button>
-                    <Button type="primary" htmlType="submit" loading={processingData}>
-                      Submit
-                    </Button>
-                  </Space>
+                      <Form.Item>
+                        <Table
+                          rowKey={(record) => record.uid}
+                          dataSource={requestedProductList}
+                          columns={renderTableColumns(tableDetails)}
+                          pagination={false}
+                          locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                        />
+                      </Form.Item>
+                    </Form.Item>
+                  )}
+                </Form.List>
+              ) : (
+                <Form.Item wrapperCol={{ span: 15, offset: 4 }}>
+                  <Alert
+                    message={
+                      tableDetails?.emptyText ??
+                      `Please provide the necessary data for ${tableDetails.label}`
+                    }
+                    type="warning"
+                    showIcon
+                    icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                    style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
+                  />
                 </Form.Item>
-              </Form>
+              )}
+              <FormItem onFail={onFail} item={_.last(formDetails.form_items)} />
+              <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
+                <Space size={16}>
+                  <Button
+                    htmlType="button"
+                    onClick={() => history.goBack()}
+                    disabled={processingData}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    disabled={requestedProductList.length === 0}
+                    type="primary"
+                    htmlType="submit"
+                    loading={processingData}
+                  >
+                    Submit
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Form>
           )}
         </Col>
         <Modal
@@ -255,12 +284,14 @@ const InputForm = (props) => {
           footer={null}
         >
           <Table
-            rowKey={record => record.uid}
-            columns={TableHeader({ 
-              columns: renderProductItemColumns(tableProductInventory), 
-              hasSorter: true, hasFilter: true })}
+            rowKey={(record) => record.uid}
+            columns={TableHeader({
+              columns: renderProductItemColumns(tableProductInventory),
+              hasSorter: true,
+              hasFilter: true,
+            })}
             dataSource={productInv}
-            pagination={{simple: true}}
+            pagination={{ simple: true }}
           />
         </Modal>
       </Row>

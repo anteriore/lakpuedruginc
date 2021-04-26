@@ -12,34 +12,16 @@ const initialState = {
   action: '',
 };
 
-export const listVoucherByCompany = createAsyncThunk('listVoucherByCompany', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
-  try {
-    const response = await axiosInstance.get(
-      `/rest/vouchers/company/${company}/new-vouchers?token=${accessToken}`
-    );
-
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-    if (valid) {
-      return validatedResponse;
-    }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
-  }
-});
-
-export const listVoucherByCompanyAndStatus = createAsyncThunk(
-  'listVoucherByCompanyAndStatus',
+export const listVoucherByCompany = createAsyncThunk(
+  'listVoucherByCompany',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-
-    const { company, status } = payload
-
+    const { company } = payload;
     try {
-      const response = await axiosInstance.get(`rest/vouchers/company/${company}/status/${status}/new-vouchers?token=${accessToken}`);
+      const response = await axiosInstance.get(
+        `/rest/vouchers/company/${company}/new-vouchers?token=${accessToken}`
+      );
+
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
       if (valid) {
@@ -49,7 +31,29 @@ export const listVoucherByCompanyAndStatus = createAsyncThunk(
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
     }
+  }
+);
 
+export const listVoucherByCompanyAndStatus = createAsyncThunk(
+  'listVoucherByCompanyAndStatus',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+
+    const { company, status } = payload;
+
+    try {
+      const response = await axiosInstance.get(
+        `rest/vouchers/company/${company}/status/${status}/new-vouchers?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
 );
 
@@ -64,14 +68,17 @@ const vouchersSlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading', 
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for vouchers`,
       };
     },
     [listVoucherByCompany.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Vouchers'
+        action.payload, 
+        'Vouchers',
+        state.action  
       );
 
       return {
@@ -86,8 +93,9 @@ const vouchersSlice = createSlice({
     [listVoucherByCompany.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Vouchers'
+        action.payload, 
+        'Vouchers',
+        state.action  
       );
 
       return {
@@ -99,18 +107,21 @@ const vouchersSlice = createSlice({
         statusMessage,
       };
     },
-    [listVoucherByCompanyAndStatus.pending]: (state,) => {
+    [listVoucherByCompanyAndStatus.pending]: (state) => {
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for vouchers`,
       };
     },
     [listVoucherByCompanyAndStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Vouchers'
+        action.payload, 
+        'Vouchers',
+        state.action      
       );
 
       return {
@@ -125,8 +136,9 @@ const vouchersSlice = createSlice({
     [listVoucherByCompanyAndStatus.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload,
-        'Vouchers'
+        action.payload, 
+        'Vouchers',
+        state.action  
       );
 
       return {
@@ -138,8 +150,8 @@ const vouchersSlice = createSlice({
         statusMessage,
       };
     },
-  }
-})
+  },
+});
 
-export const {clearData} = vouchersSlice.actions;
+export const { clearData } = vouchersSlice.actions;
 export default vouchersSlice.reducer;

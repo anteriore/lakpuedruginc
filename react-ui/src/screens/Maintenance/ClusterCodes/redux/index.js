@@ -12,29 +12,26 @@ const initialState = {
   action: '',
 };
 
-export const listCluster = createAsyncThunk(
-  'listCluster',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const listCluster = createAsyncThunk('listCluster', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
-    try {
-      const response = await axiosInstance.get(`/rest/cluster-codes?token=${accessToken}`);
-  
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: 'failed. An error has occurred'
-      });
+  try {
+    const response = await axiosInstance.get(`/rest/cluster-codes?token=${accessToken}`);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred',
+    });
   }
-);
+});
 
 export const createCluster = createAsyncThunk('createCluster', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -51,7 +48,7 @@ export const createCluster = createAsyncThunk('createCluster', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -72,7 +69,7 @@ export const updateCluster = createAsyncThunk('updateCluster', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -80,9 +77,12 @@ export const updateCluster = createAsyncThunk('updateCluster', async (payload, t
 export const deleteCluster = createAsyncThunk('deleteCluster', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   const { id } = payload;
-  
+
   try {
-    const response = await axiosInstance.post(`/rest/cluster-codes/delete?token=${accessToken}`, id);
+    const response = await axiosInstance.post(
+      `/rest/cluster-codes/delete?token=${accessToken}`,
+      id
+    );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -94,7 +94,7 @@ export const deleteCluster = createAsyncThunk('deleteCluster', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -106,17 +106,21 @@ const clusterCodeSlice = createSlice({
   },
   extraReducers: {
     [listCluster.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: 'loading',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clusters` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clusters`,
       };
     },
     [listCluster.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cluster Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cluster Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -144,17 +148,21 @@ const clusterCodeSlice = createSlice({
       };
     },
     [createCluster.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: 'loading',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clusters` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clusters`,
       };
     },
     [createCluster.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cluster Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cluster Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -181,17 +189,21 @@ const clusterCodeSlice = createSlice({
       };
     },
     [updateCluster.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: 'loading',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clusters` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clusters`,
       };
     },
     [updateCluster.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cluster Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cluster Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -218,17 +230,21 @@ const clusterCodeSlice = createSlice({
       };
     },
     [deleteCluster.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: 'loading',
-        statusMessage: `${message.ITEMS_GET_PENDING} for clusters` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for clusters`,
       };
     },
     [deleteCluster.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Cluster Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Cluster Codes',
+        state.action
+      );
 
       return {
         ...state,

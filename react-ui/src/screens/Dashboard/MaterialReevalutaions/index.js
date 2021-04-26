@@ -8,9 +8,8 @@ import TableDisplay from '../../../components/TableDisplay';
 import { modalColumns, tableHeader } from './data';
 import InputForm from './InputForm';
 import { listApprovedReceipts, clearData as clearAR } from '../ApprovedReceipts/redux';
-import GeneralHelper from '../../../helpers/general-helper';
 import { formatPayload } from './helpers';
-import { reevalutateMessageStatus } from '../../../helpers/general-helper'
+import GeneralHelper ,{ reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper'
 import ItemDescription from '../../../components/ItemDescription';
 
 const { Title } = Typography;
@@ -31,13 +30,19 @@ const MaterialReevaluations = (props) => {
     statusMessage,
     statusLevel,
   } = useSelector((state) => state.dashboard.materialReevaluations);
-  const { list: ARList } = useSelector((state) => state.dashboard.approvedReceipts);
+  const { 
+    list: ARList, 
+    status: statusAR, 
+    statusMessage: statusMessageAR, 
+    statusLevel: statusLevelAR, 
+    action: actionAR
+  } = useSelector((state) => state.dashboard.approvedReceipts);
   const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearAR());
-  },[dispatch])
+  }, [dispatch]);
 
   const onSuccess = useCallback(() => {
     history.push(`${path}/new`);
@@ -45,12 +50,22 @@ const MaterialReevaluations = (props) => {
 
   const onFailed = useCallback(() => {
     history.goBack();
-		setContentLoading(false);
+    setContentLoading(false);
   }, [history]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusAR,
+      statusMessage: statusMessageAR,
+      action: actionAR, 
+      statusLevel: statusLevelAR,
+      module: 'Approved Receipts'
+    });
+  }, [actionAR, statusMessageAR, statusAR, statusLevelAR]);
 
   useEffect(() => {
     dispatch(listMaterialReevaluations(company))
@@ -58,23 +73,25 @@ const MaterialReevaluations = (props) => {
       if (isMounted.current) {
         setContentLoading(false);
       }
-    })
+    });
     return function cleanup() {
-      isMounted.current = false
-      performCleanup()
+      isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
   const handleAddButton = () => {
-    setContentLoading(true)
-    dispatch(listApprovedReceipts({company})).then((dataAR) => {
-      if(isMounted.current){
-        handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
+    setContentLoading(true);
+    dispatch(listApprovedReceipts({ company }))
+      .then((dataAR) => {
+        if (isMounted.current) {
+          handleRequestResponse([dataAR], onSuccess, onFailed, '/material-reevaluations');
+          setContentLoading(false);
+        }
+      })
+      .catch(() => {
         setContentLoading(false);
-      }
-    }).catch(() => {
-      setContentLoading(false);
-    });
+      });
   };
 
   const handleRetrieve = (data) => {

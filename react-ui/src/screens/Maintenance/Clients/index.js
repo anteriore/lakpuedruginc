@@ -30,36 +30,33 @@ const Clients = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { path } = useRouteMatch();
-  const { list: clients, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.clients);
+  const { list: clients, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.clients
+  );
   const { formDetails } = FormDetails();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
   const isMounted = useRef(true);
 
   useEffect(() => {
     dispatch(listClient({ company, message })).then(() => {
-      if(isMounted.current){
+      if (isMounted.current) {
         setFormData(null);
         setLoading(false);
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
-      performCleanup()
+      isMounted.current = false;
+      dispatch(clearData());
+      dispatch(clearCluster());
+      dispatch(clearInstitution());
+      dispatch(clearS());
     };
-    // eslint-disable-next-line
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
-  
-  const performCleanup = () => {
-    dispatch(clearData());
-    dispatch(clearCluster());
-    dispatch(clearInstitution());
-    dispatch(clearS());
-  }
 
   const handleAdd = () => {
     setFormTitle('Add Client');
@@ -69,14 +66,14 @@ const Clients = (props) => {
     dispatch(listCluster()).then((response1) => {
       dispatch(listInstitution({ company, message })).then((response2) => {
         dispatch(listS({ company, message })).then((response3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
-                history.push(`${path}/new`);
-                setLoading(false);
-            }
+              history.push(`${path}/new`);
+              setLoading(false);
+            };
             const onFail = () => {
               setLoading(false);
-            }
+            };
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
           }
         });
@@ -99,14 +96,14 @@ const Clients = (props) => {
     dispatch(listCluster()).then((response1) => {
       dispatch(listInstitution({ company, message })).then((response2) => {
         dispatch(listS({ company, message })).then((response3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
               history.push(`${path}/${data.id}`);
               setLoading(false);
-            }
+            };
             const onFail = () => {
               setLoading(false);
-            }
+            };
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
           }
         });
@@ -121,10 +118,10 @@ const Clients = (props) => {
         dispatch(listClient({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -137,10 +134,10 @@ const Clients = (props) => {
         setDisplayModal(true);
         setDisplayData(response.payload.data);
         setLoadingItem(false);
-      }
+      };
       const onFail = () => {
         setDisplayModal(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -167,7 +164,7 @@ const Clients = (props) => {
       },
     };
     if (formMode === 'edit') {
-      payload.id = formData.id
+      payload.id = formData.id;
 
       await dispatch(updateClient(payload)).then((response) => {
         setLoading(true);
@@ -176,11 +173,11 @@ const Clients = (props) => {
           dispatch(listClient({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -191,11 +188,11 @@ const Clients = (props) => {
           dispatch(listClient({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
@@ -287,9 +284,16 @@ const Clients = (props) => {
                   dataSource={displayData !== null ? displayData.clientReferencesList : []}
                   columns={itemColumns}
                   pagination={false}
-                  locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No client references." /> }}
+                  locale={{
+                    emptyText: (
+                      <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description="No client references."
+                      />
+                    ),
+                  }}
                 />
-            </Space>
+              </Space>
             )}
           </Modal>
         </Row>

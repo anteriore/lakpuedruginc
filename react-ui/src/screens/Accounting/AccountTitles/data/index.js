@@ -26,7 +26,7 @@ export const columns = [
 ];
 
 const FormDetails = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const accountTitles = useSelector((state) => state.accounting.accountTitles.list);
 
   const formDetails = {
@@ -38,18 +38,18 @@ const FormDetails = () => {
         type: 'select',
         choices: [
           {
-            id: "Credit",
-            name: "Credit"
+            id: 'Credit',
+            name: 'Credit',
           },
           {
-            id: "Debit",
-            name: "Debit"
-          }
+            id: 'Debit',
+            name: 'Debit',
+          },
         ],
         render: (item) => item.name,
         onChange: (e) => {
-          dispatch(clearData())
-          dispatch(listAccountTitlesByType({ type: e}))
+          dispatch(clearData());
+          dispatch(listAccountTitlesByType({ type: e }));
         },
         rules: [{ required: true }],
       },
@@ -66,8 +66,8 @@ const FormDetails = () => {
         choices: accountTitles,
         allowEmpty: true,
         render: (item) => `${item.title}`,
-        //rules: [{ required: true }],
-        notFoundContent: "Please select a type first before selecting the parent."
+        // rules: [{ required: true }],
+        notFoundContent: 'Please select a type first before selecting the parent.',
       },
     ],
   };

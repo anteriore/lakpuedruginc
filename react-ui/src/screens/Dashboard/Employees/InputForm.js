@@ -13,17 +13,17 @@ const InputForm = (props) => {
   const history = useHistory();
   const { path } = useRouteMatch();
   const [form] = useForm();
-  const [processingData, setProcessingData] = useState(false)
+  const [processingData, setProcessingData] = useState(false);
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 
   const onFinish = () => {
-    setProcessingData(true)
+    setProcessingData(true);
     onSubmit(form.getFieldsValue()).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
     history.goBack();
   };
 
@@ -41,7 +41,11 @@ const InputForm = (props) => {
               ))}
               <Form.Item wrapperCol={{ offset: 15, span: 4 }}>
                 <Space size={16}>
-                  <Button htmlType="button" onClick={() => history.goBack()} loading={processingData}>
+                  <Button
+                    htmlType="button"
+                    onClick={() => history.goBack()}
+                    loading={processingData}
+                  >
                     Cancel
                   </Button>
                   <Button type="primary" htmlType="submit">

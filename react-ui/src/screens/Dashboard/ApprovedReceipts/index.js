@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Row, Col, Typography, Button, Modal, Skeleton, Descriptions, Space, message, } from 'antd';
+import { Row, Col, Typography, Button, Modal, Skeleton, Descriptions, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -8,12 +8,15 @@ import TableDisplay from '../../../components/TableDisplay';
 import { DisplayDetails, FormDetails } from './data';
 import { formatPayload } from './helpers';
 import InputForm from './InputForm';
-//import FormScreen from '../../../components/forms/FormScreen';
-import { listApprovedReceipts, addApprovedReceipt, clearData,} from './redux';
-import { listRR, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
-import { listItemSummary, clearData as clearItem} from '../../Maintenance/Items/redux';
+// import FormScreen from '../../../components/forms/FormScreen';
+import { listApprovedReceipts, addApprovedReceipt, clearData } from './redux';
+import { listRR, clearData as clearRR } from '../ReceivingReceipts/redux';
+import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 // import { addInventory } from '../../Dashboard/Inventory/redux';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -30,16 +33,20 @@ const ApprovedReceipts = (props) => {
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
-  //const [formData, setFormData] = useState(null);
+  // const [formData, setFormData] = useState(null);
 
   const { columns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
   const [selectedData, setSelectedData] = useState(null);
-  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.dashboard.approvedReceipts);
-  const { 
-    status: statusItems, statusLevel: statusLevelItems,
-    statusMessage: statusMessageItems, action: actionItems
-  } = useSelector(state => state.maintenance.items);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.approvedReceipts
+  );
+  const {
+    status: statusItems,
+    statusLevel: statusLevelItems,
+    statusMessage: statusMessageItems,
+    action: actionItems,
+  } = useSelector((state) => state.maintenance.items);
   const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
@@ -50,7 +57,7 @@ const ApprovedReceipts = (props) => {
 
   useEffect(() => {
     dispatch(listApprovedReceipts({ company, message })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
       }
     });
@@ -62,17 +69,17 @@ const ApprovedReceipts = (props) => {
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusItems,
       statusMessage: statusMessageItems,
-      action: actionItems, 
+      action: actionItems,
       statusLevel: statusLevelItems,
-      module: title
-    })
+      module: title,
+    });
   }, [actionItems, statusMessageItems, statusItems, statusLevelItems, title]);
 
   const handleAdd = () => {
@@ -82,14 +89,14 @@ const ApprovedReceipts = (props) => {
     setLoading(true);
     dispatch(listRR({ company, message })).then((resp1) => {
       dispatch(listItemSummary({ company, message })).then((resp2) => {
-        if(isMounted.current){
+        if (isMounted.current) {
           const onSuccess = () => {
-              history.push(`${path}/new`);
-              setLoading(false);
-          }
+            history.push(`${path}/new`);
+            setLoading(false);
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
         }
       });
@@ -103,8 +110,7 @@ const ApprovedReceipts = (props) => {
 
   const onSubmit = async (data) => {
     const payload = formatPayload(id, company, data);
-    //const invPayload = inventoryPayload(company, data);
-    
+    // const invPayload = inventoryPayload(company, data);
 
     if (formMode === 'edit') {
       payload.id = selectedData.id;
@@ -117,21 +123,20 @@ const ApprovedReceipts = (props) => {
         dispatch(listApprovedReceipts({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-        
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
 
-    return 1
+    return 1;
   };
 
   const handleCancelButton = () => {
     setSelectedData(null);
-    setLoading(false)
+    setLoading(false);
   };
 
   return (
@@ -221,8 +226,7 @@ const ApprovedReceipts = (props) => {
                     }
                     if (item.type === 'select' || item.type === 'selectSearch') {
                       const itemData = selectedData[item.name];
-                      if(itemData !== null && typeof itemData !== 'undefined'){
-
+                      if (itemData !== null && typeof itemData !== 'undefined') {
                         return (
                           <Descriptions.Item label={item.label}>
                             {itemData[item.selectName]}
@@ -254,10 +258,19 @@ const ApprovedReceipts = (props) => {
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Item Details:
               </Title>
-              <Descriptions title={`[${selectedData.item.code}] ${selectedData.item.name}`} size="default">
-                <Descriptions.Item label="Received">{selectedData.receivedQuantity}</Descriptions.Item>
-                <Descriptions.Item label="Approved">{selectedData.approvedQuantity}</Descriptions.Item>
-                <Descriptions.Item label="Rejected">{selectedData.rejectedQuantity}</Descriptions.Item>
+              <Descriptions
+                title={`[${selectedData.item.code}] ${selectedData.item.name}`}
+                size="default"
+              >
+                <Descriptions.Item label="Received">
+                  {selectedData.receivedQuantity}
+                </Descriptions.Item>
+                <Descriptions.Item label="Approved">
+                  {selectedData.approvedQuantity}
+                </Descriptions.Item>
+                <Descriptions.Item label="Rejected">
+                  {selectedData.rejectedQuantity}
+                </Descriptions.Item>
                 <Descriptions.Item label="QC Sample">{selectedData.qcSamples}</Descriptions.Item>
                 <Descriptions.Item label="Total">{selectedData.totalQuantity}</Descriptions.Item>
                 <Descriptions.Item label="Expiration">
@@ -267,10 +280,10 @@ const ApprovedReceipts = (props) => {
                   {moment(new Date(selectedData.bestBefore)).format('DD/MM/YYYY')}
                 </Descriptions.Item>
                 <Descriptions.Item label="Reevaluation">
-                {moment(new Date(selectedData.reevaluation)).format('DD/MM/YYYY')}
+                  {moment(new Date(selectedData.reevaluation)).format('DD/MM/YYYY')}
                 </Descriptions.Item>
                 <Descriptions.Item label="Retest">
-                {moment(new Date(selectedData.retest)).format('DD/MM/YYYY')}
+                  {moment(new Date(selectedData.retest)).format('DD/MM/YYYY')}
                 </Descriptions.Item>
               </Descriptions>
             </Space>

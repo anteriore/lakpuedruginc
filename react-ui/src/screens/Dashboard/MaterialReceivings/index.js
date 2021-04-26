@@ -17,13 +17,15 @@ import {
 } from '../MaterialIssuances/redux';
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
-
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
 const MaterialReceivings = (props) => {
-  const {title} = props;
+  const { title } = props;
   const { handleRequestResponse } = GeneralHelper();
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -31,14 +33,15 @@ const MaterialReceivings = (props) => {
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const {
-    list, status, statusLevel, 
-    statusMessage, action
-  } = useSelector((state) => state.dashboard.materialReceivings);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.materialReceivings
+  );
 
-  const { 
-    status: statusMI, statusLevel: statusLevelMI, 
-    statusMessage: statusMessageMI, action: actionMI 
+  const {
+    status: statusMI,
+    statusLevel: statusLevelMI,
+    statusMessage: statusMessageMI,
+    action: actionMI,
   } = useSelector((state) => state.dashboard.materialIssuances);
 
   const user = useSelector((state) => state.auth.user);
@@ -54,11 +57,11 @@ const MaterialReceivings = (props) => {
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearMaterialIssuance());
-  },[dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listMaterialReceiving({ company, message })).then(() => {
-      if (isMounted.current){
+      if (isMounted.current) {
         setFormData(null);
         setLoading(false);
       }
@@ -71,36 +74,33 @@ const MaterialReceivings = (props) => {
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusMI,
       statusMessage: statusMessageMI,
-      action: actionMI, 
+      action: actionMI,
       statusLevel: statusLevelMI,
-      module: title
-    })
-  }, [
-    actionMI, statusMessageMI, 
-    statusMI, statusLevelMI, title
-  ]);
+      module: title,
+    });
+  }, [actionMI, statusMessageMI, statusMI, statusLevelMI, title]);
 
   const handleAdd = () => {
     setFormTitle('Create Material Receiving');
     setFormData(null);
     setLoading(true);
     dispatch(listMaterialIssuanceByStatus({ status: 'Pending', message })).then((response) => {
-      if (isMounted.current){
+      if (isMounted.current) {
         const onSuccess = () => {
           history.push(`${path}/new`);
           setLoading(false);
-        }
+        };
 
         const onFailed = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFailed, '');
       }
     });
@@ -157,12 +157,12 @@ const MaterialReceivings = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
 
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (

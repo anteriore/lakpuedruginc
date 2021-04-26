@@ -13,7 +13,7 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
-  const [tableData, setTableData] = useState();
+  const [tableData, setTableData] = useState([]);
   const [processingData, setProcessingData] = useState(false);
   const [selectedMIS, setSelectedMIS] = useState([]);
 
@@ -24,11 +24,10 @@ const InputForm = (props) => {
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
     }
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable.name, hasTable]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -42,29 +41,12 @@ const InputForm = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
     message.error("An error has occurred. Please double check the information you've provided.");
-  };
-
-  // for rendering tables
-  const renderTableColumns = (item) => {
-    const columns = [];
-    item.fields.forEach((field) => {
-      if (typeof field.render === 'undefined' || field.render === null) {
-        field.render = (object) => object[field.name];
-      }
-      columns.push({
-        title: field.label,
-        key: field.name,
-        render: (object) => field.render(object),
-      });
-    });
-
-    return columns;
   };
 
   const onFail = () => {
@@ -74,12 +56,6 @@ const InputForm = (props) => {
   const onValuesChange = (values) => {
     if (hasTable && values.hasOwnProperty(formTable.name)) {
       setTableData(values[formTable.name].inventoryList);
-    }
-
-    if (values.hasOwnProperty('depot')) {
-      setSelectedMIS([]);
-      setTableData(null);
-      form.setFieldsValue({ pis: null });
     }
   };
 
@@ -132,7 +108,7 @@ const InputForm = (props) => {
                     <Text style={{ float: 'left', marginLeft: '2%' }}>{'Received Items: '}</Text>
                     <Table
                       dataSource={tableData}
-                      columns={renderTableColumns(formTable)}
+                      columns={formTable.renderTableColumns(formTable.fields)}
                       pagination={false}
                       locale={{
                         emptyText: <Empty description="No Material Issuance Slip Selected." />,

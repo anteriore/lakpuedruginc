@@ -32,37 +32,40 @@ export const listUser = createAsyncThunk('listUser', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
-export const listUserByCompanyGroupByDepartment = createAsyncThunk('listUserByCompanyGroupByDepartment', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const departments = thunkAPI.getState().maintenance.departmentArea.deptList;
+export const listUserByCompanyGroupByDepartment = createAsyncThunk(
+  'listUserByCompanyGroupByDepartment',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const departments = thunkAPI.getState().maintenance.departmentArea.deptList;
 
-  try {
-    const response = await axiosInstance.get(
-      `rest/users/company/${payload.company}/?token=${accessToken}`
-    );
+    try {
+      const response = await axiosInstance.get(
+        `rest/users/company/${payload.company}/?token=${accessToken}`
+      );
 
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid && departments.length > 0) {
-      return validatedResponse;
+      if (valid && departments.length > 0) {
+        return validatedResponse;
+      }
+      if (departments.length === 0) {
+        validatedResponse.statusText = 'failed. No data retrieved for departments';
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    else if(departments.length === 0 ){
-      validatedResponse.statusText = 'failed. No data retrieved for departments'
-    }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
 export const addUser = createAsyncThunk('addUser', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -80,7 +83,7 @@ export const addUser = createAsyncThunk('addUser', async (payload, thunkAPI) => 
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -101,7 +104,7 @@ export const updateUser = createAsyncThunk('updateUser', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -122,7 +125,7 @@ export const deleteUser = createAsyncThunk('deleteUser', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -143,7 +146,7 @@ export const listPermission = createAsyncThunk('listPermission', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -156,12 +159,12 @@ const userSlice = createSlice({
   },
   extraReducers: {
     [listUser.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Users` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Users`,
       };
     },
     [listUser.fulfilled]: (state, action) => {
@@ -194,12 +197,12 @@ const userSlice = createSlice({
       };
     },
     [listPermission.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Permissions` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Permissions`,
       };
     },
     [listPermission.fulfilled]: (state, action) => {
@@ -233,12 +236,12 @@ const userSlice = createSlice({
       };
     },
     [addUser.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Users` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Users`,
       };
     },
     [addUser.fulfilled]: (state, action) => {
@@ -270,12 +273,12 @@ const userSlice = createSlice({
       };
     },
     [updateUser.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Users` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Users`,
       };
     },
     [updateUser.fulfilled]: (state, action) => {
@@ -307,12 +310,12 @@ const userSlice = createSlice({
       };
     },
     [deleteUser.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Users` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Users`,
       };
     },
     [deleteUser.fulfilled]: (state, action) => {

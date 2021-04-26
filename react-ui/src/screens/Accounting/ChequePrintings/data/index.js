@@ -1,7 +1,10 @@
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 
-import { listVoucherPayableByCompanyAndVendorAndStatus, clearData as clearVoucherPayables } from '../../VoucherPayables/redux';
+import {
+  listVoucherPayableByCompanyAndVendorAndStatus,
+  clearData as clearVoucherPayables,
+} from '../../VoucherPayables/redux';
 
 export const columns = [
   {
@@ -30,7 +33,7 @@ export const columns = [
     dataIndex: 'chequeDate',
     key: 'chequeDate',
     datatype: 'string',
-    render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
+    render: (data) => moment(new Date(data)).format('DD/MM/YYYY'),
   },
   {
     title: 'Status',
@@ -38,11 +41,10 @@ export const columns = [
     key: 'status',
     datatype: 'string',
   },
-
 ];
 
 const FormDetails = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const company = useSelector((state) => state.company.selectedCompany);
   const payees = useSelector((state) => state.maintenance.vendors.list);
   const bankAccounts = useSelector((state) => state.maintenance.bankAccount.bankAccountList);
@@ -65,8 +67,14 @@ const FormDetails = () => {
         choices: payees,
         render: (payee) => `[${payee?.code}] ${payee?.name}`,
         onChange: (e) => {
-          dispatch(clearVoucherPayables())
-          dispatch(listVoucherPayableByCompanyAndVendorAndStatus({company, vendor: e, status: "Approved"}))
+          dispatch(clearVoucherPayables());
+          dispatch(
+            listVoucherPayableByCompanyAndVendorAndStatus({
+              company,
+              vendor: e,
+              status: 'Approved',
+            })
+          );
         },
         rules: [{ required: true }],
       },
@@ -113,7 +121,7 @@ const FormDetails = () => {
     key: 'payables',
     rules: [{ required: true }],
     isVisible: voucherPayables.length > 0,
-    emptyText: "Please select a payee with an approved Voucher Payable.",
+    emptyText: 'Please select a payee with an approved Voucher Payable.',
     fields: [
       {
         label: 'Number',
@@ -122,12 +130,12 @@ const FormDetails = () => {
       {
         label: 'Date',
         name: 'date',
-        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`
+        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`,
       },
       {
         label: 'Payee',
         name: 'vendor',
-        render: (data) => `[${data.vendor.code}] ${data.vendor.name}`
+        render: (data) => `[${data.vendor.code}] ${data.vendor.name}`,
       },
       {
         label: 'Remarks',
@@ -145,28 +153,38 @@ const FormDetails = () => {
       {
         title: 'Number',
         dataIndex: 'number',
+        key: 'number',
+        datatype: 'string',
       },
       {
         title: 'Date',
         dataIndex: 'date',
-        render: (data) => moment(new Date(data)).format('DD/MM/YYYY')
+        key: 'date',
+        datatype: 'date',
+        render: (data) => moment(new Date(data)).format('DD/MM/YYYY'),
       },
       {
         title: 'Payee',
         dataIndex: 'vendor',
-        render: (data) => `[${data.code}] ${data.name}`
+        key: 'vendor',
+        datatype: 'object',
+        dataToString: (data) => `[${data.code}] ${data.name}`,
+        render: (data) => `[${data.code}] ${data.name}`,
       },
       {
         title: 'Remarks',
         dataIndex: 'remarks',
+        key: 'remarks',
+        datatype: 'string',
       },
       {
         title: 'Amount',
         dataIndex: 'totalAmount',
+        key: 'totalAmount',
       },
     ],
     processData: (data) => {
-      return data
+      return data;
     },
     checkSelected: (selectedData, rowData) => {
       if (

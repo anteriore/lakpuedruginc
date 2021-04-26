@@ -29,7 +29,7 @@ export const listUnit = createAsyncThunk('listUnit', async (payload, thunkAPI, r
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -50,7 +50,7 @@ export const createUnit = createAsyncThunk('createUnit', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -71,7 +71,7 @@ export const updateUnit = createAsyncThunk('updateUnit', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -92,7 +92,7 @@ export const deleteUnit = createAsyncThunk('deleteUnit', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -105,12 +105,12 @@ const unitsSlice = createSlice({
   },
   extraReducers: {
     [listUnit.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for units`,
       };
     },
     [listUnit.fulfilled]: (state, action) => {
@@ -143,12 +143,12 @@ const unitsSlice = createSlice({
       };
     },
     [createUnit.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for units`,
       };
     },
     [createUnit.fulfilled]: (state, action) => {
@@ -180,12 +180,12 @@ const unitsSlice = createSlice({
       };
     },
     [updateUnit.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for units`,
       };
     },
     [updateUnit.fulfilled]: (state, action) => {
@@ -217,12 +217,12 @@ const unitsSlice = createSlice({
       };
     },
     [deleteUnit.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for units` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for units`,
       };
     },
     [deleteUnit.fulfilled]: (state, action) => {

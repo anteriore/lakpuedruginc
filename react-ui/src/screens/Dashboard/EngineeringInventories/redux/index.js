@@ -33,7 +33,7 @@ export const listEngineeringInventory = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -64,12 +64,12 @@ export const deleteEngineeringInventory = createAsyncThunk(
   'deleteEngineeringInventory',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    try {  
+    try {
       const response = await axiosInstance.post(
         `rest/engineering-inventory/delete?token=${accessToken}`,
         payload
       );
-      
+
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
       if (valid) {
@@ -100,14 +100,14 @@ const engineeringInventorySlice = createSlice({
     [listEngineeringInventory.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Engineering Inventory',
         state.action
       );
 
       return {
         ...state,
-        employeeList: data,
+        list: data,
         status: 'succeeded',
         statusLevel: level,
         responseCode: status,
@@ -117,7 +117,7 @@ const engineeringInventorySlice = createSlice({
     [listEngineeringInventory.rejected]: (state, action) => {
       const { status } = action.payload;
       const { message: statusMessage, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Engineering Inventory',
         state.action
       );

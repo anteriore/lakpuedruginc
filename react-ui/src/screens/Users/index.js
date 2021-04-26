@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Row,
   Col,
@@ -35,7 +35,7 @@ import {
 } from './redux';
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
-import { listDepot, clearData as clearDepot } from '../Maintenance/Depots/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../Maintenance/Depots/redux';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -45,7 +45,7 @@ const Users = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -83,37 +83,67 @@ const Users = () => {
       }
     }
     setActions(actionList);
+  }, [permissions]);
 
+  useEffect(() => {
     dispatch(listCompany()).then(() => {
       setFormData(null);
       setCompanyLoading(false);
       setSelectedUser(null);
-      if (actionList.includes('read')) {
-        updateUserDepartments(selectedCompany);
-      } else {
-        setContentLoading(false);
-      }
-      
-      if(!isMounted.current){
-        performCleanup()
-      }
-
     });
 
     return function cleanup() {
-      isMounted.current = false
-    }
+      isMounted.current = false;
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearDepartment());
+    };
   }, [dispatch]);
 
+  const updateUserDepartments = useCallback(() => {
+    setContentLoading(true);
+    if (actions.includes('read')) {
+      dispatch(listD({ company: selectedCompany, message })).then((response1) => {
+        dispatch(listUser({ company: selectedCompany, message })).then((response2) => {
+          const onSuccess = () => {
+            const userDepartmentList = [];
+            response1.payload.data.forEach((department) => {
+              userDepartmentList.push({
+                id: department.id,
+                users: [],
+              });
+            });
+            response2.payload.data.forEach((user) => {
+              const usersPerDept = userDepartmentList.find(
+                (department) => department.id === user.department.id
+              );
+              usersPerDept.users.push(user);
+            });
+            setUserDepartments(userDepartmentList);
+            setContentLoading(false);
+          };
+          const onFail = () => {
+            setUserDepartments([]);
+            setContentLoading(false);
+          };
+          handleRequestResponse([response1, response2], onSuccess, onFail, '');
+        });
+      });
+    } else {
+      setUserDepartments([]);
+      setContentLoading(false);
+    }
+  }, [actions, selectedCompany, dispatch, handleRequestResponse]);
+
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    updateUserDepartments();
+  }, [updateUserDepartments]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
-  const performCleanup = () => {
-    dispatch(clearData());
-    dispatch(clearDepot());
-    dispatch(clearDepartment());
-  };
+  const performCleanup = () => {};
 
   const formDetails = {
     form_name: 'user',
@@ -216,20 +246,19 @@ const Users = () => {
     setFormData(null);
     setCompanyLoading(true);
     dispatch(listD({ company: selectedCompany, message })).then((response1) => {
-      dispatch(listDepot({ company: selectedCompany, message })).then((response2) => {
+      dispatch(listDepotByCompany({ company: selectedCompany })).then((response2) => {
         dispatch(listPermission({ company: selectedCompany, message })).then((response3) => {
-          if(isMounted.current){
+          if (isMounted.current) {
             const onSuccess = () => {
               history.push(`${path}/new`);
               setCompanyLoading(false);
-            }
+            };
             const onFail = () => {
               setCompanyLoading(false);
-            }
+            };
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
+          } else {
+            performCleanup();
           }
         });
       });
@@ -262,41 +291,25 @@ const Users = () => {
     };
     setFormData(formData);
     setCompanyLoading(true);
-    dispatch(listD({ company: selectedCompany, message })).then((response1) => {
-      dispatch(listDepot({ company: selectedCompany, message })).then((response2) => {
-        dispatch(listPermission({ company: selectedCompany, message })).then((response3) => {
-          if(isMounted.current){
+    dispatch(listD({ company: selectedCompany })).then((response1) => {
+      dispatch(listDepotByCompany({ company: selectedCompany })).then((response2) => {
+        dispatch(listPermission({ company: selectedCompany })).then((response3) => {
+          if (isMounted.current) {
             const onSuccess = () => {
               history.push(`${path}/${data.id}`);
               setCompanyLoading(false);
-            }
+            };
             const onFail = () => {
               setCompanyLoading(false);
-            }
+            };
             handleRequestResponse([response1, response2, response3], onSuccess, onFail, '');
-          }
-          else {
-            performCleanup()
+          } else {
+            performCleanup();
           }
         });
       });
     });
   };
-
-  /* const handleDelete = (data) => {
-    dispatch(deleteUser(data.id)).then((response) => {
-      setContentLoading(true);
-      if (response.payload.status === 200) {
-        dispatch(listUser({ selectedCompany })).then(() => {
-          setContentLoading(false);
-          message.success(`Successfully deleted ${data.firstName} ${data.lastName}`);
-        });
-      } else {
-        setContentLoading(false);
-        message.error(`Unable to delete ${data.firstName} ${data.lastName}`);
-      }
-    });
-  }; */
 
   const handleCancelButton = () => {
     setFormData(null);
@@ -349,67 +362,31 @@ const Users = () => {
         history.goBack();
         const onSuccess = () => {
           updateUserDepartments(selectedCompany);
-        }
+        };
         const onFail = () => {
           setContentLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
-    } 
-    else if (formMode === 'add') {
+    } else if (formMode === 'add') {
       await dispatch(addUser(payload)).then((response) => {
         setContentLoading(true);
         history.goBack();
         const onSuccess = () => {
           updateUserDepartments(selectedCompany);
-        }
+        };
         const onFail = () => {
           setContentLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
     setFormData(null);
-    return 1
-  };
-
-  const updateUserDepartments = (companyID) => {
-    dispatch(listD({ company: companyID, message })).then((response1) => {
-      dispatch(listUser({ company: companyID, message })).then((response2) => {
-        const onSuccess = () => {
-          const userDepartmentList = [];
-          response1.payload.data.forEach((department) => {
-            userDepartmentList.push({
-              id: department.id,
-              users: [],
-            });
-          });
-          response2.payload.data.forEach((user) => {
-            const usersPerDept = userDepartmentList.find(
-              (department) => department.id === user.department.id
-            );
-            usersPerDept.users.push(user);
-          });
-          setUserDepartments(userDepartmentList);
-          setContentLoading(false);
-        }
-        const onFail = () => {
-          setUserDepartments([]);
-          setContentLoading(false);
-        }
-        handleRequestResponse([response1, response2], onSuccess, onFail, '');
-      });
-    });
+    return 1;
   };
 
   const handleChangeTab = (companyID) => {
-    setContentLoading(true);
     dispatch(setCompany(companyID));
-    if (actions.includes('read')) {
-      updateUserDepartments(companyID);
-    } else {
-      setContentLoading(false);
-    }
   };
 
   const renderUsers = (departmentUsers) => {

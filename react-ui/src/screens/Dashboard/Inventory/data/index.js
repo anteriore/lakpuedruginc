@@ -5,8 +5,8 @@ export const columns = [
     key: 'item',
     datatype: 'object',
     dataToString: (object) => {
-        return object.name
-    }
+      return object.name;
+    },
   },
   {
     title: 'Control Number',
@@ -25,8 +25,8 @@ export const columns = [
     key: 'item',
     datatype: 'object',
     dataToString: (object) => {
-        return object.unit.name
-    }
+      return object?.unit?.name ?? '';
+    },
   },
   {
     title: 'Date Created',

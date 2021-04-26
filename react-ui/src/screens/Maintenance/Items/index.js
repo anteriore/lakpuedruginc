@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { listItemWithoutEng, addI, updateI,deleteI, clearData } from './redux';
+import { listItemWithoutEng, addI, updateI, deleteI, clearData } from './redux';
 import { listIT, clearData as clearIT } from '../ItemTypes/redux';
 import { listUnit } from '../Units/redux';
 import SimpleForm from '../../../components/forms/FormModal';
@@ -17,10 +17,12 @@ const Items = (props) => {
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
-  const [contentLoading, setContentLoading] = useState(true)
+  const [contentLoading, setContentLoading] = useState(true);
   const { company, actions } = props;
   const dispatch = useDispatch();
-  const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.items);
+  const { list, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.items
+  );
   const types = useSelector((state) => state.maintenance.itemTypes.list);
   const units = useSelector((state) => state.maintenance.units.unitList);
 
@@ -71,6 +73,8 @@ const Items = (props) => {
         name: 'type',
         type: 'select',
         choices: types,
+        tooltip:
+          'Items of type "Engineering Materials" could be found in the Engineering Items module',
       },
       {
         label: 'Unit',
@@ -99,9 +103,12 @@ const Items = (props) => {
 
   useEffect(() => {
     reevalutateMessageStatus({
-      status, action, statusMessage, statusLevel
-    })
-  }, [status, action, statusMessage, statusLevel])
+      status,
+      action,
+      statusMessage,
+      statusLevel,
+    });
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Add Item');
@@ -173,12 +180,12 @@ const Items = (props) => {
 
     setDisplayForm(false);
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (
     <Row gutter={[8, 24]}>
-      <Col style={GeneralStyles.headerPage}  span={20}>
+      <Col style={GeneralStyles.headerPage} span={20}>
         <Title level={3} style={{ float: 'left' }}>
           {props.title}
         </Title>
@@ -196,7 +203,9 @@ const Items = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { contentLoading ? <Skeleton/> : 
+        {contentLoading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={columns}
             data={list}
@@ -206,7 +215,7 @@ const Items = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }
+        )}
       </Col>
       {displayForm && (
         <SimpleForm

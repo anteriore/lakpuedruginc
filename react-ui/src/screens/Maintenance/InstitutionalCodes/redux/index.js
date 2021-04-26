@@ -4,29 +4,26 @@ import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
 
-export const listInstitution = createAsyncThunk(
-  'listInstitution',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
+export const listInstitution = createAsyncThunk('listInstitution', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
 
-    try {
-      const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
+  try {
+    const response = await axiosInstance.get(`/rest/institutional-codes?token=${accessToken}`);
 
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue({
-        status: null,
-        data: null,
-        statusText: 'failed. An error has occurred'
-      });
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: 'failed. An error has occurred',
+    });
   }
-);
+});
 
 export const createInstitution = createAsyncThunk(
   'createInstitution',
@@ -45,7 +42,7 @@ export const updateInstitution = createAsyncThunk(
   'updateInstitution',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    
+
     try {
       const response = await axiosInstance.post(
         `/rest/institutional-codes?token=${accessToken}`,
@@ -62,7 +59,7 @@ export const updateInstitution = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -89,7 +86,7 @@ export const deleteInstitution = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -110,17 +107,21 @@ const institutionalCodesSlice = createSlice({
   },
   extraReducers: {
     [listInstitution.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes`,
       };
     },
     [listInstitution.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -148,17 +149,21 @@ const institutionalCodesSlice = createSlice({
       };
     },
     [createInstitution.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes`,
       };
     },
     [createInstitution.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -185,17 +190,21 @@ const institutionalCodesSlice = createSlice({
       };
     },
     [updateInstitution.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes`,
       };
     },
     [updateInstitution.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -222,17 +231,21 @@ const institutionalCodesSlice = createSlice({
       };
     },
     [deleteInstitution.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Institutional Codes`,
       };
     },
     [deleteInstitution.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Institutional Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Institutional Codes',
+        state.action
+      );
 
       return {
         ...state,

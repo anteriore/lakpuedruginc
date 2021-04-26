@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Skeleton, Typography, Button, Modal, Space, Table, Popconfirm, message } from 'antd';
-import { PlusOutlined, QuestionCircleOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  Row,
+  Col,
+  Skeleton,
+  Typography,
+  Button,
+  Modal,
+  Space,
+  Table,
+  Popconfirm,
+  message,
+} from 'antd';
+import {
+  PlusOutlined,
+  QuestionCircleOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 
@@ -15,13 +31,20 @@ import {
   clearData,
 } from './redux';
 import { listAccountTitles, clearData as clearAccountTitles } from '../AccountTitles/redux';
-import { listD as listDepartment, listA as listArea, clearData as clearDeptArea } from '../../Maintenance/DepartmentArea/redux';
-import { listGroupByCompany, clearData as clearGroupCat } from '../../Maintenance/GroupsCategories/redux'
-import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux'
+import {
+  listD as listDepartment,
+  listA as listArea,
+  clearData as clearDeptArea,
+} from '../../Maintenance/DepartmentArea/redux';
+import {
+  listGroupByCompany,
+  clearData as clearGroupCat,
+} from '../../Maintenance/GroupsCategories/redux';
+import { listVendor, clearData as clearVendor } from '../../Maintenance/Vendors/redux';
 
 import InputForm from './InputForm';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -33,7 +56,38 @@ const VoucherPayables = (props) => {
   const [selectedData, setSelectedData] = useState(null);
   const isMounted = useRef(true);
 
-  const listData = useSelector((state) => state.accounting.voucherPayables.list);
+  const { list: listData, status, action, statusMessage, statusLevel } = useSelector(
+    (state) => state.accounting.voucherPayables
+  );
+  
+  const { 
+    status: statusAT, 
+    statusLevel: statusLevelAT, 
+    statusMessage: statusMessageAT,
+    action: actionAT 
+  } = useSelector((state) => state.accounting.accountTitles);
+
+  const {
+    status: statusDA, 
+    statusLevel: statusLevelDA,
+    statusMessage: statusMessageDA, 
+    action: actionDA
+  } =  useSelector((state) => state.maintenance.departmentArea);
+
+  const {
+    status: statusGC,
+    statusLevel: statusLevelGC, 
+    statusMessage: statusMessageGC, 
+    action: actionGC
+  } = useSelector((state) => state.maintenance.groupsCategories);
+
+  const { 
+    status: statusVendor,
+    statusLevel: statusLevelVendor,
+    statusMessage: statusMessageVendor,
+    action: actionVendor
+  } = useSelector((state) => state.maintenance.vendors);
+
   const user = useSelector((state) => state.auth.user);
 
   const { company, actions } = props;
@@ -50,7 +104,7 @@ const VoucherPayables = (props) => {
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
       dispatch(clearAccountTitles());
       dispatch(clearDeptArea());
@@ -58,6 +112,50 @@ const VoucherPayables = (props) => {
       dispatch(clearVendor());
     };
   }, [dispatch, company]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusAT,
+      statusMessage: statusMessageAT,
+      action: actionAT,
+      statusLevel: statusLevelAT,
+      module: 'Account Tittles',
+    });
+  }, [actionAT, statusMessageAT, statusAT, statusLevelAT]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDA,
+      statusMessage: statusMessageDA,
+      action: actionDA,
+      statusLevel: statusLevelDA,
+      module: 'Departments & Areas',
+    });
+  }, [actionDA, statusMessageDA, statusDA, statusLevelDA]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusGC,
+      statusMessage: statusMessageGC,
+      action: actionGC,
+      statusLevel: statusLevelGC,
+      module: 'Groups & Categories',
+    });
+  }, [actionGC, statusMessageGC, statusGC, statusLevelGC]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVendor,
+      statusMessage: statusMessageVendor,
+      action: actionVendor,
+      statusLevel: statusLevelVendor,
+      module: 'Vendors',
+    });
+  }, [actionVendor, statusMessageVendor, statusVendor, statusLevelVendor]);
 
   const handleAdd = () => {
     setFormTitle('Create Voucher Payable');
@@ -67,22 +165,27 @@ const VoucherPayables = (props) => {
       dispatch(listDepartment({ company, message })).then((response2) => {
         dispatch(listArea({ company, message })).then((response3) => {
           dispatch(listGroupByCompany({ company })).then((response4) => {
-              dispatch(listVendor({ company, message })).then((response5) => {
-                if(isMounted.current){
-                  const onSuccess = () => {
-                    history.push(`${path}/new`);
-                    setLoading(false);
-                  }
-                  const onFail = () => {
-                    setLoading(false);
-                  }
-                  handleRequestResponse([response1, response2, response3, response4, response5], onSuccess, onFail, '');
-                }
-            })
-          })
-        })
-      })
-    })
+            dispatch(listVendor({ company, message })).then((response5) => {
+              if (isMounted.current) {
+                const onSuccess = () => {
+                  history.push(`${path}/new`);
+                  setLoading(false);
+                };
+                const onFail = () => {
+                  setLoading(false);
+                };
+                handleRequestResponse(
+                  [response1, response2, response3, response4, response5],
+                  onSuccess,
+                  onFail,
+                  ''
+                );
+              }
+            });
+          });
+        });
+      });
+    });
   };
 
   const handleUpdate = (data) => {};
@@ -95,82 +198,82 @@ const VoucherPayables = (props) => {
   };
 
   const handleApprove = (data) => {
-    setLoading(true)
+    setLoading(true);
     dispatch(approveVoucherPayable({ id: data.id, user: user.id })).then(() => {
       setDisplayModal(false);
       setSelectedData(null);
       dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
-        setLoading(false)
+        setLoading(false);
       });
     });
-
-  }
+  };
 
   const handleReject = (data) => {
-    setLoading(true)
+    setLoading(true);
     dispatch(rejectVoucherPayable({ id: data.id, user: user.id })).then(() => {
       setDisplayModal(false);
       setSelectedData(null);
       dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
-        setLoading(false)
+        setLoading(false);
       });
     });
-
-  }
+  };
 
   const processSubmitPayload = (data) => {
-    const accountTitles = []
+    const accountTitles = [];
     data.accountTitles.forEach((item) => {
       accountTitles.push({
         accountTitle: {
           id: item.accountTitle.id,
-          type: item.accountTitle.type
+          type: item.accountTitle.type,
         },
-        department: {id: item.department.id},
-        group: {id: item.group.id },
-        area: {id: item.area.id },
-        amount: item?.credit ?? item.debit
-      })
-    })
-    let voucher = null
-    let vouchers = null
-    switch(data.variation){
-      case "1 Voucher": 
-        [voucher] = data.vouchers
+        department: { id: item.department.id },
+        group: { id: item.group.id },
+        area: { id: item.area.id },
+        amount: item?.credit ?? item.debit,
+      });
+    });
+    let voucher = null;
+    let vouchers = null;
+    switch (data.variation) {
+      case '1 Voucher':
+        [voucher] = data.vouchers;
         break;
-      case "Multiple PJV": 
-        vouchers = data.vouchers
+      case 'Multiple PJV':
+        vouchers = data.vouchers;
         break;
-      case "Multiple JV":
-        vouchers = data.vouchers
+      case 'Multiple JV':
+        vouchers = data.vouchers;
         break;
       default:
         break;
-
     }
 
     return {
       ...data,
       accountTitles,
       company: {
-        id: company
+        id: company,
       },
-      voucher: voucher,
-      vouchers: vouchers,
-      vendor: {
-          id: data?.vendor ?? voucher.vendor.id
-      },
+      voucher,
+      vouchers,
+      vendor:
+        (data?.vendor ?? null) !== null
+          ? {
+              id: data.vendor,
+            }
+          : voucher?.vendor?.id ?? null,
       preparedBy: {
-        id: user.id
-      }
-    }
-  }
+        id: user.id,
+      },
+    };
+  };
 
   const onSubmit = async (data) => {
-    const payload = processSubmitPayload(data)
+    const payload = processSubmitPayload(data);
     await dispatch(addVoucherPayable(payload)).then((response) => {
       setLoading(true);
-      
+
       const onSuccess = () => {
         dispatch(listVoucherPayableByCompany({ company, message })).then(() => {
           setLoading(false);
@@ -180,29 +283,38 @@ const VoucherPayables = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
-  
-  //for data display
+  // for data display
   const renderTableColumns = (fields) => {
     const columns = [];
     fields.forEach((field) => {
       if (typeof field.render === 'undefined' || field.render === null) {
         field.render = (object) => object;
       }
-      if (field.name === 'credit' || field.name === 'debit'){
+      
+      if (field.name === 'credit' || field.name === 'debit') {
         columns.push({
           title: field.label,
           key: field.name,
-          render: (object) => field.render({[object.accountTitle.type.toLowerCase()]: object['amount']}),
+          render: (object) =>
+            field.render({ [object.accountTitle.type.toLowerCase()]: object.amount }),
         });
-      }
+      } 
+      else if (field.name === 'date') {
+        columns.push({
+          title: field.label,
+          key: field.name,
+          render: (object) =>
+            field.render(object),
+        });
+      } 
       else {
         columns.push({
           title: field.label,
@@ -213,7 +325,7 @@ const VoucherPayables = (props) => {
     });
 
     return columns;
-  }
+  };
 
   return (
     <Switch>
@@ -265,7 +377,7 @@ const VoucherPayables = (props) => {
               />
             )}
           </Col>
-          {<Modal
+          <Modal
             visible={displayModal}
             onOk={() => {
               setDisplayModal(false);
@@ -289,7 +401,11 @@ const VoucherPayables = (props) => {
                 />
                 <Text>{'Voucher(s): '}</Text>
                 <Table
-                  dataSource={selectedData.variation === '1 Voucher' ? ([selectedData.voucher]) : (selectedData.vouchers)}
+                  dataSource={
+                    selectedData.variation === '1 Voucher'
+                      ? [selectedData.voucher]
+                      : selectedData.vouchers
+                  }
                   columns={renderTableColumns(tableDetails.fields)}
                   pagination={false}
                 />
@@ -298,8 +414,26 @@ const VoucherPayables = (props) => {
                   dataSource={selectedData.accountTitles}
                   columns={renderTableColumns(formDetails.accountTitles.fields)}
                   pagination={false}
+                  summary={(data) => {
+                    const processedData = []
+                    data.forEach((item) => {
+                      if(item.accountTitle.type === 'Debit'){
+                        processedData.push({
+                          credit: 0,
+                          debit: item.amount
+                        })
+                      }
+                      else {
+                        processedData.push({
+                          credit: item.amount,
+                          debit: 0
+                        })
+                      }
+                    })
+                    return formDetails.accountTitles.summary(processedData)
+                  }}
                 />
-                {(selectedData.status === 'Pending' && // add approval permissions here
+                {selectedData.status === 'Pending' && ( // add approval permissions here
                   <>
                     <Text>{'Actions: '}</Text>
                     <Space>
@@ -309,8 +443,7 @@ const VoucherPayables = (props) => {
                         onConfirm={(e) => {
                           handleApprove(selectedData);
                         }}
-                        onCancel={(e) => {
-                        }}
+                        onCancel={(e) => {}}
                         okText="Yes"
                         cancelText="No"
                       >
@@ -323,15 +456,14 @@ const VoucherPayables = (props) => {
                           Approve
                         </Button>
                       </Popconfirm>
-                      
+
                       <Popconfirm
                         title="Would you like to perform this action?"
                         icon={<QuestionCircleOutlined />}
                         onConfirm={(e) => {
                           handleReject(selectedData);
                         }}
-                        onCancel={(e) => {
-                        }}
+                        onCancel={(e) => {}}
                         okText="Yes"
                         cancelText="No"
                       >
@@ -350,7 +482,7 @@ const VoucherPayables = (props) => {
                 )}
               </Space>
             )}
-          </Modal>}
+          </Modal>
         </Row>
       </Route>
     </Switch>

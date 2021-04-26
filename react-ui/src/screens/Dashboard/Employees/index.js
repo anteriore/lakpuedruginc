@@ -9,7 +9,7 @@ import TableDisplay from '../../../components/TableDisplay';
 import { tableHeader, formDetails } from './data';
 import { clearData, listEmployees, createEmployee, deleteEmployee } from './redux';
 import InputForm from './InputForm';
-import GeneralHelper, {reevalutateMessageStatus} from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -30,23 +30,22 @@ const Employees = (props) => {
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
-  },[dispatch])
-  
+  }, [dispatch]);
+
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel});
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     setContentLoading(true);
-    dispatch(listEmployees(company))
-    .then(() => {
-      if (isMounted.current){
+    dispatch(listEmployees(company)).then(() => {
+      if (isMounted.current) {
         setContentLoading(false);
       }
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       performCleanup();
     };
   }, [dispatch, company, performCleanup]);
@@ -62,11 +61,11 @@ const Employees = (props) => {
         dispatch(listEmployees(company)).then(() => {
           setContentLoading(false);
         });
-      }
+      };
 
       const onFail = () => {
-        setContentLoading(false)
-      }
+        setContentLoading(false);
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -85,16 +84,16 @@ const Employees = (props) => {
           dispatch(listEmployees(company)).then(() => {
             setContentLoading(false);
           });
-        }
-  
+        };
+
         const onFail = () => {
-          setContentLoading(false)
-        }
-  
+          setContentLoading(false);
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     });
-    return 1
+    return 1;
   };
 
   return (

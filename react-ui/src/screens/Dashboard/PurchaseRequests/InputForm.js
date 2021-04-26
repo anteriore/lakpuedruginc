@@ -39,20 +39,18 @@ const InputForm = (props) => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
 
-    const selectedKeys = []
-    if(values !== null && values[formTable.name] !== null){
+    const selectedKeys = [];
+    if (values !== null && values[formTable.name] !== null) {
       values[formTable.name].forEach((item) => {
-        selectedKeys.push(item[formTable.selectedKey])
-      })
-      setTableData(values[formTable.name])
+        selectedKeys.push(item[formTable.selectedKey]);
+      });
+      setTableData(values[formTable.name]);
     }
-    setTableSelectedKeys(selectedKeys)
-
-    // eslint-disable-next-line
-  }, [values, form]);
+    setTableSelectedKeys(selectedKeys);
+  }, [values, form, formTable.name, formTable.selectedKey]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -65,8 +63,8 @@ const InputForm = (props) => {
       }
     });
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
@@ -171,24 +169,28 @@ const InputForm = (props) => {
   };
 
   const onTableSelect = (selectedRowKeys, selectedRows) => {
-    setTableSelectedKeys(selectedRowKeys)
-    let prevSelectData = []
-    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
-      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
+    setTableSelectedKeys(selectedRowKeys);
+    let prevSelectData = [];
+    if (typeof form.getFieldValue(formTable.name) !== 'undefined') {
+      prevSelectData = form
+        .getFieldValue(formTable.name)
+        .filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]));
     }
 
     prevSelectData.forEach((data) => {
-      const index = selectedRows.findIndex((item) => item[formTable.selectedKey] === data[formTable.selectedKey])
-      if(index !== -1){
-        selectedRows[index] = data 
+      const index = selectedRows.findIndex(
+        (item) => item[formTable.selectedKey] === data[formTable.selectedKey]
+      );
+      if (index !== -1) {
+        selectedRows[index] = data;
       }
-    })
-  
+    });
+
     const fieldsValue = {};
     fieldsValue[formTable.name] = selectedRows;
     setTableData(selectedRows);
     form.setFieldsValue(fieldsValue);
-  }
+  };
 
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
@@ -233,55 +235,60 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
 
-            {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
-              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? [{ required: true }]}>
-                {(fields, { errors }) => (
-                  <Col span={23} offset={1}>
-                    <div style={{ float: 'right', marginBottom: '1%' }}>
-                      <Button
-                        onClick={() => {
-                          setDisplayModal(true);
-                          setLoadingModal(false);
-                        }}
-                        icon={<SelectOutlined />}
-                      >
-                        {`Select ${formTable.label}`}
-                      </Button>
-                    </div>
-                    <Table
-                      dataSource={tableData}
-                      columns={renderTableColumns(formTable)}
-                      pagination={false}
-                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                      summary={formTable.summary}
-                    />
-                    <Text style={{color: 'red'}}>{form.getFieldError(formTable.name)}</Text>
-                  </Col>
-                )}
-              </Form.List>
-            ): (
-              <Col span={15} offset={6}>
-              <Alert
-                message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
-                type="warning"
-                showIcon
-                icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
-              />
-              </Col>
-            ))}
+            {hasTable &&
+              (typeof formTable.isVisible === 'undefined' || formTable.isVisible ? (
+                <Form.List
+                  label={formTable.label}
+                  name={formTable.name}
+                  rules={formTable?.rules ?? [{ required: true }]}
+                >
+                  {(fields, { errors }) => (
+                    <Col span={23} offset={1}>
+                      <div style={{ float: 'right', marginBottom: '1%' }}>
+                        <Button
+                          onClick={() => {
+                            setDisplayModal(true);
+                            setLoadingModal(false);
+                          }}
+                          icon={<SelectOutlined />}
+                        >
+                          {`Select ${formTable.label}`}
+                        </Button>
+                      </div>
+                      <Table
+                        dataSource={tableData}
+                        columns={renderTableColumns(formTable)}
+                        pagination={{ simple: true }}
+                        locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                        summary={formTable.summary}
+                      />
+                      <Text style={{ color: 'red' }}>{form.getFieldError(formTable.name)}</Text>
+                    </Col>
+                  )}
+                </Form.List>
+              ) : (
+                <Col span={15} offset={6}>
+                  <Alert
+                    message={
+                      formTable?.emptyText ??
+                      `Please provide the necessary data for ${formTable.label}`
+                    }
+                    type="warning"
+                    showIcon
+                    icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                    style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
+                  />
+                </Col>
+              ))}
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button 
-              type="primary" 
-              onClick={() => form.submit()}
-              loading={processingData}
-            >
+            <Button type="primary" onClick={() => form.submit()} loading={processingData}>
               Submit
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={processingData}
               onClick={() => {
                 onCancel();
                 history.goBack();
@@ -300,17 +307,22 @@ const InputForm = (props) => {
               width={1200}
             >
               <Table
+                tableLayout="fixed"
                 rowSelection={{
                   type: 'checkbox',
-                  //selectedRowKeys: item.selectedData,
+                  // selectedRowKeys: item.selectedData,
                   onChange: onTableSelect,
-                  //preserveSelectedRowKeys: false,
-                  selectedRowKeys: tableSelectedKeys
+                  // preserveSelectedRowKeys: false,
+                  selectedRowKeys: tableSelectedKeys,
                 }}
-                columns={TableHeader({ columns: formTable.selectFields, hasSorter: true, hasFilter: true })}
+                columns={TableHeader({
+                  columns: formTable.selectFields,
+                  hasSorter: true,
+                  hasFilter: true,
+                })}
                 dataSource={formTable.selectData}
                 rowKey={formTable.selectedKey}
-                pagination={{simple: true}}
+                pagination={{ simple: true }}
               />
             </Modal>
           )}

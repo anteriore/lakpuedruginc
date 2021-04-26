@@ -15,12 +15,12 @@ const initialState = {
 
 export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload
+  const { company } = payload;
 
-  try { 
-  const response = await axiosInstance.get(
-    `rest/purchase-orders/company/${company}/?token=${accessToken}`
-  );
+  try {
+    const response = await axiosInstance.get(
+      `rest/purchase-orders/company/${company}/?token=${accessToken}`
+    );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -32,7 +32,7 @@ export const listPO = createAsyncThunk('listPO', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -43,12 +43,12 @@ export const getOrderedQuantityByItem = createAsyncThunk(
     const accessToken = thunkAPI.getState().auth.token;
     const { company, item } = payload;
 
-    try { 
+    try {
       const response = await axiosInstance.get(
         `rest/purchase-orders/company/${company}/stock/${item}?token=${accessToken}`
       );
       const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
+
       if (valid) {
         return validatedResponse;
       }
@@ -57,16 +57,20 @@ export const getOrderedQuantityByItem = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
-});
+  }
+);
 
 export const addPO = createAsyncThunk('addPO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try { 
-    const response = await axiosInstance.post(`rest/purchase-orders/?token=${accessToken}`, payload);
-  
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-orders/?token=${accessToken}`,
+      payload
+    );
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -77,16 +81,19 @@ export const addPO = createAsyncThunk('addPO', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const updatePO = createAsyncThunk('updatePO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try { 
-    const response = await axiosInstance.post(`rest/purchase-orders/?token=${accessToken}`, payload);
-  
+  try {
+    const response = await axiosInstance.post(
+      `rest/purchase-orders/?token=${accessToken}`,
+      payload
+    );
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -97,19 +104,19 @@ export const updatePO = createAsyncThunk('updatePO', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const deletePO = createAsyncThunk('deletePO', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try { 
+  try {
     const response = await axiosInstance.post(
       `rest/purchase-orders/delete?token=${accessToken}`,
       payload
     );
-  
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -120,7 +127,7 @@ export const deletePO = createAsyncThunk('deletePO', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -132,7 +139,7 @@ export const getPO = createAsyncThunk('getPO', async (payload, thunkAPI) => {
     const response = await axiosInstance.get(
       `rest/purchase-orders/${payload.id}?token=${accessToken}`
     );
-  
+
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
@@ -143,7 +150,7 @@ export const getPO = createAsyncThunk('getPO', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -156,17 +163,21 @@ const purchaseOrderSlice = createSlice({
   },
   extraReducers: {
     [listPO.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders`,
       };
     },
     [listPO.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Purchase Orders', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Orders',
+        state.action
+      );
 
       return {
         ...state,
@@ -194,17 +205,21 @@ const purchaseOrderSlice = createSlice({
       };
     },
     [getOrderedQuantityByItem.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders`,
       };
     },
     [getOrderedQuantityByItem.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Purchase Orders', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Orders',
+        state.action
+      );
 
       return {
         ...state,
@@ -233,17 +248,21 @@ const purchaseOrderSlice = createSlice({
       };
     },
     [addPO.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders`,
       };
     },
     [addPO.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Purchase Orders', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Orders',
+        state.action
+      );
 
       return {
         ...state,
@@ -270,17 +289,21 @@ const purchaseOrderSlice = createSlice({
       };
     },
     [updatePO.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders`,
       };
     },
     [updatePO.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Purchase Orders', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Orders',
+        state.action
+      );
 
       return {
         ...state,
@@ -307,17 +330,21 @@ const purchaseOrderSlice = createSlice({
       };
     },
     [deletePO.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Purchase Orders`,
       };
     },
     [deletePO.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Purchase Orders', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Orders',
+        state.action
+      );
 
       return {
         ...state,

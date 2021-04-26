@@ -1,30 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { NodeCollapseOutlined } from '@ant-design/icons';
 import axiosInstance from '../../../../utils/axios-instance';
 import * as message from '../../../../data/constants/response-message.constant';
 import { checkResponseValidity, generateStatusMessage } from '../../../../helpers/general-helper';
-import { NodeCollapseOutlined } from '@ant-design/icons';
 
+export const listProduct = createAsyncThunk('listProduct', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  try {
+    const response = await axiosInstance.get(
+      `/rest/products/company/${payload.company}?token=${accessToken}`
+    );
 
-export const listProduct = createAsyncThunk(
-  'listProduct',
-  async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().auth.token;
-    try{
-      const response = await axiosInstance.get(
-        `/rest/products/company/${payload.company}?token=${accessToken}`
-      );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
-
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data);
+    if (valid) {
+      return validatedResponse;
     }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-);
+});
 
 export const createProduct = createAsyncThunk('createProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -44,7 +40,10 @@ export const createProduct = createAsyncThunk('createProduct', async (payload, t
 export const updateProduct = createAsyncThunk('updateProduct', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
-    const response = await axiosInstance.post(`/rest/products/update?token=${accessToken}`, payload);
+    const response = await axiosInstance.post(
+      `/rest/products/update?token=${accessToken}`,
+      payload
+    );
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {

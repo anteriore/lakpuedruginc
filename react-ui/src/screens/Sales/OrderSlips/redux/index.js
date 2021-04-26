@@ -20,16 +20,16 @@ export const listOrderSlips = createAsyncThunk('listOrderSlips', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
 
 export const listOrderSlipsByDepot = createAsyncThunk(
   'listOrderSlipsByDepot',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    try{
+    try {
       const response = await axiosInstance.get(
         `/rest/order-slips/depot/${payload.depot}?token=${accessToken}`
       );
@@ -43,7 +43,7 @@ export const listOrderSlipsByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -51,14 +51,21 @@ export const listOrderSlipsByDepot = createAsyncThunk(
 
 export const listOrderSlipsByDepotAndBalance = createAsyncThunk(
   'listOrderSlipsByDepotAndBalance',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    const { depot, hasBalance } = payload;
+
     try {
       const response = await axiosInstance.get(
-        `/rest/order-slips/depot/${payload.depot}?token=${accessToken}`
+        `/rest/order-slips/depot/${depot}?token=${accessToken}`
       );
 
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const processedResponse = {
+        ...response,
+        data: filterOSByBalance(response.data, hasBalance),
+      };
+
+      const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
 
       if (valid) {
         return validatedResponse;
@@ -68,7 +75,7 @@ export const listOrderSlipsByDepotAndBalance = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -76,14 +83,20 @@ export const listOrderSlipsByDepotAndBalance = createAsyncThunk(
 
 export const listOrderSlipsByDepotAndStatus = createAsyncThunk(
   'listOrderSlipsByDepotAndStatus',
-  async (payload, thunkAPI, rejectWithValue) => {
+  async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
+    const { depot, statuses } = payload;
     try {
       const response = await axiosInstance.get(
-        `/rest/order-slips/depot/${payload.depot}?token=${accessToken}`
+        `/rest/order-slips/depot/${depot}?token=${accessToken}`
       );
 
-      const { response: validatedResponse, valid } = checkResponseValidity(response);
+      const processedResponse = {
+        ...response,
+        data: filterOSByStatus(response.data, statuses),
+      };
+
+      const { response: validatedResponse, valid } = checkResponseValidity(processedResponse);
 
       if (valid) {
         return validatedResponse;
@@ -93,7 +106,7 @@ export const listOrderSlipsByDepotAndStatus = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -114,35 +127,35 @@ export const createOrderSlips = createAsyncThunk('createOrderSlips', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
 
-// const filterOSByBalance = (data, hasBalance) => {
-//   const processedData = [];
-//   data.forEach((orderSlip) => {
-//     if (hasBalance) {
-//       if (orderSlip.remainingBalance > 0) {
-//         processedData.push(orderSlip);
-//       }
-//     } else if (orderSlip.remainingBalance === 0) {
-//       processedData.push(orderSlip);
-//     }
-//   });
+const filterOSByBalance = (data, hasBalance) => {
+  const processedData = [];
+  data.forEach((orderSlip) => {
+    if (hasBalance) {
+      if (orderSlip.remainingBalance > 0) {
+        processedData.push(orderSlip);
+      }
+    } else if (orderSlip.remainingBalance === 0) {
+      processedData.push(orderSlip);
+    }
+  });
 
-//   return processedData;
-// };
+  return processedData;
+};
 
-// const filterOSByStatus = (data, statuses) => {
-//   const processedData = [];
-//   data.forEach((orderSlip) => {
-//     if (statuses.includes(orderSlip.status)) {
-//       processedData.push(orderSlip);
-//     }
-//   });
-//   return processedData;
-// };
+const filterOSByStatus = (data, statuses) => {
+  const processedData = [];
+  data.forEach((orderSlip) => {
+    if (statuses.includes(orderSlip.status)) {
+      processedData.push(orderSlip);
+    }
+  });
+  return processedData;
+};
 
 const initialState = {
   orderSlipsList: [],

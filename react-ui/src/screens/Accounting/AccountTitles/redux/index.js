@@ -13,50 +13,54 @@ const initialState = {
   action: '',
 };
 
-export const listAccountTitles = createAsyncThunk('listAccountTitles', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
+export const listAccountTitles = createAsyncThunk(
+  'listAccountTitles',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
 
-  try {
-    const response = await axiosInstance.get(
-      `rest/account-titles/?token=${accessToken}`
-    );
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(`rest/account-titles/?token=${accessToken}`);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
-export const listAccountTitlesByType = createAsyncThunk('listAccountTitlesByType', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { type } = payload;
+export const listAccountTitlesByType = createAsyncThunk(
+  'listAccountTitlesByType',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { type } = payload;
 
-  try {
-    const response = await axiosInstance.get(
-      `rest/account-titles/type/${type}?token=${accessToken}`
-    );
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/account-titles/type/${type}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
 export const createAccountTitle = createAsyncThunk(
   'createAccountTitle',
@@ -79,7 +83,7 @@ export const createAccountTitle = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -106,7 +110,7 @@ export const updateAccountTitle = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -117,7 +121,6 @@ export const deleteAccountTitle = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    
     try {
       const response = await axiosInstance.post(
         `rest/account-titles/delete?token=${accessToken}`,
@@ -134,7 +137,7 @@ export const deleteAccountTitle = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -148,17 +151,21 @@ const accountTitleSlice = createSlice({
   },
   extraReducers: {
     [listAccountTitles.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles`,
       };
     },
     [listAccountTitles.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Titles', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Titles',
+        state.action
+      );
 
       return {
         ...state,
@@ -186,17 +193,21 @@ const accountTitleSlice = createSlice({
       };
     },
     [listAccountTitlesByType.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles`,
       };
     },
     [listAccountTitlesByType.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Titles', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Titles',
+        state.action
+      );
 
       return {
         ...state,
@@ -224,17 +235,21 @@ const accountTitleSlice = createSlice({
       };
     },
     [createAccountTitle.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles`,
       };
     },
     [createAccountTitle.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Titles', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Titles',
+        state.action
+      );
 
       return {
         ...state,
@@ -261,17 +276,21 @@ const accountTitleSlice = createSlice({
       };
     },
     [updateAccountTitle.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles`,
       };
     },
     [updateAccountTitle.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Titles', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Titles',
+        state.action
+      );
 
       return {
         ...state,
@@ -298,17 +317,21 @@ const accountTitleSlice = createSlice({
       };
     },
     [deleteAccountTitle.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Account Titles`,
       };
     },
     [deleteAccountTitle.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Account Titles', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Account Titles',
+        state.action
+      );
 
       return {
         ...state,

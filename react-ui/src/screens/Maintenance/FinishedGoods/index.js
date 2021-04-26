@@ -19,7 +19,9 @@ const FinishedGoods = (props) => {
   const [mode, setMode] = useState('');
   const [currentID, setCurrentID] = useState('');
   const dispatch = useDispatch();
-  const { list, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.finishedGoods);
+  const { list, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.finishedGoods
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -38,7 +40,7 @@ const FinishedGoods = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status,action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAddButton = () => {
@@ -52,16 +54,15 @@ const FinishedGoods = (props) => {
     setModalTitle('Edit Finished Good');
     setMode('edit');
     setFormValues({
-      ...row
+      ...row,
     });
     setIsOpenForm(!isOpenForm);
   };
 
   const handleDeleteButton = (row) => {
-    dispatch(deleteFG(row))
-      .then(() => {
-        dispatch(getFGList());
-      })
+    dispatch(deleteFG(row)).then(() => {
+      dispatch(getFGList());
+    });
   };
 
   const handleCancelButton = () => {
@@ -70,24 +71,24 @@ const FinishedGoods = (props) => {
   };
 
   const onSubmit = async (values) => {
-    setContentLoading(true)
+    setContentLoading(true);
     if (mode === 'edit') {
       const newValues = values;
       newValues.id = currentID;
 
       await dispatch(updateFG(newValues)).then(() => {
         dispatch(getFGList());
-        setContentLoading(false)
+        setContentLoading(false);
       });
     } else if (mode === 'add') {
       const newValues = values;
       await dispatch(createFG(newValues)).then(() => {
         dispatch(getFGList());
-        setContentLoading(false)
+        setContentLoading(false);
       });
     }
-    handleCancelButton()
-    return 1
+    handleCancelButton();
+    return 1;
   };
 
   return (
@@ -95,13 +96,19 @@ const FinishedGoods = (props) => {
       <Col style={styles.headerPage} span={20}>
         <Title level={3}>{title}</Title>
         {actions.includes('create') && (
-          <Button icon={<PlusOutlined />} loading={contentLoading} onClick={() => handleAddButton()}>
+          <Button
+            icon={<PlusOutlined />}
+            loading={contentLoading}
+            onClick={() => handleAddButton()}
+          >
             Add
           </Button>
         )}
       </Col>
       <Col span={20}>
-        {contentLoading ? <Skeleton/> : 
+        {contentLoading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={list}
@@ -110,7 +117,7 @@ const FinishedGoods = (props) => {
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
           />
-        }        
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

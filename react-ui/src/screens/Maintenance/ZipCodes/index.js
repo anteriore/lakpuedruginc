@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Typography, Col, Button, message, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import GeneralStyles from '../../../data/styles/styles.general';
 import SimpleForm from '../../../components/forms/FormModal';
 import TableDisplay from '../../../components/TableDisplay';
@@ -26,9 +26,11 @@ const ZipCodes = (props) => {
   const [loading, setLoading] = useState(true);
   const { provinceCodeList } = useSelector((state) => state.maintenance.provinceCodes);
   const { regionCodeList } = useSelector((state) => state.maintenance.regionCodes);
-  const { zipCodeList, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.zipCodes);
+  const { zipCodeList, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.zipCodes
+  );
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
   useEffect(() => {
     let isCancelled = false;
@@ -48,7 +50,7 @@ const ZipCodes = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
@@ -80,10 +82,10 @@ const ZipCodes = (props) => {
       dispatch(listProvinceCode({ message })).then((response2) => {
         const onSuccess = () => {
           setIsOpenForm(!isOpenForm);
-        }
+        };
         const onFail = () => {
-          handleCancelButton()
-        }
+          handleCancelButton();
+        };
         handleRequestResponse([response1, response2], onSuccess, onFail, '');
       });
     });
@@ -102,23 +104,22 @@ const ZipCodes = (props) => {
       dispatch(listProvinceCode({ message })).then((response2) => {
         const onSuccess = () => {
           setIsOpenForm(!isOpenForm);
-        }
+        };
         const onFail = () => {
-          handleCancelButton()
-        }
+          handleCancelButton();
+        };
         handleRequestResponse([response1, response2], onSuccess, onFail, '');
-      })
+      });
     });
   };
 
   const handleDeleteButton = (row) => {
     setLoading(true);
-    dispatch(deleteZipCode(row))
-      .then(() => {
-        dispatch(listZipCode({ message })).then(() => {
-          setLoading(false);
-        })
-      })
+    dispatch(deleteZipCode(row)).then(() => {
+      dispatch(listZipCode({ message })).then(() => {
+        setLoading(false);
+      });
+    });
   };
 
   const handleCancelButton = () => {
@@ -136,31 +137,32 @@ const ZipCodes = (props) => {
           dispatch(listZipCode({ message })).then(() => {
             setFormValues('');
             setIsOpenForm(!isOpenForm);
-            setLoading(false)
-          })
-        }
+            setLoading(false);
+          });
+        };
         const onFail = () => {
-          setLoading(false)
-        }
+          setLoading(false);
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (mode === 'add') {
-      await dispatch(createZipCode(formatZipPayload(values, provinceCodeList, regionCodeList)))
-      .then((response) => {
+      await dispatch(
+        createZipCode(formatZipPayload(values, provinceCodeList, regionCodeList))
+      ).then((response) => {
         const onSuccess = () => {
           dispatch(listZipCode({ message })).then(() => {
             setFormValues('');
             setIsOpenForm(!isOpenForm);
-            setLoading(false)
-          })
-        }
+            setLoading(false);
+          });
+        };
         const onFail = () => {
-          setLoading(false)
-        }
+          setLoading(false);
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   return (
@@ -174,7 +176,9 @@ const ZipCodes = (props) => {
         )}
       </Col>
       <Col span={20}>
-        { loading ? <Skeleton/> :
+        {loading ? (
+          <Skeleton />
+        ) : (
           <TableDisplay
             columns={tableHeader}
             data={zipCodeList}
@@ -182,8 +186,8 @@ const ZipCodes = (props) => {
             handleDelete={handleDeleteButton}
             updateEnabled={actions.includes('update')}
             deleteEnabled={actions.includes('delete')}
-          /> 
-        }
+          />
+        )}
       </Col>
       <SimpleForm
         visible={isOpenForm}

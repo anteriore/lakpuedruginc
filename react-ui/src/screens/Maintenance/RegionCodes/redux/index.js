@@ -9,9 +9,9 @@ export const listRegionCode = createAsyncThunk(
     const accessToken = thunkAPI.getState().auth.token;
     try {
       const response = await axiosInstance.get(`/rest/region-codes?token=${accessToken}`);
-  
+
       const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
+
       if (valid) {
         return validatedResponse;
       }
@@ -20,7 +20,7 @@ export const listRegionCode = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -41,7 +41,7 @@ export const createRegionCode = createAsyncThunk('createRegionCode', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -61,7 +61,7 @@ export const updateRegionCode = createAsyncThunk('updateRegioncode', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -82,7 +82,7 @@ export const deleteRegionCode = createAsyncThunk('deleteRegionCode', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -104,17 +104,21 @@ const regionCodeSlice = createSlice({
   },
   extraReducers: {
     [listRegionCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes`,
       };
     },
     [listRegionCode.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Region Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Region Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -142,17 +146,21 @@ const regionCodeSlice = createSlice({
       };
     },
     [createRegionCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes`,
       };
     },
     [createRegionCode.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Region Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Region Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -179,17 +187,21 @@ const regionCodeSlice = createSlice({
       };
     },
     [updateRegionCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes`,
       };
     },
     [updateRegionCode.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Region Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Region Codes',
+        state.action
+      );
 
       return {
         ...state,
@@ -216,17 +228,21 @@ const regionCodeSlice = createSlice({
       };
     },
     [deleteRegionCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Region Codes`,
       };
     },
     [deleteRegionCode.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Region Codes', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Region Codes',
+        state.action
+      );
 
       return {
         ...state,

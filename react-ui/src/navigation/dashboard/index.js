@@ -10,7 +10,7 @@ import InventoryMovements from '../../screens/Dashboard/InventoryMovements';
 import MaterialIssuances from '../../screens/Dashboard/MaterialIssuances';
 import MaterialReceivings from '../../screens/Dashboard/MaterialReceivings';
 import Employees from '../../screens/Dashboard/Employees';
-import SalesReports from '../../screens/Dashboard/SalesReports';
+// import SalesReports from '../../screens/Dashboard/SalesReports';
 import JobOrder from '../../screens/Dashboard/JobOrder';
 import EngineeringInventories from '../../screens/Dashboard/EngineeringInventories';
 import EngineeringItems from '../../screens/Dashboard/EngineeringItems';
@@ -97,14 +97,14 @@ export const routes = [
     path: '/engineering-inventory',
     component: EngineeringInventories,
   },
-  /*{
+  /* {
     title: 'Account Summary Reports',
     path: '/account-summary',
     component: '',
-  },*/
-  {
-    title: 'Sales Reports',
-    path: '/sales-reports',
-    component: SalesReports,
-  },
+  }, */
+  // {
+  //   title: 'Sales Reports',
+  //   path: '/sales-reports',
+  //   component: SalesReports,
+  // },
 ];

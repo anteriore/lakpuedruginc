@@ -78,7 +78,7 @@ const FormDetails = () => {
   const depots = useSelector((state) => state.maintenance.depots.list);
   const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
   const [displayModal, setDisplayModal] = useState(false);
-  const [loadingAR, setLoadingAR] = useState(false)
+  const [loadingAR, setLoadingAR] = useState(false);
 
   const formDetails = {
     form_name: 'official_receipt',
@@ -106,10 +106,10 @@ const FormDetails = () => {
         render: (depot) => `[${depot.code}] ${depot.name}`,
         rules: [{ required: true }],
         onChange: (e) => {
-          setLoadingAR(true)
+          setLoadingAR(true);
           dispatch(listAReceiptWithSIByDepot({ message, depot: e })).then(() => {
-            setLoadingAR(false)
-          })
+            setLoadingAR(false);
+          });
         },
       },
     ],
@@ -192,6 +192,7 @@ const FormDetails = () => {
 
   // different format from other "tableDetails"
   const tableDetails = {
+    label: 'Acknowledgement Receipts',
     columns: [
       {
         title: 'SI Number',

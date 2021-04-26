@@ -18,15 +18,16 @@ const PDCVouchers = (props) => {
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
   const [formData, setFormData] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const isMounted = useRef(true);
 
   const { formDetails, tableDetails } = FormDetails();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
-  const listData = useSelector((state) => state.accounting.PDCVouchers.list);
+  const { list: listData, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.accounting.PDCVouchers
+  );
 
   const { company, actions } = props;
 
@@ -40,28 +41,31 @@ const PDCVouchers = (props) => {
     });
 
     return function cleanup() {
-      isMounted.current = false
+      isMounted.current = false;
       dispatch(clearData());
     };
   }, [dispatch, company]);
 
+  useEffect(() => {
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
+
   const handleAdd = () => {
     setFormTitle('Create PDC Voucher');
-    setFormMode('add');
     setFormData(null);
     setLoading(true);
-    dispatch(listPDCDisbursementByStatus({ status: "Pending", message })).then((response) => {
-      if(isMounted.current){
+    dispatch(listPDCDisbursementByStatus({ status: 'Pending', message })).then((response) => {
+      if (isMounted.current) {
         const onSuccess = () => {
-            history.push(`${path}/new`);
-            setLoading(false);
-        }
+          history.push(`${path}/new`);
+          setLoading(false);
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       }
-    })
+    });
   };
 
   const handleUpdate = (data) => {};
@@ -87,14 +91,14 @@ const PDCVouchers = (props) => {
         dispatch(listPDCVoucher({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);
-    return 1
+    return 1;
   };
 
   return (
@@ -183,9 +187,7 @@ const PDCVouchers = (props) => {
                 />
                 <Text>{'Cheques: '}</Text>
                 <Table
-                  dataSource={
-                    selectedData?.disbursement?.cheques ?? []
-                  }
+                  dataSource={selectedData?.disbursement?.cheques ?? []}
                   columns={tableDetails.renderTableColumns(tableDetails.fields)}
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}

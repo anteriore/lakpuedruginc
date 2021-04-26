@@ -9,9 +9,9 @@ export const listProductionArea = createAsyncThunk(
     const accessToken = thunkAPI.getState().auth.token;
     try {
       const response = await axiosInstance.get(`/rest/procedure-areas?token=${accessToken}`);
-  
+
       const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
+
       if (valid) {
         return validatedResponse;
       }
@@ -20,7 +20,7 @@ export const listProductionArea = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -30,15 +30,15 @@ export const createProductionArea = createAsyncThunk(
   'createProductionArea',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    
+
     try {
       const response = await axiosInstance.post(
         `/rest/procedure-areas?token=${accessToken}`,
         payload
       );
-  
+
       const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
+
       if (valid) {
         return validatedResponse;
       }
@@ -47,7 +47,7 @@ export const createProductionArea = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -63,9 +63,9 @@ export const updateProductionArea = createAsyncThunk(
         `/rest/procedure-areas?token=${accessToken}`,
         payload
       );
-  
+
       const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
+
       if (valid) {
         return validatedResponse;
       }
@@ -74,7 +74,7 @@ export const updateProductionArea = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -90,9 +90,9 @@ export const deleteProductionArea = createAsyncThunk(
         `/rest/procedure-areas/delete?token=${accessToken}`,
         id
       );
-  
+
       const { response: validatedResponse, valid } = checkResponseValidity(response);
-  
+
       if (valid) {
         return validatedResponse;
       }
@@ -101,7 +101,7 @@ export const deleteProductionArea = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -124,17 +124,21 @@ const productionAreaSlice = createSlice({
   },
   extraReducers: {
     [listProductionArea.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for production areas` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for production areas`,
       };
     },
     [listProductionArea.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
 
       return {
         ...state,
@@ -162,17 +166,21 @@ const productionAreaSlice = createSlice({
       };
     },
     [createProductionArea.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas`,
       };
     },
     [createProductionArea.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
 
       return {
         ...state,
@@ -199,17 +207,21 @@ const productionAreaSlice = createSlice({
       };
     },
     [updateProductionArea.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas`,
       };
     },
     [updateProductionArea.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
 
       return {
         ...state,
@@ -236,17 +248,21 @@ const productionAreaSlice = createSlice({
       };
     },
     [deleteProductionArea.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Production Areas`,
       };
     },
     [deleteProductionArea.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Production Areas', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Production Areas',
+        state.action
+      );
 
       return {
         ...state,

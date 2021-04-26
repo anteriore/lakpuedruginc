@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import React, { useState } from 'react';
 import moment from 'moment';
 import { Table, Typography } from 'antd';
+import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
 const { Text } = Typography;
 
@@ -58,7 +59,6 @@ export const columns = [
       return `${object?.totalAmount}`;
     },
   },
-
 ];
 
 const FormDetails = () => {
@@ -70,6 +70,33 @@ const FormDetails = () => {
   const [displayModal, setDisplayModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
 
+  const selectTableColumns = [
+    {
+      title: 'CP Number',
+      dataIndex: 'number',
+      key: 'number',
+      datatype: 'string',
+    },
+    /* {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
+    }, */
+    {
+      title: 'Payee',
+      dataIndex: 'vendor',
+      key: 'vendor',
+      datatype: 'object',
+      dataToString: (data) => {
+        return `[${data?.code}] ${data?.name}`;
+      },
+      render: (data) => {
+        return `[${data?.code}] ${data?.name}`;
+      },
+    },
+  ];
+
   const formDetails = {
     form_name: 'cheque_disbursement',
     form_items: [
@@ -79,37 +106,19 @@ const FormDetails = () => {
         type: 'selectTable',
         render: (object) => `${object.number}`,
         rules: [{ required: true }],
-        //allowEmpty: true,
+        // allowEmpty: true,
         placeholder: 'Select Cheque Disbursement',
         displayModal,
         setDisplayModal,
         dataSource: chequePrintings,
-        columns: [
-          {
-            title: 'CP Number',
-            dataIndex: 'number',
-            key: 'number',
-          },
-          /*{
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            render: (date) => moment(new Date(date)).format('DD/MM/YYYY'),
-          },*/
-          {
-            title: 'Payee',
-            dataIndex: 'vendor',
-            key: 'vendor',
-            render: (data) => {return `[${data?.code}] ${data?.name}`},
-          },
-        ],
+        columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
         rowKey: 'id',
         getValueProps: (value) => {
           if (typeof value !== 'undefined') {
-            return { value: value?.number ?? "" };
+            return { value: value?.number ?? '' };
           }
         },
-        toString: (data) => data.number
+        toString: (data) => data.number,
       },
       {
         label: 'Payee',
@@ -146,7 +155,7 @@ const FormDetails = () => {
         rules: [],
         readOnly: true,
       },
-      /*{
+      /* {
         label: 'Bank Account',
         name: 'bankAccount',
         type: 'selectSearch',
@@ -154,7 +163,7 @@ const FormDetails = () => {
         choices: bankAccounts,
         render: (object) => `[${object.code}] ${object.name}`,
         rules: [{ required: true }],
-      },*/
+      }, */
       {
         label: 'Remarks',
         name: 'remarks',
@@ -162,7 +171,6 @@ const FormDetails = () => {
         rules: [{ message: 'Please provide a valid remark' }],
         placeholder: 'Remarks',
       },
-      
     ],
     account_titles: {
       label: 'Account Titles',
@@ -175,20 +183,21 @@ const FormDetails = () => {
           name: 'accountTitle',
           rules: [{ required: true, message: 'Please select account title' }],
           placeholder: 'Select Account Title',
-          render: (object) => `[${object?.type}] ${object?.title}` ?? "",
+          render: (object) => `[${object?.type}] ${object?.title}` ?? '',
           type: 'selectSearch',
           choices: accountTitles,
           width: 200,
           onChange: (e) => {
-            const accountTitle = accountTitles.find((data) => data.id === e)
-            setSelectedAccount(accountTitle)
-          }
-        },{
+            const accountTitle = accountTitles.find((data) => data.id === e);
+            setSelectedAccount(accountTitle);
+          },
+        },
+        {
           label: 'Department',
           name: 'department',
           rules: [{ required: true, message: 'Please select department' }],
           placeholder: 'Select Department',
-          render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+          render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
           type: 'selectSearch',
           choices: departments,
           width: 200,
@@ -198,7 +207,7 @@ const FormDetails = () => {
           name: 'group',
           rules: [{ required: true, message: 'Please select group' }],
           placeholder: 'Select Group',
-          render: (object) => object?.name ?? "",
+          render: (object) => object?.name ?? '',
           type: 'selectSearch',
           choices: groups,
           width: 200,
@@ -208,7 +217,7 @@ const FormDetails = () => {
           name: 'area',
           rules: [{ required: true, message: 'Please select area' }],
           placeholder: 'Select Area',
-          render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+          render: (object) => `[${object?.code ?? ''}] ${object?.name ?? ''}`,
           type: 'selectSearch',
           choices: areas,
           width: 200,
@@ -219,7 +228,7 @@ const FormDetails = () => {
           type: 'number',
           dependencies: ['accountTitle'],
           rules: [{ required: true, message: 'Please provide debit' }],
-          isVisible: (selectedAccount?.type ?? "") === "Debit",
+          isVisible: (selectedAccount?.type ?? '') === 'Debit',
           initialValue: 0,
           min: 0,
           width: 200,
@@ -229,33 +238,33 @@ const FormDetails = () => {
           name: 'credit',
           type: 'number',
           rules: [{ required: true, message: 'Please provide credit' }],
-          isVisible: (selectedAccount?.type ?? "") === "Credit",
+          isVisible: (selectedAccount?.type ?? '') === 'Credit',
           initialValue: 0,
           min: 0,
           width: 200,
         },
       ],
       handleAdd: (values) => {
-        const accountTitle = accountTitles.find((data) => data.id === values.accountTitle)
-        const department = departments.find((data) => data.id === values.department)
-        const group = groups.find((data) => data.id === values.group)
-        const area = areas.find((data) => data.id === values.area)
+        const accountTitle = accountTitles.find((data) => data.id === values.accountTitle);
+        const department = departments.find((data) => data.id === values.department);
+        const group = groups.find((data) => data.id === values.group);
+        const area = areas.find((data) => data.id === values.area);
         return {
           ...values,
           accountTitle,
           department,
           group,
-          area
-        }
+          area,
+        };
       },
       summary: (data) => {
         let totalCredit = 0;
         let totalDebit = 0;
         data.forEach((item) => {
-          totalCredit += (item?.credit ?? 0)
-          totalDebit += (item?.debit ?? 0)
+          totalCredit += item?.credit ?? 0;
+          totalDebit += item?.debit ?? 0;
         });
-  
+
         return (
           <Table.Summary.Row>
             <Table.Summary.Cell>Total Credit</Table.Summary.Cell>
@@ -278,12 +287,12 @@ const FormDetails = () => {
       {
         label: 'Date',
         name: 'date',
-        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`
+        render: (data) => `${moment(new Date(data.date)).format('DD/MM/YYYY')}`,
       },
       {
         label: 'Payee',
         name: 'vendor',
-        render: (data) => `[${data.vendor.code}] ${data.vendor.name}`
+        render: (data) => `[${data.vendor.code}] ${data.vendor.name}`,
       },
       {
         label: 'Remarks',
@@ -297,10 +306,10 @@ const FormDetails = () => {
     processDisplayData: (data) => {
       const processedData = {
         ...data,
-        //disbursementDate: data.disbursement.date,
-      }
-      return processedData
-    }
+        // disbursementDate: data.disbursement.date,
+      };
+      return processedData;
+    },
   };
 
   return { formDetails };

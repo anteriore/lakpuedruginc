@@ -6,7 +6,6 @@ import {
   InputNumber,
   Input,
   Select,
-  Checkbox,
   Modal,
   Row,
   Col,
@@ -18,6 +17,7 @@ import {
 import { SelectOutlined } from '@ant-design/icons';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
+import TableHeader from '../../../components/TableDisplay/TableHeader';
 
 const { Title } = Typography;
 
@@ -29,6 +29,7 @@ const InputForm = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState();
+  const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
   const [processingData, setProcessingData] = useState(false);
@@ -38,8 +39,16 @@ const InputForm = (props) => {
   useEffect(() => {
     form.setFieldsValue(values);
     setTableData(form.getFieldValue(formTable.name));
-    // eslint-disable-next-line
-  }, [values, form]);
+
+    const selectedKeys = [];
+    if (values !== null && values[formTable.name] !== null) {
+      values[formTable.name].forEach((item) => {
+        selectedKeys.push(item[formTable.selectedKey]);
+      });
+      setTableData(values[formTable.name]);
+    }
+    setTableSelectedKeys(selectedKeys);
+  }, [values, form, formTable.name, formTable.selectedKey]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -48,7 +57,7 @@ const InputForm = (props) => {
   }, [user, form]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -62,8 +71,8 @@ const InputForm = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
@@ -93,7 +102,6 @@ const InputForm = (props) => {
               );
             },
           });
-        
         } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
@@ -168,81 +176,28 @@ const InputForm = (props) => {
     return columns;
   };
 
-  // for selecting selecting a new row in a table
-  const onModalSelect = (data, isSelected) => {
-    let selectedItems = [];
-    if (hasTable) {
-      if (isSelected) {
-        // add existing data
-        if (tableData !== null && typeof tableData !== 'undefined') {
-          selectedItems = selectedItems.concat(tableData);
-        }
-
-        // process the new data before adding if necessary
-        let processedData = data;
-        if (typeof formTable.processData === 'function') {
-          processedData = formTable.processData(data);
-        }
-        selectedItems = selectedItems.concat(processedData);
-      } else if (tableData !== null && typeof tableData !== 'undefined') {
-        selectedItems = tableData;
-
-        // key for the selected item
-        if (typeof formTable.selectedKey === 'undefined') {
-          formTable.selectedKey = 'id';
-        }
-        // foreign key that corresponds to the selected item
-        if (typeof formTable.foreignKey === 'undefined') {
-          formTable.foreignKey = 'id';
-        }
-        selectedItems = selectedItems.filter(
-          (item) => item[formTable.selectedKey] !== data[formTable.foreignKey]
-        );
-      }
-      const fieldsValue = {};
-      fieldsValue[formTable.name] = selectedItems;
-      setTableData(selectedItems);
-      form.setFieldsValue(fieldsValue);
-      onValuesChange(fieldsValue);
+  const onTableSelect = (selectedRowKeys, selectedRows) => {
+    setTableSelectedKeys(selectedRowKeys);
+    let prevSelectData = [];
+    if (typeof form.getFieldValue(formTable.name) !== 'undefined') {
+      prevSelectData = form
+        .getFieldValue(formTable.name)
+        .filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]));
     }
-  };
 
-  // for rendering the columns inside the row selection modal
-  const renderModalColumns = (columns) => {
-    let modalColumns = [
-      {
-        key: 'select',
-        render: (row) => {
-          return (
-            <Checkbox
-              onChange={(e) => {
-                onModalSelect(row, e.target.checked);
-              }}
-              defaultChecked={formTable.checkSelected(tableData, row)}
-            />
-          );
-        },
-      },
-    ];
-
-    modalColumns = modalColumns.concat(columns);
-
-    return modalColumns;
-  };
-
-  const expandedRowRender = (row) => {
-    if (formTable.hasOwnProperty('nestedData')) {
-      return (
-        <>
-          <Title level={5}>{formTable.nestedData.label}</Title>
-          <Table
-            columns={formTable.nestedData.fields}
-            dataSource={row[formTable.nestedData.data]}
-            pagination={false}
-          />
-        </>
+    prevSelectData.forEach((data) => {
+      const index = selectedRows.findIndex(
+        (item) => item[formTable.selectedKey] === data[formTable.selectedKey]
       );
-    }
+      if (index !== -1) {
+        selectedRows[index] = data;
+      }
+    });
+
+    const fieldsValue = {};
+    fieldsValue[formTable.name] = selectedRows;
+    setTableData(selectedRows);
+    form.setFieldsValue(fieldsValue);
   };
 
   const onFail = () => {
@@ -293,7 +248,7 @@ const InputForm = (props) => {
                     <Table
                       dataSource={tableData}
                       columns={renderTableColumns(formTable)}
-                      pagination={false}
+                      pagination={{ simple: true }}
                       locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                       summary={formTable.summary}
                     />
@@ -304,15 +259,12 @@ const InputForm = (props) => {
           </Form>
 
           <div style={styles.tailLayout}>
-            <Button 
-              type="primary" 
-              onClick={() => form.submit()}
-              loading={processingData}
-            >
+            <Button type="primary" onClick={() => form.submit()} loading={processingData}>
               Submit
             </Button>
             <Button
               style={{ marginRight: '2%' }}
+              disabled={processingData}
               onClick={() => {
                 onCancel();
                 history.goBack();
@@ -330,23 +282,21 @@ const InputForm = (props) => {
               cancelButtonProps={{ style: { display: 'none' } }}
               width={1000}
             >
-              {typeof formTable.nestedData !== 'undefined' && formTable.nestedData !== null ? (
-                // for nested tables
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  expandable={{ expandedRowRender }}
-                  rowKey={formTable.foreignKey}
-                />
-              ) : (
-                <Table
-                  dataSource={formTable.selectData}
-                  columns={renderModalColumns(formTable.selectFields)}
-                  pagination={false}
-                  rowKey={formTable.foreignKey}
-                />
-              )}
+              <Table
+                rowSelection={{
+                  type: 'checkbox',
+                  onChange: onTableSelect,
+                  selectedRowKeys: tableSelectedKeys,
+                }}
+                columns={TableHeader({
+                  columns: formTable.selectFields,
+                  hasSorter: true,
+                  hasFilter: true,
+                })}
+                dataSource={formTable.selectData}
+                rowKey={formTable.selectedKey}
+                pagination={{ simple: true }}
+              />
             </Modal>
           )}
         </Col>

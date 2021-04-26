@@ -13,11 +13,25 @@ import {
   Popconfirm,
   message,
 } from 'antd';
-import { PlusOutlined, CheckOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { listPR, cancelPR, addPR, deletePR, approvePR, rejectPR, clearData, updatePR } from './redux';
+import {
+  listPR,
+  cancelPR,
+  addPR,
+  deletePR,
+  approvePR,
+  rejectPR,
+  clearData,
+  updatePR,
+} from './redux';
 import { listD, clearData as clearDepartment } from '../../Maintenance/DepartmentArea/redux';
 import { listItemSummary, clearData as clearItem } from '../../Maintenance/Items/redux';
 import { DisplayDetails, FormDetails } from './data';
@@ -25,7 +39,7 @@ import { processDataForSubmission, loadDataForUpdate } from './helpers';
 import InputForm from './InputForm';
 import TableDisplay from '../../../components/TableDisplay';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, {reevalutateMessageStatus} from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -45,7 +59,9 @@ const PurchaseRequests = (props) => {
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
 
-  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.dashboard.purchaseRequests);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.purchaseRequests
+  );
 
   const { company, title, actions } = props;
   const { path } = useRouteMatch();
@@ -58,12 +74,12 @@ const PurchaseRequests = (props) => {
     dispatch(clearData());
     dispatch(clearItem());
     dispatch(clearDepartment());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listPR({ company, message })).then(() => {
       dispatch(listD({ company, message })).then(() => {
-        if(isMounted.current){
+        if (isMounted.current) {
           setLoading(false);
         }
       });
@@ -71,13 +87,13 @@ const PurchaseRequests = (props) => {
 
     return function cleanup() {
       isMounted.current = false;
-      performCleanup()
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
-  },[status, action, statusMessage, statusLevel]);
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
     setFormTitle('Create Purchase Request');
@@ -87,23 +103,27 @@ const PurchaseRequests = (props) => {
   };
 
   const handleUpdate = (data) => {
+    if (data.status === 'Pending') {
       setFormTitle('Edit Purchase Request');
       setFormMode('edit');
       setLoading(true);
       const itemData = list.find((item) => item.id === data.id);
       dispatch(listItemSummary({ company, message })).then((response) => {
-        if(isMounted.current){
+        if (isMounted.current) {
           const onSuccess = () => {
             const inputData = loadDataForUpdate(itemData, response.payload.data);
             setFormData(inputData);
             history.push(`${path}/${data.id}`);
-          }
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([response], onSuccess, onFail, '');
         }
       });
+    } else {
+      message.error('This action is only available for pending purchase requests');
+    }
   };
 
   const handleDelete = (data) => {
@@ -113,10 +133,10 @@ const PurchaseRequests = (props) => {
         dispatch(listPR({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -135,10 +155,10 @@ const PurchaseRequests = (props) => {
         dispatch(listPR({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -152,40 +172,38 @@ const PurchaseRequests = (props) => {
         dispatch(listPR({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
-  
   const handleCancel = () => {
-    setDisplayCancelModal(true)
+    setDisplayCancelModal(true);
   };
 
   const onCancelPR = () => {
-    dispatch(cancelPR({ id: selectedData.id, remarks: remarks })).then((response) => {
+    dispatch(cancelPR({ id: selectedData.id, remarks })).then((response) => {
       const onSuccess = () => {
         closeModal();
         dispatch(listPR({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
-
-  }
+  };
 
   const handleCancelRemarks = (data) => {
-    setRemarks(data)
-  }
+    setRemarks(data);
+  };
 
   const onSubmit = async (data) => {
     const payload = processDataForSubmission(data, company);
@@ -199,14 +217,14 @@ const PurchaseRequests = (props) => {
           dispatch(listPR({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
-    }else {
+    } else {
       await dispatch(addPR(payload)).then((response) => {
         setLoading(true);
         const onSuccess = () => {
@@ -214,15 +232,15 @@ const PurchaseRequests = (props) => {
           dispatch(listPR({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   const handleCancelButton = () => {
@@ -290,7 +308,8 @@ const PurchaseRequests = (props) => {
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
                 updateEnabled={actions.includes('update')}
-                deleteEnabled={actions.includes('delete')}
+                deleteEnabled={false}
+                // deleteEnabled={actions.includes('delete')}
               />
             </Col>
           )}
@@ -299,18 +318,18 @@ const PurchaseRequests = (props) => {
           visible={displayCancelModal}
           title={`Cancel ${selectedData?.number ?? ''}`}
           onOk={() => {
-            onCancelPR()
+            onCancelPR();
           }}
           onCancel={() => {
-            closeModal()
+            closeModal();
           }}
         >
           <Space direction="vertical" style={{ width: '100%' }} size="middle">
             <Text>{'Remarks (Reason for cancellation): '}</Text>
-            <TextArea 
-              rows={3} 
-              maxLength={200} 
-              placeholder={`Please indicate the reason for cancellation`} 
+            <TextArea
+              rows={3}
+              maxLength={200}
+              placeholder="Please indicate the reason for cancellation"
               onChange={(e) => handleCancelRemarks(e.target.value)}
               defaultValue={selectedData?.remarks ?? ''}
             />
@@ -356,8 +375,7 @@ const PurchaseRequests = (props) => {
                         onConfirm={(e) => {
                           handleApprove(selectedData);
                         }}
-                        onCancel={(e) => {
-                        }}
+                        onCancel={(e) => {}}
                         okText="Yes"
                         cancelText="No"
                       >
@@ -369,15 +387,14 @@ const PurchaseRequests = (props) => {
                           Approve
                         </Button>
                       </Popconfirm>
-                      
+
                       <Popconfirm
                         title="Would you like to perform this action?"
                         icon={<QuestionCircleOutlined />}
                         onConfirm={(e) => {
                           handleReject(selectedData);
                         }}
-                        onCancel={(e) => {
-                        }}
+                        onCancel={(e) => {}}
                         okText="Yes"
                         cancelText="No"
                       >
@@ -390,10 +407,8 @@ const PurchaseRequests = (props) => {
                           Reject
                         </Button>
                       </Popconfirm>
-                      
-                      
                     </Space>
-                  ):(
+                  ) : (
                     <Space>
                       <Button
                         style={{ marginRight: '1%' }}

@@ -10,8 +10,11 @@ import TableDisplay from '../../../components/TableDisplay';
 import InputForm from './InputForm';
 
 import { listOReceipt, addOReceipt, deleteOReceipt, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -29,7 +32,9 @@ const OfficialReceipts = (props) => {
   const [selectedAR, setSelectedAR] = useState(null);
   const { formDetails, tableDetails } = FormDetails();
 
-  const {list, status, statusLevel, statusMessage, action } = useSelector((state) => state.sales.officialReceipts);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.sales.officialReceipts
+  );
   const {
     action: actionDepot,
     statusMessage: statusMessageDepot,
@@ -42,26 +47,26 @@ const OfficialReceipts = (props) => {
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearDepot());
-  },[dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusDepot,
       statusMessage: statusMessageDepot,
-      action: actionDepot, 
+      action: actionDepot,
       statusLevel: statusLevelDepot,
-      module: 'Depots'
+      module: 'Depots',
     });
   }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
 
   useEffect(() => {
     dispatch(listOReceipt({ company, message })).then(() => {
       if (isMounted.current) {
-        setLoading(false)
+        setLoading(false);
       }
     });
 
@@ -75,15 +80,15 @@ const OfficialReceipts = (props) => {
     setFormTitle('Create Official Receipt');
     setFormData(null);
     setLoading(true);
-    dispatch(listDepot({ company, message })).then((resp1) => {
+    dispatch(listDepotByCompany({ company })).then((resp1) => {
       if(isMounted.current){
         const onSuccess = () => {
-            history.push(`${path}/new`);
-            setLoading(false);
-        }
+          history.push(`${path}/new`);
+          setLoading(false);
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([resp1], onSuccess, onFail, '');
       }
     });
@@ -91,21 +96,6 @@ const OfficialReceipts = (props) => {
 
   const handleUpdate = (data) => {
     message.error('Unable to perform action.');
-    /*
-    setFormTitle('Edit Official Receipt');
-    setLoading(true);
-    const itemData = listData.find((item) => item.id === data.id);
-    const formData = {
-      ...itemData,
-      date: moment(new Date(data.date)) || moment(),
-      depot: itemData.depot !== null ? itemData.depot.id : null,
-    };
-    setFormData(formData);
-    dispatch(listDepot({ company, message })).then(() => {
-      history.push(`${path}/${data.id}`);
-      setLoading(false);
-    });
-    */
   };
 
   const handleDelete = (data) => {
@@ -119,7 +109,7 @@ const OfficialReceipts = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -145,7 +135,7 @@ const OfficialReceipts = (props) => {
         id: user.id,
       },
     };
-    
+
     await dispatch(addOReceipt(payload)).then((response) => {
       setLoading(true);
       const onSuccess = () => {
@@ -157,7 +147,7 @@ const OfficialReceipts = (props) => {
 
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
     setFormData(null);

@@ -2,7 +2,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import moment from 'moment';
 
-import { listProductInventoryWithStockByDepot, clearData as clearPI } from '../../ProductInventories/redux';
+import {
+  listProductInventoryWithStockByDepot,
+  clearData as clearPI,
+} from '../../ProductInventories/redux';
 
 export const columns = [
   {
@@ -84,11 +87,11 @@ const FormDetails = () => {
         rules: [{ required: true }],
         loading: loadingDepot,
         onChange: (e) => {
-          setLoadingDepot(true)
+          setLoadingDepot(true);
           dispatch(clearPI());
           dispatch(listProductInventoryWithStockByDepot({ company, depot: e })).then(() => {
-            setLoadingDepot(false)
-          })
+            setLoadingDepot(false);
+          });
         },
       },
       {
@@ -161,6 +164,10 @@ const FormDetails = () => {
         title: 'Lot Number',
         dataIndex: 'product',
         key: 'product',
+        datatype: 'object',
+        dataToString: (product) => {
+          return product.lotNumber;
+        },
         render: (product) => {
           return product.lotNumber;
         },
@@ -169,6 +176,7 @@ const FormDetails = () => {
         title: 'Date Created',
         dataIndex: 'dateCreated',
         key: 'dateCreated',
+        datatype: 'date',
         render: (object) => {
           return moment(new Date(object)).format('DD/MM/YYYY');
         },
@@ -177,6 +185,10 @@ const FormDetails = () => {
         title: 'FG Code',
         dataIndex: 'product',
         key: 'product',
+        datatype: 'object',
+        dataToString: (object) => {
+          return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
+        },
         render: (object) => {
           return `[${object.finishedGood.code}] ${object.finishedGood.name}`;
         },
