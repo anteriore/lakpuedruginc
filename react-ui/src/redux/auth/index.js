@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
 import axiosInstance from '../../utils/axios-instance';
+import * as message from '../../data/constants/response-message.constant';
+import { checkResponseValidity, generateStatusMessage } from '../../helpers/general-helper';
 
 const initialState = {
   signedIn: false,
@@ -9,43 +10,74 @@ const initialState = {
   user: null,
   permissions: null,
   messsage: null,
+  status: 'loading',
+  statusLevel: '',
+  responseCode: null,
+  statusMessage: '',
+  action: '',
 };
 
-export const login = createAsyncThunk('login', async (payload) => {
+export const login = createAsyncThunk('login', async (payload, thunkAPI) => {
   const data = {
     username: payload.username,
     password: payload.password,
   };
+  try {
+    const response = await axiosInstance.post('api/login', data);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  const response = await axiosInstance.post('api/login', data);
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED,
+    });
+  }
 });
 
-export const getUser = createAsyncThunk('getUser', async (args, thunkAPI) => {
+export const getUser = createAsyncThunk('getUser', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
 
-  const response = await axiosInstance.get(`rest/me/?token=${accessToken}`);
-  return response;
+  try {
+    const response = await axiosInstance.get(`rest/me/?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED,
+    });
+  }
 });
 
 export const changePassword = createAsyncThunk('changePassword', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const data = {
-    id: payload.id,
-    password: payload.password,
-  };
 
-  const response = await axiosInstance.post(`rest/users/password/?token=${accessToken}`, data);
-  return response;
+  try {
+    const response = await axiosInstance.post(`rest/users/password/?token=${accessToken}`, payload);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED,
+    });
+  }
 });
-
-/* export const logout = createAsyncThunk('logout', async (payload) => {
-    
-    const response = await axiosInstance.post('api/logout')
-    return response
-
-})
-*/
 
 const processUserData = (data) => {
   const processedData = {
@@ -74,103 +106,107 @@ const authSlice = createSlice({
     },
     resetErrorMsg(state) {
       state.message = null;
+      state.status =  'loading'
+      state.statusLevel = ''
+      state.responseCode = null
+      state.statusMessage = ''
+      state.action = ''
     },
   },
   extraReducers: {
     [login.pending]: (state) => {
-      state.status = 'loading';
+      return {
+        ...state,
+        action: 'login',
+        status: 'loading',
+        statusMessage: `Authenticating User`,
+        statusLevel: '',
+        responseCode: null,
+      };
     },
     [login.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        return {
-          ...state,
-          status: 'succeeded',
-          token: action.payload.data.token,
-          expired: action.payload.data.expired,
-          signedIn: true,
-          message: 'Login Successful',
-        };
-      }
-      if (typeof action.payload === 'undefined') {
-        return {
-          ...state,
-          status: 'failed',
-          message: 'Unable to connect to server',
-        };
-      }
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Authentication',
+        state.action
+      );
+      return {
+        ...state,
+        token: action.payload.data.token,
+        expired: action.payload.data.expired,
+        signedIn: true,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [login.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Authentication',
+        state.action
+      );
 
       return {
         ...state,
         status: 'failed',
-        message: 'Invalid username and/or password',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
-    },
-    [login.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'failed',
-        message: 'Invalid username and/or password',
-      };
-    },
-
-    [getUser.pending]: (state) => {
-      state.status = 'loading';
     },
     [getUser.fulfilled]: (state, action) => {
       if (action.payload !== undefined && action.payload.status === 200) {
         return {
           ...state,
-          status: 'succeeded',
-          message: null,
           user: processUserData(action.payload.data, action.type),
           permissions: action.payload.data.permissions,
         };
       }
-
-      return {
-        ...state,
-        status: 'failed',
-        message: 'Unable get user info',
-      };
     },
-    [getUser.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'failed',
-        message: 'Unable get user info',
-      };
-    },
-
+    
     [changePassword.pending]: (state) => {
-      state.status = 'loading';
+      return {
+        ...state,
+        action: 'password change',
+        status: 'loading',
+        statusMessage: `Changing Password`,
+        statusLevel: '',
+        responseCode: null,
+      };
     },
     [changePassword.fulfilled]: (state, action) => {
-      if (action.payload !== undefined && action.payload.status === 200) {
-        return {
-          ...state,
-          status: 'succeeded',
-          message: 'Password change successful',
-        };
-      }
-      if (typeof action.payload === 'undefined') {
-        return {
-          ...state,
-          status: 'failed',
-          message: 'Unable to connect to server',
-        };
-      }
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Authentication',
+        state.action
+      );
+      return {
+        ...state,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
+      };
+    },
+    [changePassword.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Authentication',
+        state.action
+      );
 
       return {
         ...state,
         status: 'failed',
-        message: 'Password change request was denied',
-      };
-    },
-    [changePassword.rejected]: (state) => {
-      return {
-        ...state,
-        status: 'failed',
-        message: 'Password change request was denied',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
   },

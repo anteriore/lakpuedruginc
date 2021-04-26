@@ -22,11 +22,12 @@ import { listCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import Container from '../../components/container';
 import FormModal from '../../components/forms/FormModal';
+import { reevalutateMessageStatus } from '../../helpers/general-helper';
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const Account = (props) => {
+const Account = () => {
   const [form] = Form.useForm();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -35,8 +36,7 @@ const Account = (props) => {
   const [loading, setLoading] = useState(true);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
   const companies = useSelector((state) => state.company.companyList);
-  const user = useSelector((state) => state.auth.user);
-  const auth = useSelector((state) => state.auth);
+  const { user, statusMessage, action, status, statusLevel, permissions} = useSelector((state) => state.auth);
 
   const [displayForm, setDisplayForm] = useState(false);
 
@@ -47,6 +47,7 @@ const Account = (props) => {
   };
 
   useEffect(() => {
+    setLoading(true);
     dispatch(listCompany()).then(() => {
       dispatch(listD({ company: user.company.id })).then(() => {
         setLoading(false);
@@ -61,15 +62,8 @@ const Account = (props) => {
   }, [dispatch, user.company.id]);
 
   useEffect(() => {
-    console.log('Status:', auth.message);
-    if (auth.message !== null) {
-      if (auth.status === 'failed') {
-        message.error(auth.message);
-      } else if (auth.status === 'succeeded') {
-        message.success(auth.message);
-      }
-    }
-  }, [auth.message, auth.status]);
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     if (!loading) {
@@ -82,7 +76,7 @@ const Account = (props) => {
     form_items: [
       {
         label: 'Old Password',
-        name: 'oldPassword',
+        name: 'password',
         type: 'password',
         rules: [{ required: true, message: 'Please provide a valid password.' }],
         placeholder: 'Old Password',
@@ -90,7 +84,7 @@ const Account = (props) => {
       },
       {
         label: 'New Password',
-        name: 'password',
+        name: 'newPassword',
         type: 'password',
         rules: [
           {
@@ -107,12 +101,12 @@ const Account = (props) => {
         label: 'Confirm Password',
         name: 'confirmPassword',
         type: 'password',
-        dependencies: ['password'],
+        dependencies: ['newPassword'],
         rules: [
           { required: true, message: 'Please confirm your password.' },
           ({ getFieldValue }) => ({
             validator(rule, value) {
-              if (!value || getFieldValue('password') === value) {
+              if (!value || getFieldValue('newPassword') === value) {
                 return Promise.resolve();
               }
               return Promise.reject('The two passwords that you entered do not match!');
@@ -229,7 +223,6 @@ const Account = (props) => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
-    // message.error(errorInfo)
   };
 
   const onFinish = (data) => {
@@ -243,7 +236,7 @@ const Account = (props) => {
         id: data.department,
       },
       depots: null, // the user does not normally have access to the depots
-      permissions: auth.permissions,
+      permissions: permissions,
     };
     dispatch(updateUser(payload)).then((response) => {
       if (response.payload.status === 200) {
@@ -261,16 +254,18 @@ const Account = (props) => {
     setDisplayForm(true);
   };
 
-  const onSubmitPassword = (data) => {
+  const onSubmitPassword = async (data) => {
     setDisplayForm(false);
     const payload = {
       id: user.id,
       password: data.password,
       newPassword: data.newPassword,
     };
-    dispatch(changePassword(payload)).then((response) => {
-      dispatch(resetErrorMsg());
-    });
+    await dispatch(changePassword(payload)).then(() => {
+      dispatch(resetErrorMsg())
+    })
+    return 1
+
   };
 
   const onFail = () => {
