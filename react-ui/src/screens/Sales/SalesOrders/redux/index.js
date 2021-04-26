@@ -41,7 +41,7 @@ export const approveSalesOrder = createAsyncThunk(
   'approveSalesOrder',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    try{
+    try {
       const response = await axiosInstance.post(
         `/rest/sales-orders/approve/${payload}?token=${accessToken}`
       );
@@ -58,7 +58,7 @@ export const approveSalesOrder = createAsyncThunk(
 
 export const rejectSalesOrder = createAsyncThunk('rejectSalesOrder', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  try{
+  try {
     const response = await axiosInstance.post(
       `/rest/sales-orders/reject/${payload}?token=${accessToken}`
     );

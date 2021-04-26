@@ -20,6 +20,28 @@ export const listMemo = createAsyncThunk('listMemo', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
+      statusText: 'failed. An error has occurred',
+    });
+  }
+});
+
+export const listMemoByType = createAsyncThunk('listMemoByType', async (payload, thunkAPI) => {
+  const accessToken = thunkAPI.getState().auth.token;
+  const { type } = payload
+
+  try {
+    const response = await axiosInstance.get(`/rest/memo-types/type/${type}?token=${accessToken}`);
+
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
+
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
       statusText: 'failed. An error has occurred'
     });
   }
@@ -40,7 +62,7 @@ export const createMemo = createAsyncThunk('createMemo', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -60,7 +82,7 @@ export const updateMemo = createAsyncThunk('updateMemo', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -81,7 +103,7 @@ export const deleteMemo = createAsyncThunk('deleteMemo', async (payload, thunkAP
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -103,12 +125,12 @@ const memoSlice = createSlice({
   },
   extraReducers: {
     [listMemo.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [listMemo.fulfilled]: (state, action) => {
@@ -140,13 +162,51 @@ const memoSlice = createSlice({
         statusMessage,
       };
     },
-    [createMemo.pending]: (state) => {
+    [listMemoByType.pending]: (state) => {
       return { 
         ...state,  
-        action: 'create', 
+        action: 'fetch', 
         status: 'loading',
         statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+      };
+    },
+    [listMemoByType.fulfilled]: (state, action) => {
+      const { data, status } = action.payload;
+      const { message, level } = generateStatusMessage(action.payload, 'Memo Types', state.action);
+
+      return {
+        ...state,
+        list: data,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage: message,
+      };
+    },
+    [listMemoByType.rejected]: (state, action) => {
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Memo Types',
+        state.action
+      );
+
+      return {
+        ...state,
+        data: [],
+        status: 'failed',
+        statusLevel: level,
+        responseCode: null,
+        statusMessage,
+      };
+    },
+    [createMemo.pending]: (state) => {
+      return {
+        ...state,
+        action: 'create',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [createMemo.fulfilled]: (state, action) => {
@@ -178,12 +238,12 @@ const memoSlice = createSlice({
       };
     },
     [updateMemo.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [updateMemo.fulfilled]: (state, action) => {
@@ -215,12 +275,12 @@ const memoSlice = createSlice({
       };
     },
     [deleteMemo.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Memo Types`,
       };
     },
     [deleteMemo.fulfilled]: (state, action) => {

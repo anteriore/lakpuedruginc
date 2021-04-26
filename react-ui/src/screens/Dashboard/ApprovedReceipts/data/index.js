@@ -1,334 +1,332 @@
 import { useSelector } from 'react-redux';
 
 export const DisplayDetails = () => {
-    const columns = [
-        {
-            title: 'A.R. No',
-            dataIndex: 'number',
-            key: 'rrNum',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.number.length - b.number.length,
-        },
-        {
-            title: 'R.R. No',
-            dataIndex: 'receivingReceipt',
-            key: 'receivingReceipt',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            datatype: 'object',
-            dataToString: (object) => {
-                return object.number
-            }
-        },
-        {
-            title: 'Material Type',
-            dataIndex: 'item',
-            key: 'itemType',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            datatype: 'object',
-            dataToString: (object) => {
-                return object.type.name
-            }
-        },
-        {
-            title: 'Total Items',
-            dataIndex: 'totalQuantity',
-            key: 'totalQuantity',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.number.length - b.number.length,
-        },
-        {
-            title: 'Control Number',
-            dataIndex: 'controlNumber',
-            key: 'controlNumber',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.number.length - b.number.length,
-        },
-        {
-            title: 'DR/SI',
-            dataIndex: 'receivingReceipt',
-            key: 'drSI',
-            align: 'center',
-            defaultSortOrder: 'ascend',
-            datatype: 'object',
-            dataToString: (object) => {
-                return `${object.drNumber}/${object.siNumber}`
-            }
-        },
-    ];
+  const columns = [
+    {
+      title: 'A.R. No',
+      dataIndex: 'number',
+      key: 'rrNum',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.number.length - b.number.length,
+    },
+    {
+      title: 'R.R. No',
+      dataIndex: 'receivingReceipt',
+      key: 'receivingReceipt',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      datatype: 'object',
+      dataToString: (object) => {
+        return object.number;
+      },
+    },
+    {
+      title: 'Material Type',
+      dataIndex: 'item',
+      key: 'itemType',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      datatype: 'object',
+      dataToString: (object) => {
+        return object.type.name;
+      },
+    },
+    {
+      title: 'Total Items',
+      dataIndex: 'totalQuantity',
+      key: 'totalQuantity',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.number.length - b.number.length,
+    },
+    {
+      title: 'Control Number',
+      dataIndex: 'controlNumber',
+      key: 'controlNumber',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.number.length - b.number.length,
+    },
+    {
+      title: 'DR/SI',
+      dataIndex: 'receivingReceipt',
+      key: 'drSI',
+      align: 'center',
+      defaultSortOrder: 'ascend',
+      datatype: 'object',
+      dataToString: (object) => {
+        return `${object.drNumber}/${object.siNumber}`;
+      },
+    },
+  ];
 
-    const itemColumns = [
-        {
-            title: 'Received',
-            dataIndex: 'receivedQuantity',
-            key: 'receivedQuantity',
-        },
-        {
-            title: 'Approved',
-            dataIndex: 'approvedQuantity',
-            key: 'approvedQuantity',
-        },
-        {
-            title: 'Rejected',
-            dataIndex: 'rejectedQuantity',
-            key: 'rejectedQuantity',
-        },
-        {
-            title: 'QC Samples',
-            dataIndex: 'qcSamples',
-            key: 'qcSamples',
-        },
-        {
-            title: 'Total',
-            dataIndex: 'totalQuantity',
-            key: 'totalQuantity',
-        },
-        {
-            label: 'Expiration',
-            dataIndex: 'expiration',
-            key: 'expiration',
-        },
-        {
-            label: 'Best Before',
-            dataIndex: 'bestBefore',
-            key: 'bestBefore',
-        },
-        {
-            label: 'Re-eval',
-            dataIndex: 'reevaluation',
-            key: 'reevaluation',
-        },
-        {
-            label: 'Re-test',
-            dataIndex: 'retest',
-            key: 'retest',
-        },
-    ];
+  const itemColumns = [
+    {
+      title: 'Received',
+      dataIndex: 'receivedQuantity',
+      key: 'receivedQuantity',
+    },
+    {
+      title: 'Approved',
+      dataIndex: 'approvedQuantity',
+      key: 'approvedQuantity',
+    },
+    {
+      title: 'Rejected',
+      dataIndex: 'rejectedQuantity',
+      key: 'rejectedQuantity',
+    },
+    {
+      title: 'QC Samples',
+      dataIndex: 'qcSamples',
+      key: 'qcSamples',
+    },
+    {
+      title: 'Total',
+      dataIndex: 'totalQuantity',
+      key: 'totalQuantity',
+    },
+    {
+      label: 'Expiration',
+      dataIndex: 'expiration',
+      key: 'expiration',
+    },
+    {
+      label: 'Best Before',
+      dataIndex: 'bestBefore',
+      key: 'bestBefore',
+    },
+    {
+      label: 'Re-eval',
+      dataIndex: 'reevaluation',
+      key: 'reevaluation',
+    },
+    {
+      label: 'Re-test',
+      dataIndex: 'retest',
+      key: 'retest',
+    },
+  ];
 
   return { columns, itemColumns };
 };
 
 export const FormDetails = () => {
+  const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
+  const itemList = useSelector((state) => state.maintenance.items.list);
+  // const itemList = [];
 
-    const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
-    const itemList = useSelector((state) => state.maintenance.items.list);
-    //const itemList = []; 
-
-    const formDetails = {
-        form_name: 'approvedReceipts',
-        form_items: [
-            {
-                label: 'A.R. No.',
-                name: 'number',
-                placeholder: 'AUTOGENERATED UPON CREATION',
-                readOnly: true,
-            },
-            {
-                label: 'R.R. No',
-                name: 'receivingReceipt',
-                type: 'selectSearch',
-                selectName: 'name',
-                choices: rrList,
-                render: (object) => 
-                object.number,
-                rules: [{ required: true }],
-                /*onChange: (object) => {
-                    itemList = object.receivingReceipts
-                },*/
-            },
-            {
-                label: 'Date',
-                name: 'date',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select a date' }],
-            },
-            {
-                label: 'Received By',
-                name: 'receivedBy',
-                rules: [{ required: true, message: 'Please login a valid user' }],
-                placeholder: '',
-                type: 'readOnly',
-                writeOnly: true,
-            },
-            {
-                label: 'Control Number',
-                name: 'controlNumber',
-                rules: [{ required: true, message: 'Please provide a valid Control Number' }],
-                placeholder: 'Control Number',
-            },
-            {
-                label: 'Max Containers',
-                name: 'maxContainers',
-                type: 'number',
-                min: 0,
-                rules: [{ required: true, message: 'Please provide a valid Max Containers' }],
-                placeholder: 'Max Containers',
-            },
-            {
-                label: 'Specified Gravity',
-                name: 'specifiedGravity',
-                type: 'number',
-                min: 0,
-                rules: [{ required: true, message: 'Please provide a valid Specified Gravity' }],
-                placeholder: 'Specified Gravity',
-            },
-            {
-                label: 'Date Created',
-                name: 'dateCreated',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select a date' }],
-            },
-            {
-                label: 'Date Modified',
-                name: 'modified',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select a date' }],
-            },
-            {
-                label: 'Remarks',
-                name: 'remarks',
-                rules: [{}],
-                placeholder: 'Remarks (optional)',
-                type: 'textArea',
-            },
-        ]
-    };
-
-    const processSelectData = (data) => {
-        const processedData = []
-        data.forEach((item) => {
-          const processedItem = {
-            ...item,
-            ...item.item,
-            itemID: item.item.id,
-          }
-          delete processedItem.item;
-          delete processedItem.id;
-          processedData.push(processedItem)
-        })
-        return processedData
-    }
-
-    const tableDetails = {
-        label: 'Received Item',
-        name: 'receivedItems',
-        key: 'receivedItems',
+  const formDetails = {
+    form_name: 'approvedReceipts',
+    form_items: [
+      {
+        label: 'A.R. No.',
+        name: 'number',
+        placeholder: 'AUTOGENERATED UPON CREATION',
+        readOnly: true,
+      },
+      {
+        label: 'R.R. No',
+        name: 'receivingReceipt',
+        type: 'selectSearch',
+        selectName: 'name',
+        choices: rrList,
+        render: (object) => object.number,
         rules: [{ required: true }],
-        fields: [
-            {
-                label: 'Item ID',
-                name: 'itemID',
-                type: 'hidden',
-            },
-            {
-                label: 'Code',
-                name: 'code',
-            },
-            {
-                label: 'Item Name',
-                name: 'name',
-            },
-            {
-                label: 'Received Quantity',
-                type: 'number',
-                name: 'receivedQuantity',
-                min: 0,
-                rules: [{ required: true, message: 'Please input a valid quantity' }],
-            },
-            {
-                label: 'Approved Quantity',
-                type: 'number',
-                name: 'approvedQuantity',
-                min: 0,
-                rules: [{ required: true, message: 'Please input a valid quantity' }],
-            },
-            {
-                label: 'Rejected Quantity',
-                type: 'number',
-                name: 'rejectedQuantity',
-                min: 0,
-                rules: [{ required: true, message: 'Please input a valid quantity' }],
-            },
-            {
-                label: 'QC Samples',
-                type: 'number',
-                name: 'qcSamples',
-                min: 0,
-                rules: [{ required: true, message: 'Please input a valid quantity' }],
-            },
-            {
-                label: 'Total Quantity',
-                type: 'number',
-                name: 'totalQuantity',
-                min: 0,
-                rules: [{ required: true, message: 'Please input a valid quantity' }],
-            },
-            {
-                label: 'Expiration',
-                name: 'expiration',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select an expiration date' }],
-            },
-            {
-                label: 'Best Before',
-                name: 'bestBefore',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select an best before date' }],
-            },
-            {
-                label: 'Re-eval',
-                name: 'reevaluation',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select a reevaluation date' }],
-            },
-            {
-                label: 'Re-test',
-                name: 'retest',
-                type: 'date',
-                rules: [{ required: true, message: 'Please select a retest date' }],
-            },
-        ],
-        
-        foreignKey: 'itemID',
-        selectedKey: 'itemID',
-        selectData: processSelectData(itemList),
-        selectFields: [
-            {
-            title: 'Item Code',
-            dataIndex: 'code',
-            key: 'code',
-            datatype: 'string'
-            },
-            {
-            title: 'Item Name',
-            dataIndex: 'name',
-            key: 'name',
-            datatype: 'string'
-            },
-            {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type',
-            datatype: 'object',
-            dataToString: (object) => object?.name ?? "",
-            render: (object) => object?.name ?? "",
-            },
-            {
-            title: 'Unit',
-            dataIndex: 'unit',
-            key: 'unit',
-            datatype: 'object',
-            dataToString: (object) => object?.code ?? "",
-            render: (object) => object?.code ?? "",
-            },
-        ],
-        processData: (data) => {
-          return data
-        },
-    };
+        /* onChange: (object) => {
+                    itemList = object.receivingReceipts
+                }, */
+      },
+      {
+        label: 'Date',
+        name: 'date',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a date' }],
+      },
+      {
+        label: 'Received By',
+        name: 'receivedBy',
+        rules: [{ required: true, message: 'Please login a valid user' }],
+        placeholder: '',
+        type: 'readOnly',
+        writeOnly: true,
+      },
+      {
+        label: 'Control Number',
+        name: 'controlNumber',
+        rules: [{ required: true, message: 'Please provide a valid Control Number' }],
+        placeholder: 'Control Number',
+      },
+      {
+        label: 'Max Containers',
+        name: 'maxContainers',
+        type: 'number',
+        min: 0,
+        rules: [{ required: true, message: 'Please provide a valid Max Containers' }],
+        placeholder: 'Max Containers',
+      },
+      {
+        label: 'Specified Gravity',
+        name: 'specifiedGravity',
+        type: 'number',
+        min: 0,
+        rules: [{ required: true, message: 'Please provide a valid Specified Gravity' }],
+        placeholder: 'Specified Gravity',
+      },
+      {
+        label: 'Date Created',
+        name: 'dateCreated',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a date' }],
+      },
+      {
+        label: 'Date Modified',
+        name: 'modified',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a date' }],
+      },
+      {
+        label: 'Remarks',
+        name: 'remarks',
+        rules: [{}],
+        placeholder: 'Remarks (optional)',
+        type: 'textArea',
+      },
+    ],
+  };
+
+  const processSelectData = (data) => {
+    const processedData = [];
+    data.forEach((item) => {
+      const processedItem = {
+        ...item,
+        ...item.item,
+        itemID: item.item.id,
+      };
+      delete processedItem.item;
+      delete processedItem.id;
+      processedData.push(processedItem);
+    });
+    return processedData;
+  };
+
+  const tableDetails = {
+    label: 'Received Item',
+    name: 'receivedItems',
+    key: 'receivedItems',
+    rules: [{ required: true }],
+    fields: [
+      {
+        label: 'Item ID',
+        name: 'itemID',
+        type: 'hidden',
+      },
+      {
+        label: 'Code',
+        name: 'code',
+      },
+      {
+        label: 'Item Name',
+        name: 'name',
+      },
+      {
+        label: 'Received Quantity',
+        type: 'number',
+        name: 'receivedQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Approved Quantity',
+        type: 'number',
+        name: 'approvedQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Rejected Quantity',
+        type: 'number',
+        name: 'rejectedQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'QC Samples',
+        type: 'number',
+        name: 'qcSamples',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Total Quantity',
+        type: 'number',
+        name: 'totalQuantity',
+        min: 0,
+        rules: [{ required: true, message: 'Please input a valid quantity' }],
+      },
+      {
+        label: 'Expiration',
+        name: 'expiration',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select an expiration date' }],
+      },
+      {
+        label: 'Best Before',
+        name: 'bestBefore',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select an best before date' }],
+      },
+      {
+        label: 'Re-eval',
+        name: 'reevaluation',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a reevaluation date' }],
+      },
+      {
+        label: 'Re-test',
+        name: 'retest',
+        type: 'date',
+        rules: [{ required: true, message: 'Please select a retest date' }],
+      },
+    ],
+
+    foreignKey: 'itemID',
+    selectedKey: 'itemID',
+    selectData: processSelectData(itemList),
+    selectFields: [
+      {
+        title: 'Item Code',
+        dataIndex: 'code',
+        key: 'code',
+        datatype: 'string',
+      },
+      {
+        title: 'Item Name',
+        dataIndex: 'name',
+        key: 'name',
+        datatype: 'string',
+      },
+      {
+        title: 'Type',
+        dataIndex: 'type',
+        key: 'type',
+        datatype: 'object',
+        dataToString: (object) => object?.name ?? '',
+        render: (object) => object?.name ?? '',
+      },
+      {
+        title: 'Unit',
+        dataIndex: 'unit',
+        key: 'unit',
+        datatype: 'object',
+        dataToString: (object) => object?.code ?? '',
+        render: (object) => object?.code ?? '',
+      },
+    ],
+    processData: (data) => {
+      return data;
+    },
+  };
   return { formDetails, tableDetails };
 };

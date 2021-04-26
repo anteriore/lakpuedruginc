@@ -42,23 +42,22 @@ const FormScreen = (props) => {
     form.setFieldsValue(values);
     if (hasTable) {
       setTableData(form.getFieldValue(formTable.name));
-      let selectedKeys = []
-      if(values !== null && values[formTable.name] !== null){
+      let selectedKeys = [];
+      if (values !== null && values[formTable.name] !== null) {
         values[formTable.name].forEach((item) => {
-          selectedKeys.push(item[formTable.foreignKey])
-        })
+          selectedKeys.push(item[formTable.foreignKey]);
+        });
       }
-      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i)
-      setTableSelectedKeys(selectedKeys)
+      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i);
+      setTableSelectedKeys(selectedKeys);
     }
     if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
       setToggleValue(values[toggleName]);
     }
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable.name, formTable.foreignKey, hasTable, toggleName]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -72,8 +71,8 @@ const FormScreen = (props) => {
     });
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
@@ -176,28 +175,31 @@ const FormScreen = (props) => {
   };
 
   const onTableSelect = (selectedRowKeys, selectedRows) => {
-    setTableSelectedKeys(selectedRowKeys)
-    let prevSelectData = []
-    if(typeof form.getFieldValue(formTable.name) !== 'undefined'){
-      prevSelectData = form.getFieldValue(formTable.name).filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]))
+    setTableSelectedKeys(selectedRowKeys);
+    let prevSelectData = [];
+    if (typeof form.getFieldValue(formTable.name) !== 'undefined') {
+      prevSelectData = form
+        .getFieldValue(formTable.name)
+        .filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]));
     }
 
-    let processedData = []
+    let processedData = [];
     selectedRows.forEach((rowData) => {
-      const index = prevSelectData.findIndex((item) => item[formTable.selectedKey] === rowData[formTable.selectedKey])
-      if(index !== -1){
-        processedData.push(prevSelectData[index])
+      const index = prevSelectData.findIndex(
+        (item) => item[formTable.selectedKey] === rowData[formTable.selectedKey]
+      );
+      if (index !== -1) {
+        processedData.push(prevSelectData[index]);
+      } else {
+        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData]);
       }
-      else {
-        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData])
-      }
-    })
+    });
 
     const fieldsValue = {};
     fieldsValue[formTable.name] = processedData;
     setTableData(processedData);
     form.setFieldsValue(fieldsValue);
-  }
+  };
 
   const expandedRowRender = (row) => {
     if (formTable.hasOwnProperty('nestedData')) {
@@ -212,9 +214,8 @@ const FormScreen = (props) => {
         </>
       );
     }
-    else {
-      return null
-    }
+
+    return null;
   };
 
   const onFail = () => {
@@ -283,44 +284,52 @@ const FormScreen = (props) => {
                 }
 
                 return <FormItem item={item} onFail={onFail} />;
-            })}
+              })}
 
-            {hasTable && ((typeof formTable.isVisible === 'undefined' || formTable.isVisible) ? (
-              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? [{ required: true }]}>
-                {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
-                    <div style={{ float: 'right', marginBottom: '1%' }}>
-                      <Button
-                        onClick={() => {
-                          setDisplayModal(true);
-                          setLoadingModal(false);
-                        }}
-                        icon={<SelectOutlined />}
-                      >
-                        {`Select ${formTable.label}`}
-                      </Button>
-                    </div>
-                    <Table
-                      dataSource={tableData}
-                      columns={renderTableColumns(formTable)}
-                      pagination={{simple: true}}
-                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                      summary={formTable.summary}
-                    />
-                  </Col>
-                )}
-              </Form.List>
-            ): (
-              <Col span={15} offset={6}>
-              <Alert
-                message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
-                type="warning"
-                showIcon
-                icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
-              />
-              </Col>
-            ))}
+            {hasTable &&
+              (typeof formTable.isVisible === 'undefined' || formTable.isVisible ? (
+                <Form.List
+                  label={formTable.label}
+                  name={formTable.name}
+                  rules={formTable?.rules ?? [{ required: true }]}
+                >
+                  {(fields, { errors }) => (
+                    <Col span={20} offset={1}>
+                      <div style={{ float: 'right', marginBottom: '1%' }}>
+                        <Button
+                          onClick={() => {
+                            setDisplayModal(true);
+                            setLoadingModal(false);
+                          }}
+                          icon={<SelectOutlined />}
+                        >
+                          {`Select ${formTable.label}`}
+                        </Button>
+                      </div>
+                      <Table
+                        dataSource={tableData}
+                        columns={renderTableColumns(formTable)}
+                        pagination={{ simple: true }}
+                        locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                        summary={formTable.summary}
+                      />
+                    </Col>
+                  )}
+                </Form.List>
+              ) : (
+                <Col span={15} offset={6}>
+                  <Alert
+                    message={
+                      formTable?.emptyText ??
+                      `Please provide the necessary data for ${formTable.label}`
+                    }
+                    type="warning"
+                    showIcon
+                    icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                    style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
+                  />
+                </Col>
+              ))}
           </Form>
 
           <div style={styles.tailLayout}>
@@ -350,18 +359,24 @@ const FormScreen = (props) => {
               <Table
                 rowSelection={{
                   type: 'checkbox',
-                  //selectedRowKeys: item.selectedData,
+                  // selectedRowKeys: item.selectedData,
                   onChange: onTableSelect,
                   preserveSelectedRowKeys: false,
-                  selectedRowKeys: tableSelectedKeys
+                  selectedRowKeys: tableSelectedKeys,
                 }}
-                columns={TableHeader({ 
-                  columns: formTable.selectFields, 
-                  hasSorter: true, hasFilter: true })}
+                columns={TableHeader({
+                  columns: formTable.selectFields,
+                  hasSorter: true,
+                  hasFilter: true,
+                })}
                 dataSource={formTable.selectData}
                 rowKey={formTable.selectedKey}
-                pagination={{simple: true}}
-                expandable={{ expandedRowRender: formTable.hasOwnProperty('nestedData') ? expandedRowRender : null }}
+                pagination={{ simple: true }}
+                expandable={{
+                  expandedRowRender: formTable.hasOwnProperty('nestedData')
+                    ? expandedRowRender
+                    : null,
+                }}
               />
             </Modal>
           )}
@@ -399,7 +414,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',
-    marginTop: '2%'
+    marginTop: '2%',
   },
   listTailLayout: {
     labelCol: {

@@ -29,20 +29,23 @@ export const listI = createAsyncThunk('listI', async (payload, thunkAPI) => {
   }
 });
 
-export const listItemWithoutEng = createAsyncThunk('listItemWithoutEng', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  try {
-    const response = await axiosInstance.get(`rest/items/rm-pm?token=${accessToken}`);
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+export const listItemWithoutEng = createAsyncThunk(
+  'listItemWithoutEng',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    try {
+      const response = await axiosInstance.get(`rest/items/rm-pm?token=${accessToken}`);
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
 export const listItemReportSummaryByProduct = createAsyncThunk(
   'listItemReportSummaryByProduct',
@@ -103,43 +106,49 @@ export const listItemSummary = createAsyncThunk('listItemSummary', async (payloa
   }
 });
 
-export const listItemSummaryNonEngineering = createAsyncThunk('listItemSummaryNonEngineering', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload;
+export const listItemSummaryNonEngineering = createAsyncThunk(
+  'listItemSummaryNonEngineering',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
 
-  try {
-    const response = await axiosInstance.get(
-      `rest/items/company/${company}/summary/non-eng?token=${accessToken}`
-    );
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/items/company/${company}/summary/non-eng?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
-export const listItemSummaryEngineering = createAsyncThunk('listItemSummaryEngineering', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { company } = payload;
+export const listItemSummaryEngineering = createAsyncThunk(
+  'listItemSummaryEngineering',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { company } = payload;
 
-  try {
-    const response = await axiosInstance.get(
-      `rest/items/company/${company}/summary/eng?token=${accessToken}`
-    );
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.get(
+        `rest/items/company/${company}/summary/eng?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response.data);
   }
-});
+);
 
 export const addI = createAsyncThunk('addI', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -173,7 +182,7 @@ export const updateI = createAsyncThunk('updateI', async (payload, thunkAPI) => 
 
 export const deleteI = createAsyncThunk('deleteI', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  
+
   try {
     const response = await axiosInstance.post(`rest/items/delete?token=${accessToken}`, payload);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
@@ -200,7 +209,7 @@ const itemSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: message.ITEMS_GET_PENDING
+        statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listI.fulfilled]: (state, action) => {
@@ -215,8 +224,8 @@ const itemSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
@@ -368,7 +377,7 @@ const itemSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: message.ITEMS_GET_PENDING
+        statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listItemWithoutEng.fulfilled]: (state, action) => {
@@ -383,8 +392,8 @@ const itemSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
@@ -410,7 +419,7 @@ const itemSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: message.ITEMS_GET_PENDING
+        statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listItemByType.fulfilled]: (state, action) => {
@@ -425,8 +434,8 @@ const itemSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
@@ -452,7 +461,7 @@ const itemSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: message.ITEMS_GET_PENDING
+        statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listItemSummary.fulfilled]: (state, action) => {
@@ -467,8 +476,8 @@ const itemSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
@@ -494,7 +503,7 @@ const itemSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: message.ITEMS_GET_PENDING
+        statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listItemSummaryEngineering.fulfilled]: (state, action) => {
@@ -509,8 +518,8 @@ const itemSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },
@@ -536,7 +545,7 @@ const itemSlice = createSlice({
         action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: message.ITEMS_GET_PENDING
+        statusMessage: message.ITEMS_GET_PENDING,
       };
     },
     [listItemSummaryNonEngineering.fulfilled]: (state, action) => {
@@ -551,8 +560,8 @@ const itemSlice = createSlice({
         ...state,
         list: data,
         status: 'succeeded',
-        statusLevel: level, 
-        responseCode: status, 
+        statusLevel: level,
+        responseCode: status,
         statusMessage,
       };
     },

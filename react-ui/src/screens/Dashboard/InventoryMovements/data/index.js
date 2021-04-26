@@ -34,7 +34,7 @@ export const columns = [
 
 const FormDetails = () => {
   const inventories = useSelector((state) => state.dashboard.inventory.list);
-  const [mode, setMode] = useState('IN')
+  const [mode, setMode] = useState('IN');
   const [classifications, setClassifications] = useState([
     {
       id: 'RETURN',
@@ -81,7 +81,7 @@ const FormDetails = () => {
         ],
         onChange: (e) => {
           if (e.target.value === 'IN') {
-            setMode(e.target.value)
+            setMode(e.target.value);
             setClassifications([
               {
                 id: 'RETURN',
@@ -95,7 +95,7 @@ const FormDetails = () => {
               },
             ]);
           } else if (e.target.value === 'OUT') {
-            setMode(e.target.value)
+            setMode(e.target.value);
             setClassifications([
               {
                 id: 'EXPIRED',
@@ -140,9 +140,7 @@ const FormDetails = () => {
         placeholder: 'Remarks',
       },
     ],
-    required_data: [
-      inventories
-    ]
+    required_data: [inventories],
   };
 
   const tableDetails = {
@@ -182,10 +180,8 @@ const FormDetails = () => {
           if (mode === 'IN') {
             return (object?.stockOnHand ?? 0) + (object?.quantity ?? 0);
           }
-          else {
-            return (object?.stockOnHand ?? 0) - (object?.quantity ?? 0);
-          }
-          
+
+          return (object?.stockOnHand ?? 0) - (object?.quantity ?? 0);
         },
       },
     ],

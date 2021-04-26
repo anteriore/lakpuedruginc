@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableDisplay from '../../../components/TableDisplay';
-import { listPC, addPC, updatePC,deletePC, clearData } from './redux';
+import { listPC, addPC, updatePC, deletePC, clearData } from './redux';
 import { listPD, clearData as clearPD } from '../ProductDivisions/redux';
 import SimpleForm from '../../../components/forms/FormModal';
 import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
@@ -20,8 +20,10 @@ const Depots = (props) => {
 
   const { company, actions } = props;
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
-  const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.productCategories);
+  const { handleRequestResponse } = GeneralHelper();
+  const { list, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.productCategories
+  );
   const divisions = useSelector((state) => state.maintenance.productDivisions.list);
 
   const columns = [
@@ -77,7 +79,7 @@ const Depots = (props) => {
         label: 'Division',
         name: 'division',
         type: 'select',
-        placeholder: "Product Division",
+        placeholder: 'Product Division',
         rules: [{ required: true, message: 'Please select a product division' }],
         selectName: 'title',
         choices: divisions,
@@ -104,7 +106,7 @@ const Depots = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action,statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
@@ -114,10 +116,10 @@ const Depots = (props) => {
     dispatch(listPD({ company, message })).then((response) => {
       const onSuccess = () => {
         setDisplayForm(true);
-      }
+      };
       const onFail = () => {
-        handleCancelButton()
-      }
+        handleCancelButton();
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -133,10 +135,10 @@ const Depots = (props) => {
     dispatch(listPD({ company, message })).then((response) => {
       const onSuccess = () => {
         setDisplayForm(true);
-      }
+      };
       const onFail = () => {
-        handleCancelButton()
-      }
+        handleCancelButton();
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
@@ -178,10 +180,10 @@ const Depots = (props) => {
             setFormData(null);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -201,15 +203,15 @@ const Depots = (props) => {
             setFormData(null);
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
+        };
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
 
-    return 1
+    return 1;
   };
 
   return (

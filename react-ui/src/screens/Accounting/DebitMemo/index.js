@@ -10,8 +10,8 @@ import { FormDetails, DisplayDetails } from './data';
 import InputForm from './InputForm';
 
 import { listDM, addDM, deleteDM, updateDM, getDM, clearData } from './redux';
-import { listDepot, clearData as clearDepot } from '../../Maintenance/Depots/redux';
-import { listMemo, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
+import { listDepotByCompany, clearData as clearDepot } from '../../Maintenance/Depots/redux';
+import { listMemoByType, clearData as clearMemo } from '../../Maintenance/MemoTypes/redux';
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
 
@@ -32,40 +32,34 @@ const DebitMemo = (props) => {
   const [formData, setFormData] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
-  const {list: dmList, statusMessage, action, status, statusLevel} = useSelector((state) => state.accounting.debitMemo);
+  const { list: dmList, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.accounting.debitMemo
+  );
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
- 
-  const { handleRequestResponse } = GeneralHelper()
+
+  const { handleRequestResponse } = GeneralHelper();
   const isMounted = useRef(true);
 
   useEffect(() => {
     dispatch(listDM({ company, message })).then(() => {
       setFormData(null);
       setLoading(false);
-      if(!isMounted.current){
-        performCleanup()
-      }
     });
 
     return function cleanup() {
-      isMounted.current = false
-      performCleanup();
+      isMounted.current = false;
+      dispatch(clearData());
+      dispatch(clearDepot());
+      dispatch(clearMemo());
+      dispatch(clearOS());
+      dispatch(clearSI());
     };
-    // eslint-disable-next-line
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
-  
-  const performCleanup = () => {
-    dispatch(clearData());
-    dispatch(clearDepot());
-    dispatch(clearMemo());
-    dispatch(clearOS());
-    dispatch(clearSI());
-  }
 
   const handleAdd = () => {
     setFormTitle('Create Debit Memo');
@@ -75,16 +69,16 @@ const DebitMemo = (props) => {
     setLoading(true);
     dispatch(clearOS());
     dispatch(clearSI());
-    dispatch(listDepot({ company, message })).then((response1) => {
-      dispatch(listMemo({ company, message })).then((response2) => {
-        if(isMounted.current){
+    dispatch(listDepotByCompany({ company })).then((response1) => {
+      dispatch(listMemoByType({ type: ['DM'] })).then((response2) => {
+        if (isMounted.current) {
           const onSuccess = () => {
-              history.push(`${path}/new`);
-              setLoading(false);
-          }
+            history.push(`${path}/new`);
+            setLoading(false);
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([response1, response2], onSuccess, onFail, '');
         }
       });
@@ -98,18 +92,16 @@ const DebitMemo = (props) => {
         dispatch(listDM({ company, message })).then(() => {
           setLoading(false);
         });
-      }
+      };
       const onFail = () => {
         setLoading(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
   };
 
-  const handleUpdate = (data) => {
-    
-  };
+  const handleUpdate = (data) => {};
 
   const handleRetrieve = (data) => {
     setLoading(true);
@@ -118,10 +110,10 @@ const DebitMemo = (props) => {
         setDisplayModal(true);
         setSelectedData(response.payload.data);
         setLoading(false);
-      }
+      };
       const onFail = () => {
         setDisplayModal(false);
-      }
+      };
 
       handleRequestResponse([response], onSuccess, onFail, '');
     });
@@ -133,14 +125,14 @@ const DebitMemo = (props) => {
 
   const onSubmit = async (data) => {
     const payload = {
-        ...data,
-        memoSlipType: 'DM',
-        depot: {id: data.depot},
-        type: {id: data.type},
-    }
+      ...data,
+      memoSlipType: 'DM',
+      depot: { id: data.depot },
+      type: { id: data.type },
+    };
 
     if (formMode === 'edit') {
-      payload.id = formData.id
+      payload.id = formData.id;
 
       await dispatch(updateDM(payload)).then((response) => {
         setLoading(true);
@@ -149,11 +141,11 @@ const DebitMemo = (props) => {
           dispatch(listDM({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -164,15 +156,15 @@ const DebitMemo = (props) => {
           dispatch(listDM({ company, message })).then(() => {
             setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    
+
     setFormData(null);
     return 1;
   };

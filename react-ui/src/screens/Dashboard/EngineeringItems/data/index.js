@@ -51,7 +51,7 @@ const FormDetails = () => {
         name: 'type',
         type: 'select',
         choices: types,
-        readOnly: true
+        readOnly: true,
       },
       {
         label: 'Unit',

@@ -8,8 +8,8 @@ const GeneralStyles = {
   reportsArea: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'start'
-  }
+    justifyContent: 'start',
+  },
 };
 
 export default GeneralStyles;

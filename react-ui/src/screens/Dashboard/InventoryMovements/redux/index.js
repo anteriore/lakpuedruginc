@@ -33,7 +33,7 @@ export const listInventoryMovement = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -58,7 +58,7 @@ export const addInventoryMovement = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -83,7 +83,7 @@ export const deleteInventoryMovement = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -97,18 +97,18 @@ const inventoryMovementSlice = createSlice({
   },
   extraReducers: {
     [listInventoryMovement.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for inventory movement slips` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for inventory movement slips`,
       };
     },
     [listInventoryMovement.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Inventory Movement Slips',
         state.action
       );
@@ -139,17 +139,21 @@ const inventoryMovementSlice = createSlice({
       };
     },
     [addInventoryMovement.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEM_ADD_PENDING} for inventory movement` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for inventory movement`,
       };
     },
     [addInventoryMovement.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Inventory Movement Slips', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Inventory Movement Slips',
+        state.action
+      );
 
       return {
         ...state,

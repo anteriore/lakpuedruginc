@@ -31,7 +31,7 @@ export const listFGIssuance = createAsyncThunk('listFGIssuance', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -56,7 +56,7 @@ export const listFGIssuanceByDepot = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -72,22 +72,22 @@ export const addFGIssuance = createAsyncThunk('addFGIssuance', async (payload, t
     );
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-      if (valid) {
-        return validatedResponse;
-      }
-      return thunkAPI.rejectWithValue(validatedResponse);
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
 
 export const cancelFGIssuance = createAsyncThunk('cancelFGIssuance', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload
+  const { id } = payload;
   try {
     const response = await axiosInstance.post(
       `rest/product-issuances/cancel/${id}?token=${accessToken}`
@@ -102,7 +102,7 @@ export const cancelFGIssuance = createAsyncThunk('cancelFGIssuance', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -113,7 +113,8 @@ export const deleteFGIssuance = createAsyncThunk('deleteFGIssuance', async (payl
     const response = await axiosInstance.post(
       `rest/product-issuances/delete?token=${accessToken}`,
       payload
-    );  const { response: validatedResponse, valid } = checkResponseValidity(response);
+    );
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
     if (valid) {
       return validatedResponse;
@@ -123,7 +124,7 @@ export const deleteFGIssuance = createAsyncThunk('deleteFGIssuance', async (payl
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -136,21 +137,17 @@ const FGIssuanceSlice = createSlice({
   },
   extraReducers: {
     [listFGIssuance.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for FG issuance` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for FG issuance`,
       };
     },
     [listFGIssuance.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(
-        action.payload, 
-        'FG Issuance',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance', state.action);
 
       return {
         ...state,
@@ -163,11 +160,7 @@ const FGIssuanceSlice = createSlice({
     },
     [listFGIssuance.rejected]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(
-        action.payload, 
-        'FG Issuance',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance', state.action);
 
       return {
         ...state,
@@ -179,21 +172,17 @@ const FGIssuanceSlice = createSlice({
       };
     },
     [listFGIssuanceByDepot.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for FG issuance` 
-      }
+        statusMessage: `${message.ITEMS_GET_PENDING} for FG issuance`,
+      };
     },
     [listFGIssuanceByDepot.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(
-        action.payload, 
-        'FG Issuance',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance', state.action);
 
       return {
         ...state,
@@ -206,11 +195,7 @@ const FGIssuanceSlice = createSlice({
     },
     [listFGIssuanceByDepot.rejected]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(
-        action.payload, 
-        'FG Issuance',
-        state.action
-      );
+      const { message, level } = generateStatusMessage(action.payload, 'FG Issuance', state.action);
 
       return {
         ...state,
@@ -223,12 +208,12 @@ const FGIssuanceSlice = createSlice({
     },
 
     [addFGIssuance.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEM_ADD_PENDING} for fg issuance` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for fg issuance`,
       };
     },
     [addFGIssuance.fulfilled]: (state, action) => {
@@ -261,12 +246,12 @@ const FGIssuanceSlice = createSlice({
     },
 
     [cancelFGIssuance.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'reject', 
+      return {
+        ...state,
+        action: 'reject',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEM_ADD_PENDING} for fg issuance` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for fg issuance`,
       };
     },
     [cancelFGIssuance.fulfilled]: (state, action) => {

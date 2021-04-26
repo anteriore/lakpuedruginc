@@ -1,5 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Row, Col, Layout, Typography, Form, Skeleton, Table, InputNumber, Checkbox, Space, Button, Alert } from 'antd';
+import {
+  Row,
+  Col,
+  Layout,
+  Typography,
+  Form,
+  Skeleton,
+  Table,
+  InputNumber,
+  Checkbox,
+  Space,
+  Button,
+  Alert,
+} from 'antd';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import _ from 'lodash';
@@ -62,13 +75,13 @@ const InputForm = (props) => {
   const handleChange = (value, index, name) => {
     setRequestedProductList((prevData) => {
       const newData = [...prevData];
-      const newItem = {...newData[index]};
+      const newItem = { ...newData[index] };
       newItem[name] = value;
       newData[index] = newItem;
       form.setFieldsValue({ product: newData });
       return newData;
-    })
-  }
+    });
+  };
 
   const onItemSelect = (data, isSelected) => {
     if (isSelected) {
@@ -116,32 +129,35 @@ const InputForm = (props) => {
     return filteredColumn;
   };
 
-  const modProductColumn = (table) => table.map((col) => {
-    if(col.editable) { 
-      return {
-        ...col, 
-        render: ( _value, _, index) => <InputNumber 
-          min={1}
-          defaultValue={1}
-          precision={0}
-          onChange={(val) => handleChange(val, index, col.dataIndex)}
-        />
+  const modProductColumn = (table) =>
+    table.map((col) => {
+      if (col.editable) {
+        return {
+          ...col,
+          render: (_value, _, index) => (
+            <InputNumber
+              min={1}
+              defaultValue={1}
+              precision={0}
+              onChange={(val) => handleChange(val, index, col.dataIndex)}
+            />
+          ),
+        };
       }
-    }
 
-    return col;
-  })
+      return col;
+    });
 
   const onFail = () => {
     history.push(`/${path.split('/')[1]}/${path.split('/')[2]}`);
   };
 
   const onFinish = () => {
-    setProcessingData(true)
+    setProcessingData(true);
     onSubmit(form.getFieldsValue()).then(() => {
-      setProcessingData(false)
+      setProcessingData(false);
       history.goBack();
-    })
+    });
   };
 
   return (
@@ -191,8 +207,8 @@ const InputForm = (props) => {
                       message="Please select depot with assigned product inventories on it"
                       type="warning"
                       showIcon
-                      icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                      style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                      icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                      style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
                     />
                   </Form.Item>
                 )}
@@ -202,7 +218,12 @@ const InputForm = (props) => {
                     <Button htmlType="button" onClick={() => history.goBack()}>
                       Cancel
                     </Button>
-                    <Button disabled={requestedProductList.length === 0} type="primary" htmlType="submit" loading={processingData}>
+                    <Button
+                      disabled={requestedProductList.length === 0}
+                      type="primary"
+                      htmlType="submit"
+                      loading={processingData}
+                    >
                       Submit
                     </Button>
                   </Space>
@@ -220,10 +241,14 @@ const InputForm = (props) => {
           width={1000}
         >
           <Table
-            columns={TableHeader({ columns: renderProductItemColumns(tableProductInventory), hasSorter: true, hasFilter: true })}
+            columns={TableHeader({
+              columns: renderProductItemColumns(tableProductInventory),
+              hasSorter: true,
+              hasFilter: true,
+            })}
             rowKey={(record) => record.uid}
             dataSource={productInv}
-            pagination={{ simple:true }}
+            pagination={{ simple: true }}
           />
         </Modal>
       </Row>

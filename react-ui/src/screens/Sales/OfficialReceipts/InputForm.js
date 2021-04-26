@@ -16,8 +16,8 @@ const FormScreen = (props) => {
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
   const [tableData, setTableData] = useState(null);
-  const [selectedAR, setSelectedAR] = useState(null)
-  const [processingData, setProcessingData] = useState(false)
+  const [selectedAR, setSelectedAR] = useState(null);
+  const [processingData, setProcessingData] = useState(false);
   const areceipts = useSelector((state) => state.sales.acknowledgementReceipts.list);
 
   useEffect(() => {
@@ -25,11 +25,10 @@ const FormScreen = (props) => {
     if (hasTable && values !== null) {
       setTableData(formTable.getValues(values.acknowledgementReceipt));
     }
-    // eslint-disable-next-line
-  }, [values, form]);
+  }, [values, form, formTable, hasTable]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -54,8 +53,8 @@ const FormScreen = (props) => {
     }
 
     onSubmit(data).then(() => {
-      setProcessingData(false)
-    })
+      setProcessingData(false);
+    });
   };
 
   const onFinishFailed = () => {
@@ -119,35 +118,36 @@ const FormScreen = (props) => {
 
             {areceipts !== null && areceipts.length > 0 ? (
               formDetails.ar_items.map((item) => {
-                if(item.type === 'selectTable'){
+                if (item.type === 'selectTable') {
                   return (
-                    <FormItem 
+                    <FormItem
                       item={{
                         ...item,
                         selectedData: selectedAR,
-                        setSelectedData: setSelectedAR
-                      }} 
-                      onFail={onFail} 
-                      onTableSelect={onTableSelect} 
+                        setSelectedData: setSelectedAR,
+                      }}
+                      onFail={onFail}
+                      onTableSelect={onTableSelect}
                     />
                   );
                 }
-                else {
-                  return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
-                }
+
+                return <FormItem item={item} onFail={onFail} onTableSelect={onTableSelect} />;
               })
             ) : (
               <Col span={15} offset={6}>
                 <Alert
-                  message={formTable?.emptyText ?? `Please provide the necessary data for ${formTable.label}`}
+                  message={
+                    formTable?.emptyText ??
+                    `Please provide the necessary data for ${formTable.label}`
+                  }
                   type="warning"
                   showIcon
-                  icon={<InfoCircleFilled style={{color: '#d4d4d4'}}/>}
-                  style={{backgroundColor: '#ebebeb', borderColor: '#ebebeb'}}
+                  icon={<InfoCircleFilled style={{ color: '#d4d4d4' }} />}
+                  style={{ backgroundColor: '#ebebeb', borderColor: '#ebebeb' }}
                 />
               </Col>
-            )
-          }
+            )}
           </Form>
 
           {areceipts !== null && areceipts.length > 0 && (
@@ -258,7 +258,7 @@ const styles = {
     marginBottom: '2%',
   },
   tailLayout: {
-    marginTop: '2%', 
+    marginTop: '2%',
     display: 'flex',
     flexDirection: 'row-reverse',
     width: '87.5%',

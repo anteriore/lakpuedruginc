@@ -5,7 +5,7 @@ import { checkResponseValidity, generateStatusMessage } from '../../../../helper
 
 export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  
+
   try {
     const response = await axiosInstance.get(`/rest/zip-codes?token=${accessToken}`);
 
@@ -19,7 +19,7 @@ export const listZipCode = createAsyncThunk('listZipCode', async (payload, thunk
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -39,7 +39,7 @@ export const createZipCode = createAsyncThunk('createZipCode', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -59,7 +59,7 @@ export const updateZipCode = createAsyncThunk('updateZipCode', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -80,7 +80,7 @@ export const deleteZipCode = createAsyncThunk('deleteZipCode', async (payload, t
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -102,12 +102,12 @@ const zipCodeSlice = createSlice({
   },
   extraReducers: {
     [listZipCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes`,
       };
     },
     [listZipCode.fulfilled]: (state, action) => {
@@ -140,12 +140,12 @@ const zipCodeSlice = createSlice({
       };
     },
     [createZipCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes`,
       };
     },
     [createZipCode.fulfilled]: (state, action) => {
@@ -177,12 +177,12 @@ const zipCodeSlice = createSlice({
       };
     },
     [updateZipCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes`,
       };
     },
     [updateZipCode.fulfilled]: (state, action) => {
@@ -214,12 +214,12 @@ const zipCodeSlice = createSlice({
       };
     },
     [deleteZipCode.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Zip Codes`,
       };
     },
     [deleteZipCode.fulfilled]: (state, action) => {

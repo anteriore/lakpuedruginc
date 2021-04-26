@@ -29,7 +29,7 @@ export const listPD = createAsyncThunk('listPD', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -53,7 +53,7 @@ export const addPD = createAsyncThunk('addPD', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -77,7 +77,7 @@ export const updatePD = createAsyncThunk('updatePD', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -101,7 +101,7 @@ export const deletePD = createAsyncThunk('deletePD', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -114,17 +114,21 @@ const productDivisionSlice = createSlice({
   },
   extraReducers: {
     [listPD.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions`,
       };
     },
     [listPD.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Product Divisions', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Product Divisions',
+        state.action
+      );
 
       return {
         ...state,
@@ -152,17 +156,21 @@ const productDivisionSlice = createSlice({
       };
     },
     [addPD.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions`,
       };
     },
     [addPD.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Product Divisions', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Product Divisions',
+        state.action
+      );
 
       return {
         ...state,
@@ -189,17 +197,21 @@ const productDivisionSlice = createSlice({
       };
     },
     [updatePD.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions`,
       };
     },
     [updatePD.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Product Divisions', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Product Divisions',
+        state.action
+      );
 
       return {
         ...state,
@@ -226,17 +238,21 @@ const productDivisionSlice = createSlice({
       };
     },
     [deletePD.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Product Divisions`,
       };
     },
     [deletePD.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Product Divisions', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Product Divisions',
+        state.action
+      );
 
       return {
         ...state,

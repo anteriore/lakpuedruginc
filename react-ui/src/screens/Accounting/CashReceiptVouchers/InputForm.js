@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Form,
   Button,
@@ -31,18 +31,10 @@ const InputForm = (props) => {
   const [formButtonLoading, setFormButtonLoading] = useState(false);
   const [loadingModal, setLoadingModal] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
-  const [displayVoucherFields, setDisplayVoucherFields] = useState(false)
-
-  useEffect(() => {
-    form.setFieldsValue(values);
-    if (hasTable) {
-      setTableData(form.getFieldValue(formTable.name));
-    }
-    // eslint-disable-next-line
-  }, [values, form]);
+  const [displayVoucherFields, setDisplayVoucherFields] = useState(false);
 
   const onFinish = (data) => {
-    setFormButtonLoading(true)
+    setFormButtonLoading(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -195,19 +187,18 @@ const InputForm = (props) => {
       setTableData(form.getFieldValue(formTable.name));
     }
 
-    if(values.hasOwnProperty('variation')){
-      switch(values.variation){
-        case "New":
-          setDisplayVoucherFields(false)
+    if (values.hasOwnProperty('variation')) {
+      switch (values.variation) {
+        case 'New':
+          setDisplayVoucherFields(false);
           break;
-        case "Adjustment":
-          setDisplayVoucherFields(true)
+        case 'Adjustment':
+          setDisplayVoucherFields(true);
           break;
         default:
           break;
       }
     }
-
   };
 
   return (
@@ -230,36 +221,43 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
-            {displayVoucherFields && formDetails.voucher_fields.map((item) => {
-              return <FormItem item={item} onFail={onFail} formInstance={form} />;
-            })}
+            {displayVoucherFields &&
+              formDetails.voucher_fields.map((item) => {
+                return <FormItem item={item} onFail={onFail} formInstance={form} />;
+              })}
 
-            {displayVoucherFields && hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
-              <Form.List label={formTable.label} name={formTable.name} rules={formTable?.rules ?? []}>
-                {(fields, { errors }) => (
-                  <Col span={20} offset={1}>
-                    <div style={{ float: 'right', marginBottom: '1%' }}>
-                      <Button
-                        onClick={() => {
-                          setDisplayModal(true);
-                          setLoadingModal(false);
-                        }}
-                        icon={<SelectOutlined />}
-                      >
-                        {`Select ${formTable.label}`}
-                      </Button>
-                    </div>
-                    <Table
-                      dataSource={tableData}
-                      columns={renderTableColumns(formTable)}
-                      pagination={false}
-                      locale={{ emptyText: <Empty description="No Item Seleted." /> }}
-                      summary={formTable.summary}
-                    />
-                  </Col>
-                )}
-              </Form.List>
-            )}
+            {displayVoucherFields &&
+              hasTable &&
+              (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
+                <Form.List
+                  label={formTable.label}
+                  name={formTable.name}
+                  rules={formTable?.rules ?? []}
+                >
+                  {(fields, { errors }) => (
+                    <Col span={20} offset={1}>
+                      <div style={{ float: 'right', marginBottom: '1%' }}>
+                        <Button
+                          onClick={() => {
+                            setDisplayModal(true);
+                            setLoadingModal(false);
+                          }}
+                          icon={<SelectOutlined />}
+                        >
+                          {`Select ${formTable.label}`}
+                        </Button>
+                      </div>
+                      <Table
+                        dataSource={tableData}
+                        columns={renderTableColumns(formTable)}
+                        pagination={false}
+                        locale={{ emptyText: <Empty description="No Item Seleted." /> }}
+                        summary={formTable.summary}
+                      />
+                    </Col>
+                  )}
+                </Form.List>
+              )}
 
             <FormItem item={formDetails.account_titles} onFail={onFail} formInstance={form} />
           </Form>
@@ -289,10 +287,10 @@ const InputForm = (props) => {
               width={1000}
             >
               <Table
-                tableLayout={'fixed'}
+                tableLayout="fixed"
                 rowSelection={{
                   type: 'radio',
-                  //selectedRowKeys: item.selectedData,
+                  // selectedRowKeys: item.selectedData,
                   onChange: (selectedRowKeys, selectedRows) => {
                     const fieldsValue = {};
                     fieldsValue[formTable.name] = selectedRows;

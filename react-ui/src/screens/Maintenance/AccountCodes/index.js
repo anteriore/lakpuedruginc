@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Button, Skeleton, message } from 'antd';
+import { Row, Col, Typography, Button, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -20,9 +20,11 @@ const AccountCodes = (props) => {
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
-  const { handleRequestResponse } = GeneralHelper()
+  const { handleRequestResponse } = GeneralHelper();
 
-  const { list: data, statusMessage, action, status, statusLevel } = useSelector((state) => state.maintenance.accountCodes);
+  const { list: data, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.accountCodes
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -41,7 +43,7 @@ const AccountCodes = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
@@ -60,11 +62,11 @@ const AccountCodes = (props) => {
 
   const handleDelete = (val) => {
     const { id } = val;
-    setLoading(true)
+    setLoading(true);
     dispatch(deleteAC(id)).then(() => {
       dispatch(listAC()).then(() => {
         setLoading(false);
-      })
+      });
     });
   };
 
@@ -76,7 +78,7 @@ const AccountCodes = (props) => {
   };
 
   const onSubmit = async (values) => {
-    setLoading(true)
+    setLoading(true);
     if (formMode === 'edit') {
       const payload = {
         ...values,
@@ -91,13 +93,13 @@ const AccountCodes = (props) => {
           dispatch(listAC()).then(() => {
             setDisplayForm(false);
             setFormData(null);
-            setLoading(false)
+            setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     } else if (formMode === 'add') {
@@ -112,17 +114,17 @@ const AccountCodes = (props) => {
           dispatch(listAC()).then(() => {
             setDisplayForm(false);
             setFormData(null);
-            setLoading(false)
+            setLoading(false);
           });
-        }
+        };
         const onFail = () => {
           setLoading(false);
-        }
-  
+        };
+
         handleRequestResponse([response], onSuccess, onFail, '');
       });
     }
-    return 1
+    return 1;
   };
 
   return (

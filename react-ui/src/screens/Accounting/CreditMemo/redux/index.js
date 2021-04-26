@@ -24,18 +24,18 @@ export const listCM = createAsyncThunk('listCM', async (payload, thunkAPI) => {
     }
     return thunkAPI.rejectWithValue(validatedResponse);
   } catch (err) {
-    //client side error
+    // client side error
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const addCM = createAsyncThunk('addCM', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  
+
   try {
     const response = await axiosInstance.post(`rest/credit-memos?token=${accessToken}`, payload);
     const { response: validatedResponse, valid } = checkResponseValidity(response);
@@ -48,7 +48,7 @@ export const addCM = createAsyncThunk('addCM', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -68,7 +68,7 @@ export const updateCM = createAsyncThunk('updateCM', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -76,7 +76,10 @@ export const updateCM = createAsyncThunk('updateCM', async (payload, thunkAPI) =
 export const deleteCM = createAsyncThunk('deleteCM', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
   try {
-    const response = await axiosInstance.post(`rest/credit-memos/delete?token=${accessToken}`, payload);
+    const response = await axiosInstance.post(
+      `rest/credit-memos/delete?token=${accessToken}`,
+      payload
+    );
 
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -88,14 +91,14 @@ export const deleteCM = createAsyncThunk('deleteCM', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
 
 export const getCM = createAsyncThunk('getCM', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { id } = payload
+  const { id } = payload;
   try {
     const response = await axiosInstance.get(`rest/credit-memos/${id}?token=${accessToken}`);
 
@@ -109,7 +112,7 @@ export const getCM = createAsyncThunk('getCM', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: 'failed. An error has occurred'
+      statusText: 'failed. An error has occurred',
     });
   }
 });
@@ -124,7 +127,7 @@ const creditMemoSlice = createSlice({
     [listCM.pending]: (state) => {
       return {
         ...state,
-        action: 'fetch', 
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos`,
@@ -164,12 +167,12 @@ const creditMemoSlice = createSlice({
       };
     },
     [getCM.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos`,
       };
     },
     [getCM.fulfilled]: (state, action) => {
@@ -201,12 +204,12 @@ const creditMemoSlice = createSlice({
       };
     },
     [addCM.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos`,
       };
     },
     [addCM.fulfilled]: (state, action) => {
@@ -238,12 +241,12 @@ const creditMemoSlice = createSlice({
       };
     },
     [updateCM.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'update', 
+      return {
+        ...state,
+        action: 'update',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos`,
       };
     },
     [updateCM.fulfilled]: (state, action) => {
@@ -275,12 +278,12 @@ const creditMemoSlice = createSlice({
       };
     },
     [deleteCM.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Credit Memos`,
       };
     },
     [deleteCM.fulfilled]: (state, action) => {

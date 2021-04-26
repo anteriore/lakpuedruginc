@@ -33,7 +33,7 @@ export const listMaterialIssuance = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -59,7 +59,7 @@ export const listMaterialIssuanceByStatus = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -69,7 +69,7 @@ export const addMaterialIssuance = createAsyncThunk(
   'addMaterialIssuance',
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
-    try{
+    try {
       const response = await axiosInstance.post(
         `rest/material-issuances/?token=${accessToken}`,
         payload
@@ -84,7 +84,7 @@ export const addMaterialIssuance = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -109,7 +109,7 @@ export const deleteMaterialIssuance = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -123,18 +123,18 @@ const materialIssuanceSlice = createSlice({
   },
   extraReducers: {
     [listMaterialIssuance.pending]: (state, action) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for material issuance` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for material issuance`,
       };
     },
     [listMaterialIssuance.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Material Issuance Slips',
         state.action
       );
@@ -165,20 +165,20 @@ const materialIssuanceSlice = createSlice({
       };
     },
     [listMaterialIssuanceByStatus.pending]: (state, action) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for material issuance` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for material issuance`,
       };
     },
     [listMaterialIssuanceByStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
+        action.payload,
         'Material Issuance Slips',
-        state.action   
+        state.action
       );
 
       return {
@@ -208,17 +208,21 @@ const materialIssuanceSlice = createSlice({
     },
 
     [addMaterialIssuance.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEM_ADD_PENDING} for material issuance` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for material issuance`,
       };
     },
     [addMaterialIssuance.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Material Issuance Slips', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Material Issuance Slips',
+        state.action
+      );
 
       return {
         ...state,

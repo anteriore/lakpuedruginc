@@ -9,7 +9,7 @@ const initialState = {
   list: [],
   status: 'loading',
   statusLevel: 'loading',
-  responseCode: null, 
+  responseCode: null,
   statusMessage: '',
   action: '',
 };
@@ -30,7 +30,7 @@ export const listPR = createAsyncThunk('listPR', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -53,7 +53,7 @@ export const listPRByStatus = createAsyncThunk('listPRByStatus', async (payload,
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -78,7 +78,7 @@ export const listPRByCompanyAndStatusAndDepartment = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -91,9 +91,9 @@ export const getRequestedQuantityByItem = createAsyncThunk(
     const { company, item } = payload;
 
     try {
-    const response = await axiosInstance.get(
-      `rest/purchase-requests/company/${company}/stock/${item}?token=${accessToken}`
-    );
+      const response = await axiosInstance.get(
+        `rest/purchase-requests/company/${company}/stock/${item}?token=${accessToken}`
+      );
 
       const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -105,7 +105,7 @@ export const getRequestedQuantityByItem = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: message.ERROR_OCCURED
+        statusText: message.ERROR_OCCURED,
       });
     }
   }
@@ -129,7 +129,7 @@ export const addPR = createAsyncThunk('addPR', async (payload, thunkAPI) => {
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -152,7 +152,7 @@ export const updatePR = createAsyncThunk('updatePR', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -174,7 +174,7 @@ export const approvePR = createAsyncThunk('approvePR', async (payload, thunkAPI)
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -196,18 +196,18 @@ export const rejectPR = createAsyncThunk('rejectPR', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
 
-
 export const cancelPR = createAsyncThunk('cancelPR', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const { id, remarks } = payload
+  const { id, remarks } = payload;
   try {
     const response = await axiosInstance.post(
-      `rest/purchase-requests/cancel/${id}?token=${accessToken}`, remarks
+      `rest/purchase-requests/cancel/${id}?token=${accessToken}`,
+      remarks
     );
     const { response: validatedResponse, valid } = checkResponseValidity(response);
 
@@ -219,7 +219,7 @@ export const cancelPR = createAsyncThunk('cancelPR', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
 });
@@ -242,10 +242,9 @@ export const deletePR = createAsyncThunk('deletePR', async (payload, thunkAPI) =
     return thunkAPI.rejectWithValue({
       status: null,
       data: null,
-      statusText: message.ERROR_OCCURED
+      statusText: message.ERROR_OCCURED,
     });
   }
-
 });
 
 const purchaseRequestSlice = createSlice({
@@ -256,19 +255,19 @@ const purchaseRequestSlice = createSlice({
   },
   extraReducers: {
     [listPR.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase requests`,
       };
     },
     [listPR.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
-        'Purchase Requests', 
+        action.payload,
+        'Purchase Requests',
         state.action
       );
 
@@ -298,19 +297,19 @@ const purchaseRequestSlice = createSlice({
       };
     },
     [listPRByStatus.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for purchase request` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase request`,
       };
     },
     [listPRByStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
-        'Purchase Requests', 
+        action.payload,
+        'Purchase Requests',
         state.action
       );
 
@@ -341,19 +340,19 @@ const purchaseRequestSlice = createSlice({
     },
 
     [listPRByCompanyAndStatusAndDepartment.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for purchase request` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for purchase request`,
       };
     },
     [listPRByCompanyAndStatusAndDepartment.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
       const { message, level } = generateStatusMessage(
-        action.payload, 
-        'Purchase Requests', 
+        action.payload,
+        'Purchase Requests',
         state.action
       );
 
@@ -383,17 +382,21 @@ const purchaseRequestSlice = createSlice({
       };
     },
     [addPR.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: 'loading',
-        statusMessage: `${message.ITEM_ADD_PENDING} for material issuance` 
+        statusMessage: `${message.ITEM_ADD_PENDING} for material issuance`,
       };
     },
     [addPR.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Purchase Request', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Purchase Request',
+        state.action
+      );
 
       return {
         ...state,

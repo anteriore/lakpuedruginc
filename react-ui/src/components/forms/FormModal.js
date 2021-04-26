@@ -9,16 +9,14 @@ const SimpleForm = (props) => {
 
   useEffect(() => {
     form.setFieldsValue(values);
-    // eslint-disable-next-line
-  }, [values]);
+  }, [values, form]);
 
   const onFinish = (data) => {
-    setProcessingData(true)
+    setProcessingData(true);
     onSubmit(data).then(() => {
-      setProcessingData(false)
+      setProcessingData(false);
     });
-
-  }
+  };
 
   const onFinishFailed = () => {
     message.error("An error has occurred. Please double check the information you've provided.");
@@ -32,7 +30,7 @@ const SimpleForm = (props) => {
       title={title}
       onCancel={onCancel}
       onOk={() => {
-        form.submit()
+        form.submit();
       }}
       okButtonProps={{ loading: processingData }}
       cancelButtonProps={{ disabled: processingData }}
@@ -40,9 +38,9 @@ const SimpleForm = (props) => {
         form.resetFields();
       }}
     >
-      <Form 
-        form={form} 
-        layout="vertical" 
+      <Form
+        form={form}
+        layout="vertical"
         name={formDetails.form_name}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}

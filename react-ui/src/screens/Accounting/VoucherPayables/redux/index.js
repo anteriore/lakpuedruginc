@@ -33,7 +33,7 @@ export const listVoucherPayableByCompany = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -59,56 +59,62 @@ export const listVoucherPayableByCompanyAndVendorAndStatus = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
 );
-export const approveVoucherPayable = createAsyncThunk('approveVoucherPayable', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { id, user } = payload;
+export const approveVoucherPayable = createAsyncThunk(
+  'approveVoucherPayable',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id, user } = payload;
 
-  try {
-    const response = await axiosInstance.post(
-      `rest/vouchers-payables/approve/${id}/user/${user}?token=${accessToken}`
-    );
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.post(
+        `rest/vouchers-payables/approve/${id}/user/${user}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
-export const rejectVoucherPayable = createAsyncThunk('rejectVoucherPayable', async (payload, thunkAPI) => {
-  const accessToken = thunkAPI.getState().auth.token;
-  const { id, user } = payload;
+export const rejectVoucherPayable = createAsyncThunk(
+  'rejectVoucherPayable',
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().auth.token;
+    const { id, user } = payload;
 
-  try {
-    const response = await axiosInstance.post(
-      `rest/vouchers-payables/reject/${id}$user/${user}?token=${accessToken}`
-    );
-    const { response: validatedResponse, valid } = checkResponseValidity(response);
+    try {
+      const response = await axiosInstance.post(
+        `rest/vouchers-payables/reject/${id}$user/${user}?token=${accessToken}`
+      );
+      const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-    if (valid) {
-      return validatedResponse;
+      if (valid) {
+        return validatedResponse;
+      }
+      return thunkAPI.rejectWithValue(validatedResponse);
+    } catch (err) {
+      return thunkAPI.rejectWithValue({
+        status: null,
+        data: null,
+        statusText: 'failed. An error has occurred',
+      });
     }
-    return thunkAPI.rejectWithValue(validatedResponse);
-  } catch (err) {
-    return thunkAPI.rejectWithValue({
-      status: null,
-      data: null,
-      statusText: 'failed. An error has occurred'
-    });
   }
-});
+);
 
 export const addVoucherPayable = createAsyncThunk(
   'addVoucherPayable',
@@ -130,7 +136,7 @@ export const addVoucherPayable = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -141,7 +147,6 @@ export const deleteVoucherPayable = createAsyncThunk(
   async (payload, thunkAPI) => {
     const accessToken = thunkAPI.getState().auth.token;
 
-    
     try {
       const response = await axiosInstance.post(
         `rest/vouchers-payables/delete?token=${accessToken}`,
@@ -157,7 +162,7 @@ export const deleteVoucherPayable = createAsyncThunk(
       return thunkAPI.rejectWithValue({
         status: null,
         data: null,
-        statusText: 'failed. An error has occurred'
+        statusText: 'failed. An error has occurred',
       });
     }
   }
@@ -171,17 +176,21 @@ const voucherPayableSlice = createSlice({
   },
   extraReducers: {
     [listVoucherPayableByCompany.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables`,
       };
     },
     [listVoucherPayableByCompany.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Voucher Payables', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Voucher Payables',
+        state.action
+      );
 
       return {
         ...state,
@@ -209,17 +218,21 @@ const voucherPayableSlice = createSlice({
       };
     },
     [listVoucherPayableByCompanyAndVendorAndStatus.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'fetch', 
+      return {
+        ...state,
+        action: 'fetch',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables`,
       };
     },
     [listVoucherPayableByCompanyAndVendorAndStatus.fulfilled]: (state, action) => {
       const { data, status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Voucher Payables', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Voucher Payables',
+        state.action
+      );
 
       return {
         ...state,
@@ -248,17 +261,21 @@ const voucherPayableSlice = createSlice({
       };
     },
     [addVoucherPayable.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'create', 
+      return {
+        ...state,
+        action: 'create',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables`,
       };
     },
     [addVoucherPayable.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Voucher Payables', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Voucher Payables',
+        state.action
+      );
 
       return {
         ...state,
@@ -285,17 +302,21 @@ const voucherPayableSlice = createSlice({
       };
     },
     [approveVoucherPayable.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'approve', 
+      return {
+        ...state,
+        action: 'approve',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables`,
       };
     },
     [approveVoucherPayable.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Voucher Payables', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Voucher Payables',
+        state.action
+      );
 
       return {
         ...state,
@@ -322,17 +343,21 @@ const voucherPayableSlice = createSlice({
       };
     },
     [rejectVoucherPayable.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'reject', 
+      return {
+        ...state,
+        action: 'reject',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables`,
       };
     },
     [rejectVoucherPayable.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Voucher Payables', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Voucher Payables',
+        state.action
+      );
 
       return {
         ...state,
@@ -359,17 +384,21 @@ const voucherPayableSlice = createSlice({
       };
     },
     [deleteVoucherPayable.pending]: (state) => {
-      return { 
-        ...state,  
-        action: 'delete', 
+      return {
+        ...state,
+        action: 'delete',
         status: 'loading',
         statusLevel: '',
-        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables` 
+        statusMessage: `${message.ITEMS_GET_PENDING} for Voucher Payables`,
       };
     },
     [deleteVoucherPayable.fulfilled]: (state, action) => {
       const { status } = action.payload;
-      const { message, level } = generateStatusMessage(action.payload, 'Voucher Payables', state.action);
+      const { message, level } = generateStatusMessage(
+        action.payload,
+        'Voucher Payables',
+        state.action
+      );
 
       return {
         ...state,

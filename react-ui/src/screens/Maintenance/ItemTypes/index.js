@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import GeneralStyles from '../../../data/styles/styles.general';
 import TableDisplay from '../../../components/TableDisplay';
-import { listIT, addIT, deleteIT, updateIT,clearData } from './redux';
+import { listIT, addIT, deleteIT, updateIT, clearData } from './redux';
 import SimpleForm from '../../../components/forms/FormModal';
 import { reevalutateMessageStatus } from '../../../helpers/general-helper';
 
@@ -52,7 +52,9 @@ const ItemTypes = (props) => {
 
   const { company, title, actions } = props;
   const dispatch = useDispatch();
-  const {list, statusMessage, action, status, statusLevel} = useSelector((state) => state.maintenance.itemTypes);
+  const { list, statusMessage, action, status, statusLevel } = useSelector(
+    (state) => state.maintenance.itemTypes
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -71,8 +73,11 @@ const ItemTypes = (props) => {
 
   useEffect(() => {
     reevalutateMessageStatus({
-      status, action, statusMessage, statusLevel
-    })
+      status,
+      action,
+      statusMessage,
+      statusLevel,
+    });
   }, [status, action, statusMessage, statusLevel]);
 
   const handleAdd = () => {
@@ -132,50 +137,50 @@ const ItemTypes = (props) => {
     }
 
     handleCancelButton();
-    return 1
+    return 1;
   };
 
   return (
-      <Row gutter={[8, 24]}>
-        <Col style={GeneralStyles.headerPage} span={20}>
-          <Title level={3}>
-            {title}
-          </Title>
-          {actions.includes('create') && (
-            <Button
-              style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
-              icon={<PlusOutlined />}
-              loading={contentLoading}
-              onClick={() => {
-                handleAdd();
-              }}
-            >
-              Add
-            </Button>
-          )}
-        </Col>
-        <Col span={20}>
-          {contentLoading ? <Skeleton/> : 
-            <TableDisplay
-              columns={columns}
-              data={list}
-              handleRetrieve={handleRetrieve}
-              handleUpdate={handleUpdate}
-              handleDelete={handleDelete}
-              updateEnabled={actions.includes('update')}
-              deleteEnabled={actions.includes('delete')}
-            />
-          }
-        </Col>
-        <SimpleForm
-          visible={displayForm}
-          title={formTitle}
-          onSubmit={onSubmit}
-          values={formData}
-          onCancel={handleCancelButton}
-          formDetails={formDetail}
-        />
-      </Row>
+    <Row gutter={[8, 24]}>
+      <Col style={GeneralStyles.headerPage} span={20}>
+        <Title level={3}>{title}</Title>
+        {actions.includes('create') && (
+          <Button
+            style={{ float: 'right', marginRight: '0.7%', marginBottom: '1%' }}
+            icon={<PlusOutlined />}
+            loading={contentLoading}
+            onClick={() => {
+              handleAdd();
+            }}
+          >
+            Add
+          </Button>
+        )}
+      </Col>
+      <Col span={20}>
+        {contentLoading ? (
+          <Skeleton />
+        ) : (
+          <TableDisplay
+            columns={columns}
+            data={list}
+            handleRetrieve={handleRetrieve}
+            handleUpdate={handleUpdate}
+            handleDelete={handleDelete}
+            updateEnabled={actions.includes('update')}
+            deleteEnabled={actions.includes('delete')}
+          />
+        )}
+      </Col>
+      <SimpleForm
+        visible={displayForm}
+        title={formTitle}
+        onSubmit={onSubmit}
+        values={formData}
+        onCancel={handleCancelButton}
+        formDetails={formDetail}
+      />
+    </Row>
   );
 };
 
