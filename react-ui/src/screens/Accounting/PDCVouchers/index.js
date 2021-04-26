@@ -10,7 +10,7 @@ import { listPDCVoucher, addPDCVoucher, clearData } from './redux';
 import InputForm from './InputForm';
 import { listPDCDisbursementByStatus } from '../PDCDisbursements/redux';
 import ItemDescription from '../../../components/ItemDescription';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -28,6 +28,13 @@ const PDCVouchers = (props) => {
   const { list: listData, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.accounting.PDCVouchers
   );
+
+  const { 
+    status: statusPDC,
+    statusLevel: statusLevelPDC,
+    statusMessage:  statusMessagePDC,
+    action: actionPDC
+  } = useSelector(state => state.accounting.PDCDisbursements)
 
   const { company, actions } = props;
 
@@ -49,6 +56,16 @@ const PDCVouchers = (props) => {
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusPDC,
+      statusMessage: statusMessagePDC,
+      action: actionPDC, 
+      statusLevel: statusLevelPDC,
+      module: 'PDC Disbursments'
+    })
+  }, [actionPDC, statusMessagePDC, statusPDC, statusLevelPDC]);
 
   const handleAdd = () => {
     setFormTitle('Create PDC Voucher');
