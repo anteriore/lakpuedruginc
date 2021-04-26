@@ -8,7 +8,7 @@ import FormDetails, { columns } from './data';
 
 import TableDisplay from '../../../components/TableDisplay';
 import FormScreen from '../../../components/forms/FormScreen';
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 import {
   listPDCDisbursement,
@@ -41,6 +41,13 @@ const PDCDisbursements = (props) => {
     (state) => state.accounting.PDCDisbursements
   );
 
+  const {
+    status: statusVendor, 
+    statusLevel: statusLevelVendor,
+    statusMessage: statusMessageVendor,
+    action: actionVendor
+  } = useSelector(state => state.maintenance.vendors);
+
   useEffect(() => {
     dispatch(listPDCDisbursement({ company, message })).then(() => {
       setLoading(false);
@@ -56,6 +63,16 @@ const PDCDisbursements = (props) => {
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusVendor,
+      statusMessage: statusMessageVendor,
+      action: actionVendor,
+      statusLevel: statusLevelVendor,
+      module: 'Account Tittles',
+    });
+  }, [actionVendor, statusMessageVendor, statusVendor, statusLevelVendor]);
 
   const handleAdd = () => {
     setFormTitle('Create PDC Disbursement');
