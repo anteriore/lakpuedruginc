@@ -15,7 +15,7 @@ import { listMemoByType, clearData as clearMemo } from '../../Maintenance/MemoTy
 import { clearData as clearOS } from '../../Sales/OrderSlips/redux';
 import { clearData as clearSI } from '../../Sales/SalesInvoice/redux';
 
-import GeneralHelper, { reevalutateMessageStatus } from '../../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus, reevalDependencyMsgStats } from '../../../helpers/general-helper';
 
 const { Title } = Typography;
 
@@ -35,6 +35,21 @@ const DebitMemo = (props) => {
   const { list: dmList, statusMessage, action, status, statusLevel } = useSelector(
     (state) => state.accounting.debitMemo
   );
+
+  const { 
+    status: statusDepot, 
+    statusLevel: statusLevelDepot, 
+    statusMessage: statusMessageDepot, 
+    action: actionDepot 
+  } = useSelector(state => state.maintenance.depots);
+
+  const { 
+    status: statusMT,
+    statusLevel: statusLevelMT,
+    statusMessage: statusMessageMT, 
+    action: actionMT
+  } = useSelector(state =>  state.maintenance.memoTypes);
+
   const { formDetails } = FormDetails();
   const { columns } = DisplayDetails();
 
@@ -60,6 +75,26 @@ const DebitMemo = (props) => {
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
   }, [status, action, statusMessage, statusLevel]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusDepot,
+      statusMessage: statusMessageDepot,
+      action: actionDepot, 
+      statusLevel: statusLevelDepot,
+      module: 'Depots'
+    })
+  }, [actionDepot, statusMessageDepot, statusDepot, statusLevelDepot]);
+
+  useEffect(() => {
+    reevalDependencyMsgStats({
+      status: statusMT,
+      statusMessage: statusMessageMT,
+      action: actionMT, 
+      statusLevel: statusLevelMT,
+      module: 'Memo Types'
+    })
+  }, [actionMT, statusMessageMT, statusMT, statusLevelMT]);
 
   const handleAdd = () => {
     setFormTitle('Create Debit Memo');
