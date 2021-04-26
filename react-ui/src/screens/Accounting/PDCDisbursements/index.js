@@ -70,7 +70,7 @@ const PDCDisbursements = (props) => {
       statusMessage: statusMessageVendor,
       action: actionVendor,
       statusLevel: statusLevelVendor,
-      module: 'Account Tittles',
+      module: 'Vendors',
     });
   }, [actionVendor, statusMessageVendor, statusVendor, statusLevelVendor]);
 
