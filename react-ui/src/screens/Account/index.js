@@ -266,6 +266,7 @@ const Account = (props) => {
     const payload = {
       id: user.id,
       password: data.password,
+      newPassword: data.newPassword,
     };
     dispatch(changePassword(payload)).then((response) => {
       dispatch(resetErrorMsg());
