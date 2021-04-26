@@ -38,26 +38,27 @@ const FormScreen = (props) => {
   const [displayModal, setDisplayModal] = useState(false);
 
   const toggleName = formDetails.toggle_name;
+  const { isVisible, selectData, preloadedData, foreignKey, name } = formTable ?? { isVisible: null, selectData: null, preloadedData: null, foreignKey: null, name: null }
 
   const onFail = useCallback(() => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   }, [history, path]);
 
   useEffect(() => {
-    if (!(formTable.isVisible ?? formTable.selectData.length > 0) && formTable.preloadedData) {
+    if (!(isVisible ?? (selectData?.length ?? 0) > 0) && preloadedData) {
       // selected data was pre-loaded but is empty
       onFail();
     }
-  }, [formTable.isVisible, formTable.selectData.length, formTable.preloadedData, onFail])
+  }, [isVisible, selectData, preloadedData, onFail])
 
   useEffect(() => {
     form.setFieldsValue(values);
     if (hasTable) {
-      setTableData(form.getFieldValue(formTable.name));
+      setTableData(form.getFieldValue(name));
       let selectedKeys = [];
-      if (values !== null && values[formTable.name] !== null) {
-        values[formTable.name].forEach((item) => {
-          selectedKeys.push(item[formTable.foreignKey]);
+      if (values !== null && values[name] !== null) {
+        values[name].forEach((item) => {
+          selectedKeys.push(item[foreignKey]);
         });
       }
       selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i);
@@ -74,7 +75,7 @@ const FormScreen = (props) => {
         }
       });
     }
-  }, [form, values, hasTable, toggleName, formDetails.required_data, formTable.foreignKey, formTable.name, onFail]);
+  }, [form, values, hasTable, toggleName, formDetails.required_data, name, foreignKey, onFail]);
 
   const onFinish = (data) => {
     setLoading(true);
