@@ -103,7 +103,7 @@ public class ExecuteInitData {
     private ZipCodeData zipCodeData;
 
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
         unitData.init();
         System.out.println("Units initialized.");
