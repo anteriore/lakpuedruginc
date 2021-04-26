@@ -36,6 +36,7 @@ import {
 import { listCompany, setCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import { listDepotByCompany, clearData as clearDepot } from '../Maintenance/Depots/redux';
+import { logout } from '../../redux/auth';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -45,7 +46,7 @@ const Users = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { handleRequestResponse } = GeneralHelper();
+  const { handleRequestResponse, pushErrorPage } = GeneralHelper();
 
   const [formTitle, setFormTitle] = useState('');
   const [formMode, setFormMode] = useState('');
@@ -86,10 +87,18 @@ const Users = () => {
   }, [permissions]);
 
   useEffect(() => {
-    dispatch(listCompany()).then(() => {
-      setFormData(null);
-      setCompanyLoading(false);
-      setSelectedUser(null);
+    setContentLoading(true);
+    dispatch(listCompany()).then((response) => {
+      const onSuccess = () => {
+        setFormData(null);
+        setCompanyLoading(false);
+        setSelectedUser(null);
+      }
+      const onFail = () => {
+        dispatch(logout())
+        pushErrorPage(response?.payload?.status ?? 400, '/login');
+      }
+      handleRequestResponse([response], onSuccess, onFail, null)
     });
 
     return function cleanup() {
@@ -98,7 +107,7 @@ const Users = () => {
       dispatch(clearDepot());
       dispatch(clearDepartment());
     };
-  }, [dispatch]);
+  }, [dispatch, handleRequestResponse, pushErrorPage]);
 
   const updateUserDepartments = useCallback(() => {
     setContentLoading(true);

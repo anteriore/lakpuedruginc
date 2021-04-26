@@ -99,6 +99,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    logout: () => initialState,
     updateAuthState(state, action) {
       state.signedIn = action.payload.signedIn;
       state.token = action.payload.token;
@@ -212,6 +213,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { updateAuthState, resetErrorMsg } = authSlice.actions;
+export const { updateAuthState, resetErrorMsg, logout } = authSlice.actions;
 
 export default authSlice.reducer;

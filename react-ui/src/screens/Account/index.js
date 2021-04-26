@@ -17,12 +17,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { updateUser } from '../Users/redux';
-import { getUser, changePassword, resetErrorMsg } from '../../redux/auth';
+import { getUser, changePassword, resetErrorMsg, logout } from '../../redux/auth';
 import { listCompany } from '../../redux/company';
 import { listD, clearData as clearDepartment } from '../Maintenance/DepartmentArea/redux';
 import Container from '../../components/container';
 import FormModal from '../../components/forms/FormModal';
-import { reevalutateMessageStatus } from '../../helpers/general-helper';
+import GeneralHelper, { reevalutateMessageStatus } from '../../helpers/general-helper';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -32,6 +32,7 @@ const Account = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { path } = useRouteMatch();
+  const { handleRequestResponse, pushErrorPage } = GeneralHelper()
 
   const [loading, setLoading] = useState(true);
   const departments = useSelector((state) => state.maintenance.departmentArea.deptList);
@@ -48,10 +49,17 @@ const Account = () => {
 
   useEffect(() => {
     setLoading(true);
-    dispatch(listCompany()).then(() => {
-      dispatch(listD({ company: user.company.id })).then(() => {
-        setLoading(false);
-      });
+    dispatch(listCompany()).then((response) => {
+      const onSuccess = () => {
+        dispatch(listD({ company: user.company.id })).then(() => {
+          setLoading(false);
+        });
+      }
+      const onFail = () => {
+        dispatch(logout())
+        pushErrorPage(response?.payload?.status ?? 400, '/login');
+      }
+      handleRequestResponse([response], onSuccess, onFail, null)
     });
 
     return function cleanup() {
@@ -59,7 +67,7 @@ const Account = () => {
       setDisplayForm(false);
       dispatch(clearDepartment());
     };
-  }, [dispatch, user.company.id]);
+  }, [dispatch, user.company.id, handleRequestResponse, pushErrorPage]);
 
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });

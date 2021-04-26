@@ -1,12 +1,25 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../utils/axios-instance';
 import * as message from '../../data/constants/response-message.constant';
+import { checkResponseValidity } from '../../helpers/general-helper';
 
 export const listCompany = createAsyncThunk('listCompany', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
-  const response = await axiosInstance.get(`/rest/companies?token=${accessToken}`);
+  try {
+    const response = await axiosInstance.get(`/rest/companies?token=${accessToken}`);
+    const { response: validatedResponse, valid } = checkResponseValidity(response);
 
-  return response;
+    if (valid) {
+      return validatedResponse;
+    }
+    return thunkAPI.rejectWithValue(validatedResponse);
+  } catch (err) {
+    return thunkAPI.rejectWithValue({
+      status: null,
+      data: null,
+      statusText: message.ERROR_OCCURED,
+    });
+  }
 });
 
 const companySlice = createSlice({

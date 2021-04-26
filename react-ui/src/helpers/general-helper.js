@@ -169,7 +169,7 @@ const GeneralHelper = () => {
     [pushErrorPage]
   );
 
-  return { handleRequestResponse };
+  return { handleRequestResponse, pushErrorPage };
 };
 
 export default GeneralHelper;

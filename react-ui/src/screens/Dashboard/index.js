@@ -8,6 +8,8 @@ import ModulesGrid from '../../components/ModulesGrid';
 import { routes } from '../../navigation/dashboard';
 
 import { listCompany, setCompany } from '../../redux/company';
+import { logout } from '../../redux/auth';
+import GeneralHelper from '../../helpers/general-helper';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -17,6 +19,7 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [moduleRoutes, setModuleRoutes] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
+  const { handleRequestResponse, pushErrorPage } = GeneralHelper()
 
   const companies = useSelector((state) => state.company.companyList);
   const selectedCompany = useSelector((state) => state.company.selectedCompany);
@@ -36,11 +39,19 @@ const Dashboard = () => {
   }, [permissions]);
 
   useEffect(() => {
-    dispatch(listCompany()).then(() => {
-      setModuleRoutes(getPermittedRoutes());
-      setContentLoading(false);
+    setContentLoading(true);
+    dispatch(listCompany()).then((response) => {
+      const onSuccess = () => {
+        setModuleRoutes(getPermittedRoutes());
+        setContentLoading(false);
+      }
+      const onFail = () => {
+        dispatch(logout())
+        pushErrorPage(response?.payload?.status ?? 400, '/login');
+      }
+      handleRequestResponse([response], onSuccess, onFail, null)
     });
-  }, [dispatch, getPermittedRoutes]);
+  }, [dispatch, getPermittedRoutes, handleRequestResponse, pushErrorPage]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));

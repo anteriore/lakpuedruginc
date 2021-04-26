@@ -13,6 +13,7 @@ import ItemDescription from '../../components/ItemDescription';
 import GeneralHelper, { reevalutateMessageStatus } from '../../helpers/general-helper';
 
 import { listPO, addPO, updatePO, deletePO, clearData } from './redux';
+import { logout } from '../../redux/auth';
 import { listVendor, clearData as clearVendor } from '../Maintenance/Vendors/redux';
 import {
   listD as listDepartment,
@@ -52,7 +53,7 @@ const Purchasing = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { formDetails, tableDetails } = FormDetails();
-  const { handleRequestResponse } = GeneralHelper();
+  const { handleRequestResponse, pushErrorPage } = GeneralHelper();
   const { permissions } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -95,14 +96,21 @@ const Purchasing = () => {
   }, [actions, dispatch, selectedCompany]);
 
   useEffect(() => {
-    dispatch(listCompany()).then(() => {
-      setLoadingCompany(false);
+    dispatch(listCompany()).then((response) => {
+      const onSuccess = () => {
+        setLoadingCompany(false);
+      }
+      const onFail = () => {
+        dispatch(logout())
+        pushErrorPage(response?.payload?.status ?? 400, '/login');
+      }
+      handleRequestResponse([response], onSuccess, onFail, null)
     });
     return function cleanup() {
       isMounted.current = false;
       performCleanup();
     };
-  }, [dispatch, performCleanup]);
+  }, [dispatch, performCleanup, handleRequestResponse, pushErrorPage]);
 
   useEffect(() => {
     reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
