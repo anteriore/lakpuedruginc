@@ -136,8 +136,8 @@ const ProvinceCode = (props) => {
             data={provinceCodeList}
             handleUpdate={handleEditButton}
             handleDelete={handleDeleteButton}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
+            updateEnabled={false}
+            deleteEnabled={false}
           />
         )}
       </Col>

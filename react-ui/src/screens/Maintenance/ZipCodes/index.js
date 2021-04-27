@@ -184,8 +184,8 @@ const ZipCodes = (props) => {
             data={zipCodeList}
             handleUpdate={handleEditButton}
             handleDelete={handleDeleteButton}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
+            updateEnabled={false}
+            deleteEnabled={false}
           />
         )}
       </Col>

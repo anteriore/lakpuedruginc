@@ -138,8 +138,8 @@ const InstitutionalCodes = (props) => {
             data={institutionList}
             handleUpdate={handleEditButton}
             handleDelete={handleDeleteButton}
-            updateEnabled={actions.includes('update')}
-            deleteEnabled={actions.includes('delete')}
+            updateEnabled={false}
+            deleteEnabled={false}
           />
         )}
       </Col>
