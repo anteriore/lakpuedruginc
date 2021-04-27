@@ -18,7 +18,6 @@ import GeneralHelper, {
 const { Title, Text } = Typography;
 
 const InventoryMovements = (props) => {
-  const { title } = props;
   const { handleRequestResponse } = GeneralHelper();
   const [loading, setLoading] = useState(true);
   const [displayModal, setDisplayModal] = useState(false);
@@ -74,9 +73,9 @@ const InventoryMovements = (props) => {
       statusMessage: statusMessageInventory,
       action: actionInventory,
       statusLevel: statusLevelInventory,
-      module: title,
+      module: "Inventories",
     });
-  }, [actionInventory, statusMessageInventory, statusInventory, statusLevelInventory, title]);
+  }, [actionInventory, statusMessageInventory, statusInventory, statusLevelInventory]);
 
   const handleAdd = () => {
     setFormTitle('Create Inventory Movement Slip');
