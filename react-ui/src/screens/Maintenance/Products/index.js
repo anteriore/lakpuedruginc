@@ -223,7 +223,7 @@ const Product = (props) => {
                 columns={tableHeader}
                 data={productList}
                 handleUpdate={handleUpdate}
-                updateEnabled={actions.includes('update')}
+                updateEnabled={false}
                 deleteEnabled={false}
               />
             )}

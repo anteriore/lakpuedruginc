@@ -252,7 +252,7 @@ const DepartmentArea = (props) => {
               handleDelete={handleDeleteD}
               pagination={{ size: 'small' }}
               updateEnabled={actions.includes('update')}
-              deleteEnabled={actions.includes('delete')}
+              deleteEnabled={true}
             />
           )}
         </Col>
@@ -284,7 +284,7 @@ const DepartmentArea = (props) => {
               handleDelete={handleDeleteA}
               pagination={{ size: 'small' }}
               updateEnabled={actions.includes('update')}
-              deleteEnabled={actions.includes('delete')}
+              deleteEnabled={true}
             />
           )}
         </Col>

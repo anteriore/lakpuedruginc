@@ -257,8 +257,8 @@ const Clients = (props) => {
                 handleRetrieve={handleRetrieve}
                 handleUpdate={handleUpdate}
                 handleDelete={handleDelete}
-                updateEnabled={actions.includes('update')}
-                deleteEnabled={actions.includes('delete')}
+                updateEnabled={false}
+                deleteEnabled={false}
               />
             )}
           </Col>
