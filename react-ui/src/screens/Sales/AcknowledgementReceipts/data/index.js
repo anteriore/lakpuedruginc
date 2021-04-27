@@ -341,7 +341,6 @@ const FormDetails = () => {
       },
     ],
     getValues: (values) => {
-      console.log(values);
       const payments = [];
       values.payments.forEach((payment) => {
         payments.push({
