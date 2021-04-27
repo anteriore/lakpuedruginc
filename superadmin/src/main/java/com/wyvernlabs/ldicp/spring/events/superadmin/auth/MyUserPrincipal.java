@@ -21,6 +21,7 @@ public class MyUserPrincipal implements UserDetails {
 
     // required info
     private String firstName;
+    private String middleInitial;
     private String lastName;
     private Company company;
     private String employeeType;
@@ -34,6 +35,7 @@ public class MyUserPrincipal implements UserDetails {
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.firstName = user.getFirstName();
+        this.middleInitial = user.getMiddleInitial();
         this.lastName = user.getLastName();
         this.company = user.getCompany();
         this.employeeType = user.getEmployeeType();
@@ -57,6 +59,10 @@ public class MyUserPrincipal implements UserDetails {
 
     public String getFirstName() {
         return this.firstName;
+    }
+
+    public String getMiddleInitial() {
+        return this.middleInitial;
     }
 
     public String getLastName() {

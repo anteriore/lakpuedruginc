@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton, Empty } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Empty, message } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { routes } from '../../navigation/maintenance';
 import Container from '../../components/container';
 import ModulesGrid from '../../components/ModulesGrid';
 import { listCompany, setCompany } from '../../redux/company';
+import { logout } from '../../redux/auth';
+import GeneralHelper from '../../helpers/general-helper';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -13,6 +15,7 @@ const { Title } = Typography;
 const Maintenance = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
+  const { handleRequestResponse, pushErrorPage } = GeneralHelper()
 
   const [moduleRoutes, setModuleRoutes] = useState([]);
   const [contentLoading, setContentLoading] = useState(true);
@@ -33,12 +36,22 @@ const Maintenance = () => {
     return routeList;
   }, [permissions]);
 
+
   useEffect(() => {
-    dispatch(listCompany()).then(() => {
-      setModuleRoutes(getPermittedRoutes());
-      setContentLoading(false);
+    setContentLoading(true);
+    dispatch(listCompany()).then((response) => {
+      const onSuccess = () => {
+        setModuleRoutes(getPermittedRoutes());
+        setContentLoading(false);
+      }
+      const onFail = () => {
+        message.error("An error has occurred. Failed to retrieved data from the server.")
+        dispatch(logout())
+        pushErrorPage(response?.payload?.status ?? 400, '/login');
+      }
+      handleRequestResponse([response], onSuccess, onFail, null)
     });
-  }, [dispatch, getPermittedRoutes]);
+  }, [dispatch, getPermittedRoutes, handleRequestResponse, pushErrorPage]);
 
   const handleChangeTab = (id) => {
     dispatch(setCompany(id));

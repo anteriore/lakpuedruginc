@@ -5,9 +5,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import AdminRoutes from './routes/AdminRoutes';
 import Login from '../screens/Account/Login';
 import { getUser } from '../redux/auth';
+import {
+  reevalutateMessageStatus,
+} from '../helpers/general-helper'
 
 const Main = () => {
-  const signedIn = useSelector((state) => state.auth.signedIn);
+  const {signedIn, status, statusLevel, statusMessage, action} = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -15,6 +18,10 @@ const Main = () => {
       dispatch(getUser());
     }
   }, [dispatch, signedIn]);
+
+  useEffect(() => {
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
 
   const PrivateRoute = ({ children, ...rest }) => {
     const signedInStatus = useSelector((state) => state.auth.signedIn);
