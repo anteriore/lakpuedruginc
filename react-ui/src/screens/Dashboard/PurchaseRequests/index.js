@@ -364,7 +364,7 @@ const PurchaseRequests = (props) => {
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Seleted." /> }}
               />
-              {(selectedData.status === 'Pending' || selectedData.status === 'Approved') && ( // add approval permissions here
+              {(selectedData.status === 'Pending' || selectedData.status === 'Approved') && actions.includes('update') && (
                 <>
                   <Text>{'Actions: '}</Text>
                   {selectedData.status === 'Pending' ? (

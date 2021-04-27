@@ -310,7 +310,7 @@ const PurchaseVouchers = (props) => {
                   </Descriptions.Item>
                 </Descriptions>
                 <Space style={{ marginTop: '2%' }} size="middle">
-                  {_.toLower(purchaseVoucher.status) === 'pending' && (
+                  {_.toLower(purchaseVoucher.status) === 'pending' && actions.includes('update')  && (
                     <>
                       <Button
                         style={{ backgroundColor: '#3fc380', marginRight: '1%' }}

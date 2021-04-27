@@ -317,7 +317,7 @@ const JournalVouchers = (props) => {
                   </Descriptions.Item>
                 </Descriptions>
                 <Space style={{ marginTop: '2%' }} size="middle">
-                  {_.toLower(journalVoucher.status) === 'pending' && (
+                  {_.toLower(journalVoucher.status) === 'pending' && actions.includes('update')  && (
                     <>
                       <Button
                         style={{ backgroundColor: '#3fc380', marginRight: '1%' }}
