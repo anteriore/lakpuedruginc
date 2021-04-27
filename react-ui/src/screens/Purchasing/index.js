@@ -101,6 +101,7 @@ const Purchasing = () => {
         setLoadingCompany(false);
       }
       const onFail = () => {
+        message.error("An error has occurred. Failed to retrieved data from the server.")
         dispatch(logout())
         pushErrorPage(response?.payload?.status ?? 400, '/login');
       }

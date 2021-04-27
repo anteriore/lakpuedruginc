@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Tabs, Typography, Skeleton, Empty } from 'antd';
+import { Row, Col, Tabs, Typography, Skeleton, Empty, message } from 'antd';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -47,6 +47,7 @@ const Sales = () => {
         setContentLoading(false);
       }
       const onFail = () => {
+        message.error("An error has occurred. Failed to retrieved data from the server.")
         dispatch(logout())
         pushErrorPage(response?.payload?.status ?? 400, '/login');
       }

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../utils/axios-instance';
 import * as message from '../../data/constants/response-message.constant';
-import { checkResponseValidity } from '../../helpers/general-helper';
+import { checkResponseValidity, generateStatusMessage } from '../../helpers/general-helper';
 
 export const listCompany = createAsyncThunk('listCompany', async (payload, thunkAPI) => {
   const accessToken = thunkAPI.getState().auth.token;
@@ -29,7 +29,9 @@ const companySlice = createSlice({
     selectedCompany: 1,
     status: '',
     statusMessage: '',
+    statusLevel: '',
     action: '',
+    responseCode: null,
   },
   reducers: {
     setCompany(state, selectedCompany) {
@@ -40,27 +42,44 @@ const companySlice = createSlice({
     [listCompany.pending]: (state) => {
       return {
         ...state,
-        status: 'Loading',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_PENDING,
+        action: 'fetch',
+        status: 'loading',
+        statusLevel: '',
+        statusMessage: `${message.ITEMS_GET_PENDING} for Companies`,
       };
     },
     [listCompany.fulfilled]: (state, action) => {
-      const { data } = action.payload;
+      const { data, status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Companies',
+        state.action
+      );
+
       return {
         ...state,
         companyList: data,
-        status: 'Fulfilled',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_FULFILLED,
+        status: 'succeeded',
+        statusLevel: level,
+        responseCode: status,
+        statusMessage,
       };
     },
     [listCompany.rejected]: (state, action) => {
+      const { status } = action.payload;
+      const { message: statusMessage, level } = generateStatusMessage(
+        action.payload,
+        'Companies',
+        state.action
+      );
+
       return {
         ...state,
-        status: 'Error',
-        action: 'get',
-        statusMessage: message.ITEMS_GET_REJECTED,
+        status: 'failed',
+        statusLevel: level,
+        responseCode: status,
+        action: 'fetch',
+        statusMessage,
       };
     },
   },
