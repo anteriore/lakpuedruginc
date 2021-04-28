@@ -18,9 +18,7 @@ const InputForm = (props) => {
   const [formButtonLoading, setFormButtonLoading] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
-  const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
   const itemList = useSelector((state) => state.maintenance.items.list);
-  let rrItems = [];
 
   useEffect(() => {
     form.setFieldsValue({
@@ -101,8 +99,7 @@ const InputForm = (props) => {
 
     if (key === 'item') {
       const selectedRRItem = itemList.find((rrItem) => rrItem.id === value);
-      formValues[key] = selectedRRItem.code;
-      formValues.item = selectedRRItem;
+      formValues[key] = selectedRRItem;
     } else {
       formValues[key] = value;
     }
