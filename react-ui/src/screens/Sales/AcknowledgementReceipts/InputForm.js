@@ -195,8 +195,16 @@ const FormScreen = (props) => {
       }
     });
 
+    let paymentSum = 0;
+    processedData.forEach((payment) => {
+      if (payment.appliedAmount > 0) {
+        paymentSum += payment.appliedAmount;
+      }
+    });
+
     const fieldsValue = {};
     fieldsValue[formTable.name] = processedData;
+    fieldsValue.amountPaid = paymentSum;
     setTableData(processedData);
     form.setFieldsValue(fieldsValue);
   };
