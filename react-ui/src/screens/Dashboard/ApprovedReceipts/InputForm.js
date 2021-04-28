@@ -1,21 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import {
-  DatePicker,
-  Form,
-  Button,
-  InputNumber,
-  Input,
-  Select,
-  Modal,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Empty,
-  message,
-} from 'antd';
+import { Form, Button, InputNumber, Input, Select, Row, Col, Typography, Table, Empty, message,} from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import FormItem from '../../../components/forms/FormItem';
 import TableHeader from '../../../components/TableDisplay/TableHeader';
@@ -29,28 +15,20 @@ const InputForm = (props) => {
   const { path } = useRouteMatch();
   const hasTable = formTable !== null && typeof formTable !== 'undefined';
 
-  const [tableData, setTableData] = useState();
-  const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
-  const [processingData, setProcessingData] = useState(false);
-  const [loadingModal, setLoadingModal] = useState(true);
-  const [displayModal, setDisplayModal] = useState(false);
+  const [tableData, setTableData] = useState(null);
+  const [selectedRRItem, setSelectedRRItem] = useState([]);
+  const [toggleValue, setToggleValue] = useState(null);
+
+  const [_loadingModal, setLoadingModal] = useState(true);
+  const [_displayModal, setDisplayModal] = useState(false);
+  const [formButtonLoading, setFormButtonLoading] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
+  const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
+  const itemList = useSelector((state) => state.maintenance.items.list);
+  let rrItems = [];
 
-  useEffect(() => {
-    form.setFieldsValue(values);
-    if (hasTable) {
-      setTableData(form.getFieldValue(formTable.name));
-      let selectedKeys = [];
-      if (values !== null && values[formTable.name] !== null) {
-        values[formTable.name].forEach((item) => {
-          selectedKeys.push(item[formTable.foreignKey]);
-        });
-      }
-      selectedKeys = selectedKeys.filter((v, i, a) => a.indexOf(v) === i);
-      setTableSelectedKeys(selectedKeys);
-    }
-  }, [values, form, formTable.name, formTable.foreignKey, hasTable]);
+  const toggleName = formDetails.toggle_name;
 
   useEffect(() => {
     form.setFieldsValue({
@@ -58,8 +36,19 @@ const InputForm = (props) => {
     });
   }, [user, form]);
 
+  useEffect(() => {
+    form.setFieldsValue(values);
+    if (hasTable && values !== null) {
+      setTableData(formTable.getValues(values));
+    }
+    if (values !== null && toggleName !== null && typeof toggleName !== 'undefined') {
+      setToggleValue(values[toggleName]);
+    }
+    // eslint-disable-next-line
+  }, [values, form]);
+
   const onFinish = (data) => {
-    setProcessingData(true);
+    setFormButtonLoading(true);
     formDetails.form_items.forEach((item) => {
       if (
         item.type === 'date' &&
@@ -72,16 +61,28 @@ const InputForm = (props) => {
       }
     });
 
-    onSubmit(data).then(() => {
-      setProcessingData(false);
-    });
+    if (hasTable) {
+      if (tableData !== null) {
+        data[formTable.name] = tableData;
+        onSubmit(data).then(() => setFormButtonLoading(false));
+      } else {
+        onFinishFailed(
+          `Unable to submit. Please provide the necessary information on ${formTable.label}`
+        );
+      }
+    } else {
+      onSubmit(data).then(() => setFormButtonLoading(false));
+    }
   };
 
-  const onFinishFailed = () => {
-    message.error("An error has occurred. Please double check the information you've provided.");
+  const onFinishFailed = (errorInfo) => {
+    if (typeof errorInfo === 'string') {
+      message.error(errorInfo);
+    } else {
+      message.error("An error has occurred. Please double check the information you've provided.");
+    }
   };
 
-  // for rendering tables
   const renderTableColumns = (item) => {
     const columns = [];
     item.fields.forEach((field) => {
@@ -104,24 +105,6 @@ const InputForm = (props) => {
               );
             },
           });
-        } else if (field.type === 'date') {
-          columns.push({
-            title: field.label,
-            key: field.name,
-            render: (row) => {
-              const index = tableData.indexOf(row);
-              return (
-                <Form.Item
-                  name={[index, field.name]}
-                  fieldKey={[index, field.name]}
-                  rules={field.rules}
-                  initialValue={field.initialValue}
-                >
-                  <DatePicker />
-                </Form.Item>
-              );
-            },
-          });
         } else if (field.type === 'hidden' || field.type === 'hiddenNumber') {
           columns.push({
             key: field.name,
@@ -138,8 +121,6 @@ const InputForm = (props) => {
                   name={[index, field.name]}
                   fieldKey={[index, field.name]}
                   rules={field.rules}
-                  labelCol={0}
-                  wrapperCol={24}
                 >
                   <Input bordered={false} />
                 </Form.Item>
@@ -196,58 +177,35 @@ const InputForm = (props) => {
     return columns;
   };
 
-  const onTableSelect = (selectedRowKeys, selectedRows) => {
-    setTableSelectedKeys(selectedRowKeys);
-    let prevSelectData = [];
-    if (typeof form.getFieldValue(formTable.name) !== 'undefined') {
-      prevSelectData = form
-        .getFieldValue(formTable.name)
-        .filter((item) => selectedRowKeys.includes(item[formTable.selectedKey]));
-    }
-
-    let processedData = [];
-    selectedRows.forEach((rowData) => {
-      const index = prevSelectData.findIndex(
-        (item) => item[formTable.selectedKey] === rowData[formTable.selectedKey]
-      );
-      if (index !== -1) {
-        processedData.push(prevSelectData[index]);
-      } else {
-        processedData = processedData.concat(formTable?.processData(rowData) ?? [rowData]);
-      }
-    });
-
-    const fieldsValue = {};
-    fieldsValue[formTable.name] = processedData;
-    setTableData(processedData);
-    form.setFieldsValue(fieldsValue);
-  };
-
-  const expandedRowRender = (row) => {
-    if (formTable.hasOwnProperty('nestedData')) {
-      return (
-        <>
-          <Title level={5}>{formTable.nestedData.label}</Title>
-          <Table
-            columns={formTable.nestedData.fields}
-            dataSource={row[formTable.nestedData.data]}
-            pagination={false}
-          />
-        </>
-      );
-    }
-
-    return null;
-  };
-
   const onFail = () => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
 
   const onValuesChange = (values) => {
-    if (values.hasOwnProperty(formTable.name)) {
-      setTableData(form.getFieldValue(formTable.name));
+    if (toggleName !== null && typeof toggleName !== 'undefined') {
+      if (typeof values[toggleName] !== 'undefined' && toggleValue !== values[toggleName]) {
+        setToggleValue(values[toggleName]);
+      }
     }
+
+    if (values.hasOwnProperty('receivingReceipt')) {
+      setSelectedRRItem([]);
+      setTableData(null);
+      form.setFieldsValue({ item: null });
+    }
+  };
+
+  const onTableSelect = (key, value) => {
+    const formValues = {};
+
+    if (key === 'item') {
+      const selectedRRItem = itemList.find((rrItem) => rrItem.id === value);
+      formValues[key] = selectedRRItem.code;
+    } else {
+      formValues[key] = value;
+    }
+    onValuesChange(formValues);
+    form.setFieldsValue(formValues);
   };
 
   return (
@@ -270,10 +228,27 @@ const InputForm = (props) => {
               return <FormItem item={item} onFail={onFail} />;
             })}
 
+            {formDetails.rr_item.map((item) => {
+              const itemData = {
+                ...item,
+              };
+
+              if (item.name === 'item') {
+                itemData.selectedData = selectedRRItem;
+                itemData.setSelectedData = setSelectedRRItem;
+              }
+
+              return <FormItem item={itemData} onFail={onFail} onTableSelect={onTableSelect} />;
+            })}
+
+            {formDetails.item_details.map((item) => {
+              return <FormItem item={item} onFail={onFail} />;
+            })} 
+
             {hasTable && (typeof formTable.isVisible === 'undefined' || formTable.isVisible) && (
               <Form.List label={formTable.label} name={formTable.name} rules={[{ required: true }]}>
                 {(fields, { errors }) => (
-                  <Col span={24} offset={1}>
+                  <Col span={20} offset={1}>
                     <div style={{ float: 'right', marginBottom: '1%' }}>
                       <Button
                         onClick={() => {
@@ -296,55 +271,21 @@ const InputForm = (props) => {
                 )}
               </Form.List>
             )}
+            <div style={styles.tailLayout}>
+              <Button loading={formButtonLoading} type="primary" onClick={() => form.submit()}>
+                Submit
+              </Button>
+              <Button
+                style={{ marginRight: '2%' }}
+                onClick={() => {
+                  onCancel();
+                  history.goBack();
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           </Form>
-
-          <div style={styles.tailLayout}>
-            <Button type="primary" onClick={() => form.submit()} loading={processingData}>
-              Submit
-            </Button>
-            <Button
-              style={{ marginRight: '2%' }}
-              onClick={() => {
-                onCancel();
-                history.goBack();
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-          {!loadingModal && hasTable && (
-            <Modal
-              visible={displayModal}
-              title="Modal"
-              onOk={() => setDisplayModal(false)}
-              onCancel={() => setDisplayModal(false)}
-              cancelButtonProps={{ style: { display: 'none' } }}
-              width={1000}
-            >
-              <Table
-                rowSelection={{
-                  type: 'radio',
-                  // selectedRowKeys: item.selectedData,
-                  onChange: onTableSelect,
-                  preserveSelectedRowKeys: false,
-                  selectedRowKeys: tableSelectedKeys,
-                }}
-                columns={TableHeader({
-                  columns: formTable.selectFields,
-                  hasSorter: true,
-                  hasFilter: true,
-                })}
-                dataSource={formTable.selectData}
-                rowKey={formTable.selectedKey}
-                pagination={{ simple: true }}
-                expandable={{
-                  expandedRowRender: formTable.hasOwnProperty('nestedData')
-                    ? expandedRowRender
-                    : null,
-                }}
-              />
-            </Modal>
-          )}
         </Col>
       </Row>
     </>
@@ -378,8 +319,7 @@ const styles = {
   tailLayout: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    marginTop: '2%',
-    width: '100%',
+    width: '87.5%',
   },
   listTailLayout: {
     labelCol: {

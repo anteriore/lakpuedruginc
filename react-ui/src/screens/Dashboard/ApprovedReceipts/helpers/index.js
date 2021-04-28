@@ -11,39 +11,19 @@ export const formatPayload = (approvalId, company, data) => {
     modified: data.modified,
     receivingReceipt: { id: data.receivingReceipt },
 
-    receivedQuantity: data.receivedItems[0].receivedQuantity,
-    approvedQuantity: data.receivedItems[0].approvedQuantity,
-    rejectedQuantity: data.receivedItems[0].rejectedQuantity,
-    qcSamples: data.receivedItems[0].qcSamples,
-    totalQuantity: data.receivedItems[0].totalQuantity,
-    expiration: data.receivedItems[0].expiration,
-    bestBefore: data.receivedItems[0].bestBefore,
-    reevaluation: data.receivedItems[0].reevaluation,
-    retest: data.receivedItems[0].retest,
+        receivedQuantity: data.receivedQuantity,
+        approvedQuantity: data.approvedQuantity,
+        rejectedQuantity: data.rejectedQuantity,
+        qcSamples: data.qcSamples,
+        totalQuantity: data.totalQuantity,
+        expiration: data.expiration,
+        bestBefore: data.bestBefore,
+        reevaluation: data.reevaluation,
+        retest: data.retest,
 
-    item: { id: data.receivedItems[0].itemID },
-    unit: data.receivedItems[0].unit.code,
-    controlNumber: data.controlNumber,
-    remarks: data.remarks,
-  };
-};
-
-export const inventoryPayload = (company, data) => {
-  return {
-    ...data,
-    item: { id: data.receivedItems[0].itemID },
-    controlNumber: data.controlNumber,
-    quantity: data.receivedItems[0].totalQuantity,
-    company: { id: company },
-    dateCreated: data.dateCreated,
-
-    expiration: data.receivedItems[0].expiration,
-    bestBefore: data.receivedItems[0].bestBefore,
-    reevaluation: data.receivedItems[0].reevaluation,
-    retest: data.receivedItems[0].retest,
-
-    moqReserved: 0,
-    moQuantity: 0,
-    ppQuantity: 0,
-  };
+        item: { id: data.item.id },
+        unit: data.item.unit.code,
+        controlNumber: data.controlNumber,
+        remarks: data.remarks,
+    };
 };
