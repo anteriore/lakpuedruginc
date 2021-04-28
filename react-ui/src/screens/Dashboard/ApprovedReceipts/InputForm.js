@@ -17,14 +17,26 @@ const InputForm = (props) => {
   const [selectedRRItem, setSelectedRRItem] = useState([]);
   const [formButtonLoading, setFormButtonLoading] = useState(false);
 
-  const itemList = useSelector((state) => state.maintenance.items.list);
   const { user } = useSelector((state) => state.auth);
+  const itemList = useSelector((state) => state.maintenance.items.list);
 
   useEffect(() => {
     form.setFieldsValue({
       receivedBy: `${user.firstName} ${user.lastName}`,
     });
   }, [user, form]);
+
+  useEffect(() => {
+    form.setFieldsValue(values);
+    if (hasTable && values !== null) {
+      setTableData(formTable.getValues(values));
+    }
+    // eslint-disable-next-line
+  }, [values, form]);
+
+  const onFail = () => {
+    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
+  };
 
   const onFinish = (data) => {
     setFormButtonLoading(true);
@@ -74,10 +86,6 @@ const InputForm = (props) => {
     }
   };
 
-  const onFail = () => {
-    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
-  };
-
   const onValuesChange = (values) => {
     if (values.hasOwnProperty('receivingReceipt')) {
       setSelectedRRItem([]);
@@ -91,8 +99,7 @@ const InputForm = (props) => {
 
     if (key === 'item') {
       const selectedRRItem = itemList.find((rrItem) => rrItem.id === value);
-      formValues[key] = selectedRRItem.code;
-      formValues.item = selectedRRItem;
+      formValues[key] = selectedRRItem;
     } else {
       formValues[key] = value;
     }
@@ -143,6 +150,7 @@ const InputForm = (props) => {
               </Button>
               <Button
                 style={{ marginRight: '2%' }}
+                disabled={formButtonLoading}
                 onClick={() => {
                   onCancel();
                   history.goBack();

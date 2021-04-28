@@ -21,7 +21,7 @@ export const formatPayload = (approvalId, company, data) => {
         reevaluation: data.reevaluation,
         retest: data.retest,
 
-        //item: { id: data.item.id },
+        item: { id: data.item.id },
         unit: data.item.unit.code,
         controlNumber: data.controlNumber,
         remarks: data.remarks,

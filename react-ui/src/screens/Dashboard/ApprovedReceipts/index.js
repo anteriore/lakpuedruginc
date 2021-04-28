@@ -11,7 +11,7 @@ import InputForm from './InputForm';
 
 import { listApprovedReceipts, addApprovedReceipt, clearData, getApprovedReceipt,} from './redux';
 import { listRR, clearData as clearRR } from '../../Dashboard/ReceivingReceipts/redux';
-import { listItemSummary, clearData as clearItem} from '../../Maintenance/Items/redux';
+import { listI as listItem, clearData as clearItem} from '../../Maintenance/Items/redux';
 
 import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 import { formatPayload } from './helpers';
@@ -46,9 +46,6 @@ const ApprovedReceipts = (props) => {
     dispatch(listApprovedReceipts({ company, message })).then(() => {
       setSelectedData(null);
       setLoading(false);
-      if(!isMounted.current){
-        performCleanup()
-      }
     });
 
     return function cleanup() {
@@ -83,8 +80,8 @@ const ApprovedReceipts = (props) => {
     setFormMode('add');
     setSelectedData(null);
     setLoading(true);
-    dispatch(listRR({ company, message })).then((resp1) => {
-      dispatch(listItemSummary({ company, message })).then((resp2) => {
+    dispatch(listRR({ company })).then((resp1) => {
+      dispatch(listItem({ company })).then((resp2) => {
         if(isMounted.current){
           const onSuccess = () => {
               history.push(`${path}/new`);
@@ -133,7 +130,7 @@ const ApprovedReceipts = (props) => {
       }
       const onFail = () => {
         setLoading(false);
-      }
+      };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
 
