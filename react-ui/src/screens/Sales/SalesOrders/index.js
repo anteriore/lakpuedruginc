@@ -270,7 +270,7 @@ const SalesOrders = (props) => {
                 pagination={false}
                 locale={{ emptyText: <Empty description="No Item Seleted." /> }}
               />
-              {_.toLower(selectedSO.status) === 'pending' && (
+              {_.toLower(selectedSO.status) === 'pending' && actions.includes('update') && (
                 <>
                   <Space>
                     <Button

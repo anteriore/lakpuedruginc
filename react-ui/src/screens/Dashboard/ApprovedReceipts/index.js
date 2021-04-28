@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Row, Col, Typography, Button, Modal, Skeleton, Descriptions, Space, message } from 'antd';
+import React, { useEffect, useState, useRef } from 'react';
+import { Row, Col, Typography, Button, Modal, Skeleton, Descriptions, Space, message, } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
@@ -33,17 +33,13 @@ const ApprovedReceipts = (props) => {
   const [formMode, setFormMode] = useState('');
 
   const { columns } = DisplayDetails();
-  const { formDetails, tableDetails } = FormDetails();
+  const { formDetails } = FormDetails();
   const [selectedData, setSelectedData] = useState(null);
-  const { list, status, statusLevel, statusMessage, action } = useSelector(
-    (state) => state.dashboard.approvedReceipts
-  );
-  const {
-    status: statusItems,
-    statusLevel: statusLevelItems,
-    statusMessage: statusMessageItems,
-    action: actionItems,
-  } = useSelector((state) => state.maintenance.items);
+  const {list, status, statusLevel, statusMessage, action} = useSelector((state) => state.dashboard.approvedReceipts);
+  const { 
+    status: statusItems, statusLevel: statusLevelItems,
+    statusMessage: statusMessageItems, action: actionItems
+  } = useSelector(state => state.maintenance.items);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -60,7 +56,7 @@ const ApprovedReceipts = (props) => {
   }, [dispatch, company]);
 
   useEffect(() => {
-    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
   }, [status, action, statusMessage, statusLevel]);
 
   const performCleanup = () => {
@@ -73,10 +69,10 @@ const ApprovedReceipts = (props) => {
     reevalDependencyMsgStats({
       status: statusItems,
       statusMessage: statusMessageItems,
-      action: actionItems,
+      action: actionItems, 
       statusLevel: statusLevelItems,
-      module: title,
-    });
+      module: title
+    })
   }, [actionItems, statusMessageItems, statusItems, statusLevelItems, title]);
 
   const handleAdd = () => {
@@ -86,14 +82,14 @@ const ApprovedReceipts = (props) => {
     setLoading(true);
     dispatch(listRR({ company, message })).then((resp1) => {
       dispatch(listItemSummary({ company, message })).then((resp2) => {
-        if (isMounted.current) {
+        if(isMounted.current){
           const onSuccess = () => {
-            history.push(`${path}/new`);
-            setLoading(false);
-          };
+              history.push(`${path}/new`);
+              setLoading(false);
+          }
           const onFail = () => {
             setLoading(false);
-          };
+          }
           handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
         }
       });
@@ -131,19 +127,19 @@ const ApprovedReceipts = (props) => {
         dispatch(listApprovedReceipts({ company, message })).then(() => {
           setLoading(false);
         });
-      };
+      }
       const onFail = () => {
         setLoading(false);
       };
       handleRequestResponse([response], onSuccess, onFail, '');
     });
 
-    return 1;
+    return 1
   };
 
   const handleCancelButton = () => {
     setSelectedData(null);
-    setLoading(false);
+    setLoading(false)
   };
 
   return (
@@ -233,7 +229,8 @@ const ApprovedReceipts = (props) => {
                     }
                     if (item.type === 'select' || item.type === 'selectSearch') {
                       const itemData = selectedData[item.name];
-                      if (itemData !== null && typeof itemData !== 'undefined') {
+                      if(itemData !== null && typeof itemData !== 'undefined'){
+
                         return (
                           <Descriptions.Item label={item.label}>
                             {itemData[item.selectName]}
@@ -265,19 +262,10 @@ const ApprovedReceipts = (props) => {
               <Title level={5} style={{ marginRight: 'auto', marginTop: '2%', marginBottom: '1%' }}>
                 Item Details:
               </Title>
-              <Descriptions
-                title={`[${selectedData.item.code}] ${selectedData.item.name}`}
-                size="default"
-              >
-                <Descriptions.Item label="Received">
-                  {selectedData.receivedQuantity}
-                </Descriptions.Item>
-                <Descriptions.Item label="Approved">
-                  {selectedData.approvedQuantity}
-                </Descriptions.Item>
-                <Descriptions.Item label="Rejected">
-                  {selectedData.rejectedQuantity}
-                </Descriptions.Item>
+              <Descriptions title={`[${selectedData.item.code}] ${selectedData.item.name}`} size="default">
+                <Descriptions.Item label="Received">{selectedData.receivedQuantity}</Descriptions.Item>
+                <Descriptions.Item label="Approved">{selectedData.approvedQuantity}</Descriptions.Item>
+                <Descriptions.Item label="Rejected">{selectedData.rejectedQuantity}</Descriptions.Item>
                 <Descriptions.Item label="QC Sample">{selectedData.qcSamples}</Descriptions.Item>
                 <Descriptions.Item label="Total">{selectedData.totalQuantity}</Descriptions.Item>
                 <Descriptions.Item label="Expiration">
@@ -287,10 +275,10 @@ const ApprovedReceipts = (props) => {
                   {moment(new Date(selectedData.bestBefore)).format('DD/MM/YYYY')}
                 </Descriptions.Item>
                 <Descriptions.Item label="Reevaluation">
-                  {moment(new Date(selectedData.reevaluation)).format('DD/MM/YYYY')}
+                {moment(new Date(selectedData.reevaluation)).format('DD/MM/YYYY')}
                 </Descriptions.Item>
                 <Descriptions.Item label="Retest">
-                  {moment(new Date(selectedData.retest)).format('DD/MM/YYYY')}
+                {moment(new Date(selectedData.retest)).format('DD/MM/YYYY')}
                 </Descriptions.Item>
               </Descriptions>
             </Space>

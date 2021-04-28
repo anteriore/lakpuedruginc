@@ -126,6 +126,13 @@ const FormDetails = () => {
         choices: groups,
         rules: [{ required: true, message: 'Please select a Group' }],
       },
+      {
+        label: 'Active',
+        name: 'isActive',
+        type: 'boolean',
+        initialValue: true,
+        rules: [{ required: true, message: 'Please select specify if the vendor is active or not' }],
+      },
     ],
   };
   return { formDetails };

@@ -274,7 +274,7 @@ const FGIssuances = (props) => {
                   pagination={false}
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
-                {selectedData.status === 'Pending' && ( // add approval permissions here
+                {selectedData.status === 'Pending' && (
                   <>
                     <Text>{'Actions: '}</Text>
                     <Space>

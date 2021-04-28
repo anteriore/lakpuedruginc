@@ -1,81 +1,114 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import TableHeader from '../../../../components/TableDisplay/TableHeader';
 
 export const DisplayDetails = () => {
-  const columns = [
-    {
-      title: 'A.R. No',
-      dataIndex: 'number',
-      key: 'rrNum',
-      align: 'center',
-      defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.number.length - b.number.length,
-    },
-    {
-      title: 'R.R. No',
-      dataIndex: 'receivingReceipt',
-      key: 'receivingReceipt',
-      align: 'center',
-      defaultSortOrder: 'ascend',
-      datatype: 'object',
-      dataToString: (object) => {
-        return object.number;
-      },
-    },
-    {
-      title: 'Material Type',
-      dataIndex: 'item',
-      key: 'itemType',
-      align: 'center',
-      defaultSortOrder: 'ascend',
-      datatype: 'object',
-      dataToString: (object) => {
-        return object.type.name;
-      },
-    },
-    {
-      title: 'Total Items',
-      dataIndex: 'totalQuantity',
-      key: 'totalQuantity',
-      align: 'center',
-      defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.number.length - b.number.length,
-    },
-    {
-      title: 'Control Number',
-      dataIndex: 'controlNumber',
-      key: 'controlNumber',
-      align: 'center',
-      defaultSortOrder: 'ascend',
-      sorter: (a, b) => a.number.length - b.number.length,
-    },
-    {
-      title: 'DR/SI',
-      dataIndex: 'receivingReceipt',
-      key: 'drSI',
-      align: 'center',
-      defaultSortOrder: 'ascend',
-      datatype: 'object',
-      dataToString: (object) => {
-        return `${object.drNumber}/${object.siNumber}`;
-      },
-    },
-  ];
+    const columns = [
+        {
+            title: 'A.R. No',
+            dataIndex: 'number',
+            key: 'rrNum',
+            align: 'center',
+            defaultSortOrder: 'ascend',
+            sorter: (a, b) => a.number.length - b.number.length,
+        },
+        {
+            title: 'R.R. No',
+            dataIndex: 'receivingReceipt',
+            key: 'receivingReceipt',
+            align: 'center',
+            defaultSortOrder: 'ascend',
+            datatype: 'object',
+            dataToString: (object) => {
+                return object?.number ?? ""
+            }
+        },
+        {
+            title: 'Material Type',
+            dataIndex: 'item',
+            key: 'itemType',
+            align: 'center',
+            defaultSortOrder: 'ascend',
+            datatype: 'object',
+            dataToString: (object) => {
+                return object?.type?.name ?? ""
+            }
+        },
+        {
+            title: 'Total Items',
+            dataIndex: 'totalQuantity',
+            key: 'totalQuantity',
+            align: 'center',
+            defaultSortOrder: 'ascend',
+            sorter: (a, b) => a.number.length - b.number.length,
+        },
+        {
+            title: 'Control Number',
+            dataIndex: 'controlNumber',
+            key: 'controlNumber',
+            align: 'center',
+            defaultSortOrder: 'ascend',
+            sorter: (a, b) => a.number.length - b.number.length,
+        },
+        {
+            title: 'DR/SI',
+            dataIndex: 'receivingReceipt',
+            key: 'drSI',
+            align: 'center',
+            defaultSortOrder: 'ascend',
+            datatype: 'object',
+            dataToString: (object) => {
+                return `${object?.drNumber ?? ""}/${object?.siNumber ?? ""}`
+            }
+        },
+    ];
 
   return { columns };
 };
 
 export const FormDetails = () => {
-  const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
-  const itemList = useSelector((state) => state.maintenance.items.list);
-  // const itemList = [];
-
     const [displayModal, setDisplayModal] = useState(false);
     const rrList = useSelector((state) => state.dashboard.receivingReceipts.list);
     const itemList = useSelector((state) => state.maintenance.items.list);
 
+    const selectTableColumns = [
+        {
+            label: 'Item ID',
+            name: 'id',
+            key: 'id',
+            type: 'hidden',
+        },
+        {
+            title: 'Item',
+            dataIndex: 'item',
+            key: 'item',
+            datatype: 'object',
+            render: (object) => `[${object?.code ?? ""}] ${object?.name ?? ""}`,
+        },
+        {
+            title: 'Material Type',
+            dataIndex: 'item',
+            key: 'type',
+            datatype: 'object',
+            render: (object) => `[${object?.type?.code ?? ""}] ${object?.type?.name ?? ""}`,
+        },
+        /*{
+            title: 'Quantity',
+            dataIndex: 'quantity',
+            key: 'quantity',
+        },*/
+        {
+            title: 'Unit',
+            dataIndex: 'item',
+            key: 'unit',
+            datatype: 'object',
+            render: (object) => object?.unit?.code ?? "",
+        },
+    ]
+
     const formDetails = {
         form_name: 'approvedReceipts',
+        toggle_name: 'item',
         form_items: [
             {
                 label: 'A.R. No.',
@@ -89,7 +122,7 @@ export const FormDetails = () => {
                 type: 'selectSearch',
                 selectName: 'name',
                 choices: rrList,
-                render: (object) => object.number,
+                render: (object) => object?.number ?? "",
                 rules: [{ required: true }],
             },
             {
@@ -142,48 +175,6 @@ export const FormDetails = () => {
             },
         ],
 
-        /*rr_details: [
-            {
-                label: 'Receiving Receipt',
-                name: 'receivingReceipt',
-                type: 'selectTable',
-                rules: [{ required: true }],
-                allowEmpty: true,
-                placeholder: 'Select Receiving Receipt',
-                displayModal,
-                setDisplayModal,
-                dataSource: rrList,
-                columns: [
-                    {
-                        label: 'RR ID',
-                        name: 'id',
-                        type: 'hidden',
-                    },
-                    {
-                        label: 'R.R. Num',
-                        dataIndex: 'number',
-                        key: 'number',
-                    },
-                    {
-                        label: 'Date',
-                        dataIndex: 'date',
-                        key: 'date',
-                    },
-                    {
-                        title: 'Status',
-                        dataIndex: 'status',
-                        key: 'status',
-                    },
-                ],
-                rowKey: 'id',
-                getValueProps: (value) => {
-                    if (typeof value !== 'undefined') {
-                        return { value };
-                    }
-                },
-            },
-        ],*/
-
         rr_item: [
             {
                 label: 'R.R. Item',
@@ -195,39 +186,11 @@ export const FormDetails = () => {
                 displayModal,
                 setDisplayModal,
                 dataSource: itemList,
-                columns: [
-                    {
-                        label: 'RR Item ID',
-                        name: 'id',
-                        type: 'hidden',
-                    },
-                    {
-                        title: 'Item',
-                        dataIndex: 'item',
-                        key: 'item',
-                        render: (object) => `[${object.code}] ${object.name}`,
-                    },
-                    {
-                        title: 'Material Type',
-                        dataIndex: 'item',
-                        key: 'type',
-                        render: (object) => `[${object.type.code}] ${object.type.name}`,
-                    },
-                    /*{
-                        title: 'Quantity',
-                        dataIndex: 'quantity',
-                        key: 'quantity',
-                    },*/
-                    {
-                        title: 'Unit',
-                        dataIndex: 'item',
-                        key: 'unit',
-                        render: (object) => object.unit.code,
-                    },
-                ],
+                columns: TableHeader({ columns: selectTableColumns, hasSorter: true, hasFilter: true }),
                 rowKey: 'id',
                 getValueProps: (value) => {
                     if (typeof value !== 'undefined') {
+                        //return { value: value.code };
                         return { value };
                     }
                 },
@@ -306,18 +269,18 @@ export const FormDetails = () => {
         ],
 
         processData: (data) => {
-        const processedData = [];
-    
-        data.receivedItems.forEach((rrItem) => {
-            processedData.push({
-            id: rrItem.id,
-            item: rrItem.item.id,
-            quantity: rrItem.quantity,
-            unit: rrItem.unit.id,   
+            const processedData = [];
+        
+            data.receivedItems.forEach((rrItem) => {
+                processedData.push({
+                id: rrItem.id,
+                item: rrItem.item.id,
+                quantity: rrItem.quantity,
+                unit: rrItem.unit.id,   
+                });
             });
-        });
-    
-        return processedData;
+        
+            return processedData;
         },
     };
   return { formDetails };
