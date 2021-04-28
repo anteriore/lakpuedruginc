@@ -64,7 +64,7 @@ const JobOrder = (props) => {
       statusMessage: statusMessageMO,
       action: actionMO,
       statusLevel: statusLevelMO,
-      module: 'MO',
+      module: 'Manufacturing Orders',
     });
   }, [actionMO, statusMessageMO, statusMO, statusLevelMO]);
 

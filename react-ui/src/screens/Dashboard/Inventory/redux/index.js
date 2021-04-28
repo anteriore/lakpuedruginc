@@ -125,6 +125,7 @@ const inventorySlice = createSlice({
       return {
         ...state,
         action: 'fetch',
+        status: 'loading',
         statusLevel: '',
         statusMessage: `${message.ITEMS_GET_PENDING} for inventory`,
       };
