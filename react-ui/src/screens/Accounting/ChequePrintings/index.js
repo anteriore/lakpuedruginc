@@ -289,7 +289,7 @@ const ChequePrintings = (props) => {
                   locale={{ emptyText: <Empty description="No Item Seleted." /> }}
                 />
 
-                {selectedData.status === 'Pending' && ( // add approval permissions here
+                {selectedData.status === 'Pending' && actions.includes('update') && (
                   <>
                     <Text>{'Actions: '}</Text>
                     <Space>

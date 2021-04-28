@@ -433,7 +433,7 @@ const VoucherPayables = (props) => {
                     return formDetails.accountTitles.summary(processedData)
                   }}
                 />
-                {selectedData.status === 'Pending' && ( // add approval permissions here
+                {selectedData.status === 'Pending' && actions.includes('update')  && (
                   <>
                     <Text>{'Actions: '}</Text>
                     <Space>
