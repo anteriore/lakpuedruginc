@@ -22,7 +22,7 @@ import { formatPayload } from './helpers';
 import InputForm from './InputForm';
 import { listRR, addRR, clearData } from './redux';
 import { clearData as clearPO, listPO } from '../../Purchasing/redux';
-import { clearData as clearItem, listItemSummary } from '../../Maintenance/Items/redux';
+import { clearData as clearItem, listI as listItem } from '../../Maintenance/Items/redux';
 import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
@@ -94,8 +94,8 @@ const ReceivingReceipts = (props) => {
     setFormMode('add');
     setReceivingReceipt(null);
     setLoading(true)
-    dispatch(listPO({ company, message })).then((resp1) => {
-      dispatch(listItemSummary({ company, message })).then((resp2) => {
+    dispatch(listPO({ company })).then((resp1) => {
+      dispatch(listItem({ company })).then((resp2) => {
         if(isMounted.current){
           const onSuccess = () => {
               history.push(`${path}/new`);

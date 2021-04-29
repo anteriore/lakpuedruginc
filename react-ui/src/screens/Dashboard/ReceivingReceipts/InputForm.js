@@ -33,6 +33,7 @@ const FormScreen = (props) => {
   const [toggleValue, setToggleValue] = useState(null);
   const [tableData, setTableData] = useState();
   const [tableSelectedKeys, setTableSelectedKeys] = useState([]);
+  const [selectedPO, setSelectedPO] = useState();
 
   const [loading, setLoading] = useState(false);
   const [loadingModal, setLoadingModal] = useState(true);
@@ -41,7 +42,6 @@ const FormScreen = (props) => {
   const toggleName = formDetails.toggle_name;
   const { isVisible, selectData, preloadedData, foreignKey, name } = formTable ?? { isVisible: null, selectData: null, preloadedData: null, foreignKey: null, name: null };
   const { user } = useSelector((state) => state.auth);
-  const [selectedPO, setSelectedPO] = useState([]);
 
   const onFail = useCallback(() => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
@@ -112,6 +112,7 @@ const FormScreen = (props) => {
       }
     });
 
+    data.purchaseOrder = selectedPO
     onSubmit(data).then(() => {
       setLoading(false);
     });
@@ -273,6 +274,7 @@ const FormScreen = (props) => {
     const fieldsValue = {};
     fieldsValue[formTable.name] = processedData;
     setTableData(processedData);
+    setSelectedPO(selectedRows[0].id)
     form.setFieldsValue(fieldsValue);
   };
 
@@ -423,7 +425,7 @@ const FormScreen = (props) => {
             >
               <Table
                 rowSelection={{
-                  type: 'checkbox',
+                  type: 'radio',
                   // selectedRowKeys: item.selectedData,
                   onChange: onTableSelect,
                   preserveSelectedRowKeys: false,

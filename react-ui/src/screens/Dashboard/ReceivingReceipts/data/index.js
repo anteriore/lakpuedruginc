@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export const DisplayDetails = () => {
@@ -84,8 +83,6 @@ export const DisplayDetails = () => {
 
 export const FormDetails = () => {
   const poList = useSelector((state) => state.purchaseOrders.list);
-  const itemList = useSelector((state) => state.maintenance.items.list);
-  const [loadingPO, setLoadingPO] = useState(false);
 
     const formDetails = {
       form_name: 'receivingReceipts',
@@ -190,8 +187,9 @@ export const FormDetails = () => {
     label: 'Purchase Order',
     name: 'receivedItems',
     key: 'id',
+    preloadedData: true,
     rules: [{ required: true, message: 'Please select a Purchase Order' }],
-    isVisible: poList.length > 0 && !loadingPO,
+    isVisible: poList.length > 0,
     fields: [
       {
         label: 'PO Number',
@@ -211,7 +209,7 @@ export const FormDetails = () => {
       {
         label: 'Type',
         name: 'item',
-        render: (object) => object?.type?.name,
+        render: (object) => object?.item?.type?.name,
       },
       {
         label: 'Quantity',

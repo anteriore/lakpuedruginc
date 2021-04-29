@@ -5,7 +5,7 @@ export const formatPayload = (approvalId, company, data) => {
     receivedItems.push({
       ...rrItem,
       quantity: rrItem.quantity,
-      unit: { id: rrItem.unit },
+      unit: rrItem?.unit ?? rrItem.item.unit,
       status: 'Quarantined',
     });
   });
