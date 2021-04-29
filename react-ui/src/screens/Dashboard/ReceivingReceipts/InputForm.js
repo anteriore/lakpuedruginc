@@ -41,6 +41,7 @@ const FormScreen = (props) => {
   const toggleName = formDetails.toggle_name;
   const { isVisible, selectData, preloadedData, foreignKey, name } = formTable ?? { isVisible: null, selectData: null, preloadedData: null, foreignKey: null, name: null };
   const { user } = useSelector((state) => state.auth);
+  const [selectedPO, setSelectedPO] = useState([]);
 
   const onFail = useCallback(() => {
     history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
@@ -331,15 +332,16 @@ const FormScreen = (props) => {
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
-            {formDetails.tolling_details.map((item) => {
-              if (item.toggle) {
-                if (item.toggleCondition(toggleValue)) {
-                  return <FormItem item={item} onFail={onFail} />;
+            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) &&
+              formDetails.tolling_details.map((item) => {
+                if (item.toggle) {
+                  if (item.toggleCondition(toggleValue)) {
+                    return <FormItem item={item} onFail={onFail} />;
+                  }
+                  return null;
                 }
-                return null;
-              }
 
-              return <FormItem item={item} onFail={onFail} formInstance={form} />;
+                return <FormItem item={item} onFail={onFail} />;
             })}
 
             {hasTable &&

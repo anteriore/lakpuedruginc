@@ -89,7 +89,7 @@ export const FormDetails = () => {
 
     const formDetails = {
       form_name: 'receivingReceipts',
-      toggle_name: 'terms',
+      toggle_name: 'tolling',
       form_items: [
         {
           label: 'R.R. Number',
