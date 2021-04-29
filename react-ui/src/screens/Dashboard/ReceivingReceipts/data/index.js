@@ -109,6 +109,13 @@ export const FormDetails = () => {
             writeOnly: true,
         },
         {
+          label: 'Purchase Order No.',
+          name: 'poNumber',
+          type: 'string',
+          rules: [{ required: true, message: 'Please provide a Purchase Order No.' }],
+          placeholder: 'Purchase Order No.',
+        },
+        {
           label: 'Delivery Receipt No.',
           name: 'drNumber',
           type: 'string',
