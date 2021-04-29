@@ -130,6 +130,20 @@ export const FormDetails = () => {
             placeholder: 'Sales Invoice No.',
         },
         {
+          label: 'Delivery Type',
+          name: 'deliveryType',
+          type: 'string',
+          rules: [{ required: true, message: 'Please provide a Delivery Type' }],
+          placeholder: 'Delivery Type',
+        },
+        {
+          label: 'Origin',
+          name: 'origin',
+          type: 'string',
+          rules: [{ required: true, message: 'Please specify the origin' }],
+          placeholder: 'Origin',
+        },
+        {
             label: 'Remarks',
             name: 'remarks',
             rules: [{}],

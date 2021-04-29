@@ -113,7 +113,7 @@ const ReceivingReceipts = (props) => {
   };
 
   const handleAddTolling = () => {
-    setFormTitle('Create Receiving Receipt');
+    setFormTitle('Create Tolling Receiving Receipt');
     setReceivingReceipt(null);
     setLoading(true);
     dispatch(listPO({ company, message })).then((resp1) => {
