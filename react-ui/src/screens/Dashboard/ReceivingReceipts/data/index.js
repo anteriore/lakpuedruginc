@@ -306,7 +306,6 @@ export const FormDetails = () => {
 };
 
 export const TollingFormDetails = () => {
-  const poList = useSelector((state) => state.purchaseOrders.list);
   const itemList = useSelector((state) => state.maintenance.items.list);
 
   const formDetails = {
@@ -333,15 +332,6 @@ export const TollingFormDetails = () => {
         writeOnly: true,
       },
       {
-        label: 'Purchase Order',
-        name: 'purchaseOrder',
-        type: 'selectSearch',
-        selectName: 'name',
-        choices: poList,
-        render: (object) => object.number,
-        rules: [{ required: true }],
-      },
-      {
         label: 'Delivery Receipt No.',
         name: 'drNumber',
         type: 'string',
@@ -354,13 +344,6 @@ export const TollingFormDetails = () => {
         type: 'string',
         rules: [{ required: true, message: 'Please provide a Sales Invoice No.' }],
         placeholder: 'Sales Invoice No.',
-      },
-      {
-        label: 'Purchase Order No.',
-        name: 'poNumber',
-        type: 'string',
-        rules: [{ required: true, message: 'Please provide a Purchase Order No.' }],
-        placeholder: 'Purchase Order No.',
       },
       {
         label: 'Delivery Type',

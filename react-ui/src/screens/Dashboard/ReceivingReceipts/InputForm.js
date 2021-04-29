@@ -101,6 +101,7 @@ const FormScreen = (props) => {
     });
 
     data.purchaseOrder = selectedPO
+    data.tolling = false
     onSubmit(data).then(() => {
       setLoading(false);
     });
