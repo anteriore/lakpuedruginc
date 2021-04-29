@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Form,
@@ -35,20 +35,32 @@ const InputForm = (props) => {
   const [processingData, setProcessingData] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
+  const { isVisible, selectData, preloadedData, selectedKey, name } = formTable ?? { isVisible: null, selectData: null, preloadedData: null, foreignKey: null, name: null };
+  
+  const onFail = useCallback(() => {
+    history.push(`${path.replace(new RegExp('/new|[0-9]|:id|tolling'), '')}`);
+  }, [history, path]);
+
+  useEffect(() => {
+    if (!(isVisible ?? (selectData?.length ?? 0) > 0) && preloadedData) {
+      // selected data was pre-loaded but is empty
+      onFail();
+    }
+  }, [isVisible, selectData, preloadedData, onFail])
 
   useEffect(() => {
     form.setFieldsValue(values);
-    setTableData(form.getFieldValue(formTable.name));
+    setTableData(form.getFieldValue(name));
 
     const selectedKeys = [];
-    if (values !== null && values[formTable.name] !== null) {
-      values[formTable.name].forEach((item) => {
-        selectedKeys.push(item[formTable.selectedKey]);
+    if (values !== null && values[name] !== null) {
+      values[name].forEach((item) => {
+        selectedKeys.push(item[selectedKey]);
       });
-      setTableData(values[formTable.name]);
+      setTableData(values[name]);
     }
     setTableSelectedKeys(selectedKeys);
-  }, [values, form, formTable.name, formTable.selectedKey]);
+  }, [values, form, name, selectedKey]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -195,13 +207,9 @@ const InputForm = (props) => {
     });
 
     const fieldsValue = {};
-    fieldsValue[formTable.name] = selectedRows;
-    setTableData(selectedRows);
+    fieldsValue[formTable.name] = formTable.processData(selectedRows);
+    setTableData(formTable.processData(selectedRows));
     form.setFieldsValue(fieldsValue);
-  };
-
-  const onFail = () => {
-    history.push(`${path.replace(new RegExp('/new|[0-9]|:id'), '')}`);
   };
 
   const onValuesChange = (values) => {

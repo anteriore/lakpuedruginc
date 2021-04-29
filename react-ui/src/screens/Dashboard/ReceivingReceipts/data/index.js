@@ -441,25 +441,18 @@ export const TollingFormDetails = () => {
     label: 'Received Items',
     name: 'receivedItems',
     key: 'id',
+    preloadedData: true,
     rules: [{ required: true }],
     fields: [
       {
-        label: 'Item ID',
-        name: 'itemID',
-        type: 'hidden',
-      },
-      {
-        label: 'Code',
-        name: 'code',
-      },
-      {
-        label: 'Item Name',
-        name: 'name',
+        label: 'Item',
+        name: 'item',
+        render: (object) => `[${object.item.code}] ${object.item.name}`,
       },
       {
         label: 'Type',
-        name: 'type',
-        render: (object) => object.name,
+        name: 'item',
+        render: (object) => object?.item?.type?.name,
       },
       {
         label: 'Quantity',
@@ -504,13 +497,13 @@ export const TollingFormDetails = () => {
     ],
 
     processData: (data) => {
-      const processedData = {
-        ...data,
-        ...data.item,
-        itemID: data.item.id,
-      };
-      delete processedData.item;
-      delete processedData.id;
+      const processedData = []
+      data.forEach((item) => {
+        processedData.push({
+          item: item,
+          unit: item?.unit
+        })
+      });
       return processedData;
     },
     checkSelected: (selectedData, rowData) => {

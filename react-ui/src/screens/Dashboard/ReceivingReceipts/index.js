@@ -116,8 +116,6 @@ const ReceivingReceipts = (props) => {
     setFormTitle('Create Receiving Receipt');
     setReceivingReceipt(null);
     setLoading(true);
-    console.log(formTollingDetails)
-    console.log(tableTollingDetails)
     dispatch(listPO({ company, message })).then((resp1) => {
       dispatch(listI({ company, message })).then((resp2) => {
         if (isMounted.current) {
