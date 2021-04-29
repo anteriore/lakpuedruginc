@@ -1,5 +1,6 @@
 export const formatPayload = (approvalId, company, data) => {
   const receivedItems = [];
+  let tempPurchaseOrder;
 
   data.receivedItems.forEach((rrItem) => {
     receivedItems.push({
@@ -10,12 +11,18 @@ export const formatPayload = (approvalId, company, data) => {
     });
   });
 
+  if(data.isTolling){
+    tempPurchaseOrder = data?.purchaseOrder
+  } else {
+    tempPurchaseOrder = { id: data.purchaseOrder }
+  }
+
   return {
     ...data,
     number: data.number,
     date: data.date,
     receivedBy: { id: approvalId },
-    purchaseOrder: data?.purchaseOrder,
+    purchaseOrder: tempPurchaseOrder,
     company: { id: company },
     drNumber: data.drNumber,
     siNumber: data.siNumber,
@@ -24,7 +31,7 @@ export const formatPayload = (approvalId, company, data) => {
     origin: data.origin,
     status: 'Pending',
     remarks: data.remarks,
-    tolling: data.tolling,
+    tolling: false,
 
     receivedItems,
   };
