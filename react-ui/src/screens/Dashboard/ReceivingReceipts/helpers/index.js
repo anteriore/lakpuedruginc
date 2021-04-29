@@ -15,7 +15,7 @@ export const formatPayload = (approvalId, company, data) => {
     number: data.number,
     date: data.date,
     receivedBy: { id: approvalId },
-    purchaseOrder: { id: data.purchaseOrder },
+    purchaseOrder: data?.purchaseOrder,
     company: { id: company },
     drNumber: data.drNumber,
     siNumber: data.siNumber,

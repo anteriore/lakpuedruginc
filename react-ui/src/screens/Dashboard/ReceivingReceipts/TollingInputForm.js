@@ -82,6 +82,7 @@ const InputForm = (props) => {
       }
     });
 
+    data.poNumber = 'N/A'
     data.tolling = true
     onSubmit(data).then(() => {
       setProcessingData(false);
