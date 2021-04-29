@@ -108,43 +108,12 @@ export const FormDetails = () => {
             type: 'readOnly',
             writeOnly: true,
         },
-      ],
-      
-      tolling_details: [
-        {
-          label: 'Tolling',
-          name: 'tolling',
-          type: 'radioGroup',
-          selectName: 'name',
-          initialValue: false,
-          choices: [
-            {
-              id: false,
-              value: false,
-              name: 'False',
-            },
-            {
-              id: true,
-              value: true,
-              name: 'True',
-            },
-          ],
-          rules: [{ required: true }],
-        },
         {
           label: 'Purchase Order No.',
           name: 'poNumber',
-          toggle: true,
-          toggleCondition: (value) => {
-            if (!value) {
-              return true;
-            }
-            return false;
-          },
-          initialValue: null,
           rules: [{ required: true, message: 'Please provide a Purchase Order No.' }],
           placeholder: 'Purchase Order No.',
-      },
+        },
         {
           label: 'Delivery Receipt No.',
           name: 'drNumber',
