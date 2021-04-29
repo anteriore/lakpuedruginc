@@ -17,13 +17,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import TableDisplay from '../../../components/TableDisplay';
-import { DisplayDetails, FormDetails } from './data';
+import { DisplayDetails, FormDetails, TollingFormDetails } from './data';
 import { formatPayload } from './helpers';
 import InputForm from './InputForm';
+import TollingInputForm from './TollingInputForm';
 import { listRR, addRR, clearData } from './redux';
 import { clearData as clearPO, listPO } from '../../Purchasing/redux';
-import { clearData as clearItem, listI as listItem } from '../../Maintenance/Items/redux';
-import GeneralHelper, {reevalutateMessageStatus, reevalDependencyMsgStats} from '../../../helpers/general-helper';
+import { clearData as clearItem, listI } from '../../Maintenance/Items/redux';
+import GeneralHelper, {
+  reevalutateMessageStatus,
+  reevalDependencyMsgStats,
+} from '../../../helpers/general-helper';
 
 const { Title, Text } = Typography;
 
@@ -39,75 +43,92 @@ const ReceivingReceipts = (props) => {
   const [loading, setLoading] = useState(true);
 
   const [formTitle, setFormTitle] = useState('');
-  const [formMode, setFormMode] = useState('');
 
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
+  const { formDetails: formTollingDetails, tableDetails: tableTollingDetails } = TollingFormDetails();
   const [receivingReceipt, setReceivingReceipt] = useState(null);
+  const { list, status, statusLevel, statusMessage, action } = useSelector(
+    (state) => state.dashboard.receivingReceipts
+  );
   const {
-    list, status, statusLevel, statusMessage, action
-  } = useSelector((state) => state.dashboard.receivingReceipts);
-  const { 
     status: statusItems,
     statusLevel: statusLevelItems,
     statusMessage: statusMessageItems,
-    action: actionItems
-  } = useSelector((state) => state.maintenance.items)
+    action: actionItems,
+  } = useSelector((state) => state.maintenance.items);
   const isMounted = useRef(true);
 
   const performCleanup = useCallback(() => {
     dispatch(clearData());
     dispatch(clearPO());
     dispatch(clearItem());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(listRR({ company, message })).then(() => {
-      if(isMounted.current){
+      if (isMounted.current) {
         setLoading(false);
-      }else{
-        performCleanup();
       }
     });
 
     return function cleanup() {
       isMounted.current = false;
+      performCleanup();
     };
   }, [dispatch, company, performCleanup]);
 
   useEffect(() => {
-    reevalutateMessageStatus({status, action, statusMessage, statusLevel})
-  },[status, action, statusMessage, statusLevel]);
+    reevalutateMessageStatus({ status, action, statusMessage, statusLevel });
+  }, [status, action, statusMessage, statusLevel]);
 
   useEffect(() => {
     reevalDependencyMsgStats({
       status: statusItems,
       statusMessage: statusMessageItems,
-      action: actionItems, 
+      action: actionItems,
       statusLevel: statusLevelItems,
-      module: title
-    })
+      module: title,
+    });
   }, [actionItems, statusMessageItems, statusItems, statusLevelItems, title]);
 
   const handleAdd = () => {
     setFormTitle('Create Receiving Receipt');
-    setFormMode('add');
     setReceivingReceipt(null);
-    setLoading(true)
-    dispatch(listPO({ company })).then((resp1) => {
-      dispatch(listItem({ company })).then((resp2) => {
-        if(isMounted.current){
+    setLoading(true);
+    dispatch(listPO({ company, message })).then((resp1) => {
+      dispatch(listI({ company, message })).then((resp2) => {
+        if (isMounted.current) {
           const onSuccess = () => {
-              history.push(`${path}/new`);
-              setLoading(false);
-          }
+            history.push(`${path}/new`);
+            setLoading(false);
+          };
           const onFail = () => {
             setLoading(false);
-          }
+          };
           handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
         }
-        else {
-          performCleanup()
+      });
+    });
+  };
+
+  const handleAddTolling = () => {
+    setFormTitle('Create Receiving Receipt');
+    setReceivingReceipt(null);
+    setLoading(true);
+    console.log(formTollingDetails)
+    console.log(tableTollingDetails)
+    dispatch(listPO({ company, message })).then((resp1) => {
+      dispatch(listI({ company, message })).then((resp2) => {
+        if (isMounted.current) {
+          const onSuccess = () => {
+            history.push(`${path}/tolling`);
+            setLoading(false);
+          };
+          const onFail = () => {
+            setLoading(false);
+          };
+          handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
         }
       });
     });
@@ -121,25 +142,21 @@ const ReceivingReceipts = (props) => {
   const onSubmit = async (data) => {
     const payload = formatPayload(id, company, data);
 
-    if (formMode === 'edit') {
-      payload.id = receivingReceipt.id;
-    }
-
     await dispatch(addRR(payload)).then((response) => {
-        setLoading(true);
-        const onSuccess = () => {
-          history.goBack();
-          dispatch(listRR({ company, message })).then(() => {
-            setLoading(false);
-          });
-        }
-        const onFail = () => {
+      setLoading(true);
+      const onSuccess = () => {
+        history.goBack();
+        dispatch(listRR({ company, message })).then(() => {
           setLoading(false);
-        }
-  
-        handleRequestResponse([response], onSuccess, onFail, '');
+        });
+      };
+      const onFail = () => {
+        setLoading(false);
+      };
+
+      handleRequestResponse([response], onSuccess, onFail, '');
     });
-    return 1
+    return 1;
   };
 
   const handleCancelButton = () => {
@@ -159,14 +176,14 @@ const ReceivingReceipts = (props) => {
           formTable={tableDetails}
         />
       </Route>
-      <Route path={`${path}/:id`}>
-        <InputForm
+      <Route path={`${path}/tolling`}>
+        <TollingInputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={receivingReceipt}
           onCancel={handleCancelButton}
-          formDetails={formDetails}
-          formTable={tableDetails}
+          formDetails={formTollingDetails}
+          formTable={tableTollingDetails}
         />
       </Route>
       <Route path={path}>
@@ -185,6 +202,18 @@ const ReceivingReceipts = (props) => {
                 }}
               >
                 Add
+              </Button>
+            )}
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '1%' }}
+                icon={<PlusOutlined />}
+                loading={loading}
+                onClick={(e) => {
+                  handleAddTolling();
+                }}
+              >
+                Add Tolling
               </Button>
             )}
           </Col>

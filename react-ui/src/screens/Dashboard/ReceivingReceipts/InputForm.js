@@ -330,7 +330,6 @@ const FormScreen = (props) => {
                 }
                 return null;
               }
-
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
             })}
 
