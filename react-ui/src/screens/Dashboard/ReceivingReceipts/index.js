@@ -17,9 +17,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import TableDisplay from '../../../components/TableDisplay';
-import { DisplayDetails, FormDetails } from './data';
+import { DisplayDetails, FormDetails, TollingFormDetails } from './data';
 import { formatPayload } from './helpers';
 import InputForm from './InputForm';
+import TollingInputForm from './TollingInputForm';
 import { listRR, addRR, clearData } from './redux';
 import { clearData as clearPO, listPO } from '../../Purchasing/redux';
 import { clearData as clearItem, listI } from '../../Maintenance/Items/redux';
@@ -45,6 +46,7 @@ const ReceivingReceipts = (props) => {
 
   const { columns, itemColumns } = DisplayDetails();
   const { formDetails, tableDetails } = FormDetails();
+  const { formDetails: formTollingDetails, tableDetails: tableTollingDetails } = TollingFormDetails();
   const [receivingReceipt, setReceivingReceipt] = useState(null);
   const { list, status, statusLevel, statusMessage, action } = useSelector(
     (state) => state.dashboard.receivingReceipts
@@ -110,6 +112,26 @@ const ReceivingReceipts = (props) => {
     });
   };
 
+  const handleAddTolling = () => {
+    setFormTitle('Create Tolling Receiving Receipt');
+    setReceivingReceipt(null);
+    setLoading(true);
+    dispatch(listPO({ company, message })).then((resp1) => {
+      dispatch(listI({ company, message })).then((resp2) => {
+        if (isMounted.current) {
+          const onSuccess = () => {
+            history.push(`${path}/tolling`);
+            setLoading(false);
+          };
+          const onFail = () => {
+            setLoading(false);
+          };
+          handleRequestResponse([resp1, resp2], onSuccess, onFail, '');
+        }
+      });
+    });
+  };
+
   const handleRetrieve = (data) => {
     setDisplayModal(true);
     setReceivingReceipt(data);
@@ -152,14 +174,14 @@ const ReceivingReceipts = (props) => {
           formTable={tableDetails}
         />
       </Route>
-      <Route path={`${path}/:id`}>
-        <InputForm
+      <Route path={`${path}/tolling`}>
+        <TollingInputForm
           title={formTitle}
           onSubmit={onSubmit}
           values={receivingReceipt}
           onCancel={handleCancelButton}
-          formDetails={formDetails}
-          formTable={tableDetails}
+          formDetails={formTollingDetails}
+          formTable={tableTollingDetails}
         />
       </Route>
       <Route path={path}>
@@ -177,7 +199,19 @@ const ReceivingReceipts = (props) => {
                   handleAdd();
                 }}
               >
-                Add
+                Add Non-Tolling
+              </Button>
+            )}
+            {actions.includes('create') && (
+              <Button
+                style={{ float: 'right', marginRight: '1%' }}
+                icon={<PlusOutlined />}
+                loading={loading}
+                onClick={(e) => {
+                  handleAddTolling();
+                }}
+              >
+                Add Tolling
               </Button>
             )}
           </Col>

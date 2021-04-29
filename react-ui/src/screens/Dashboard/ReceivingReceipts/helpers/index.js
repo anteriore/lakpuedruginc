@@ -1,30 +1,37 @@
 export const formatPayload = (approvalId, company, data) => {
   const receivedItems = [];
+  let tempPurchaseOrder;
 
   data.receivedItems.forEach((rrItem) => {
     receivedItems.push({
-      item: { id: rrItem.id },
+      ...rrItem,
       quantity: rrItem.quantity,
-      unit: { id: rrItem.unit.id },
+      unit: rrItem?.unit ?? rrItem.item.unit,
       status: 'Quarantined',
     });
   });
+
+  if(data.isTolling){
+    tempPurchaseOrder = data?.purchaseOrder
+  } else {
+    tempPurchaseOrder = { id: data.purchaseOrder }
+  }
 
   return {
     ...data,
     number: data.number,
     date: data.date,
     receivedBy: { id: approvalId },
-    purchaseOrder: { id: data.purchaseOrder },
+    purchaseOrder: tempPurchaseOrder,
     company: { id: company },
     drNumber: data.drNumber,
     siNumber: data.siNumber,
     poNumber: data.poNumber,
     deliveryType: data.deliveryType,
     origin: data.origin,
-    status: data.status,
+    status: 'Pending',
     remarks: data.remarks,
-    tolling: true,
+    tolling: false,
 
     receivedItems,
   };
