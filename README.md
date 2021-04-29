@@ -16,8 +16,12 @@
 1. run superadmin folder - `mvn spring-boot:run`
 2. run app-ui folder - `npm start`
 
-# How to run (REACT UI)
+# How to run (REACT UI) for develop build
 1. react-ui folder - `npm start`
+
+# How to run (REACT UI) for production build
+1. react-ui folder - `npm run build`
+2. react-ui folder - `serve -s build`
 
 
 

@@ -2,13 +2,18 @@
 import axios from 'axios';
 
 //local
-//const baseURL = 'http://localhost:9000/'
+let baseURL = 'http://localhost:9000/'
 
-//develop
-//const baseURL = 'http://18.222.158.28:9000/';
-
-//production
-const baseURL = 'http://18.217.227.111:9000/';
+if(process.env.NODE_ENV === 'production'){
+  baseURL = 'http://18.217.227.111:9000/'
+}
+else {
+  //develop
+  //baseURL = 'http://18.222.158.28:9000/'
+  
+  //production
+  baseURL = 'http://18.217.227.111:9000/'
+}
 
 const instance = axios.create({
   baseURL,
