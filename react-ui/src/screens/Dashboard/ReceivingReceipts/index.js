@@ -199,7 +199,7 @@ const ReceivingReceipts = (props) => {
                   handleAdd();
                 }}
               >
-                Add
+                Add Non-Tolling
               </Button>
             )}
             {actions.includes('create') && (

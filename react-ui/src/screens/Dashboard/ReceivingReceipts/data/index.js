@@ -109,12 +109,6 @@ export const FormDetails = () => {
             writeOnly: true,
         },
         {
-          label: 'Purchase Order No.',
-          name: 'poNumber',
-          rules: [{ required: true, message: 'Please provide a Purchase Order No.' }],
-          placeholder: 'Purchase Order No.',
-        },
-        {
           label: 'Delivery Receipt No.',
           name: 'drNumber',
           type: 'string',
@@ -127,20 +121,6 @@ export const FormDetails = () => {
             type: 'string',
             rules: [{ required: true, message: 'Please provide a Sales Invoice No.' }],
             placeholder: 'Sales Invoice No.',
-        },
-        {
-            label: 'Delivery Type',
-            name: 'deliveryType',
-            type: 'string',
-            rules: [{ required: true, message: 'Please provide a Delivery Type' }],
-            placeholder: 'Delivery Type',
-        },
-        {
-            label: 'Origin',
-            name: 'origin',
-            type: 'string',
-            rules: [{ required: true, message: 'Please specify the origin' }],
-            placeholder: 'Origin',
         },
         {
             label: 'Remarks',
