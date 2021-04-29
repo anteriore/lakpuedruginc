@@ -3,9 +3,9 @@ export const formatPayload = (approvalId, company, data) => {
 
   data.receivedItems.forEach((rrItem) => {
     receivedItems.push({
-      item: { id: rrItem.id },
+      ...rrItem,
       quantity: rrItem.quantity,
-      unit: { id: rrItem.unit.id },
+      unit: { id: rrItem.unit },
       status: 'Quarantined',
     });
   });
@@ -22,9 +22,9 @@ export const formatPayload = (approvalId, company, data) => {
     poNumber: data.poNumber,
     deliveryType: data.deliveryType,
     origin: data.origin,
-    status: data.status,
+    status: 'Pending',
     remarks: data.remarks,
-    tolling: true,
+    tolling: data.tolling,
 
     receivedItems,
   };
