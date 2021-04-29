@@ -100,18 +100,6 @@ const FormScreen = (props) => {
       }
     });
 
-    formDetails.tolling_details.forEach((item) => {
-      if (
-        item.type === 'date' &&
-        typeof data[item.name] !== 'undefined' &&
-        data[item.name] !== null
-      ) {
-        data[item.name] = `${data[item.name].format('YYYY-MM-DD')}T${data[item.name].format(
-          'HH:mm:ss'
-        )}`;
-      }
-    });
-
     data.purchaseOrder = selectedPO
     onSubmit(data).then(() => {
       setLoading(false);
@@ -331,18 +319,6 @@ const FormScreen = (props) => {
                 return null;
               }
               return <FormItem item={item} onFail={onFail} formInstance={form} />;
-            })}
-
-            {(typeof formTable.isVisible === 'undefined' || formTable.isVisible) &&
-              formDetails.tolling_details.map((item) => {
-                if (item.toggle) {
-                  if (item.toggleCondition(toggleValue)) {
-                    return <FormItem item={item} onFail={onFail} />;
-                  }
-                  return null;
-                }
-
-                return <FormItem item={item} onFail={onFail} />;
             })}
 
             {hasTable &&
