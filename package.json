@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "angular-cookies": "^1.6.1",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "folder": "0.0.4",
     "inside": "^1.0.0",
     "ldi-app-ui": "file:app-ui"
